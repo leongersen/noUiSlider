@@ -2,8 +2,7 @@
 /* If you have more bars, perhaps give it a class	*/
 #sliderbar			{ width: 400px; border: 1px solid #CCC; height: 8px; border-radius: 4px; background: #EEE; }
 
-.noUi_lowerHandle	{ height: 8px; width: 8px; }
-.noUi_upperHandle	{ height: 8px; width: 8px; }
+.noUi_handle		{ height: 8px; width: 8px; }
 .noUi_midBar		{ height: 8px; }
 
 .noUi_midBar		{

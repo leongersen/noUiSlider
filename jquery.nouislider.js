@@ -90,7 +90,7 @@
 
 											var minimumavailable = options.minValue;		// Setting
 
-											if ( useMinObject.attr('class') == "noUi_lowerHandle" ){
+											if ( useMinObject.hasClass('noUi_lowerHandle') ){
 											
 												return minimumavailable;
 												
@@ -116,7 +116,7 @@
 												maximumavailable = maximumavailable - upperWidth;
 											}
 
-											if ( useMaxObject.attr('class') == "noUi_upperHandle" ){
+											if ( useMaxObject.hasClass('noUi_upperHandle') ){
 											
 												return maximumavailable;
 												
@@ -234,14 +234,14 @@
 
 								// Add required children to sliderbar
 
-									this.append('<div class="noUi_lowerHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div>');
+									this.append('<div class="noUi_handle noUi_lowerHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div>');
 									
 								// If the midbar is to be used...
 									if ( options.bar != "off"){
 										this.append('<div class="noUi_midBar"></div>');
 									}
 									
-									this.append('<div class="noUi_upperHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div><div style="display:none !important;" id="noUi_wait"></div>');
+									this.append('<div class="noUi_handle noUi_upperHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div><div style="display:none !important;" id="noUi_wait"></div>');
 
 									this.children().css('position', 'absolute');
 									
