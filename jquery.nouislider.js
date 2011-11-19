@@ -145,6 +145,8 @@
 												poselementleft = poselementleft.replace("px","");
 											var registeredmovement;
 
+												$(useObject).children().addClass('active');
+
 												$(document).mousemove(function(f){
 
 													if ( options.step == 0 ){
@@ -212,6 +214,8 @@
 
 											$(document).mouseup(function(){
 											
+												$(useObject).children().removeClass('active');
+
 												$(document).unbind('mousemove');
 												$(document).unbind('mouseup');
 												
