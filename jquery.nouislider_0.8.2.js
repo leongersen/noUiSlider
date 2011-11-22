@@ -146,6 +146,11 @@
 											var registeredmovement;
 
 												$(useObject).children().addClass('noUi_activeHandle');
+
+												// prevent text selection in IE
+												$('body').bind('selectstart.nouislider', function(e) {
+													return false;
+												});
 											
 												$(document).mousemove(function(f){
 
@@ -215,6 +220,8 @@
 											$(document).mouseup(function(){
 											
 												$(useObject).children().removeClass('noUi_activeHandle');
+
+												$('body').unbind('selectstart.nouislider');
 											
 												$(document).unbind('mousemove');
 												$(document).unbind('mouseup');
