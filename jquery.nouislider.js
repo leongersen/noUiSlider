@@ -22,6 +22,8 @@
 				var methods = {
 
 					init:		function init(){
+					
+								return this.each(function(){
 
 									function activate(useObject){
 
@@ -146,11 +148,6 @@
 											var registeredmovement;
 
 												$(useObject).children().addClass('noUi_activeHandle');
-
-												// prevent text selection in IE
-												$('body').bind('selectstart.nouislider', function(e) {
-													return false;
-												});
 											
 												$(document).mousemove(function(f){
 
@@ -217,14 +214,12 @@
 
 												});
 
-											$(document).mouseup(function(){
+											$(document).bind('mouseup.NoUiSlider', function(){
 											
 												$(useObject).children().removeClass('noUi_activeHandle');
-
-												$('body').unbind('selectstart.nouislider');
 											
 												$(document).unbind('mousemove');
-												$(document).unbind('mouseup');
+												$(document).unbind('mouseup.NoUiSlider');
 												
 												if( typeof options.callback == 'function' ){
 													options.callback.call(this);
@@ -239,56 +234,54 @@
 										}
 
 									}
-							
-								// Saving on css
-									this.css('position','relative');
 
 								// Add required children to sliderbar
 
-									this.append('<div class="noUi_handle noUi_lowerHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div>');
+									$(this).css('position','relative').append('<div class="noUi_handle noUi_lowerHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div>');
 									
 								// If the midbar is to be used...
 									if ( options.bar != "off"){
-										this.append('<div class="noUi_midBar"></div>');
+										$(this).append('<div class="noUi_midBar"></div>');
 									}
 									
-									this.append('<div class="noUi_handle noUi_upperHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div><div style="display:none !important;" id="noUi_wait"></div>');
+									$(this).append('<div class="noUi_handle noUi_upperHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div><div style="display:none !important;" id="noUi_wait"></div>');
 
-									this.children().css('position', 'absolute');
+									$(this).children().css('position', 'absolute');
 									
 								// Hide unwanted dots
 									if ( options.dontActivate == "upper" ){
-										this.children(".noUi_upperHandle").css('width',0).children(".noUi_sliderKnob").hide();
+										$(this).children(".noUi_upperHandle").css('width',0).children(".noUi_sliderKnob").hide();
 									}
 									if ( options.dontActivate == "lower" ){
-										this.children(".noUi_lowerHandle").css('width',0).children(".noUi_sliderKnob").hide();
+										$(this).children(".noUi_lowerHandle").css('width',0).children(".noUi_sliderKnob").hide();
 									}	
-								// Get width's of dots.
-									var lowerWidth = this.children(".noUi_lowerHandle").css('width')
-										lowerWidth = parseInt(lowerWidth.replace("px",""));
-									var upperWidth = this.children(".noUi_upperHandle").css('width')
-										upperWidth = parseInt(upperWidth.replace("px",""));
-								// Get width of bar.		
-									var maxwidth = this.css('width');
-										maxwidth = maxwidth.replace("px","");
-								// Set dots to defined starting point.	
-									var startMaxValue = options.startMax;
-										startMaxValue = ( ( startMaxValue * ( maxwidth - upperWidth) ) / 100 );
-										
-									var startMinValue = options.startMin;
-										startMinValue = ( ( startMinValue * ( maxwidth - lowerWidth) ) / 100 );
 								
-									this.children(".noUi_lowerHandle").css('left',startMinValue);							
-									this.children(".noUi_upperHandle").css('left',startMaxValue);	
+								// Get width's of dots.
+									var lowerWidth = $(this).children(".noUi_lowerHandle").css('width')
+										lowerWidth = parseInt(lowerWidth.replace("px",""));
+									var upperWidth = $(this).children(".noUi_upperHandle").css('width')
+										upperWidth = parseInt(upperWidth.replace("px",""));
+										
+								// Get width of bar.		
+									var maxwidth = parseInt(($(this).css('width')).replace("px",""));
+									
+								// Set dots to defined starting point.	
+									var startMaxValue = ( ( (options.startMax) * ( maxwidth - upperWidth) ) / 100 );
+									var startMinValue = ( ( (options.startMin) * ( maxwidth - lowerWidth) ) / 100 );
+								
+									$(this).children(".noUi_lowerHandle").css('left',startMinValue);							
+									$(this).children(".noUi_upperHandle").css('left',startMaxValue);	
 
 								// Activate, if requested.
 									if ( options.dontActivate != "upper" ){
-										activate(this.children(".noUi_upperHandle"));
+										activate($(this).children(".noUi_upperHandle"));
 									}
 									if ( options.dontActivate != "lower" ){
-										activate(this.children(".noUi_lowerHandle"));
+										activate($(this).children(".noUi_lowerHandle"));
 									}
 
+								}); // end of return this.	
+									
 								},
 							
 					getValue:	function getValue(){
