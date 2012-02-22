@@ -10,7 +10,8 @@
 					'minValue'      : 0,			// Minimum selectable. Default: 0;
 					'maxValue' 		: 'full',		// Maximum selectable. Default: 'full';
 					'point'			: 'lower',		// Set point for Getvalue function. Default 'lower'.
-				// Callbacks	
+				// Callbacks
+					'change'		: '',
 					'callback'		: '',			// Callback to be triggered on release of dot. 
 					'tracker'		: '',			// Callback to be triggered on every dot movement.
 					'clickmove'		: '',			// Callback to be triggered on movement by clicking.
@@ -24,70 +25,23 @@
 					init:		function init(){
 					
 								return this.each(function(){
+								
+									function setMidBar(useMidObject){
+
+										var one = $(useMidObject).children(".noUi_lowerHandle").css('left');
+										var two = $(useMidObject).children(".noUi_upperHandle").css('left');
+
+										one = parseInt(one.replace("px",""));
+										two = parseInt(two.replace("px",""));
+									
+										$(useMidObject).children(".noUi_midBar").css("left",(one+lowerWidth)).css("width",(two-(one+lowerWidth)));
+
+									}
 
 									function activate(useObject){
 
 										$(useObject).click(function(e) { e.stopPropagation(); });
-								
-									// ClickMove	
-								
-										var mainBarClick = useObject.parent();
-								
-										$(mainBarClick).click(function(e){
 
-											var dot0 = e.pageX;
-											var thebar = $(mainBarClick).offset();
-											
-											if ( options.dontActivate != "lower" && options.dontActivate != "upper" ){
-												
-												var dot1 = $(mainBarClick).children(".noUi_lowerHandle").offset();
-													dot1 = dot1.left;
-												var dot2 = $(mainBarClick).children(".noUi_upperHandle").offset();
-													dot2 = dot2.left;
-												
-												var z = ( (dot1 + dot2) / 2 );
-
-												if ( dot0 > z ){
-													$(mainBarClick).children(".noUi_upperHandle").css("left", (dot0 - thebar.left));
-												} else {
-													$(mainBarClick).children(".noUi_lowerHandle").css("left", (dot0 - thebar.left));
-												}
-												
-											} else {
-											
-												if ( options.dontActivate != "lower" ){
-													$(mainBarClick).children(".noUi_lowerHandle").css("left", (dot0 - thebar.left));
-												}
-												if ( options.dontActivate != "upper" ){
-													$(mainBarClick).children(".noUi_upperHandle").css("left", (dot0 - thebar.left));
-												}
-
-											}
-												
-											if ( options.bar != "off"){
-												setMidBar(mainBarClick);
-											}
-											
-											if ( typeof options.clickmove == "function" ){
-												options.clickmove.call(this);
-											}
-
-										});
-										
-									// -
-
-										function setMidBar(useMidObject){
-
-											var one = $(useMidObject).children(".noUi_lowerHandle").css('left');
-											var two = $(useMidObject).children(".noUi_upperHandle").css('left');
-
-											one = parseInt(one.replace("px",""));
-											two = parseInt(two.replace("px",""));
-										
-											$(useMidObject).children(".noUi_midBar").css("left",(one+lowerWidth)).css("width",(two-(one+lowerWidth)));
-
-										}
-										
 										function getMinimum(useMinObject){
 
 											var minimumavailable = options.minValue;		// Setting
@@ -225,6 +179,10 @@
 													options.callback.call(this);
 												}
 												
+												if( typeof options.change == 'function' ){
+													options.change.call(this);
+												}
+												
 											});
 
 										});
@@ -279,6 +237,53 @@
 									if ( options.dontActivate != "lower" ){
 										activate($(this).children(".noUi_lowerHandle"));
 									}
+
+								// ClickMove	
+
+									$(this).click(function(e){
+
+										var dot0 = e.pageX;
+										var thebar = ($(this).offset()).left;
+										
+										if ( options.dontActivate != "lower" && options.dontActivate != "upper" ){
+											
+											var dot1 = ($(this).children(".noUi_lowerHandle").offset()).left;
+											var dot2 = ($(this).children(".noUi_upperHandle").offset()).left;
+											
+											var z = ( (dot1 + dot2) / 2 );
+
+											if ( dot0 > z ){
+												$(this).children(".noUi_upperHandle").css("left", (dot0 - thebar));
+											} else {
+												$(this).children(".noUi_lowerHandle").css("left", (dot0 - thebar));
+											}
+											
+										} else {
+										
+											if ( options.dontActivate != "lower" ){
+												$(this).children(".noUi_lowerHandle").css("left", (dot0 - thebar));
+											}
+											if ( options.dontActivate != "upper" ){
+												$(this).children(".noUi_upperHandle").css("left", (dot0 - thebar));
+											}
+
+										}
+											
+										if ( options.bar != "off"){
+											setMidBar($(this));
+										}
+										
+										if ( typeof options.clickmove == "function" ){
+											options.clickmove.call(this);
+										}
+										
+										if ( typeof options.change == "function" ){
+											options.change.call(this);
+										}
+
+									});
+									
+								// -
 
 								}); // end of return this.	
 									
