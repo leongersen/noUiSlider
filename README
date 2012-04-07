@@ -1,11 +1,13 @@
 	
-	/* All new version coming up! */
+	/* All new version released! (1.1.7) */
 	- Features:
+		- 'Move' function
+		- More accurate
 		- Data storage
 		- Faster
 		- Smaller
 		- Bug fixes
-	
-	Please view an extended documentation here: 
+
+	You can view an extended documentation, as well as changelogs, at: 
 	
 	http://refreshless.com/nouislider/
