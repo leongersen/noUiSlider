@@ -3,341 +3,352 @@
 			$.fn.noUiSlider = function( method, options ) {
 
 				var settings = {
-					'dontActivate'	: '',			// Set to Upper or lower. Default = '';
-					'bar'			: '',			// Use bar
-					'startMax'		: 75,			// Percentage of the sliderbar to set the noUi_upperHandle to;
-					'startMin'		: 25,			// Percentage of the sliderbar to set the noUi_lowerHandle to;
-					'minValue'      : 0,			// Minimum selectable. Default: 0;
-					'maxValue' 		: 'full',		// Maximum selectable. Default: 'full';
-					'point'			: 'lower',		// Set point for Getvalue function. Default 'lower'.
-				// Callbacks
+					'bar'			: true,			// Should the bar be used? Set to 'false' or LEGACY 'off'
+					'dontActivate'	: '',			// Set to Upper or lower.
+					'scale'			: '',			// NEW. Use like [0,50] or omit.
+					'startMin'		: '25',			
+					'startMax'		: '75',
+					
+					'point'			: '',			// Accepts [array/both, lower, upper, 0, 1]
+					'saveScale'		: false,
+					'moveStyle'		: '',			// set To Animate!
+					'setTo'			: '',			// INT, [INT,INT]
+
+				// Callbacks	*/
 					'change'		: '',
 					'callback'		: '',			// Callback to be triggered on release of dot. 
+					'knobRelease'	: '',			// rename for Callback
 					'tracker'		: '',			// Callback to be triggered on every dot movement.
 					'clickmove'		: '',			// Callback to be triggered on movement by clicking.
-					'step'			: 0,			// ALPHA: Set the slider to make steps in stead of fluid sliding.
-					'minLimit'		: 0,			// Default zero point for getValue calculator.
-					'maxLimit'		: 100			// Default maxpoint for getValue calculator.
 				};
 
+				function rebuildMidBar(element){
+					var handles=new Array();
+					if(element.find('.noUi_handle.noUi_lowerHandle').length){
+						handles[0]=parseInt(element.find('.noUi_handle.noUi_lowerHandle').css('left'));
+						if(isNaN(handles[0])){handles[0] = 0;}
+					} else { handles[0] = 0; }
+					if(element.find('.noUi_handle.noUi_upperHandle').length){
+						handles[1]=(parseInt(element.css('width'))-parseInt(element.find('.noUi_handle.noUi_upperHandle').css('left')));
+						if(isNaN(handles[1])){handles[1] = '100%';}
+					} else { handles[1] = 0; }
+					element.find('.noUi_midBar').css({'left':handles[0],'right':handles[1]});
+				}
+
+				function locToScale(element, input, knob, scale){
+					var elementWidth = parseInt(element.css('width'));
+					var knobWidth = parseInt(knob.css('width'));
+					if(!scale){ scale=[0,100]; }
+					return ((elementWidth/(scale[1]-scale[0]))*(parseInt(input)-scale[0]))-(knobWidth/2);
+				}
+				
+				function scaleToLoc(element, knob, scale){
+					var elementWidth = parseInt(element.css('width'));
+					var knobWidth = parseInt(knob.css('width'));
+					if(!scale){ scale=[0,100]; }
+					var value = parseInt(knob.css('left')) + ( knobWidth/2 );
+						value = value / ( elementWidth / (scale[1]-scale[0]) );
+						value = value + scale[0];
+					return value;
+				}
+				
 				var methods = {
 
 					init:		function init(){
-					
-								return this.each(function(){
-								
-									function setMidBar(useMidObject){
-
-										var one = $(useMidObject).children(".noUi_lowerHandle").css('left');
-										var two = $(useMidObject).children(".noUi_upperHandle").css('left');
-
-										one = parseInt(one.replace("px",""));
-										two = parseInt(two.replace("px",""));
+						
+									return this.each(function(){
 									
-										$(useMidObject).children(".noUi_midBar").css("left",(one+lowerWidth)).css("width",(two-(one+lowerWidth)));
+										if(!settings.knobRelease && settings.callBack){
+											settings.knobRelease=settings.callBack;
+										}
+									
+										var element = $(this);
+										var elementWidth = parseInt(element.css('width'));
+									
+										$.event.props = $.event.props.join('|').replace('layerX|layerY|', '').split('|');
 
-									}
-
-									function activate(useObject){
-
-										$(useObject).click(function(e) { e.stopPropagation(); });
-
-										function getMinimum(useMinObject){
-
-											var minimumavailable = options.minValue;		// Setting
-
-											if ( useMinObject.hasClass('noUi_lowerHandle') ){
-											
-												return minimumavailable;
-												
-											} else {
-											
-												var value = $(useMinObject).parent().children('.noUi_lowerHandle').css("left");
-													value = value.replace("px","");
-													value = parseInt(value);
-											
-												return ( lowerWidth + value );
-											
-											}
+										$(this).css('position','relative');
+										
+										if(settings.dontActivate.toLowerCase()!='lower'){
+											$(this).append('<div class="noUi_handle noUi_lowerHandle"><div class="noUi_sliderKnob"></div></div>');
 										}
 										
-										function getMaximum(useMaxObject){
-
-											var maximumavailable = options.maxValue;		// Setting
-										
-											if ( maximumavailable == 'full' ){
-												
-												maximumavailable = $(useMaxObject).parent().css('width');
-												maximumavailable = maximumavailable.replace("px","");
-												maximumavailable = maximumavailable - upperWidth;
-											}
-
-											if ( useMaxObject.hasClass('noUi_upperHandle') ){
-											
-												return maximumavailable;
-												
-											} else {
-											
-												var value =  $(useMaxObject).parent().children('.noUi_upperHandle').css("left");
-													value = value.replace("px","");
-													value = parseInt(value);
-													value = value - lowerWidth;
-											
-												return ( value );
-											
-											}
-										
+										if(settings.bar && settings.bar!='off'){
+											$(this).append('<div class="noUi_midBar"></div>');
 										}
 										
-										var mainObject = useObject.parent();
-									
-										$(useObject).mousedown(function(e){
-
-											var previousxpos = e.pageX;
-											var previousstore;
-											var counter = 0;
-											var currentvalue;
-											var poselementleft = $(this).css("left");
-												poselementleft = poselementleft.replace("px","");
-											var registeredmovement;
-
-												$(useObject).children().addClass('noUi_activeHandle');
+										if(settings.dontActivate.toLowerCase()!='upper'){
+											$(this).append('<div class="noUi_handle noUi_upperHandle"><div class="noUi_sliderKnob"></div></div>');
+										}
+										
+										$(this).data('activated',[element.find('.noUi_handle.noUi_lowerHandle').length,element.find('.noUi_handle.noUi_upperHandle').length]);
+										
+										$(this)
+											.children().css('position', 'absolute')
+										;
+										$(this)
+											.find('.noUi_midBar')
+											.css({'left':0,'right':0})
+										;
+										
+										if(settings.scale){
+											$(this).data('scale', settings.scale);
+										}
+										
+										var knobs = $(this).find('.noUi_sliderKnob');
+										
+										knobs.each(function(){
 											
-												$(document).mousemove(function(f){
+											var knob = $(this).parent('.noUi_handle');
 
-													if ( options.step == 0 ){
-													
-														poselementleft = $(useObject).css("left");
-														poselementleft = poselementleft.replace("px","");
-													
-														currentvalue = f.pageX;
-														registeredmovement = currentvalue - previousxpos;
+											knob.data('offSet',knob.offset().left);
+											
+											if(knob.hasClass('noUi_lowerHandle')&&settings.startMin){
+												if(typeof(settings.startMin)=='string' && (settings.startMin.indexOf('%')!=-1)){
+													knob.css('left', locToScale(element,settings.startMin,knob));
+												} else {
+													knob.css('left', locToScale(element,settings.startMin,knob,settings.scale));
+												}
+											}
+											
+											if(knob.hasClass('noUi_upperHandle')&&settings.startMax){
+												if(typeof(settings.startMax)=='string' && (settings.startMax.indexOf('%')!=-1)){
+													knob.css('left', locToScale(element,settings.startMax,knob));
+												} else {
+													knob.css('left', locToScale(element,settings.startMax,knob,settings.scale));
+												}
+											}
+										
+										});
+										
+										if(settings.bar && settings.bar!='off'){rebuildMidBar(element);}
 
-														var tomove = parseInt(poselementleft) + parseInt(registeredmovement);
-														
-														if (tomove > getMinimum(useObject)){
-															
-															if (tomove <= getMaximum(useObject) ){
-																$(useObject).css("left",tomove);
-															} else {
-																$(useObject).css("left",getMaximum(useObject));
-															}
+										knobs.bind('mousedown.noUiSlider',function(e){
 
-														} else {
-															$(useObject).css("left",getMinimum(useObject));
-														}
+											/* Fixes */
+												e.preventDefault();
+												$('body').bind('selectstart.noUiSlider', function(e){return false;});
+												$(this).addClass('noUi_activeHandle');
+										
+											var knob = $(this).parent('.noUi_handle');
+											
+											var status = element.data('activated')[0] && element.data('activated')[1];
 
-														if ( options.bar != "off"){
-															setMidBar(mainObject);
-														}
-														
-														previousxpos = currentvalue;
+											$(document).bind('mousemove.noUiSlider', function(f){
 
-													} else {	
-													
-														if ( f.pageX > previousstore ) {
-															counter++;
-														} else {
-															counter--;
-														}
-														
-														var maxwidth = $(useObject).parent().css('width');
-															maxwidth = parseInt(maxwidth.replace("px",""));
-															
-														var maxstep = (( maxwidth * options.step ) / 100 );
-														
-														if ( counter > maxstep || counter < ( -1 * maxstep ) ){
-
-															poselementleft = $(useObject).css("left");
-															poselementleft = parseInt(poselementleft.replace("px",""));
-
-															$(useObject).css("left", poselementleft + counter);
-															counter = 0;
-															
-															setMidBar(mainObject);
-															
-														}
-														
-														previousstore = f.pageX;
-
+											
+											
+												var knobCorrection=parseInt(knob.css('width'));
+												var flattened = f.pageX-(knob.data('offSet'));
+											
+												/* lower knob */
+											
+												if(knob.hasClass('noUi_lowerHandle')||!status){
+												
+													if(flattened<(-1*(parseInt(knob.css('width'))/2))){
+														flattened=(-1*(parseInt(knob.css('width'))/2));
 													}
 													
-													if ( typeof options.tracker == 'function' ){
-														options.tracker.call(this);
+													if(status){
+														var l=(parseInt(knob.parent().find('.noUi_upperHandle').css('left'))-knobCorrection);
+														if(flattened>l){
+															flattened=l;
+														}
 													}
-
-												});
-
-											$(document).bind('mouseup.NoUiSlider', function(){
-											
-												$(useObject).children().removeClass('noUi_activeHandle');
-											
-												$(document).unbind('mousemove');
-												$(document).unbind('mouseup.NoUiSlider');
 												
-												if( typeof options.callback == 'function' ){
-													options.callback.call(this);
 												}
 												
-												if( typeof options.change == 'function' ){
-													options.change.call(this);
+												/* upper knob */
+												
+												if(knob.hasClass('noUi_upperHandle')||!status){
+												
+													var correctedElementWidth = (elementWidth-(knobCorrection/2));
+													
+													if(flattened>correctedElementWidth){
+														flattened=correctedElementWidth;
+													}
+													
+													if(status){
+														var l=(parseInt(knob.parent().find('.noUi_lowerHandle').css('left'))+knobCorrection);
+														if(flattened<l){
+															flattened=l;
+														}
+													}
+													
+												}
+
+												knob.css({'left':flattened});
+												
+												if(settings.bar&&settings.bar!='off'){
+													rebuildMidBar(element);
 												}
 												
+												if ( typeof(options.tracker) == "function" ){ options.tracker.call(this); }
+											
 											});
+										
+										});
+										
+										$(document).bind('mouseup.noUiSlider',function(){
+											knobs.removeClass('noUi_activeHandle');
+											$(this).unbind('mousemove.noUiSlider');
+											$('body').unbind('selectstart.noUiSlider');
+											
+											if ( typeof(options.knobRelease) == "function" ){ options.knobRelease.call(this); }
+											if ( typeof(options.change) == "function" ){ options.change.call(this); }
+										});
+										
+										$(this).bind('click.noUiSlider',function(e){
+										
+											var dot0 = e.pageX;
+											var thebar = $(this).offset().left;
+											
+											if($(this).data('activated')[0] && $(this).data('activated')[1]){
+												
+												var dot1 = $(this).children(".noUi_lowerHandle").offset().left;
+												var dot2 = $(this).children(".noUi_upperHandle").offset().left;
+												
+												var z = (dot1 + dot2) / 2;
+
+												if ( dot0 > z ){
+													$(this).children(".noUi_upperHandle").css("left", (dot0 - thebar));
+												} else {
+													$(this).children(".noUi_lowerHandle").css("left", (dot0 - thebar));
+												}
+
+											} else {
+												if ($(this).data('activated')[0]){
+													$(this).children(".noUi_lowerHandle").css("left", (dot0 - thebar));
+												}
+												if ($(this).data('activated')[1]){
+													$(this).children(".noUi_upperHandle").css("left", (dot0 - thebar));
+												}
+											}
+											
+											if(settings.bar&&settings.bar!='off'){
+												rebuildMidBar(element);
+											}
+											
+											if ( typeof(options.clickmove) == "function" ){ options.clickmove.call(this); }
+											if ( typeof(options.change) == "function" ){ options.change.call(this); }
 
 										});
 										
-										if ( options.bar != "off"){
-											setMidBar(mainObject);
-										}
-
-									}
-
-								// Add required children to sliderbar
-
-									$(this).css('position','relative').append('<div class="noUi_handle noUi_lowerHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div>');
-									
-								// If the midbar is to be used...
-									if ( options.bar != "off"){
-										$(this).append('<div class="noUi_midBar"></div>');
-									}
-									
-									$(this).append('<div class="noUi_handle noUi_upperHandle" onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false"><div class="noUi_sliderKnob"></div></div><div style="display:none !important;" id="noUi_wait"></div>');
-
-									$(this).children().css('position', 'absolute');
-									
-								// Hide unwanted dots
-									if ( options.dontActivate == "upper" ){
-										$(this).children(".noUi_upperHandle").css('width',0).children(".noUi_sliderKnob").hide();
-									}
-									if ( options.dontActivate == "lower" ){
-										$(this).children(".noUi_lowerHandle").css('width',0).children(".noUi_sliderKnob").hide();
-									}	
-								
-								// Get width's of dots.
-									var lowerWidth = $(this).children(".noUi_lowerHandle").css('width')
-										lowerWidth = parseInt(lowerWidth.replace("px",""));
-									var upperWidth = $(this).children(".noUi_upperHandle").css('width')
-										upperWidth = parseInt(upperWidth.replace("px",""));
-										
-								// Get width of bar.		
-									var maxwidth = parseInt(($(this).css('width')).replace("px",""));
-									
-								// Set dots to defined starting point.	
-									var startMaxValue = ( ( (options.startMax) * ( maxwidth - upperWidth) ) / 100 );
-									var startMinValue = ( ( (options.startMin) * ( maxwidth - lowerWidth) ) / 100 );
-								
-									$(this).children(".noUi_lowerHandle").css('left',startMinValue);							
-									$(this).children(".noUi_upperHandle").css('left',startMaxValue);	
-
-								// Activate, if requested.
-									if ( options.dontActivate != "upper" ){
-										activate($(this).children(".noUi_upperHandle"));
-									}
-									if ( options.dontActivate != "lower" ){
-										activate($(this).children(".noUi_lowerHandle"));
-									}
-
-								// ClickMove	
-
-									$(this).click(function(e){
-
-										var dot0 = e.pageX;
-										var thebar = ($(this).offset()).left;
-										
-										if ( options.dontActivate != "lower" && options.dontActivate != "upper" ){
-											
-											var dot1 = ($(this).children(".noUi_lowerHandle").offset()).left;
-											var dot2 = ($(this).children(".noUi_upperHandle").offset()).left;
-											
-											var z = ( (dot1 + dot2) / 2 );
-
-											if ( dot0 > z ){
-												$(this).children(".noUi_upperHandle").css("left", (dot0 - thebar));
-											} else {
-												$(this).children(".noUi_lowerHandle").css("left", (dot0 - thebar));
-											}
-											
-										} else {
-										
-											if ( options.dontActivate != "lower" ){
-												$(this).children(".noUi_lowerHandle").css("left", (dot0 - thebar));
-											}
-											if ( options.dontActivate != "upper" ){
-												$(this).children(".noUi_upperHandle").css("left", (dot0 - thebar));
-											}
-
-										}
-											
-										if ( options.bar != "off"){
-											setMidBar($(this));
-										}
-										
-										if ( typeof options.clickmove == "function" ){
-											options.clickmove.call(this);
-										}
-										
-										if ( typeof options.change == "function" ){
-											options.change.call(this);
-										}
-
 									});
 									
-								// -
+								},
+								
+					move:		function move(){
 
-								}); // end of return this.	
+									var element = $(this);
+
+									var ok = false;
 									
+									/* if point was omitted */
+									if(!settings.point){
+										if($(this).data('activated')[0] && $(this).data('activated')[1]){
+											ok = true;
+										} else {
+											if($(this).data('activated')[0]){
+												settings.point = 0;
+											}
+											if($(this).data('activated')[1]){
+												settings.point = 1;
+											}
+										}
+									}
+									
+									if(settings.saveScale){
+										$(this).data('scale',settings.scale);
+									}
+					
+									/* if scale was omitted */
+									if(!settings.scale){
+										if(!$(this).data('scale')){
+											settings.scale=[0,100];
+										} else {
+											settings.scale=$(this).data('scale');
+										}									
+									}
+									
+									/* It is not necessary to specify an array for one dot. */
+									if(typeof(settings.setTo)!='object'){
+										if(settings.point=='lower'||settings.point==0){
+											settings.setTo = [settings.setTo,0]
+										}
+										if(settings.point=='upper'||settings.point==1){
+											settings.setTo = [0,settings.setTo]
+										}
+									}
+									
+									if(settings.point=='lower'||settings.point==0 ||ok){
+										var newKnob1 = $(this).find('.noUi_lowerHandle');
+										var value1 = locToScale(element, settings.setTo[0], newKnob1, settings.scale);
+										if(settings.moveStyle=='animate'){
+											newKnob1.animate({'left':value1}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }}});
+										} else {
+											newKnob1.css('left',value1);
+										}
+									}
+									
+									if(settings.point=='upper'||settings.point==1||ok){
+										var newKnob2 = $(this).find('.noUi_upperHandle');
+										var value2 = locToScale(element, settings.setTo[1],  newKnob2, settings.scale );
+										if(settings.moveStyle=='animate'){
+											newKnob2.animate({'left':value2}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }}});
+										} else {
+											newKnob2.css('left',value2);
+										}
+									}
+									
+									if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }
+									if ( typeof(options.change) == "function" ){ options.change.call(this); }
+									
+								},
+								
+					reset:		function reset(){
+					
+					
 								},
 							
 					getValue:	function getValue(){
+					
+									if(!settings.point){ settings.point = 'array'; }
 
-									var lowerWidth = this.children(".noUi_lowerHandle").css('width')
-										lowerWidth = parseInt(lowerWidth.replace("px",""));
-									var upperWidth = this.children(".noUi_upperHandle").css('width')
-										upperWidth = parseInt(upperWidth.replace("px",""));
+									if(!settings.scale){
+										if($(this).data('scale')=='undefined'){
+											settings.scale=[0,100];
+										} else {
+											settings.scale=$(this).data('scale');
+										}									
+									}
 
-									var maxwidth = this.css('width');
-										maxwidth = maxwidth.replace("px","");
-
-									scaleMin = options.minLimit;
-									scaleMax = options.maxLimit;
-									useObject = options.point;
-
-									if ( useObject == "lower" ){
-										var val = $(this.children(".noUi_lowerHandle")).css("left");
-										val = parseInt(val.replace("px",""));
-										maxwidth = maxwidth - lowerWidth;
+									returnA = new Array();
+									
+									if($(this).data('activated')[0]){
+										returnA.push(scaleToLoc($(this), $(this).find('.noUi_lowerHandle'), settings.scale));
 									}
 									
-									if ( useObject == "upper" ){
-										var val = $(this.children(".noUi_upperHandle")).css("left");
-										val = parseInt(val.replace("px",""));
-										maxwidth = maxwidth - upperWidth;
+									if($(this).data('activated')[1]){
+										returnA.push(scaleToLoc($(this), $(this).find('.noUi_upperHandle'), settings.scale));
 									}
-
-									var calc = ( ( scaleMax - scaleMin ) );
-										calc = ( maxwidth / calc );
-										calc = ( val / calc );
-										
-									return ( calc + scaleMin ) ;
-								}
+									
+									if(settings.point=='lower'||settings.point==0){
+										return returnA[0];
+									}
+									
+									if(settings.point=='upper'||settings.point==1){
+										return returnA[1];
+									}
+									
+									if(settings.point=='array'){
+										return returnA;
+									}
 					
+								}
+
 				};
 
-				if ( options ){
-					if ( options.dontActivate ) {
-					
-						if ( !options.startMin ){
-							options.startMin = 0;
-						}
-						
-						if ( !options.startMax ){
-							options.startMax = 100;
-						}
-					
-					}
-				}
-				
 				var options = $.extend( settings, options );
 
 				if ( methods[method] ) {
