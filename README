@@ -1,5 +1,11 @@
 	
-	/* All new version released! (1.1.7) */
+	Bugfix released! (1.2.2)
+	
+	- Callbacks should now work properly.
+	
+	------------------------------------------------------------------
+	
+	All new version released! (1.1.7)
 	- Features:
 		- 'Move' function
 		- More accurate

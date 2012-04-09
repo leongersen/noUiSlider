@@ -86,6 +86,11 @@
 										$(this)
 											.children().css('position', 'absolute')
 										;
+										
+										$(this)
+											.data('change',options.change)
+										;
+										
 										$(this)
 											.find('.noUi_midBar')
 											.css({'left':0,'right':0})
@@ -136,8 +141,6 @@
 
 											$(document).bind('mousemove.noUiSlider', function(f){
 
-											
-											
 												var knobCorrection=parseInt(knob.css('width'));
 												var flattened = f.pageX-(knob.data('offSet'));
 											
@@ -186,18 +189,21 @@
 												if ( typeof(options.tracker) == "function" ){ options.tracker.call(this); }
 											
 											});
+
+											$(document).bind('mouseup.noUiSlider',function(){
+
+												$(this).unbind('mousemove.noUiSlider');
+												knobs.removeClass('noUi_activeHandle');
+												$('body').unbind('selectstart.noUiSlider');
+
+												if ( typeof(options.knobRelease) == "function" ){ options.knobRelease.call(element); }
+												if ( typeof(options.change) == "function" ){ options.change.call(element); }
+												
+												$(this).unbind('mouseup.noUiSlider');
+											});
 										
 										});
-										
-										$(document).bind('mouseup.noUiSlider',function(){
-											knobs.removeClass('noUi_activeHandle');
-											$(this).unbind('mousemove.noUiSlider');
-											$('body').unbind('selectstart.noUiSlider');
-											
-											if ( typeof(options.knobRelease) == "function" ){ options.knobRelease.call(this); }
-											if ( typeof(options.change) == "function" ){ options.change.call(this); }
-										});
-										
+
 										$(this).bind('click.noUiSlider',function(e){
 										
 											var dot0 = e.pageX;
@@ -231,7 +237,11 @@
 											
 											if ( typeof(options.clickmove) == "function" ){ options.clickmove.call(this); }
 											if ( typeof(options.change) == "function" ){ options.change.call(this); }
+											
+											e.stopPropagation();
 
+										}).children().not('.noUi_midBar').click(function(e) {
+											return false;	// issue 6
 										});
 										
 									});
@@ -301,8 +311,9 @@
 										}
 									}
 									
+									var changeFunction=$(this).data('change');
 									if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }
-									if ( typeof(options.change) == "function" ){ options.change.call(this); }
+									if ( typeof(changeFunction) == "function" ){ changeFunction.call(this); }
 									
 								},
 								
