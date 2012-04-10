@@ -46,9 +46,15 @@
 					var elementWidth = parseInt(element.css('width'));
 					var knobWidth = parseInt(knob.css('width'));
 					if(!scale){ scale=[0,100]; }
-					var value = parseInt(knob.css('left')) + ( knobWidth/2 );
+					
+					var left=knob.css('left');
+					// gitHub issue #6;
+					if(left=='auto'){left=0;}
+					
+					var value = parseInt(left) + ( knobWidth/2 );
 						value = value / ( elementWidth / (scale[1]-scale[0]) );
 						value = value + scale[0];
+					
 					return value;
 				}
 				
@@ -106,9 +112,7 @@
 											
 											var knob = $(this).parent('.noUi_handle');
 
-											knob.data('offSet',knob.offset().left);
-											
-											if(knob.hasClass('noUi_lowerHandle')&&settings.startMin){
+											if(knob.hasClass('noUi_lowerHandle')&&(settings.startMin || (settings.startMin===0))){
 												if(typeof(settings.startMin)=='string' && (settings.startMin.indexOf('%')!=-1)){
 													knob.css('left', locToScale(element,settings.startMin,knob));
 												} else {
@@ -142,7 +146,7 @@
 											$(document).bind('mousemove.noUiSlider', function(f){
 
 												var knobCorrection=parseInt(knob.css('width'));
-												var flattened = f.pageX-(knob.data('offSet'));
+												var flattened = f.pageX-(element.offset().left);	// GitHub issue #5, fix by instanceoftom
 											
 												/* lower knob */
 											
