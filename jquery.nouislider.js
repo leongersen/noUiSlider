@@ -39,7 +39,7 @@
 					var elementWidth = parseInt(element.css('width'));
 					var knobWidth = parseInt(knob.css('width'));
 					if(!scale){ scale=[0,100]; }
-					return ((elementWidth/(scale[1]-scale[0]))*(parseInt(input)-scale[0]))-(knobWidth/2);
+					return ((elementWidth/(scale[1]-scale[0]))*(parseFloat(input)-scale[0]))-(knobWidth/2);
 				}
 				
 				function scaleToLoc(element, knob, scale){
