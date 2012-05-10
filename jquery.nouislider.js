@@ -19,7 +19,7 @@
 					'callback'		: '',			// Callback to be triggered on release of dot. 
 					'knobRelease'	: '',			// rename for Callback
 					'tracker'		: '',			// Callback to be triggered on every dot movement.
-					'clickmove'		: '',			// Callback to be triggered on movement by clicking.
+					'clickmove'		: ''			// Callback to be triggered on movement by clicking. issue #9
 				};
 
 				function rebuildMidBar(element){
@@ -61,16 +61,24 @@
 				var methods = {
 
 					init:		function init(){
+					
+									var style = $('<style title="tempNoUiSlider">.temp-show{position:absolute !important; visibility:hidden !important; display:block !important;}.autoWidth{width:auto !important;}</style>')
+									$('html > head').append(style);
 						
 									return this.each(function(){
-									
+
 										if(!settings.knobRelease && settings.callBack){
 											settings.knobRelease=settings.callBack;
 										}
 									
 										var element = $(this);
+										
+										if((!element.is(':visible'))&&((element.css('width')).indexOf('%')!=-1)){
+											$.error('Placing a percentage sized slider in a hidden element will cause trouble!');
+										}
+										
 										var elementWidth = parseInt(element.css('width'));
-									
+										
 										$.event.props = $.event.props.join('|').replace('layerX|layerY|', '').split('|');
 
 										$(this).css('position','relative');
@@ -147,7 +155,7 @@
 
 												var knobCorrection=parseInt(knob.css('width'));
 												var flattened = f.pageX-(element.offset().left);	// GitHub issue #5, fix by instanceoftom
-											
+
 												/* lower knob */
 											
 												if(knob.hasClass('noUi_lowerHandle')||!status){
@@ -168,7 +176,7 @@
 												/* upper knob */
 												
 												if(knob.hasClass('noUi_upperHandle')||!status){
-												
+													elementWidth = parseInt(element.css('width'));
 													var correctedElementWidth = (elementWidth-(knobCorrection/2));
 													
 													if(flattened>correctedElementWidth){
@@ -177,6 +185,7 @@
 													
 													if(status){
 														var l=(parseInt(knob.parent().find('.noUi_lowerHandle').css('left'))+knobCorrection);
+														
 														if(flattened<l){
 															flattened=l;
 														}
@@ -209,6 +218,8 @@
 										});
 
 										$(this).bind('click.noUiSlider',function(e){
+										
+											console.log('click');
 										
 											var dot0 = e.pageX;
 											var thebar = $(this).offset().left;
