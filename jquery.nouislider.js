@@ -218,7 +218,7 @@
 										});
 
 										$(this).bind('click.noUiSlider',function(e){
-
+										  
 											var dot0 = e.pageX;
 											var thebar = $(this).offset().left;
 											
@@ -308,7 +308,9 @@
 										var newKnob1 = $(this).find('.noUi_lowerHandle');
 										var value1 = locToScale(element, settings.setTo[0], newKnob1, settings.scale);
 										if(settings.moveStyle=='animate'){
-											newKnob1.animate({'left':value1}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }}});
+											var that = this;
+											this.data('lowerAnnimTo',settings.setTo[0]);
+											newKnob1.animate({'left':value1}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }},complete:function(){that.removeData('lowerAnnimTo');}});
 										} else {
 											newKnob1.css('left',value1);
 										}
@@ -318,7 +320,8 @@
 										var newKnob2 = $(this).find('.noUi_upperHandle');
 										var value2 = locToScale(element, settings.setTo[1],  newKnob2, settings.scale );
 										if(settings.moveStyle=='animate'){
-											newKnob2.animate({'left':value2}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }}});
+											this.data('upperAnnimTo',settings.setTo[1]);
+											newKnob2.animate({'left':value2}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }},complete:function(){that.removeData('upperAnnimTo');}});
 										} else {
 											newKnob2.css('left',value2);
 										}
@@ -350,11 +353,21 @@
 									returnA = new Array();
 									
 									if($(this).data('activated')[0]){
-										returnA.push(scaleToLoc($(this), $(this).find('.noUi_lowerHandle'), settings.scale));
+										if(typeof $(this).data('lowerAnnimTo')!="undefined"){
+											returnA.push($(this).data('lowerAnnimTo'));
+										}
+										else{
+											returnA.push(scaleToLoc($(this), $(this).find('.noUi_lowerHandle'), settings.scale));
+										}
 									}
 									
 									if($(this).data('activated')[1]){
-										returnA.push(scaleToLoc($(this), $(this).find('.noUi_upperHandle'), settings.scale));
+										if(typeof $(this).data('upperAnnimTo')!="undefined"){
+											returnA.push($(this).data('upperAnnimTo'));
+										}
+										else{
+											returnA.push(scaleToLoc($(this), $(this).find('.noUi_upperHandle'), settings.scale));
+										}
 									}
 									
 									if(settings.point=='lower'||settings.point==0){
