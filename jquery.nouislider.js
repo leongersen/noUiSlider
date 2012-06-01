@@ -320,6 +320,7 @@
 										var newKnob2 = $(this).find('.noUi_upperHandle');
 										var value2 = locToScale(element, settings.setTo[1],  newKnob2, settings.scale );
 										if(settings.moveStyle=='animate'){
+										  var that = this;
 											this.data('upperAnnimTo',settings.setTo[1]);
 											newKnob2.animate({'left':value2}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }},complete:function(){that.removeData('upperAnnimTo');}});
 										} else {
