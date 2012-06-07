@@ -217,8 +217,7 @@
 										
 										});
 
-										$(this).bind('click.noUiSlider',function(e){
-										  
+										$(this).bind('click.noUiSlider',function(e){										
 											var dot0 = e.pageX;
 											var thebar = $(this).offset().left;
 											
@@ -304,6 +303,25 @@
 										}
 									}
 									
+									/* Check if in Scale Range*/
+									var s = settings.scale;
+									var t = settings.setTo
+									if(!(((typeof t[0] == "undefined")||((t[0]>=s[0])&&(t[0]<=s[1])))&&
+									   ((typeof t[1] == "undefined")||((t[1]<=s[1])&&(t[1]>=s[0])))))
+										return false;
+									/* Check if  and lower < upper */
+									if($(this).data('activated')[0]&&$(this).data('activated')[1]){
+										var tmp = settings.point;
+										settings.point="array";
+										var c = $(this).noUiSlider("getValue",{point:"array"});
+										t[0]=(typeof t[0]=="undefined")?(c[0]):t[0];
+										t[1]=(typeof t[1]=="undefined")?(c[1]):t[1];
+										settings.point = tmp;
+										if(t[0]>t[1])
+											return false;
+									}
+									//&&(t[0]<=t[1])
+											
 									if(settings.point=='lower'||settings.point==0 ||ok){
 										var newKnob1 = $(this).find('.noUi_lowerHandle');
 										var value1 = locToScale(element, settings.setTo[0], newKnob1, settings.scale);
@@ -320,7 +338,7 @@
 										var newKnob2 = $(this).find('.noUi_upperHandle');
 										var value2 = locToScale(element, settings.setTo[1],  newKnob2, settings.scale );
 										if(settings.moveStyle=='animate'){
-										  var that = this;
+											var that = this;
 											this.data('upperAnnimTo',settings.setTo[1]);
 											newKnob2.animate({'left':value2}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }},complete:function(){that.removeData('upperAnnimTo');}});
 										} else {
@@ -331,7 +349,7 @@
 									var changeFunction=$(this).data('change');
 									if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }
 									if ( typeof(changeFunction) == "function" ){ changeFunction.call(this); }
-									
+									return true;
 								},
 								
 					reset:		function reset(){
