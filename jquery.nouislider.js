@@ -1,388 +1,591 @@
-		(function( $ ){
 
-			$.fn.noUiSlider = function( method, options ) {
+	/** 
+	 ** noUislider 2.0
+	 ** No copyrights or licenses. Do what you like. Feel free to share this code, or build upon it.
+	 ** @author: 		@leongersen
+	 ** @repository:	https://github.com/leongersen/noUiSlider
+	 **
+	 **/
 
-				var settings = {
-					'bar'			: true,			// Should the bar be used? Set to 'false' or LEGACY 'off'
-					'dontActivate'	: '',			// Set to Upper or lower.
-					'scale'			: '',			// NEW. Use like [0,50] or omit.
-					'startMin'		: '25',			
-					'startMax'		: '75',
+	(function( $ ){
+
+		$.fn.left = function(){
+		   return parseInt(this.css('left'));
+		};
+	
+	/**
+	 ** Touch support
+	 **
+	 ** Implementation from:
+	 ** http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
+	 **/
+	 
+		if(document.addEventListener){
+		
+			function touchHandler(event){
+			
+				var touches = event.changedTouches, first = touches[0], type = "";
+
+				switch(event.type){
+					case "touchstart": type = "mousedown"; break;
+					case "touchmove": type="mousemove"; break;        
+					case "touchend": type="mouseup"; break;
+					default: return;
+				}
+
+				var simulatedEvent = document.createEvent("MouseEvent");
+					simulatedEvent.initMouseEvent(type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY, false, false, false, false, 0, null);
 					
-					'point'			: '',			// Accepts [array/both, lower, upper, 0, 1]
-					'saveScale'		: false,
-					'moveStyle'		: '',			// set To Animate!
-					'setTo'			: '',			// INT, [INT,INT]
+					first.target.dispatchEvent(simulatedEvent);
+					event.preventDefault();
 
-				// Callbacks	*/
-					'change'		: '',
-					'callback'		: '',			// Callback to be triggered on release of dot. 
-					'knobRelease'	: '',			// rename for Callback
-					'tracker'		: '',			// Callback to be triggered on every dot movement.
-					'clickmove'		: ''			// Callback to be triggered on movement by clicking. issue #9
-				};
+			}
+			
+			document.addEventListener("touchstart", touchHandler, true);
+			document.addEventListener("touchmove", touchHandler, true);
+			document.addEventListener("touchend", touchHandler, true);
+			document.addEventListener("touchcancel", touchHandler, true);
+			
+		};
 
-				function rebuildMidBar(element){
-					var handles=new Array();
-					if(element.find('.noUi_handle.noUi_lowerHandle').length){
-						handles[0]=parseInt(element.find('.noUi_handle.noUi_lowerHandle').css('left'));
-						if(isNaN(handles[0])){handles[0] = 0;}
-					} else { handles[0] = 0; }
-					if(element.find('.noUi_handle.noUi_upperHandle').length){
-						handles[1]=(parseInt(element.css('width'))-parseInt(element.find('.noUi_handle.noUi_upperHandle').css('left')));
-						if(isNaN(handles[1])){handles[1] = '100%';}
-					} else { handles[1] = 0; }
-					element.find('.noUi_midBar').css({'left':handles[0],'right':handles[1]});
-				}
+		$.fn.noUiSlider = function( method, options ) {
 
-				function locToScale(element, input, knob, scale){
-					var elementWidth = parseInt(element.css('width'));
-					var knobWidth = parseInt(knob.css('width'));
-					if(!scale){ scale=[0,100]; }
-					return ((elementWidth/(scale[1]-scale[0]))*(parseFloat(input)-scale[0]))-(knobWidth/2);
-				}
+			var settings = {
 				
-				function scaleToLoc(element, knob, scale){
-					var elementWidth = parseInt(element.css('width'));
-					var knobWidth = parseInt(knob.css('width'));
-					if(!scale){ scale=[0,100]; }
-					
-					var left=knob.css('left');
-					// gitHub issue #6;
-					if(left=='auto'){left=0;}
-					
-					var value = parseInt(left) + ( knobWidth/2 );
-						value = value / ( elementWidth / (scale[1]-scale[0]) );
-						value = value + scale[0];
-					
-					return value;
-				}
-				
-				var methods = {
-
-					init:		function init(){
-					
-									var style = $('<style title="tempNoUiSlider">.temp-show{position:absolute !important; visibility:hidden !important; display:block !important;}.autoWidth{width:auto !important;}</style>')
-									$('html > head').append(style);
-						
-									return this.each(function(){
-
-										if(!settings.knobRelease && settings.callBack){
-											settings.knobRelease=settings.callBack;
-										}
-									
-										var element = $(this);
-										
-										if((!element.is(':visible'))&&((element.css('width')).indexOf('%')!=-1)){
-											$.error('Placing a percentage sized slider in a hidden element will cause trouble!');
-										}
-										
-										var elementWidth = parseInt(element.css('width'));
-										
-										$.event.props = $.event.props.join('|').replace('layerX|layerY|', '').split('|');
-
-										$(this).css('position','relative');
-										
-										if(settings.dontActivate.toLowerCase()!='lower'){
-											$(this).append('<div class="noUi_handle noUi_lowerHandle"><div class="noUi_sliderKnob"></div></div>');
-										}
-										
-										if(settings.bar && settings.bar!='off'){
-											$(this).append('<div class="noUi_midBar"></div>');
-										}
-										
-										if(settings.dontActivate.toLowerCase()!='upper'){
-											$(this).append('<div class="noUi_handle noUi_upperHandle"><div class="noUi_sliderKnob"></div></div>');
-										}
-										
-										$(this).data('activated',[element.find('.noUi_handle.noUi_lowerHandle').length,element.find('.noUi_handle.noUi_upperHandle').length]);
-										
-										$(this)
-											.children().css('position', 'absolute')
-										;
-										
-										$(this)
-											.data('change',options.change)
-										;
-										
-										$(this)
-											.find('.noUi_midBar')
-											.css({'left':0,'right':0})
-										;
-										
-										if(settings.scale){
-											$(this).data('scale', settings.scale);
-										}
-										
-										var knobs = $(this).find('.noUi_sliderKnob');
-										
-										knobs.each(function(){
-											
-											var knob = $(this).parent('.noUi_handle');
-
-											if(knob.hasClass('noUi_lowerHandle')&&(settings.startMin || (settings.startMin===0))){
-												if(typeof(settings.startMin)=='string' && (settings.startMin.indexOf('%')!=-1)){
-													knob.css('left', locToScale(element,settings.startMin,knob));
-												} else {
-													knob.css('left', locToScale(element,settings.startMin,knob,settings.scale));
-												}
-											}
-											
-											if(knob.hasClass('noUi_upperHandle')&&settings.startMax){
-												if(typeof(settings.startMax)=='string' && (settings.startMax.indexOf('%')!=-1)){
-													knob.css('left', locToScale(element,settings.startMax,knob));
-												} else {
-													knob.css('left', locToScale(element,settings.startMax,knob,settings.scale));
-												}
-											}
-										
-										});
-										
-										if(settings.bar && settings.bar!='off'){rebuildMidBar(element);}
-
-										knobs.bind('mousedown.noUiSlider',function(e){
-
-											/* Fixes */
-												e.preventDefault();
-												$('body').bind('selectstart.noUiSlider', function(e){return false;});
-												$(this).addClass('noUi_activeHandle');
-										
-											var knob = $(this).parent('.noUi_handle');
-											
-											var status = element.data('activated')[0] && element.data('activated')[1];
-
-											$(document).bind('mousemove.noUiSlider', function(f){
-
-												var knobCorrection=parseInt(knob.css('width'));
-												var flattened = f.pageX-(element.offset().left);	// GitHub issue #5, fix by instanceoftom
-
-												/* lower knob */
-											
-												if(knob.hasClass('noUi_lowerHandle')||!status){
-												
-													if(flattened<(-1*(parseInt(knob.css('width'))/2))){
-														flattened=(-1*(parseInt(knob.css('width'))/2));
-													}
-													
-													if(status){
-														var l=(parseInt(knob.parent().find('.noUi_upperHandle').css('left'))-knobCorrection);
-														if(flattened>l){
-															flattened=l;
-														}
-													}
-												
-												}
-												
-												/* upper knob */
-												
-												if(knob.hasClass('noUi_upperHandle')||!status){
-													elementWidth = parseInt(element.css('width'));
-													var correctedElementWidth = (elementWidth-(knobCorrection/2));
-													
-													if(flattened>correctedElementWidth){
-														flattened=correctedElementWidth;
-													}
-													
-													if(status){
-														var l=(parseInt(knob.parent().find('.noUi_lowerHandle').css('left'))+knobCorrection);
-														
-														if(flattened<l){
-															flattened=l;
-														}
-													}
-													
-												}
-
-												knob.css({'left':flattened});
-												
-												if(settings.bar&&settings.bar!='off'){
-													rebuildMidBar(element);
-												}
-												
-												if ( typeof(options.tracker) == "function" ){ options.tracker.call(this); }
-											
-											});
-
-											$(document).bind('mouseup.noUiSlider',function(){
-
-												$(this).unbind('mousemove.noUiSlider');
-												knobs.removeClass('noUi_activeHandle');
-												$('body').unbind('selectstart.noUiSlider');
-
-												if ( typeof(options.knobRelease) == "function" ){ options.knobRelease.call(element); }
-												if ( typeof(options.change) == "function" ){ options.change.call(element); }
-												
-												$(this).unbind('mouseup.noUiSlider');
-											});
-										
-										});
-
-										$(this).bind('click.noUiSlider',function(e){
-
-											var dot0 = e.pageX;
-											var thebar = $(this).offset().left;
-											
-											if($(this).data('activated')[0] && $(this).data('activated')[1]){
-												
-												var dot1 = $(this).children(".noUi_lowerHandle").offset().left;
-												var dot2 = $(this).children(".noUi_upperHandle").offset().left;
-												
-												var z = (dot1 + dot2) / 2;
-
-												if ( dot0 > z ){
-													$(this).children(".noUi_upperHandle").css("left", (dot0 - thebar));
-												} else {
-													$(this).children(".noUi_lowerHandle").css("left", (dot0 - thebar));
-												}
-
-											} else {
-												if ($(this).data('activated')[0]){
-													$(this).children(".noUi_lowerHandle").css("left", (dot0 - thebar));
-												}
-												if ($(this).data('activated')[1]){
-													$(this).children(".noUi_upperHandle").css("left", (dot0 - thebar));
-												}
-											}
-											
-											if(settings.bar&&settings.bar!='off'){
-												rebuildMidBar(element);
-											}
-											
-											if ( typeof(options.clickmove) == "function" ){ options.clickmove.call(this); }
-											if ( typeof(options.change) == "function" ){ options.change.call(this); }
-											
-											e.stopPropagation();
-
-										}).children().not('.noUi_midBar').click(function(e) {
-											return false;	// issue 6
-										});
-										
-									});
-									
-								},
-								
-					move:		function move(){
-
-									var element = $(this);
-
-									var ok = false;
-									
-									/* if point was omitted */
-									if(!settings.point){
-										if($(this).data('activated')[0] && $(this).data('activated')[1]){
-											ok = true;
-										} else {
-											if($(this).data('activated')[0]){
-												settings.point = 0;
-											}
-											if($(this).data('activated')[1]){
-												settings.point = 1;
-											}
-										}
-									}
-									
-									if(settings.saveScale){
-										$(this).data('scale',settings.scale);
-									}
-					
-									/* if scale was omitted */
-									if(!settings.scale){
-										if(!$(this).data('scale')){
-											settings.scale=[0,100];
-										} else {
-											settings.scale=$(this).data('scale');
-										}									
-									}
-									
-									/* It is not necessary to specify an array for one dot. */
-									if(typeof(settings.setTo)!='object'){
-										if(settings.point=='lower'||settings.point==0){
-											settings.setTo = [settings.setTo,0]
-										}
-										if(settings.point=='upper'||settings.point==1){
-											settings.setTo = [0,settings.setTo]
-										}
-									}
-									
-									if(settings.point=='lower'||settings.point==0 ||ok){
-										var newKnob1 = $(this).find('.noUi_lowerHandle');
-										var value1 = locToScale(element, settings.setTo[0], newKnob1, settings.scale);
-										if(settings.moveStyle=='animate'){
-											newKnob1.animate({'left':value1}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }}});
-										} else {
-											newKnob1.css('left',value1);
-										}
-									}
-									
-									if(settings.point=='upper'||settings.point==1||ok){
-										var newKnob2 = $(this).find('.noUi_upperHandle');
-										var value2 = locToScale(element, settings.setTo[1],  newKnob2, settings.scale );
-										if(settings.moveStyle=='animate'){
-											newKnob2.animate({'left':value2}, {step: function(){if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }}});
-										} else {
-											newKnob2.css('left',value2);
-										}
-									}
-									
-									var changeFunction=$(this).data('change');
-									if(settings.bar&&settings.bar!='off'){ rebuildMidBar(element); }
-									if ( typeof(changeFunction) == "function" ){ changeFunction.call(this); }
-									
-								},
-								
-					reset:		function reset(){
-					
-					
-								},
-							
-					getValue:	function getValue(){
-					
-									if(!settings.point){ settings.point = 'array'; }
-
-									if(!settings.scale){
-										if($(this).data('scale')=='undefined'){
-											settings.scale=[0,100];
-										} else {
-											settings.scale=$(this).data('scale');
-										}									
-									}
-
-									returnA = new Array();
-									
-									if($(this).data('activated')[0]){
-										returnA.push(scaleToLoc($(this), $(this).find('.noUi_lowerHandle'), settings.scale));
-									}
-									
-									if($(this).data('activated')[1]){
-										returnA.push(scaleToLoc($(this), $(this).find('.noUi_upperHandle'), settings.scale));
-									}
-									
-									if(settings.point=='lower'||settings.point==0){
-										return returnA[0];
-									}
-									
-									if(settings.point=='upper'||settings.point==1){
-										return returnA[1];
-									}
-									
-									if(settings.point=='array'){
-										return returnA;
-									}
-					
-								}
-
-				};
-
-				var options = $.extend( settings, options );
-
-				if ( methods[method] ) {
-					return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
-				} else if ( typeof method === 'object' || ! method ) {
-					return methods.init.apply( this, arguments );
-				} else {
-					$.error( 'Method ' +  method + ' does not exist on jQuery.noUiSlider' );
-				}
-
+			/**
+			 ** {knobs} 			Specifies the number of knobs. (init)
+			 ** [INT]				1, 2
+			 **/
+				'knobs'		:		2,
+			/**
+			 ** {connect} 			Whether to connect the middle bar to the knobs. (init)
+			 ** [MIXED] 			"upper", "lower", false, true
+			 **/
+				'connect'	:		true,
+			/**
+			 ** {scale}; 			The values represented by the slider knobs. (init,move,value)
+			 ** [ARRAY]				[-+x,>x]
+			 **/
+				'scale'		:		[0,100],
+			/**
+			 ** {start}				The starting positions for the knobs, mapped to {scale}. (init)
+			 ** [ARRAY]				[y>={scale[0]}, y=<{scale[1]}]
+			 **/
+				'start'		:		[25,75],
+			/**
+			 ** {to}				The position to move a knob to. (move)
+			 ** [INT]				Any, but will be corrected to match z > {scale[0]} || _l, z < {scale[1]} || _u
+			 **/
+				'to'		:		0,
+			/**
+			 ** {knob}				The knob to move. (move)
+			 ** [MIXED]				0,1,"lower","upper"
+			 **/
+				'knob'		:		0,
+			/**
+			 ** {change}			The function to be called on every change. (init)
+			 ** [FUNCTION]			param [STRING]'move type'
+			 **/
+				'change'	:		'',
+			/**
+			 ** {end}				The function when a knob is no longer being changed. (init)
+			 ** [FUNCTION]			param [STRING]'move type'
+			 **/
+				'end'		:		'',
+			/**
+			 ** {step}				Whether, and at what intervals, the slider should snap to a new position. Adheres to {scale} (init)
+			 ** [MIXED]				<x, FALSE
+			 **/
+				'step'		:		false,
+			/**
+			 ** {save}				Whether a scale give to a function should become the default for the slider it is called on. (move,value)
+			 ** [BOOLEAN]			true, false
+			 **/
+				'save'		:		false
+			
 			};
 
-		})( jQuery );
+		/**
+		 ** [FUNCTION] 	attach
+		 ** param 		[noUiSliderObject]
+		 ** returns 	[NULL]
+		 **/
+			function attach(o){
+
+				var s = o.data('settings');
+			
+				var _l		= o.children('.noUi-lowerHandle');
+				var _u		= o.children('.noUi-upperHandle');
+				var _b		= o.children('.noUi-midBar');
+			
+				if ( s.connect !== false ){
+				
+					if ( _l ) {
+						if ( _u ) {
+							_b.css( 'left', _l.left() );
+						} else {
+							if ( s.connect == 'lower' ){
+								_b.css( 'right', ( o.innerWidth() - _l.left() ) );
+							} else {
+								_b.css({ 'left' : _l.left(), 'right': 0 });
+							}
+						}
+					}
+					if ( _u ) {
+						if ( _l ) {
+							_b.css( 'right', ( o.innerWidth() - _u.left() ) );
+						} else {
+							if ( s.connect == 'lower' ){
+								_b.css( 'right', ( o.innerWidth() - _u.left() ) );
+							} else {
+								_b.css({ 'left' : _u.left(), 'right': 0 });
+							}
+						}
+					}
+				
+				}
+				
+				var values = new Array();
+				
+				if ( _l ){
+					values[0] = reverse( s.scale[0], s.scale[1], _l.left(), o.innerWidth() );
+				} else {
+					values[0] = false;
+				}
+				
+				if ( _u ){
+					values[1] = reverse( s.scale[0], s.scale[1], _u.left(), o.innerWidth() );
+				} else {
+					values[1] = false;
+				}
+				
+				o.data('values', values);
+				
+			}
+
+		/**
+		 ** [FUNCTION] 	isNeg
+		 ** param 		[INT]
+		 ** returns 	true, false
+		 **/
+			function isNeg ( test ) {
+				return test < 0;
+			}
+
+		/**
+		 ** [FUNCTION] 	inv
+		 ** param 		[INT]
+		 ** returns 	inverted [INT]
+		 **/			
+			function inv ( subject ) {
+				return subject * -1;
+			}
+
+		/**
+		 ** [FUNCTION] 	translate
+		 ** param 		[INT][INT][INT][INT]
+		 ** returns 	[INT]
+		 **/
+			function translate( low, high, val, ref ) {
+
+				if ( isNeg ( low ) ) {
+
+					val = val + inv ( low );
+					high = high + inv ( low );
+				
+				} else {
+				
+					val = val - low;
+					high = high - low;
+				
+				}
+
+				return ( ( val * ref ) / high );
+
+			}
+
+		/**
+		 ** [FUNCTION] 	reverse
+		 ** param 		[INT][INT][INT][INT]
+		 ** returns 	[INT]
+		 **/			
+			function reverse( low, high, val, ref ) {
+
+				if ( isNeg ( low ) ) {
+
+					high = high + inv ( low );
+				
+				} else {
+
+					high = high - low;
+				
+				}
+				
+				return ( ( ( val * high ) / ref ) + low );
+			
+			}
+			
+			var methods = {
+			
+		/**
+		 ** [FUNCTION]
+		 ** Initialises slider, places DOM elements, binds events
+		 **/
+				init:
+				
+				function(){
+	
+					return this.each( function(){
+					
+						var o = $(this);
+						var s = settings;
+						
+						o.data( 'settings' , s );
+						
+						var _l			= $('<div class="noUi-handle noUi-lowerHandle"><div></div></div>');
+						var _u			= $('<div class="noUi-handle noUi-upperHandle"><div></div></div>');
+						var _b       	= $('<div class="noUi-midBar"></div>');
+						var knobs		= false;
+
+						if ( s.knobs === 1 ){
+
+							if ( s.connect === true || s.connect === 'lower' ){
+							
+								_l 		= false;
+								_u 		= _u.appendTo(o);
+								_b 		= _b.insertBefore(_u);
+								
+								knobs	= _u;
+
+							} else {
+							
+								if ( s.connect === 'upper' ) {
+								
+									_l 	= _l.appendTo(o);
+									_b 		= _b.insertAfter(_l);
+									_u 	= false;
+									
+									knobs		= _l;
+								
+								} else {
+								
+									_l 	= _l.appendTo(o);
+									_b 		= false;
+									_u	= false;
+									
+									knobs		= _l;
+								
+								}										
+							
+							}									
+						
+						} else {
+						
+							knobs = _l.add(_u).appendTo(o);
+
+							_l = knobs.filter( '.noUi-lowerHandle' );
+							_u = knobs.filter( '.noUi-upperHandle' );
+							
+							if ( s.connect === true ){
+							
+								_b				= _b.insertAfter(_l);
+							
+							} else {
+							
+								_b				= false;
+							
+							}
+						
+						}
+						
+						o.data('knobs',knobs).css('position','relative').children().css('position','absolute');
+						
+						if ( _b ) { _b.css({ 'left' : 0 , 'right' : 0 }); }
+
+						/** Setting all knobs to their initial position **/
+						knobs.each( function( index ){
+
+							$(this).css({ 'left': translate( s.scale[0], s.scale[1], s.start[index], o.innerWidth() ), 'zIndex':index+1 });
+							
+						});
+						
+						/** Trigger midbar build **/
+						attach(o);
+
+						/** Bind mousedown event on all knobs. **/
+						knobs.children().bind('mousedown.noUiSlider',function(e){
+						
+							var k = $(this).parent();
+							$(this).addClass('noUi-activeHandle');
+							e.preventDefault();
+						
+						/** Prevent accidental selecting **/
+							$('body').bind( 'selectstart.noUiSlider' , function(){	
+								return false;
+							});
+						
+						/** Respond to the mouse moving trough the document. **/
+							$(document).bind('mousemove.noUiSlider', function(f){
+								
+								var newPosition = ( f.pageX - ( Math.round(o.offset().left )) );
+								var currentPosition = k.left();
+								
+								var greenLight = false;
+								
+								/** Correcting the new value for overlap with either the other knob or the sliders edges. Any correction vouches for step. **/
+								if ( k.hasClass( 'noUi-upperHandle' ) ) {
+								
+									if ( _l && newPosition < _l.left() ){
+
+										newPosition = _l.left();
+										greenLight = true;
+										
+									}
+									
+								}
+								
+								if ( k.hasClass( 'noUi-lowerHandle' ) ) {
+								
+									if ( _u && newPosition > _u.left() ){
+
+										newPosition = _u.left();
+										greenLight = true;
+
+									}
+									
+								}
+								
+								if ( newPosition > o.innerWidth() ) {
+								
+									newPosition = o.innerWidth();
+									greenLight = true;
+								
+								} else if ( newPosition < 0 ){
+								
+									newPosition = 0;
+									greenLight = true;
+								
+								}
+								
+								if( s.step && !greenLight ){
+								
+									if ( Math.abs( currentPosition - newPosition ) >= translate( s.scale[0], s.scale[1], s.step, o.innerWidth() ) ){
+								
+										greenLight = true;
+									
+									}
+								
+								} else {
+								
+									greenLight = true;
+									
+								}
+								
+								/** Even if all checks worked fine, there is still no need what-so-ever to fire any functions without change. **/
+								if ( currentPosition == newPosition ){
+								
+									greenLight = false;
+								
+								}
+								
+								/** Move the knob to it's new position, and call all callbacks **/
+								if ( greenLight ){
+								
+									k.css( 'left', newPosition );
+									
+									/** Safety patch to prevent knobs getting stuck **/
+									if( (k.hasClass( 'noUi-upperHandle' ) && k.left() == 0) || (k.hasClass( 'noUi-lowerHandle' ) && k.left() == o.innerWidth())){
+										k.css('zIndex',parseInt(k.css('zIndex'))+2);
+									}
+									
+									attach(o);
+									if ( typeof(s.change) == "function" ){ s.change.call(o, 'slide'); }
+								
+								}
+								
+							});
+						
+						/** Unbind events on mouseup **/
+							$(document).bind('mouseup.noUiSlider',function(){
+							
+								$('.noUi-activeHandle').removeClass('noUi-activeHandle');
+								$(document).unbind('mousemove.noUiSlider').unbind('mouseup.noUiSlider');
+								$('body').unbind('selectstart.noUiSlider');
+								
+								if ( typeof(s.end) == "function" ){ s.end.call(o, 'slide'); }
+								
+							});
+						
+						});
+						
+						/** clickMove functionality **/							
+						o.click( function( e ){
+						
+							if ( _l && _u ){
+
+								var calc = e.pageX - o.offset().left;
+
+								if ( calc < ( ( _l.left() + _u.left() ) / 2 ) ){
+								
+									_l.css("left", calc);
+									
+								} else {
+								
+									_u.css("left", calc);
+									
+								}
+								
+							} else {
+							
+								knobs.css('left', (e.pageX - o.offset().left));
+							
+							}
+
+							attach(o);
+						
+							if ( typeof(s.change) == "function" ){ s.change.call(o,'click'); }
+							if ( typeof(s.end) == "function" ){ s.end.call(o, 'click'); }
+
+						}).find('*:not(.noUi-midBar)').click(function(){
+
+							return false;
+							
+						});
+
+					});
+	
+				},
+				
+		/**
+		 ** [FUNCTION]
+		 ** Moves slider to given point
+		 **/
+			 
+				move:
+				
+				function(){
+	
+					var o = $(this);
+					var s = o.data( 'settings' );
+					var knobs = o.data('knobs');
+					
+					var _l = knobs.filter( '.noUi-lowerHandle' );
+					var _u = knobs.filter( '.noUi-upperHandle' );
+					
+					var n = settings;
+					
+					if ( n.scale ){
+					
+						s.scale = n.scale;
+						
+						if ( n.save ){
+							o.data( 'settings', s )
+						}
+						
+					}
+					
+					var newPosition = translate( s.scale[0], s.scale[1], n.to, o.innerWidth() );
+
+					var k;
+					
+					if ( n.knob === 'upper' || n.knob == 1  ) {
+					
+						if ( _l && newPosition < _l.left() ){
+
+							newPosition = _l.left();
+
+						}
+						
+						k = _u;
+						
+					} else if ( n.knob === 'lower' || n.knob == 0 ) {
+					
+						if ( _u && newPosition > _u.left() ){
+
+							newPosition = _u.left();
+
+						}
+						
+						k = _l;
+					
+					}
+					
+					if ( newPosition > o.innerWidth() ) {
+					
+						newPosition = o.innerWidth();
+					
+					} else if ( newPosition < 0 ){
+					
+						newPosition = 0;
+					
+					}
+					
+					k.css( 'left', newPosition );
+					
+					/** Safety patch to prevent knobs getting stuck **/
+					if( (k.hasClass( 'noUi-upperHandle' ) && k.left() == 0) || (k.hasClass( 'noUi-lowerHandle' ) && k.left() == o.innerWidth())){
+						k.css('zIndex',parseInt(k.css('zIndex'))+2);
+					}
+
+					attach(o);
+					
+					if ( typeof(s.change) == "function" ){ s.change.call(o, 'move'); }
+					if ( typeof(s.end) == "function" ){ s.end.call(o, 'move'); }
+
+				},
+				
+				value:	
+				
+				function(){
+			
+					var o = $(this);
+					var s = o.data( 'settings' );
+					
+					var n = options;
+					
+					var values = o.data('values');
+
+					if ( ! ( ( n.scale[0] == s.scale[0] ) && ( n.scale[1] == s.scale[1] ) ) ){
+					
+						/** crazy wizard magic! **/
+					
+						if(values[0]){
+							values[0] = translate ( n.scale[0], n.scale[1], reverse( s.scale[0], s.scale[1], values[0], o.innerWidth() ), o.innerWidth() );
+						}
+						if(values[1]){
+							values[1] = translate ( n.scale[0], n.scale[1], reverse( s.scale[0], s.scale[1], values[1], o.innerWidth() ), o.innerWidth() );
+						}
+						
+						if ( n.save ){
+						
+							s.scale = n.scale;
+							o.data( 'settings' , s );
+							$(this).data('values', values)
+							
+						}
+					
+					}
+					
+					/** For usability. There is no real use for floats here. **/
+					if(values[0]){ values[0]=Math.round(values[0]); }
+					if(values[1]){ values[1]=Math.round(values[1]); }
+					
+					return values;
+
+				}
+				
+			};
+
+			var options = $.extend( settings, options );
+
+			if ( methods[method] ) {
+				return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
+			} else if ( typeof method === 'object' || ! method ) {
+				return methods.init.apply( this, arguments );
+			} else {
+				$.error( 'No such method: ' +  method );
+			}
+
+		};
+
+	})( jQuery );
