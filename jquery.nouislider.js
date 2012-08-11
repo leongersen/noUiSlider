@@ -541,11 +541,11 @@
 					var o = $(this);
 					var s = o.data( 'settings' );
 					
-					var n = options;
+					var n = optns;
 					
 					var values = o.data('values');
 
-					if ( ! ( ( n.scale[0] == s.scale[0] ) && ( n.scale[1] == s.scale[1] ) ) ){
+					if ( typeof n != "undefined" && typeof n.scale != "undefined" && ! ( ( n.scale[0] == s.scale[0] ) && ( n.scale[1] == s.scale[1] ) ) ){
 					
 						/** crazy wizard magic! **/
 					
@@ -576,6 +576,7 @@
 				
 			};
 
+			var optns = options;
 			var options = $.extend( settings, options );
 
 			if ( methods[method] ) {
