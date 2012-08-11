@@ -565,7 +565,7 @@
 						}
 					
 					}
-					
+	
 					/** For usability. There is no real use for floats here. **/
 					if(values[0]){ values[0]=Math.round(values[0]); }
 					if(values[1]){ values[1]=Math.round(values[1]); }
