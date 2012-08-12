@@ -19,29 +19,25 @@
 	 ** Implementation from:
 	 ** http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
 	 **/
-	 
-		if(document.addEventListener){
+
+		function touchHandler(event){
 		
-			function touchHandler(event){
-			
-				var touches = event.changedTouches, first = touches[0], type = "";
+			var touches = event.changedTouches, first = touches[0], type = "";
 
-				switch(event.type){
-					case "touchstart": type = "mousedown"; break;
-					case "touchmove": type="mousemove"; break;        
-					case "touchend": type="mouseup"; break;
-					default: return;
-				}
-
-				var simulatedEvent = document.createEvent("MouseEvent");
-					simulatedEvent.initMouseEvent(type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY, false, false, false, false, 0, null);
-					
-					first.target.dispatchEvent(simulatedEvent);
-					event.preventDefault();
-
+			switch(event.type){
+				case "touchstart": type = "mousedown"; break;
+				case "touchmove": type="mousemove"; break;        
+				case "touchend": type="mouseup"; break;
+				default: return;
 			}
-			
-		};
+
+			var simulatedEvent = document.createEvent("MouseEvent");
+				simulatedEvent.initMouseEvent(type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY, false, false, false, false, 0, null);
+				
+				first.target.dispatchEvent(simulatedEvent);
+				event.preventDefault();
+
+		}
 
 		$.fn.noUiSlider = function( method, options ) {
 
@@ -302,10 +298,12 @@
 
 							$(this).css({ 'left': translate( s.scale[0], s.scale[1], s.start[index], o.innerWidth() ), 'zIndex':index+1 });
 
-							this.addEventListener("touchstart", touchHandler, true);
-							this.addEventListener("touchmove", touchHandler, true);
-							this.addEventListener("touchend", touchHandler, true);
-							this.addEventListener("touchcancel", touchHandler, true);
+							if(document.addEventListener){
+								this.addEventListener("touchstart", touchHandler, true);
+								this.addEventListener("touchmove", touchHandler, true);
+								this.addEventListener("touchend", touchHandler, true);
+								this.addEventListener("touchcancel", touchHandler, true);
+							}
 
 						});
 						
