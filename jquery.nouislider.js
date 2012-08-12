@@ -41,11 +41,6 @@
 
 			}
 			
-			document.addEventListener("touchstart", touchHandler, true);
-			document.addEventListener("touchmove", touchHandler, true);
-			document.addEventListener("touchend", touchHandler, true);
-			document.addEventListener("touchcancel", touchHandler, true);
-			
 		};
 
 		$.fn.noUiSlider = function( method, options ) {
@@ -306,7 +301,12 @@
 						knobs.each( function( index ){
 
 							$(this).css({ 'left': translate( s.scale[0], s.scale[1], s.start[index], o.innerWidth() ), 'zIndex':index+1 });
-							
+
+							this.addEventListener("touchstart", touchHandler, true);
+							this.addEventListener("touchmove", touchHandler, true);
+							this.addEventListener("touchend", touchHandler, true);
+							this.addEventListener("touchcancel", touchHandler, true);
+
 						});
 						
 						/** Trigger midbar build **/

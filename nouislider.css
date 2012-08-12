@@ -24,3 +24,16 @@
 	background:			#adcbe1 !important;
 	border-color:		#2673AB !important;
 }
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2){
+
+	.noUi-handle > div {
+
+		height:				32px;
+		width:				32px;
+		top:				-13px;
+		left:				-16px;
+
+	}
+
+}
