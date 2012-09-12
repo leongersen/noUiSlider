@@ -1,4 +1,3 @@
-
 	/** 
 	 ** noUislider 2.0
 	 ** No copyrights or licenses. Do what you like. Feel free to share this code, or build upon it.
@@ -325,7 +324,7 @@
 						/** Respond to the mouse moving trough the document. **/
 							$(document).bind('mousemove.noUiSlider', function(f){
 								
-								var newPosition = ( f.pageX - ( Math.round(o.offset().left )) );
+								var newPosition = ( f.pageX - ( Math.round(o.offset().left + parseInt(o.css("border-left-width")))) );
 								var currentPosition = k.left();
 								
 								var greenLight = false;
@@ -419,11 +418,21 @@
 						/** clickMove functionality **/							
 						o.click( function( e ){
 						
-							if ( _l && _u ){
+							var oLeft = o.offset().left + parseInt(o.css("border-left-width"));
+							var oRight = o.offset().left + parseInt(o.css("border-left-width")) + o.innerWidth();
 
-								var calc = e.pageX - o.offset().left;
+							if(_l && _u) {
 
-								if ( calc < ( ( _l.left() + _u.left() ) / 2 ) ){
+								// Check if clicked outside on the border
+								if(e.pageX < oLeft) {
+									_l.css('left', 0);
+								} else if(e.pageX > oRight) {
+									_u.css('left', o.innerWidth());
+								} else {
+
+									var calc = e.pageX - oLeft;
+
+									if(calc < ((_l.left() + _u.left()) / 2)) {
 								
 									_l.css("left", calc);
 									
@@ -432,11 +441,19 @@
 									_u.css("left", calc);
 									
 								}
-								
+								}
+
 							} else {
-							
-								knobs.css('left', (e.pageX - o.offset().left));
-							
+
+								// Check if clicked outside on the border
+								if(e.pageX < oLeft) {
+									knobs.css('left', 0);
+								} else if(e.pageX > oRight) {
+									knobs.css('left', o.innerWidth());
+								} else {
+									knobs.css('left', e.pageX - oLeft);
+								}
+
 							}
 
 							attach(o);
@@ -470,20 +487,20 @@
 					var _l = knobs.filter( '.noUi-lowerHandle' );
 					var _u = knobs.filter( '.noUi-upperHandle' );
 					
-					var n = settings;
+					var n = optns;
 					
+					var scale = s.scale;
 					if ( n.scale ){
 					
-						s.scale = n.scale;
-						
-						if ( n.save ){
-							o.data( 'settings', s )
-						}
-						
-					}
-					
-					var newPosition = translate( s.scale[0], s.scale[1], n.to, o.innerWidth() );
+						scale = n.scale;
 
+						if ( n.save ){
+						s.scale = n.scale;
+						}
+
+					}
+
+					var newPosition = translate( scale[0], scale[1], n.to, o.innerWidth() );
 					var k;
 					
 					if ( n.knob === 'upper' || n.knob == 1  ) {
@@ -557,7 +574,6 @@
 						if ( n.save ){
 						
 							s.scale = n.scale;
-							o.data( 'settings' , s );
 							$(this).data('values', values)
 							
 						}
