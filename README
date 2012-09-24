@@ -1,15 +1,16 @@
-	
-	Major new version released! (2.0.0)
-	
-	- Improved stability
-	- Added much request 'step' feature, which allows the slider to snap in place.
-	- Added touch support for iPad, iPhone and other 'touchstart' capable devices.
-	- Fixed many bugs.
-	- Drasticly improved stylability, and added a new -much smaller- default stylesheet.
-	- Reworked the entire documentation.
-	- Reduced the ammount of options, without reducing features.
-	- noUiSlider examples page provides detailed examples.
-	
-	View documentation on:
-	
-	http://refreshless.com/nouislider/
+# noUiSlider
+_Current version: 2.5_
+
+noUiSlider is a little jQuery plugin that allows you to create range sliders.
+It fully supports touch, and it is way(!) less bloated than the jQueryUI library.
+
+A full documentation, including examples, is available on the [noUiSlider documentation page](http://refreshless.com/nouislider/).
+
+**The changelog for version 2.5:**
+
+* Rewrote and resegmented code, resulting in better compressability and maintainability
+* Fixed 'step' to be reliable.
+* Fixed 'clickmove' to obide 'step' option.
+* Changed touch support to bind native events instead of translating them.
+* Improved stylesheet to no longer require !important statements.
+* Updated noUiSlider examples page with some code improvements.
