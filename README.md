@@ -6,7 +6,14 @@ It fully supports touch, and it is way(!) less bloated than the jQueryUI library
 
 A full documentation, including examples, is available on the [noUiSlider documentation page](http://refreshless.com/nouislider/).
 
-**The changelog for version 2.5:**
+**Changelog for version 2.5.1:**
+_[last minor release]_
+
+* Fixed issue #24.
+* Added wider touch-specific css-support.
+
+**Changelog for version 2.5:**
+_[last major release]_
 
 * Rewrote and resegmented code, resulting in better compressability and maintainability
 * Fixed 'step' to be reliable.

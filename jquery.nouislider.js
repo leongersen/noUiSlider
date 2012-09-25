@@ -1,6 +1,6 @@
 
 	/** 
-	 ** noUislider 2.5
+	 ** noUislider 2.5.1
 	 ** No copyrights or licenses. Do what you like. Feel free to share this code, or build upon it.
 	 ** @author: 		@leongersen
 	 ** @repository:	https://github.com/leongersen/noUiSlider
@@ -389,21 +389,25 @@
 				},
 				click:				function( e ){
 				
-					var api = $(this).data('api');
-					var s	= api.options;
-					var c	= e.pageX - api.slider.offset().left;
-					
-					c = s.step ? roundTo(c,helpers.scale( s.step, s.scale, api.slider.innerWidth() )) : c;
-					
-					if( api.low && api.up ){
-						c < ((api.low.left()+api.up.left())/2) ? api.low.css("left", c) : api.up.css("left", c);
-					} else {
-						api.knobs[0].css('left',c);
+					if(! $(this).hasClass('disabled') ){
+				
+						var api = $(this).data('api');
+						var s	= api.options;
+						var c	= e.pageX - api.slider.offset().left;
+						
+						c = s.step ? roundTo(c,helpers.scale( s.step, s.scale, api.slider.innerWidth() )) : c;
+						
+						if( api.low && api.up ){
+							c < ((api.low.left()+api.up.left())/2) ? api.low.css("left", c) : api.up.css("left", c);
+						} else {
+							api.knobs[0].css('left',c);
+						}
+						
+						helpers.connect(api);
+						helpers.call(s.change, api.slider, 'click');
+						helpers.call(s.end, api.slider, 'click');
+						
 					}
-					
-					helpers.connect(api);
-					helpers.call(s.change, api.slider, 'click');
-					helpers.call(s.end, api.slider, 'click');
 
 				},
 				flse:				function(){

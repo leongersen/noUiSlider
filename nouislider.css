@@ -7,32 +7,31 @@
 .noUi-midBar {
 	height:				8px;
 	z-index:			0;
-	background-color:	#3399CC;
+	background:			#39C;
 }
 .noUi-handle > div {
-	z-index: 			5;
+	position:			absolute;
 	width:				16px;
 	height:				16px;
-	position:			absolute;
 	top:				-5px;
 	left:				-8px;
+	z-index: 			5;
 	border:				1px solid #CCC;
 	background:			#EEE;
 }
 .noUi-handle > div:hover,
 .noUi-handle > div.noUi-activeHandle {
-	background:			#adcbe1;
-	border-color:		#2673AB;
+	background:			#ACE;
+	border-color:		#369;
 }
 .disabled > .noUi-midBar {
-	background-color:	#999;
+	background:			#999;
 }
 .disabled .noUi-handle > div {
 	border-color:		#CCC;
-	background-color:	#CCC;
+	background:			#CCC;
 }
-
-@media only screen and (-webkit-min-device-pixel-ratio: 2){
+@media (-webkit-min-device-pixel-ratio:1.2),-moz-touch-enabled,(max-device-width:1024px){
 	.noUi-handle > div {
 		height:			32px;
 		width:			32px;
