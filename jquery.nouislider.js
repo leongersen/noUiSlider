@@ -92,8 +92,9 @@
 					return (a*c)/e;
 				},
 				deScale:			function( a, b, c ){
-					b[1] = neg(b[0]) ? b[1] + abs(b[0]) : b[1] - b[0];
-					return ((a*b[1])/c) + b[0];					
+					var d = b[0],e = b[1];
+					e = neg(d) ? e + abs(d) : e - d;
+					return ((a*e)/c) + d;					
 				},
 				connect:			function( api ){
 				
