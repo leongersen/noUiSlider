@@ -1,6 +1,6 @@
 
 	/** 
-	 ** noUislider 2.5.1
+	 ** noUislider 2.5.4
 	 ** No copyrights or licenses. Do what you like. Feel free to share this code, or build upon it.
 	 ** @author: 		@leongersen
 	 ** @repository:	https://github.com/leongersen/noUiSlider
@@ -338,31 +338,38 @@
 				},
 				move:				function( e ){
 				
-					var p = new Object(), h, api, go = false, handle, bounce;
+					var a,b,h,api,go = false,handle,bounce;
 
 					h		= $('.noUi-activeHandle');
 					api		= h.parent().parent().data('api');
 					handle	= h.parent().is(api.low) ? api.low : api.up;
-					p.nw	= e.pageX - Math.round( api.slider.offset().left );
+					a		= e.pageX - Math.round( api.slider.offset().left );
 					
 					// if there is no pageX on the event, it is probably touch, so get it there.
-					if(isNaN(p.nw)){
-						p.nw = e.originalEvent.touches[0].pageX - Math.round( api.slider.offset().left );
+					if(isNaN(a)){
+						a = e.originalEvent.touches[0].pageX - Math.round( api.slider.offset().left );
 					}
 					
-					p.cur	= handle.left();
-
-					bounce	= helpers.bounce(api, p.nw, p.cur, handle);
-					p.nw	= bounce[0];
+					// a = p.nw  == New position 
+					// b = p.cur == Old position
+					
+					b		= handle.left();
+					bounce	= helpers.bounce(api, a, b, handle);
+					a		= bounce[0];
 					go		= bounce[1];
 					
 					if ( api.options.step && !go){
 					
-						m = api.options.step==api.options.scale[0]?2:1;
+						// makes range a [0,X>0] scale
+						var v1 = api.options.scale[0];
+						var v2 = api.options.scale[1];
+						if(neg(v2)){ v2=abs(v1-v2); }
+						// converts step to that range
+						var con = helpers.scale( api.options.step, [0,v2+abs(v1)], api.slider.innerWidth() );
 						
-						var con = helpers.scale( api.options.step*m, api.options.scale, api.slider.innerWidth() );
-						if ( Math.abs( p.cur - p.nw ) >= con ){
-							p.nw = p.nw < p.cur ? p.cur-con : p.cur+con;
+						// if the current movement is bigger than step, set to step.
+						if ( Math.abs( b - a ) >= con ){
+							a = a < b ? b-con : b+con;
 							go = true;
 						}
 						
@@ -370,13 +377,13 @@
 						go = true;
 					}
 					
-					if(p.nw===p.cur){
+					if(a===b){
 						go=false;
 					}
 					
 					if(go){
 					
-						handle.css('left',p.nw);
+						handle.css('left',a);
 						if( (handle.is(api.up) && handle.left() == 0) || (handle.is(api.low) && handle.left() == api.slider.innerWidth()) ){
 							handle.css('zIndex',parseInt(handle.css('zIndex'))+2);
 						}
