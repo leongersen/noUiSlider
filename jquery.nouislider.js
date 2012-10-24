@@ -1,6 +1,6 @@
 
 	/** 
-	 ** noUislider 2.5.4
+	 ** noUislider 2.5.5
 	 ** No copyrights or licenses. Do what you like. Feel free to share this code, or build upon it.
 	 ** @author: 		@leongersen
 	 ** @repository:	https://github.com/leongersen/noUiSlider
@@ -360,12 +360,20 @@
 					
 					if ( api.options.step && !go){
 					
-						// makes range a [0,X>0] scale
-						var v1 = api.options.scale[0];
-						var v2 = api.options.scale[1];
-						if(neg(v2)){ v2=abs(v1-v2); }
-						// converts step to that range
-						var con = helpers.scale( api.options.step, [0,v2+abs(v1)], api.slider.innerWidth() );
+						// get values from options
+						var v1 = api.options.scale[0], v2 = api.options.scale[1];
+						
+						// convert values to [0-X>0] range
+						// edge case: both values negative;
+						if( neg(v2) ){ 
+							v2 = abs( v1 - v2 );
+							v1 = 0;
+						}
+							// handle all values
+							v2 = ( v2 + ( -1 * v1 ) );
+						
+						// converts step to the new range
+						var con = helpers.scale( api.options.step, [0,v2], api.slider.innerWidth() );
 						
 						// if the current movement is bigger than step, set to step.
 						if ( Math.abs( b - a ) >= con ){
@@ -395,12 +403,12 @@
 				},
 				end:				function(){
 				
-					var h,api;
+					var handle, api;
 				
-					h		= $('.noUi-activeHandle');
-					api		= h.parent().parent().data('api');
+					handle	= $('.noUi-activeHandle');
+					api		= handle.parent().parent().data('api');
 					
-					$(document).add('body').add(h.removeClass('noUi-activeHandle').parent()).unbind('.noUi');
+					$(document).add('body').add(handle.removeClass('noUi-activeHandle').parent()).unbind('.noUi');
 					
 					helpers.call(api.options.end, api.slider, 'slide');
 				

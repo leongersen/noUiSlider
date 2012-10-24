@@ -6,14 +6,19 @@ It fully supports touch, and it is way(!) less bloated than the jQueryUI library
 
 A full documentation, including examples, is available on the [noUiSlider documentation page](http://refreshless.com/nouislider/).
 
-**Changelog for version 2.5.4:**
+**Changelog for version 2.5.5:**
 _[latest minor release]_
+
+* Fixed issue #31.
+
+**Changelog for version 2.5.4:**
+_[previous minor release]_
 
 * Fixed issue #27.
 * Added -webkit- touch specific statements to default stylesheet.
 
 **Changelog for version 2.5.3:**
-_[previous minor release]_
+_[earlier minor release]_
 
 * Renamed `knob` and `knobs` to `handle` and `handles`. This change is backwards compatible, and completes the cleanup of noUiSlider option names.
 * Fixed default stylesheet for use with `box-sizing: border-box;`
