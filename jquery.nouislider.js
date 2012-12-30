@@ -15,6 +15,7 @@
 			function abs(a){ return Math.abs(a); }
 			function roundTo(a,b) { return Math.round(a / b) * b; }
 			function dup(a){ return jQuery.extend(true, {}, a); }
+            function pageX(e) { return e.touches && e.touches[0].pageX || e.pageX; }
 
 			var defaults, methods, helpers, options = options||[], functions, touch = ('ontouchstart' in document.documentElement);
 
@@ -343,14 +344,10 @@
 					h		= $('.noUi-activeHandle');
 					api		= h.parent().parent().data('api');
 					handle	= h.parent().is(api.low) ? api.low : api.up;
-					a		= e.pageX - Math.round( api.slider.offset().left );
-					
-					// if there is no pageX on the event, it is probably touch, so get it there.
-					if(isNaN(a)){
-						a = e.originalEvent.touches[0].pageX - Math.round( api.slider.offset().left );
-					}
-					
-					// a = p.nw  == New position 
+
+                    a = pageX(e) - Math.round(api.slider.offset().left);
+
+					// a = p.nw  == New position
 					// b = p.cur == Old position
 					
 					b		= handle.left();
@@ -419,7 +416,7 @@
 				
 						var api = $(this).data('api');
 						var s	= api.options;
-						var c	= e.pageX - api.slider.offset().left;
+						var c	= pageX(e) - api.slider.offset().left;
 						
 						c = s.step ? roundTo(c,helpers.scale( s.step, s.scale, api.slider.innerWidth() )) : c;
 						
