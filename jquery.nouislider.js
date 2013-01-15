@@ -1,4 +1,3 @@
-
 	/** 
 	 ** noUislider 2.5.5
 	 ** No copyrights or licenses. Do what you like. Feel free to share this code, or build upon it.
@@ -74,7 +73,13 @@
 			 * {click}				Whether the slider moves by clicking the bar
 			 * [BOOLEAN]			true, false
 			 */
-				'click'		:		true
+				'click'		:		true,
+			
+			/*
+			 * {onload}				Fires after slider is loaded
+			 * [FUNCTION]			
+			 */
+				'onload'		: 	''
 			
 			};
 			
@@ -248,6 +253,9 @@
 						/* expose */
 						api.options=s;
 						api.slider.data('api',api);
+						
+						/* onload */
+						helpers.call(api.options.onload, api.slider);
 					
 					});
 				
