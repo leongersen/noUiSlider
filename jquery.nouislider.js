@@ -188,7 +188,11 @@
 						/* Append the middle bar */
 						
 						s.connect ? api.connect.appendTo(api.slider) : api.connect = false;
-						
+
+						/* Ensure the scale values are integers */
+
+						s.scale = [parseInt(s.scale[0]), parseInt(s.scale[1])];
+
 						/* Append the handles */
 						
 						// legacy rename
