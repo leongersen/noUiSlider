@@ -10,13 +10,21 @@
 		"serialize",
 		"handle"
     ],
-    "version": "3.0.0",
+    "licenses": [
+        {
+            "url": "http://refreshless.com/nouislider/"
+        }
+    ],
+    "version": "3.0.2",
     "author": {
-        "name": "Léon Gersen",
+        "name": "Leon Gersen",
         "url": "https://twitter.com/LeonGersen"
     },
     "bugs": "https://github.com/leongersen/noUiSlider/issues",
     "homepage": "http://refreshless.com/nouislider/",
     "docs": "http://refreshless.com/nouislider/",
-    "download": "http://refreshless.com/nouislider/download/"
+    "download": "http://refreshless.com/nouislider/download/",
+	"dependencies": {
+        "jquery": ">=1.7"
+    }
 }
