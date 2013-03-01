@@ -1,0 +1,22 @@
+{
+    "name": "noUiSlider",
+    "title": "jQuery noUiSlider",
+    "description": "A lightweight, highly customisable slider without bloat.",
+    "keywords": [
+        "range",
+        "slider",
+		"form",
+		"input",
+		"serialize",
+		"handle"
+    ],
+    "version": "3.0.0",
+    "author": {
+        "name": "Léon Gersen",
+        "url": "https://twitter.com/LeonGersen"
+    },
+    "bugs": "https://github.com/leongersen/noUiSlider/issues",
+    "homepage": "http://refreshless.com/nouislider/",
+    "docs": "http://refreshless.com/nouislider/",
+    "download": "http://refreshless.com/nouislider/download/"
+}
