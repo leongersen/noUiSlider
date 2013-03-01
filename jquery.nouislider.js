@@ -1,455 +1,324 @@
+(function($){
 
-	/** 
-	 ** noUislider 2.5.5
-	 ** No copyrights or licenses. Do what you like. Feel free to share this code, or build upon it.
-	 ** @author: 		@leongersen
-	 ** @repository:	https://github.com/leongersen/noUiSlider
-	 **
-	 **/
+	$.fn.noUiSlider = function(options,flag){
 	
-	(function( $ ){
-
-		$.fn.noUiSlider = function( method, options ) {
-
-			function neg(a){ return a<0; }
-			function abs(a){ return Math.abs(a); }
-			function roundTo(a,b) { return Math.round(a / b) * b; }
-			function dup(a){ return jQuery.extend(true, {}, a); }
-
-			var defaults, methods, helpers, options = options||[], functions, touch = ('ontouchstart' in document.documentElement);
-
-			defaults = {
-				
-			/*
-			 * {handles}			Specifies the number of handles. (init)
-			 * [INT]				1, 2
-			 */
-				'handles'	:		2,
-			/*
-			 * {connect} 			Whether to connect the middle bar to the handles. (init)
-			 * [MIXED] 				"upper", "lower", false, true
-			 */
-				'connect'	:		true,
-			/*
-			 * {scale}; 			The values represented by the slider handles. (init,move,value)
-			 * [ARRAY]				[-+x,>x]
-			 */
-				'scale'		:		[0,100],
-			/*
-			 * {start}				The starting positions for the handles, mapped to {scale}. (init)
-			 * [ARRAY][INT]			[y>={scale[0]}, y=<{scale[1]}], integer in range.
-			 */
-				'start'		:		[25,75],
-			/*
-			 * {to}					The position to move a handle to. (move)
-			 * [INT]				Any, but will be corrected to match z > {scale[0]} || _l, z < {scale[1]} || _u
-			 */
-				'to'		:		0,
-			/*
-			 * {handle}				The handle to move. (move)
-			 * [MIXED]				0,1,"lower","upper"
-			 */
-				'handle'	:		0,
-			/*
-			 * {change}				The function to be called on every change. (init)
-			 * [FUNCTION]			param [STRING]'move type'
-			 */
-				'change'	:		'',
-			/*
-			 * {end}				The function when a handle is no longer being changed. (init)
-			 * [FUNCTION]			param [STRING]'move type'
-			 */
-				'end'		:		'',
-			/*
-			 * {step}				Whether, and at what intervals, the slider should snap to a new position. Adheres to {scale} (init)
-			 * [MIXED]				<x, FALSE
-			 */
-				'step'		:		false,
-			/*
-			 * {save}				Whether a scale give to a function should become the default for the slider it is called on. (move,value)
-			 * [BOOLEAN]			true, false
-			 */
-				'save'		:		false,
-			/*
-			 * {click}				Whether the slider moves by clicking the bar
-			 * [BOOLEAN]			true, false
-			 */
-				'click'		:		true
-			
-			};
-			
-			helpers = {
-
-				scale:				function( a, b, c ){	
-					var d = b[0],e = b[1];
-					if(neg(d)){
-						a=a+abs(d);
-						e=e+abs(d);
-					} else {
-						a=a-d;
-						e=e-d;
-					}
-					return (a*c)/e;
-				},
-				deScale:			function( a, b, c ){
-					var d = b[0],e = b[1];
-					e = neg(d) ? e + abs(d) : e - d;
-					return ((a*e)/c) + d;					
-				},
-				connect:			function( api ){
-				
-					if(api.connect){
-					
-						if(api.handles.length>1){
-							api.connect.css({'left':api.low.left(),'right':(api.slider.innerWidth()-api.up.left())});
-						} else {
-							api.low ? api.connect.css({'left':api.low.left(),'right':0}) : api.connect.css({'left':0,'right':(api.slider.innerWidth()-api.up.left())});
-						}
-					
-					}
-				
-				},
-				left:				function(){
-					return parseFloat($(this).css('left'));
-				},
-				call:				function( f, t, n ){
-					if ( typeof(f) == "function" ){ f.call(t, n) }
-				},
-				bounce:				function( api, n, c, handle ){
-
-					var go = false;
-
-					if( handle.is( api.up ) ){
-					
-						if( api.low && n < api.low.left() ){
-						
-							n = api.low.left();
-							go=true;
-						
-						}
-					
-					} else {
-					
-						if( api.up && n > api.up.left() ){
-						
-							n = api.up.left();
-							go=true;
-							
-						}
-					
-					}
-					
-					if ( n > api.slider.innerWidth() ){
-					
-						n = api.slider.innerWidth()
-					
-						go=true;
-					
-					} else if( n < 0 ){
-					
-						n = 0;
-						go=true;
-						
-					}
-					
-					return [n,go];
-				
-				}
-			
-			};
-			
-			methods = {
-			
-				init:				function(){
-				
-					return this.each( function(){
-					
-						/* variables */
-						
-						var s, slider, api;
-					
-						/* fill them */
-						
-						slider		= $(this).css('position','relative');
-						api			= new Object();
-						
-						api.options = $.extend( defaults, options );
-						s			= api.options;
-						
-						typeof s.start == 'object' ? 1 : s.start=[s.start];
-						
-						/* Available elements */
-						
-						api.slider	= slider;
-						api.low		= $('<div class="noUi-handle noUi-lowerHandle"><div></div></div>');
-						api.up		= $('<div class="noUi-handle noUi-upperHandle"><div></div></div>');
-						api.connect	= $('<div class="noUi-midBar"></div>');
-						
-						/* Append the middle bar */
-						
-						s.connect ? api.connect.appendTo(api.slider) : api.connect = false;
-						
-						/* Append the handles */
-						
-						// legacy rename
-						if(s.knobs){
-							s.handles=s.knobs;
-						}
-						
-						if ( s.handles === 1 ){
-						
-							/*
-								This always looks weird:
-								Connect=lower, means activate upper, because the bar connects to 0.
-							*/
-						
-							if ( s.connect === true || s.connect === 'lower' ){
-							
-								api.low		= false;
-								api.up		= api.up.appendTo(api.slider);
-								api.handles	= [api.up];
-								
-							} else if ( s.connect === 'upper' || !s.connect ) {
-							
-								api.low		= api.low.prependTo(api.slider);
-								api.up		= false;
-								api.handles	= [api.low];
-							
-							}
-							
-						} else {
-						
-							api.low		= api.low.prependTo(api.slider);
-							api.up		= api.up.appendTo(api.slider);
-							api.handles	= [api.low, api.up];
-						
-						}
-						
-						if(api.low){ api.low.left = helpers.left; }
-						if(api.up){ api.up.left = helpers.left; }
-						
-						api.slider.children().css('position','absolute');
-						
-						$.each( api.handles, function( index ){
-						
-							$(this).css({
-								'left' : helpers.scale(s.start[index],api.options.scale,api.slider.innerWidth()),
-								'zIndex' : index + 1
-							}).children().bind(touch?'touchstart.noUi':'mousedown.noUi',functions.start);
-						
-						});
-						
-						if(s.click){
-							api.slider.click(functions.click).find('*:not(.noUi-midBar)').click(functions.flse);
-						}
-						
-						helpers.connect(api);
-
-						/* expose */
-						api.options=s;
-						api.slider.data('api',api);
-					
-					});
-				
-				},
-				move:				function(){
-				
-					var api, bounce, to, handle, scale;
-					
-					api = dup($(this).data('api'));
-					api.options = $.extend( api.options, options );
-
-					// rename legacy 'knob'
-					if(api.options.knob){
-						api.options.handle = api.options.knob;
-					}
-					
-					// flatten out the legacy 'lower/upper' options
-					handle	= api.options.handle;
-					handle	= api.handles[handle == 'lower' || handle == 0 || typeof handle == 'undefined' ? 0 : 1];
-					bounce	= helpers.bounce(api, helpers.scale(api.options.to, api.options.scale, api.slider.innerWidth()), handle.left(), handle);
-					
-					handle.css('left',bounce[0]);
-					
-					if( (handle.is(api.up) && handle.left() == 0) || (handle.is(api.low) && handle.left() == api.slider.innerWidth()) ){
-						handle.css('zIndex',parseInt(handle.css('zIndex'))+2);
-					}
-					
-					if(options.save===true){
-						api.options.scale = options.scale;
-						$(this).data('api',api);
-					}
-					
-					helpers.connect(api);
-					helpers.call(api.options.change, api.slider, 'move');
-					helpers.call(api.options.end, api.slider, 'move');
-					
-				},
-				value:				function(){
-				
-					var val1, val2, api;
-					
-					api = dup($(this).data('api'));
-					api.options = $.extend( api.options, options );
-					
-					val1	= api.low ? Math.round(helpers.deScale(api.low.left(), api.options.scale, api.slider.innerWidth()))  : false;
-					val2	= api.up ? Math.round(helpers.deScale(api.up.left(), api.options.scale, api.slider.innerWidth()))  : false;
-					
-					if(options.save){
-						api.options.scale = options.scale;
-						$(this).data('api',api);
-					}
-					
-					return [val1,val2];
-				
-				},
-				api:				function(){
-					return $(this).data('api');
-				},
-				disable:			function(){
-					return this.each( function(){
-						$(this).addClass('disabled');
-					});
-				},
-				enable:				function(){
-					return this.each( function(){
-						$(this).removeClass('disabled');
-					});
-				}
-
-			},
-			
-			functions = {
-			
-				start:				function( e ){
-				
-					if(! $(this).parent().parent().hasClass('disabled') ){
-					
-						e.preventDefault();
-						$('body').bind( 'selectstart.noUi' , functions.flse);
-						$(this).addClass('noUi-activeHandle');
-						
-						$(document).bind(touch?'touchmove.noUi':'mousemove.noUi', functions.move);
-						
-						touch?$(this).bind('touchend.noUi',functions.end):$(document).bind('mouseup.noUi', functions.end);
-					
-					}
-
-				},
-				move:				function( e ){
-				
-					var a,b,h,api,go = false,handle,bounce;
-
-					h		= $('.noUi-activeHandle');
-					api		= h.parent().parent().data('api');
-					handle	= h.parent().is(api.low) ? api.low : api.up;
-					a		= e.pageX - Math.round( api.slider.offset().left );
-					
-					// if there is no pageX on the event, it is probably touch, so get it there.
-					if(isNaN(a)){
-						a = e.originalEvent.touches[0].pageX - Math.round( api.slider.offset().left );
-					}
-					
-					// a = p.nw  == New position 
-					// b = p.cur == Old position
-					
-					b		= handle.left();
-					bounce	= helpers.bounce(api, a, b, handle);
-					a		= bounce[0];
-					go		= bounce[1];
-					
-					if ( api.options.step && !go){
-					
-						// get values from options
-						var v1 = api.options.scale[0], v2 = api.options.scale[1];
-						
-						// convert values to [0-X>0] range
-						// edge case: both values negative;
-						if( neg(v2) ){ 
-							v2 = abs( v1 - v2 );
-							v1 = 0;
-						}
-							// handle all values
-							v2 = ( v2 + ( -1 * v1 ) );
-						
-						// converts step to the new range
-						var con = helpers.scale( api.options.step, [0,v2], api.slider.innerWidth() );
-						
-						// if the current movement is bigger than step, set to step.
-						if ( Math.abs( b - a ) >= con ){
-							a = a < b ? b-con : b+con;
-							go = true;
-						}
-						
-					} else {
-						go = true;
-					}
-					
-					if(a===b){
-						go=false;
-					}
-					
-					if(go){
-					
-						handle.css('left',a);
-						if( (handle.is(api.up) && handle.left() == 0) || (handle.is(api.low) && handle.left() == api.slider.innerWidth()) ){
-							handle.css('zIndex',parseInt(handle.css('zIndex'))+2);
-						}
-						helpers.connect(api);
-						helpers.call(api.options.change, api.slider, 'slide');
-					
-					}
-
-				},
-				end:				function(){
-				
-					var handle, api;
-				
-					handle	= $('.noUi-activeHandle');
-					api		= handle.parent().parent().data('api');
-					
-					$(document).add('body').add(handle.removeClass('noUi-activeHandle').parent()).unbind('.noUi');
-					
-					helpers.call(api.options.end, api.slider, 'slide');
-				
-				},
-				click:				function( e ){
-				
-					if(! $(this).hasClass('disabled') ){
-				
-						var api = $(this).data('api');
-						var s	= api.options;
-						var c	= e.pageX - api.slider.offset().left;
-						
-						c = s.step ? roundTo(c,helpers.scale( s.step, s.scale, api.slider.innerWidth() )) : c;
-						
-						if( api.low && api.up ){
-							c < ((api.low.left()+api.up.left())/2) ? api.low.css("left", c) : api.up.css("left", c);
-						} else {
-							api.handles[0].css('left',c);
-						}
-						
-						helpers.connect(api);
-						helpers.call(s.change, api.slider, 'click');
-						helpers.call(s.end, api.slider, 'click');
-						
-					}
-
-				},
-				flse:				function(){
-					return false;
-				}
-			
-			}
+		// remap the native/current val function to noUiSlider
+		var valFUNCTION = jQuery.fn.val;
+		jQuery.fn.val = function(){
+			return this.data('_isnS_')?methods.val.call(this,arguments[0]):valFUNCTION.apply(this,arguments);
+		}
 		
-			if ( methods[method] ) {
-				return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
-			} else if ( typeof method === 'object' || ! method ) {
-				return methods.init.apply( this, arguments );
-			} else {
-				$.error( 'No such method: ' +  method );
+		// test for mouse, pointer or touch
+		var EVENT = window.navigator.msPointerEnabled ? 2 : 'ontouchstart' in document.documentElement ? 3 : 1;
+		
+		// shorthand for test=function, calling
+		function call( f, scope, args ){
+			if ( typeof(f) == "function" ){ f.call(scope, args) }
+		}
+		
+		// bounce handles of eachother, the edges of the slider
+		function correct(proposal,slider,handle){
+		
+			var setup = slider.data('setup');
+			var handles = setup.handles;
+			var settings = setup.settings;
+			var pos = setup.pos;
+			
+			proposal = proposal < 0 ? 0 : proposal > 100 ? 100 : proposal;
+			
+			if(settings.handles==2){
+				if(handle.is(':first-child')){
+					var other = parseFloat(handles[1][0].style[pos]) - settings.margin;
+					proposal = proposal > other ? other : proposal;
+				} else {
+					var other = parseFloat(handles[0][0].style[pos]) + settings.margin;
+					proposal = proposal < other ? other : proposal;
+				}
 			}
-
+			
+			if(settings.step){
+				var per = percentage.from(settings.range,settings.step);
+				proposal = Math.round(proposal / per) * per;
+			}
+			
+			return proposal;
+		
+		}
+		
+		// set handle to position
+		function setHandle(handle,to,slider){
+			var setup = slider.data('setup');
+			handle.css(setup.pos,to+'%').data('input').val(percentage.is(setup.settings.range,to).toFixed(setup.res));
+		}
+		
+		// get standarised clientX and clientY
+		function client(f){
+			return [(f.clientX||f.originalEvent.clientX||f.originalEvent.touches[0].clientX),(f.clientY||f.originalEvent.clientY||f.originalEvent.touches[0].clientY)];
+		}
+		
+		// get native inline style value in %
+		function place(handle,pos){
+			return parseFloat(handle[0].style[pos]);
+		}
+		
+		// function wrapper for calculating to and from range values
+		var percentage = {
+			 to: function( range, value ){
+				value = range[0]<0 ? value+Math.abs(range[0]) : value-range[0];
+				return ( value * 100 ) / this._length(range);	
+			}
+			,from: function( range, value ){
+				return ( value * 100 ) / this._length(range);
+			}
+			,is: function( range, value ){
+				return (( value * this._length(range) ) / 100 ) + range[0];
+			}
+			,_length: function( range ){
+				return ( range[0] > range[1] ? range[0]-range[1] : range[1]-range[0] );
+			}
+		}
+	
+		// simplified defaults
+		var defaults = {
+			 handles: 2
+			,serialization: { to: ['',''], resolution: 0.01 }
 		};
 	
-	})( jQuery );
+		// contains all methods
+		methods = {
+			 create: function(){
+				
+				return this.each(function(){
+				
+					// allows identification
+					$(this).data('_isnS_',true);
+				
+					var settings = $.extend( defaults, options );
+					var handlehtml = '<a><div></div></a>';
+					var slider = $(this);
+					var handles = [];
+				// the way the handles are positioned for this slider, top/left
+					var pos;
+				// for quick orientation testing and array matching
+					var orientation;
+					
+					var classes = "";
+					
+					// tests numerical
+					var num = function(e){
+						return!isNaN(parseFloat(e))&&isFinite(e);
+					}
+					
+					// counts decimals in serialization, sets default
+					var split = (settings.serialization.resolution=settings.serialization.resolution||0.01).toString().split('.');
+					var res = split[0] == 1 ? 0 : split[1].length;
+					settings.start = num(settings.start) ? [settings.start,0] : settings.start;
+					
+					// logs bad input values, if possible
+					if(console){
+					$.each(settings,function(a,b){
+						if(num(b)){
+							settings[a]=parseFloat(b);
+						}
+						var e = false;
+						switch(a){
+							case 'range':
+							case 'start': e = b.length!=2||!num(b[0])||!num(b[1]);break;
+							case 'handles': e = (b<1||b>2||!num(b));break;
+							case 'connect': e = b!="lower"&&b!="upper"&&typeof b!="boolean";break;
+							case 'orientation': e = (b!="vertical"&&b!="horizontal");break;
+							case 'margin': 
+							case 'step': e = typeof b!="undefined"&&!num(b);break;
+							case 'serialization': e = typeof b!="object" || !num(b.resolution);break;
+							case 'slide': e = typeof b != "function";break;
+						}
+						if(e){
+							console.error('Bad input for '+a+' on slider:',slider); 
+						}
+					});
+					}
+					
+					settings.margin = settings.margin ? percentage.from(settings.range,settings.margin) : 0;
+					
+					// tests serialization to be strings or jQuery objects
+					if(settings.serialization.to instanceof jQuery || typeof settings.serialization.to == 'string'){
+						settings.serialization.to = [settings.serialization.to];
+					}
+
+					if(settings.orientation == "vertical"){
+						classes += "vertical";
+						pos = 'top';
+						orientation = 1;
+					} else {
+						classes += "horizontal";
+						pos = 'left';
+						orientation = 0;
+					}
+					classes += settings.connect ? settings.connect == "lower" ? " connect lower" : " connect" : "";
+
+					slider.addClass(classes);
+					
+					for(var i=0;i<settings.handles;i++){
+					
+						handles[i] = slider.append(handlehtml).children(':last');
+						handles[i].css(pos,percentage.to(settings.range,settings.start[i])+'%');
+
+						var bind = '.noUiSlider'
+						var onEvent = 		(EVENT===1?'mousedown'	:EVENT===2?'MSPointerDown'	:'touchstart'	)+bind+'X';
+						var moveEvent = 	(EVENT===1?'mousemove'	:EVENT===2?'MSPointerMove'	:'touchmove'	)+bind;
+						var offEvent = 		(EVENT===1?'mouseup'	:EVENT===2?'MSPointerUp'	:'touchend'		)+bind;
+						
+						
+						handles[i].find('div').on(onEvent,function(e){
+						
+							$('body').bind('selectstart'+bind,function(){ return false; });
+						
+							if(!slider.hasClass('disabled')){
+							
+								var handle = $(this).addClass('active').parent();
+							
+								$('body').addClass('TOUCH');
+							
+								var unbind = handle.add($(document)).add('body');
+							
+								var originalPosition = parseFloat(handle[0].style[pos]);
+								var originalClick = client(e);
+								var previousClick = originalClick;
+								var previousProposal = false;
+								
+								$(document).on(moveEvent,function(f){
+								
+									f.preventDefault();
+								
+									var currentClick = client(f);
+										currentClick[0]-=originalClick[0];
+										currentClick[1]-=originalClick[1];
+										
+									var movement = [
+										 previousClick[0]!=currentClick[0]
+										,previousClick[1]!=currentClick[1]
+									];
+									
+									var proposal = originalPosition + ((currentClick[orientation]*100)/(orientation?slider.height():slider.width()));
+									
+									proposal = correct(proposal,slider,handle);
+									
+									if(movement[orientation]&&proposal!=previousProposal){
+										handle.css(pos,proposal+'%').data('input').val(percentage.is(settings.range,proposal).toFixed(res));
+										call(settings.slide,slider.data('_n',true));
+										previousProposal = proposal;
+										handle.css('z-index',handles.length==2&&proposal==100&&handle.is(':first-child')?2:1);
+									}
+									
+									previousClick = currentClick;
+									
+								});
+								
+								$(document).on(offEvent+' mouseLeave'+bind,function(){
+									unbind.off(bind);
+									$('body').removeClass('TOUCH');
+									slider.find('.active').removeClass('active');
+									if(slider.data('_n')){
+										slider.data('_n',false).change();
+									}
+								});
+							
+							}
+						
+						}).on('click',function(e){
+							e.stopPropagation();
+						});
+						
+					}
+						
+					if(EVENT==1){
+						slider.on('click',function(f){
+						
+							if(!slider.hasClass('disabled')){
+							
+								var currentClick = client(f),
+									proposal = ((currentClick[orientation]-slider.offset()[pos])*100) / (orientation?slider.height():slider.width());
+
+								if(handles.length>1){
+									var handle = currentClick[orientation] < (handles[0].offset()[pos]+handles[1].offset()[pos])/2 ? handles[0] : handles[1];
+								} else {
+									var handle = handles[0];
+								}
+								
+								setHandle(handle,correct(proposal,slider,handle),slider);
+								call(settings.slide,slider);
+								slider.change();
+							
+							}
+						
+						});
+					}
+					
+					for(var i=0;i<handles.length;i++){
+						var val = percentage.is(settings.range,place(handles[i],pos)).toFixed(res);
+						if(typeof settings.serialization.to[i] == 'string'){
+							handles[i].data('input',
+								slider.append('<input type="hidden" name="'+settings.serialization.to[i]+'">').find('input:last')
+								.val(val)
+								.change(function(a){
+									a.stopPropagation();
+								})
+							);
+						} else if ( settings.serialization.to[i] == false ){
+							handles[i].data('input',{val:function(){}});
+						} else {
+							handles[i].data('input',settings.serialization.to[i].data('handleNR',i).val(val).change(function(){
+								var arr = [null,null];
+								arr[$(this).data('handleNR')]=$(this).val();
+								slider.val(arr);
+							}));
+						}
+					}
+					
+					$(this).data('setup',{
+						settings:settings,
+						handles:handles,
+						pos:pos,
+						res:res
+					});
+					
+				});
+			}
+			,val: function(){
+			
+				if(arguments[0]){
+				
+					var val = typeof arguments[0] == 'number' ? [arguments[0]] : arguments[0];
+				
+					return this.each(function(){
+						
+						var setup = $(this).data('setup');
+					
+						for(var i=0;i<setup.handles.length;i++){
+							if(val[i]!=null){
+								var proposal = correct(percentage.to(setup.settings.range,val[i]),$(this),setup.handles[i]);
+								setup.handles[i].css(setup.pos,proposal+'%').data('input').val(percentage.is(setup.settings.range,proposal).toFixed(setup.res));
+							}
+						}
+					});
+					
+				} else {
+				
+					var handles = $(this).data('setup').handles,re = [];
+					for(var i=0;i<handles.length;i++){
+						re.push(handles[i].data('input').val());
+					}
+					return re;
+					
+				}
+			}
+			,disabled: function(){
+				return flag ? $(this).addClass('disabled') : $(this).removeClass('disabled');
+			}
+		}
+		
+		return options == "disabled" ? methods.disabled.apply(this) : methods.create.apply(this);
+
+	}		
+
+})(jQuery);
