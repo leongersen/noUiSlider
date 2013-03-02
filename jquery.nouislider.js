@@ -1,3 +1,4 @@
+/* noUiSlider 3.0.6 */
 (function($){
 
 	$.fn.noUiSlider = function(options,flag){
@@ -19,10 +20,11 @@
 		// bounce handles of eachother, the edges of the slider
 		function correct(proposal,slider,handle){
 		
-			var setup = slider.data('setup');
-			var handles = setup.handles;
-			var settings = setup.settings;
-			var pos = setup.pos;
+			var
+			 setup		= slider.data('setup')
+			,handles	= setup.handles
+			,settings	= setup.settings
+			,pos		= setup.pos;
 			
 			proposal = proposal < 0 ? 0 : proposal > 100 ? 100 : proposal;
 			
@@ -89,33 +91,32 @@
 			 create: function(){
 				
 				return this.each(function(){
-				
-					// allows identification
-					$(this).data('_isnS_',true);
-				
-					var settings = $.extend( defaults, options );
-					var handlehtml = '<a><div></div></a>';
-					var slider = $(this);
-					var handles = [];
+
+					var
+					 settings = $.extend( defaults, options )
+				// handles
+					,handlehtml = '<a><div></div></a>'
+				// save this to variable, // allows identification
+					,slider = $(this).data('_isnS_',true)
+				// array of handles
+					,handles = []
 				// the way the handles are positioned for this slider, top/left
-					var pos;
+					,pos
 				// for quick orientation testing and array matching
-					var orientation;
-					
-					var classes = "";
-					
-					// tests numerical
-					var num = function(e){
+					,orientation
+				// append classes	
+					,classes = ""
+				// tests numerical
+					,num = function(e){
 						return!isNaN(parseFloat(e))&&isFinite(e);
 					}
-					
-					// counts decimals in serialization, sets default
-					var split = (settings.serialization.resolution=settings.serialization.resolution||0.01).toString().split('.');
-					var res = split[0] == 1 ? 0 : split[1].length;
+				// counts decimals in serialization, sets default
+					,split = (settings.serialization.resolution=settings.serialization.resolution||0.01).toString().split('.')
+					,res = split[0] == 1 ? 0 : split[1].length;
+
 					settings.start = num(settings.start) ? [settings.start,0] : settings.start;
 					
 					// logs bad input values, if possible
-					if(console){
 					$.each(settings,function(a,b){
 						if(num(b)){
 							settings[a]=parseFloat(b);
@@ -132,11 +133,10 @@
 							case 'serialization': e = typeof b!="object" || !num(b.resolution);break;
 							case 'slide': e = typeof b != "function";break;
 						}
-						if(e){
+						if(e && console){
 							console.error('Bad input for '+a+' on slider:',slider); 
 						}
 					});
-					}
 					
 					settings.margin = settings.margin ? percentage.from(settings.range,settings.margin) : 0;
 					
@@ -154,6 +154,7 @@
 						pos = 'left';
 						orientation = 0;
 					}
+					
 					classes += settings.connect ? settings.connect == "lower" ? " connect lower" : " connect" : "";
 
 					slider.addClass(classes);

@@ -1,7 +1,7 @@
-{
+﻿{
     "name": "nouislider",
-    "title": "jQuery noUiSlider",
-    "description": "A lightweight, highly customisable slider without bloat.",
+    "title": "noUiSlider - jQuery Range Slider",
+    "description": "A lightweight, highly customizable range slider without bloat.",
     "keywords": [
         "range",
         "slider",
@@ -12,12 +12,13 @@
     ],
     "licenses": [
         {
-            "url": "http://refreshless.com/nouislider/"
+            "type": "noUiSlider Public License"
+            "url": "http://refreshless.com/nouislider/license.txt"
         }
     ],
-    "version": "3.0.4",
+    "version": "3.0.6",
     "author": {
-        "name": "Leon Gersen",
+        "name": "Léon Gersen",
         "url": "https://twitter.com/LeonGersen"
     },
     "bugs": "https://github.com/leongersen/noUiSlider/issues",
