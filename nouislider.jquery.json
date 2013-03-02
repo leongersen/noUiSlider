@@ -1,31 +1,31 @@
 ﻿{
-    "name": "nouislider",
-    "title": "noUiSlider - jQuery Range Slider",
-    "description": "A lightweight, highly customizable range slider without bloat.",
-    "keywords": [
-        "range",
-        "slider",
+	"name": "nouislider",
+	"title": "noUiSlider - jQuery Range Slider",
+	"description": "A lightweight, highly customizable range slider without bloat.",
+	"keywords": [
+		"range",
+		"slider",
 		"form",
 		"input",
 		"serialize",
 		"handle"
-    ],
-    "licenses": [
-        {
-            "type": "noUiSlider Public License"
-            "url": "http://refreshless.com/nouislider/license.txt"
-        }
-    ],
-    "version": "3.0.6",
-    "author": {
-        "name": "Léon Gersen",
-        "url": "https://twitter.com/LeonGersen"
-    },
-    "bugs": "https://github.com/leongersen/noUiSlider/issues",
-    "homepage": "http://refreshless.com/nouislider/",
-    "docs": "http://refreshless.com/nouislider/",
-    "download": "http://refreshless.com/nouislider/download/",
+	],
+	"licenses": [
+		{
+			"type": "noUiSlider Public License",
+			"url": "http://refreshless.com/nouislider/license.txt"
+		}
+	],
+	"version": "3.0.7",
+	"author": {
+		"name": "Léon Gersen",
+		"url": "https://twitter.com/LeonGersen"
+	},
+	"bugs": "https://github.com/leongersen/noUiSlider/issues",
+	"homepage": "http://refreshless.com/nouislider/",
+	"docs": "http://refreshless.com/nouislider/",
+	"download": "http://refreshless.com/nouislider/download/",
 	"dependencies": {
-        "jquery": ">=1.7"
-    }
+		"jquery": ">=1.7"
+	}
 }
