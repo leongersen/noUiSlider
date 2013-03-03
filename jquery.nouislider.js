@@ -1,4 +1,4 @@
-/* noUiSlider 3.0.9 */
+/* noUiSlider 3.1.0 */
 (function($){
 
 	$.fn.noUiSlider = function(options,flag){
@@ -129,7 +129,7 @@
 							case 'orientation': e = (b!="vertical"&&b!="horizontal");break;
 							case 'margin': 
 							case 'step': e = typeof b!="undefined"&&!num(b);break;
-							case 'serialization': e = typeof b!="object" || !num(b.resolution) || (typeof b.to == 'object' && b.to.length !== settings.handles);break;
+							case 'serialization': e = typeof b!="object" || !num(b.resolution) || (typeof b.to == 'object' && b.to.length < settings.handles);break;
 							case 'slide': e = typeof b != "function";break;
 						}
 						if(e && console){
