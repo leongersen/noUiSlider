@@ -1,4 +1,4 @@
-/* noUiSlider 3.0.6 */
+/* noUiSlider 3.0.9 */
 (function($){
 
 	$.fn.noUiSlider = function(options,flag){
@@ -47,12 +47,6 @@
 		
 		}
 		
-		// set handle to position
-		function setHandle(handle,to,slider){
-			var setup = slider.data('setup');
-			handle.css(setup.pos,to+'%').data('input').val(percentage.is(setup.settings.range,to).toFixed(setup.res));
-		}
-		
 		// get standarised clientX and clientY
 		function client(f){
 			return [(f.clientX||f.originalEvent.clientX||f.originalEvent.touches[0].clientX),(f.clientY||f.originalEvent.clientY||f.originalEvent.touches[0].clientY)];
@@ -91,6 +85,11 @@
 			 create: function(){
 				
 				return this.each(function(){
+		
+					// set handle to position
+					function setHandle(handle,to,slider){
+						handle.css(pos,to+'%').data('input').val(percentage.is(settings.range,to).toFixed(res));
+					}
 
 					var
 					 settings = $.extend( defaults, options )
@@ -130,7 +129,7 @@
 							case 'orientation': e = (b!="vertical"&&b!="horizontal");break;
 							case 'margin': 
 							case 'step': e = typeof b!="undefined"&&!num(b);break;
-							case 'serialization': e = typeof b!="object" || !num(b.resolution);break;
+							case 'serialization': e = typeof b!="object" || !num(b.resolution) || (typeof b.to == 'object' && b.to.length !== settings.handles);break;
 							case 'slide': e = typeof b != "function";break;
 						}
 						if(e && console){
@@ -141,7 +140,7 @@
 					settings.margin = settings.margin ? percentage.from(settings.range,settings.margin) : 0;
 					
 					// tests serialization to be strings or jQuery objects
-					if(settings.serialization.to instanceof jQuery || typeof settings.serialization.to == 'string'){
+					if(settings.serialization.to instanceof jQuery || typeof settings.serialization.to == 'string' || settings.serialization.to === false ){
 						settings.serialization.to = [settings.serialization.to];
 					}
 
@@ -266,7 +265,13 @@
 								})
 							);
 						} else if ( settings.serialization.to[i] == false ){
-							handles[i].data('input',{val:function(){}});
+							handles[i].data('input',{val:function(a){
+								if(typeof a != 'undefined'){
+									this.handle.data('noUiVal',a);
+								} else {
+									return this.handle.data('noUiVal');
+								}
+							},handle:handles[i]});
 						} else {
 							handles[i].data('input',settings.serialization.to[i].data('handleNR',i).val(val).change(function(){
 								var arr = [null,null];
@@ -307,9 +312,9 @@
 				
 					var handles = $(this).data('setup').handles,re = [];
 					for(var i=0;i<handles.length;i++){
-						re.push(handles[i].data('input').val());
+						re.push(parseFloat(handles[i].data('input').val()));
 					}
-					return re;
+					return re.length == 1 ? re[0] : re;
 					
 				}
 			}
