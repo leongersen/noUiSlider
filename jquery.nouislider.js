@@ -1,4 +1,4 @@
-/* noUiSlider 3.1.0 */
+/* noUiSlider 3.1.1 */
 (function($){
 
 	$.fn.noUiSlider = function(options,flag){
