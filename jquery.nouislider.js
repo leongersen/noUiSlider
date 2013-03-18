@@ -292,7 +292,7 @@
 			}
 			,val: function(){
 			
-				if(arguments[0]){
+				if(typeof arguments[0] !== 'undefined'){
 				
 					var val = typeof arguments[0] == 'number' ? [arguments[0]] : arguments[0];
 				
