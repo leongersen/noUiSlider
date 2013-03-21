@@ -1,4 +1,4 @@
-/* noUiSlider 3.1.1 */
+/* noUiSlider 3.2.0 */
 (function($){
 
 	$.fn.noUiSlider = function(options,flag){
@@ -10,7 +10,8 @@
 		}
 		
 		// test for mouse, pointer or touch
-		var EVENT = window.navigator.msPointerEnabled ? 2 : 'ontouchstart' in document.documentElement ? 3 : 1;
+		var EVENT = window.navigator.msPointerEnabled ? 2 : 'ontouchend' in document ? 3 : 1;
+		if(window.debug&&console){console.log(EVENT)}
 		
 		// shorthand for test=function, calling
 		function call( f, scope, args ){
@@ -49,7 +50,11 @@
 		
 		// get standarised clientX and clientY
 		function client(f){
-			return [(f.clientX||f.originalEvent.clientX||f.originalEvent.touches[0].clientX),(f.clientY||f.originalEvent.clientY||f.originalEvent.touches[0].clientY)];
+			try {
+				return [( f.clientX || f.originalEvent.clientX || f.originalEvent.touches[0].clientX ),( f.clientY || f.originalEvent.clientY || f.originalEvent.touches[0].clientY )];
+			} catch(e) {
+				return ['x','y'];
+			}
 		}
 		
 		// get native inline style value in %
@@ -115,12 +120,22 @@
 
 					settings.start = num(settings.start) ? [settings.start,0] : settings.start;
 					
+					
 					// logs bad input values, if possible
 					$.each(settings,function(a,b){
+					
 						if(num(b)){
 							settings[a]=parseFloat(b);
+						} else if ( typeof b == "object" && num(b[0])){
+							b[0]=parseFloat(b[0]);
+							if(num(b[1])){
+								b[1]=parseFloat(b[1]);
+							}
 						}
+						
 						var e = false;
+						b = typeof b == "undefined" ? "x" : b;
+						
 						switch(a){
 							case 'range':
 							case 'start': e = b.length!=2||!num(b[0])||!num(b[1]);break;
@@ -132,9 +147,11 @@
 							case 'serialization': e = typeof b!="object" || !num(b.resolution) || (typeof b.to == 'object' && b.to.length < settings.handles);break;
 							case 'slide': e = typeof b != "function";break;
 						}
+						
 						if(e && console){
-							console.error('Bad input for '+a+' on slider:',slider); 
+							console.error('Bad input for '+a+' on slider:',slider);
 						}
+						
 					});
 					
 					settings.margin = settings.margin ? percentage.from(settings.range,settings.margin) : 0;
@@ -163,45 +180,45 @@
 						handles[i] = slider.append(handlehtml).children(':last');
 						handles[i].css(pos,percentage.to(settings.range,settings.start[i])+'%');
 
-						var bind = '.noUiSlider'
-						var onEvent = 		(EVENT===1?'mousedown'	:EVENT===2?'MSPointerDown'	:'touchstart'	)+bind+'X';
-						var moveEvent = 	(EVENT===1?'mousemove'	:EVENT===2?'MSPointerMove'	:'touchmove'	)+bind;
-						var offEvent = 		(EVENT===1?'mouseup'	:EVENT===2?'MSPointerUp'	:'touchend'		)+bind;
-						
-						
+					 var bind = '.noUiSlider'
+						,onEvent =		(EVENT===1?'mousedown'	:EVENT===2?'MSPointerDown'	:'touchstart'	)+bind+'X'
+						,moveEvent =	(EVENT===1?'mousemove'	:EVENT===2?'MSPointerMove'	:'touchmove'	)+bind
+						,offEvent =		(EVENT===1?'mouseup'	:EVENT===2?'MSPointerUp'	:'touchend'		)+bind
+					
 						handles[i].find('div').on(onEvent,function(e){
 						
 							$('body').bind('selectstart'+bind,function(){ return false; });
 						
 							if(!slider.hasClass('disabled')){
 							
-								var handle = $(this).addClass('active').parent();
-							
 								$('body').addClass('TOUCH');
 							
-								var unbind = handle.add($(document)).add('body');
-							
-								var originalPosition = parseFloat(handle[0].style[pos]);
-								var originalClick = client(e);
-								var previousClick = originalClick;
-								var previousProposal = false;
+								 var handle = $(this).addClass('active').parent()
+									,unbind = handle.add($(document)).add('body')
+									,originalPosition = parseFloat(handle[0].style[pos])
+									,originalClick = client(e)
+									,previousClick = originalClick
+									,previousProposal = false;
 								
 								$(document).on(moveEvent,function(f){
 								
 									f.preventDefault();
 								
 									var currentClick = client(f);
-										currentClick[0]-=originalClick[0];
-										currentClick[1]-=originalClick[1];
+									
+									if(currentClick[0]=="x"){
+										return;
+									}
+
+									currentClick[0]-=originalClick[0];
+									currentClick[1]-=originalClick[1];
 										
 									var movement = [
 										 previousClick[0]!=currentClick[0]
 										,previousClick[1]!=currentClick[1]
-									];
-									
-									var proposal = originalPosition + ((currentClick[orientation]*100)/(orientation?slider.height():slider.width()));
-									
-									proposal = correct(proposal,slider,handle);
+									]
+									,proposal = originalPosition + ((currentClick[orientation]*100)/(orientation?slider.height():slider.width()));
+									 proposal = correct(proposal,slider,handle);
 									
 									if(movement[orientation]&&proposal!=previousProposal){
 										handle.css(pos,proposal+'%').data('input').val(percentage.is(settings.range,proposal).toFixed(res));
@@ -212,15 +229,14 @@
 									
 									previousClick = currentClick;
 									
-								});
+								}).on(offEvent,function(){
 								
-								$(document).on(offEvent+' mouseLeave'+bind,function(){
 									unbind.off(bind);
 									$('body').removeClass('TOUCH');
-									slider.find('.active').removeClass('active');
-									if(slider.data('_n')){
+									if(slider.find('.active').removeClass('active').end().data('_n')){
 										slider.data('_n',false).change();
 									}
+									
 								});
 							
 							}
@@ -230,21 +246,16 @@
 						});
 						
 					}
-						
+					
 					if(EVENT==1){
 						slider.on('click',function(f){
 						
 							if(!slider.hasClass('disabled')){
 							
-								var currentClick = client(f),
-									proposal = ((currentClick[orientation]-slider.offset()[pos])*100) / (orientation?slider.height():slider.width());
-
-								if(handles.length>1){
-									var handle = currentClick[orientation] < (handles[0].offset()[pos]+handles[1].offset()[pos])/2 ? handles[0] : handles[1];
-								} else {
-									var handle = handles[0];
-								}
-								
+							 var currentClick = client(f)
+								,proposal = ((currentClick[orientation]-slider.offset()[pos])*100) / (orientation?slider.height():slider.width())
+								,handle = handles.length > 1 ? (currentClick[orientation] < (handles[0].offset()[pos]+handles[1].offset()[pos])/2 ? handles[0] : handles[1]) : handles[0];
+							
 								setHandle(handle,correct(proposal,slider,handle),slider);
 								call(settings.slide,slider);
 								slider.change();
