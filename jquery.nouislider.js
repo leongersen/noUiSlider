@@ -159,7 +159,9 @@
 					// tests serialization to be strings or jQuery objects
 					if(settings.serialization.to instanceof jQuery || typeof settings.serialization.to == 'string' || settings.serialization.to === false ){
 						settings.serialization.to = [settings.serialization.to];
-					}
+					}else{
+                        throw "serialization.to has to be jQuery Element, a string or false";
+                    }
 
 					if(settings.orientation == "vertical"){
 						classes += "vertical";
@@ -170,13 +172,13 @@
 						pos = 'left';
 						orientation = 0;
 					}
-					
+
 					classes += settings.connect ? settings.connect == "lower" ? " connect lower" : " connect" : "";
 
 					slider.addClass(classes);
-					
+
 					for(var i=0;i<settings.handles;i++){
-					
+
 						handles[i] = slider.append(handlehtml).children(':last');
 						handles[i].css(pos,percentage.to(settings.range,settings.start[i])+'%');
 
@@ -184,133 +186,150 @@
 						,onEvent =		(EVENT===1?'mousedown'	:EVENT===2?'MSPointerDown'	:'touchstart'	)+bind+'X'
 						,moveEvent =	(EVENT===1?'mousemove'	:EVENT===2?'MSPointerMove'	:'touchmove'	)+bind
 						,offEvent =		(EVENT===1?'mouseup'	:EVENT===2?'MSPointerUp'	:'touchend'		)+bind
-					
+
 						handles[i].find('div').on(onEvent,function(e){
-						
+
 							$('body').bind('selectstart'+bind,function(){ return false; });
-						
+
 							if(!slider.hasClass('disabled')){
-							
+
 								$('body').addClass('TOUCH');
-							
+
 								 var handle = $(this).addClass('active').parent()
 									,unbind = handle.add($(document)).add('body')
 									,originalPosition = parseFloat(handle[0].style[pos])
 									,originalClick = client(e)
 									,previousClick = originalClick
 									,previousProposal = false;
-								
+
 								$(document).on(moveEvent,function(f){
-								
+
 									f.preventDefault();
-								
+
 									var currentClick = client(f);
-									
+
 									if(currentClick[0]=="x"){
 										return;
 									}
 
 									currentClick[0]-=originalClick[0];
 									currentClick[1]-=originalClick[1];
-										
+
 									var movement = [
 										 previousClick[0]!=currentClick[0]
 										,previousClick[1]!=currentClick[1]
 									]
 									,proposal = originalPosition + ((currentClick[orientation]*100)/(orientation?slider.height():slider.width()));
 									 proposal = correct(proposal,slider,handle);
-									
+
 									if(movement[orientation]&&proposal!=previousProposal){
 										handle.css(pos,proposal+'%').data('input').val(percentage.is(settings.range,proposal).toFixed(res));
 										call(settings.slide,slider.data('_n',true));
 										previousProposal = proposal;
 										handle.css('z-index',handles.length==2&&proposal==100&&handle.is(':first-child')?2:1);
 									}
-									
+
 									previousClick = currentClick;
-									
+
 								}).on(offEvent,function(){
-								
+
 									unbind.off(bind);
 									$('body').removeClass('TOUCH');
 									if(slider.find('.active').removeClass('active').end().data('_n')){
 										slider.data('_n',false).change();
 									}
-									
+
 								});
-							
+
 							}
-						
+
 						}).on('click',function(e){
 							e.stopPropagation();
 						});
-						
+
 					}
-					
+
 					if(EVENT==1){
 						slider.on('click',function(f){
-						
+
 							if(!slider.hasClass('disabled')){
-							
+
 							 var currentClick = client(f)
 								,proposal = ((currentClick[orientation]-slider.offset()[pos])*100) / (orientation?slider.height():slider.width())
 								,handle = handles.length > 1 ? (currentClick[orientation] < (handles[0].offset()[pos]+handles[1].offset()[pos])/2 ? handles[0] : handles[1]) : handles[0];
-							
+
 								setHandle(handle,correct(proposal,slider,handle),slider);
 								call(settings.slide,slider);
 								slider.change();
-							
+
 							}
-						
+
 						});
 					}
-					
+
 					for(var i=0;i<handles.length;i++){
 						var val = percentage.is(settings.range,place(handles[i],pos)).toFixed(res);
-						if(typeof settings.serialization.to[i] == 'string'){
+                        var serializationTo = settings.serialization.to[i];
+						if(typeof serializationTo == 'string'){
 							handles[i].data('input',
-								slider.append('<input type="hidden" name="'+settings.serialization.to[i]+'">').find('input:last')
-								.val(val)
-								.change(function(a){
-									a.stopPropagation();
-								})
+								slider
+                                    .append('<input type="hidden" name="'+serializationTo+'">')
+                                    .find('input:last')
+                                    .val(val)
+                                    .change(function(a){
+                                        a.stopPropagation();
+                                    })
 							);
-						} else if ( settings.serialization.to[i] == false ){
-							handles[i].data('input',{val:function(a){
-								if(typeof a != 'undefined'){
-									this.handle.data('noUiVal',a);
-								} else {
-									return this.handle.data('noUiVal');
-								}
-							},handle:handles[i]});
-						} else {
-							handles[i].data('input',settings.serialization.to[i].data('handleNR',i).val(val).change(function(){
-								var arr = [null,null];
-								arr[$(this).data('handleNR')]=$(this).val();
-								slider.val(arr);
-							}));
-						}
+						} else if ( serializationTo == false ){
+							handles[i].data('input',{
+                                val: function(a){
+                                    if(typeof a != 'undefined'){
+                                        this.handle.data('noUiVal', a);
+                                    } else {
+                                        return this.handle.data('noUiVal');
+                                    }
+                                },
+                                handle: handles[i]
+                            });
+						} else if ( serializationTo instanceof jQuery ) {
+                            if( serializationTo.is('input') ) {
+                                serializationTo.val(val);
+                            } else {
+                                serializationTo.html(val);
+                            }
+							handles[i].data('input',
+                                serializationTo
+                                    .data('handleNR', i)
+                                    .change(function(){
+                                        var arr = [null,null];
+                                        arr[$(this).data('handleNR')] = $(this).val();
+                                        slider.val(arr);
+							        })
+                            );
+						}else{
+                            throw "serialization.to has to be jQuery Element, a string or false";
+                        }
 					}
-					
+
 					$(this).data('setup',{
 						settings:settings,
 						handles:handles,
 						pos:pos,
 						res:res
 					});
-					
+
 				});
 			}
 			,val: function(){
-			
+
 				if(typeof arguments[0] !== 'undefined'){
-				
+
 					var val = typeof arguments[0] == 'number' ? [arguments[0]] : arguments[0];
-				
+
 					return this.each(function(){
-						
+
 						var setup = $(this).data('setup');
-					
+
 						for(var i=0;i<setup.handles.length;i++){
 							if(val[i]!=null){
 								var proposal = correct(percentage.to(setup.settings.range,val[i]),$(this),setup.handles[i]);
@@ -318,24 +337,24 @@
 							}
 						}
 					});
-					
+
 				} else {
-				
+
 					var handles = $(this).data('setup').handles,re = [];
 					for(var i=0;i<handles.length;i++){
 						re.push(parseFloat(handles[i].data('input').val()));
 					}
 					return re.length == 1 ? re[0] : re;
-					
+
 				}
 			}
 			,disabled: function(){
 				return flag ? $(this).addClass('disabled') : $(this).removeClass('disabled');
 			}
 		}
-		
+
 		return options == "disabled" ? methods.disabled.apply(this) : methods.create.apply(this);
 
-	}		
+	}
 
 })(jQuery);
