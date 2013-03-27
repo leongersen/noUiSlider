@@ -83,7 +83,8 @@
 			serialization : {
 				to : ['', ''],
 				resolution : 0.01
-			}
+			},
+			changeEvent: false
 		};
 
 		// contains all methods
@@ -100,7 +101,7 @@
 					var
 					settings = $.extend(defaults, options),
 					// handles
-					handlehtml = '<a><div></div></a>',
+					handlehtml = '<a><div><span></span></div></a>',
 					// save this to variable, // allows identification
 					slider = $(this).data('_isnS_', true),
 					// array of handles
@@ -159,6 +160,9 @@
 							break;
 						case 'slide':
 							e = typeof b != "function";
+							break;
+						case 'changeEvent':
+							e = (typeof b != 'boolean' && typeof b != 'undefined');
 							break;
 						}
 
@@ -241,6 +245,9 @@
 
 									if (movement[orientation] && proposal != previousProposal) {
 										handle.css(pos, proposal + '%').data('input').val(percentage.is(settings.range, proposal).toFixed(res));
+										if(settings.changeEvent) {
+											handle.data('input').change();
+										}
 										call(settings.slide, slider.data('_n', true));
 										previousProposal = proposal;
 										handle.css('z-index', handles.length == 2 && proposal == 100 && handle.is(':first-child') ? 2 : 1);
