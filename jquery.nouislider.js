@@ -101,7 +101,7 @@
 					var
 					settings = $.extend(defaults, options),
 					// handles
-					handlehtml = '<a><div></div></a>',
+					handlehtml = '<a><div><span></span></div></a>',
 					// save this to variable, // allows identification
 					slider = $(this).data('_isnS_', true),
 					// array of handles
