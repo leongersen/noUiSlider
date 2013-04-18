@@ -87,7 +87,7 @@
 		};
 
 		// contains all methods
-		methods = {
+		var methods = {
 			create : function () {
 
 				return this.each(function () {
@@ -171,7 +171,7 @@
 					settings.margin = settings.margin ? percentage.from(settings.range, settings.margin) : 0;
 
 					// tests serialization to be strings or jQuery objects
-					if (settings.serialization.to instanceof jQuery || typeof settings.serialization.to == 'string' || settings.serialization.to === false) {
+					if (settings.serialization.to instanceof $ || typeof settings.serialization.to == 'string' || settings.serialization.to === false) {
 						settings.serialization.to = [settings.serialization.to];
 					}
 
@@ -351,7 +351,7 @@
 		}
 
 		// remap the native/current val function to noUiSlider
-		var $_val = jQuery.fn.val;
+		var $_val = $.fn.val;
 
 		jQuery.fn.val = function () {
 			return this.data('_isnS_') ? methods.val.apply(this, arguments) : $_val.apply(this, arguments);
