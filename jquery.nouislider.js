@@ -251,6 +251,7 @@
 								}).on(offEvent, function () {
 
 									unbind.off(bind);
+									call(settings.endSlide, slider.data('_n', true));
 									$('body').removeClass('TOUCH');
 									if (slider.find('.active').removeClass('active').end().data('_n')) {
 										slider.data('_n', false).change();
