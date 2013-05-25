@@ -33,7 +33,7 @@
 			}
 		}
 
-		// bounce handles of eachother, the edges of the slider
+		// bounce handles of each other, the edges of the slider
 		function correct(proposal, slider, handle) {
 
 			var
@@ -63,7 +63,7 @@
 
 		}
 
-		// get standarised clientX and clientY
+		// get standardised clientX and clientY
 		function client(f) {
 			try {
 				return [(f.clientX || f.originalEvent.clientX || f.originalEvent.touches[0].clientX), (f.clientY || f.originalEvent.clientY || f.originalEvent.touches[0].clientY)];
