@@ -1,0 +1,112 @@
+	
+	/*	Body, root elements
+	 *	Sets a default cursor on the body, blocks text selection.
+	 */
+	.noUi-root * {
+		box-sizing: border-box;
+		display: block;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	.noUi-root *,
+	body[data-nouislider-active] {
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+	}
+	body[data-nouislider-active] * {
+		cursor: default !important;
+	}
+
+	/*	Basics
+	 *	
+	 */
+	.noUi-slider {
+		position: relative;
+	}
+	.noUi-slider b {
+		position: absolute;
+		z-index: 1;
+	}
+	.noUi-slider b + b {
+		background: inherit !important;
+	}
+	.noUi-horizontal {
+		width: 100%;
+		height: 12px;
+	}
+	.noUi-horizontal b {
+		height: 100%;
+		right: 0;
+	}
+	.noUi-vertical {
+		height: 100%;
+		width: 12px;
+	}
+	.noUi-vertical b {
+		width: 100%;
+		bottom: 0;
+	}
+	
+	/*	Looks
+	 *	
+	 */
+	.noUi-slider {
+		border: 1px solid #908d84;
+		border-radius: 3px;
+	}
+	.noUi-slider.noUi-connect.noUi-lower,
+	.noUi-slider.noUi-connect b {
+		background: #b2a98f;
+	}
+	.noUi-slider,
+	.noUi-slider.noUi-connect.noUi-lower b {
+		background: #d9d7cb;
+		box-shadow: inset 0px 1px 7px #b6b4a8;
+	}
+	.noUi-slider b {
+		border-radius: 2px;
+	}
+	.noUi-slider i {
+		width: 18px;
+		height: 18px;
+		border: 1px solid #999;
+		border-radius: 3px;
+		background: #efefef;
+		-webkit-transition: all 0.2s;
+	}
+	.noUi-vertical i {
+		margin: -9px 0 0 -4px;
+	}
+	.noUi-horizontal i {
+		margin: -4px 0 0 -9px;
+	}
+
+	/*	Hover and active states
+	 *	
+	 */
+	.noUi-slider .noUi-base-active {
+		z-index: 3 !important;
+	}
+	.noUi-slider i.noUi-active,
+	.noUi-slider i:hover {
+		border-color: #aaa;
+		background: #fff;
+		width: 26px;
+		height: 26px;
+		margin: -8px 0 0 -13px;
+	}
+
+	/*	Disabled
+	 *
+	 */
+	.noUi-disabled .noUi-slider {
+		background: #ccc;
+	}
+	.noUi-disabled i:hover,
+	.noUi-disabled i {
+		background: #999;
+		cursor: not-allowed;
+		border-color: #333;
+	}
