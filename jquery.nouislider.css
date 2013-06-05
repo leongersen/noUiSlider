@@ -101,12 +101,15 @@
 	/*	Disabled
 	 *
 	 */
-	.noUi-disabled .noUi-slider {
+	.noUi-root[disabled="disabled"] .noUi-slider {
 		background: #ccc;
 	}
-	.noUi-disabled i:hover,
-	.noUi-disabled i {
+	.noUi-root[disabled="disabled"] i:hover,
+	.noUi-root[disabled="disabled"] i {
 		background: #999;
 		cursor: not-allowed;
 		border-color: #333;
+	}
+	.noUi-root:disabled {
+		display: none;
 	}

@@ -1,15 +1,17 @@
 /* noUiSlider 3.5.0 */
 (function($){
 
-	$.fn.noUiSlider = function(options,flag){
+	$.fn.noUiSlider = function(options){
 	
 		var
 		// Default test and correction set.
 		// Might extend the plugin and documentation to make this optional/external.
+		// = NOT READY TO BE REMOVED =
 		// Requirements:
 		// - Item for every option used.
 		//	 - 'r' sets 'required'
-		//	 - 't' provides a test
+		//	 - 't' provides a testing function
+		//		arguments(reference to options object, value [, option name])
 		//		returns false on error, else true.
 		// - 'init' method that appends the parent object to all children.
 		 testCorrectionSet = {
@@ -278,6 +280,9 @@
 			// extend me.
 			return [e.pageX,e.pageY];
 		}
+		,isTrue		= function(a){
+			return typeof a !== 'undefined' && typeof a !== false
+		}
 		,substract		= function(a,b){
 			// a and b are passed by reference
 			if(a.length!=b.length)
@@ -323,8 +328,13 @@
 					,orientation;
 				
 				// set defaults by extending options object
-
-					// test or create serialization
+				// extend static options
+				options = $.extend({
+					 handles: 2
+					,margin: 0
+				}, options) || {};
+				
+				// create default serialization
 				if(!options.serialization){
 					// set default serialization
 					options.serialization = {
@@ -332,12 +342,6 @@
 						,resolution : 0.01
 					}
 				}
-				
-				// extend static options
-				options = $.extend({
-					 handles: 2
-					,margin: 0
-				}, options);
 					
 				// Run options tests, test method will throw errors 
 				// so there is no need to capture the result of this call.
@@ -396,7 +400,7 @@
 						handles[i].find('i').addClass(classes[8+i]).on(events.on,function(e){
 						
 							// if disabled, stop
-							if(base.parent().hasClass(classes[7]))
+							if(isTrue(base.parent().attr('disabled')))
 								return;
 						
 							// Location = coordinates for 'mouse'/'touch'
@@ -470,7 +474,7 @@
 						base.on(events.click, function(e){
 						
 							// if disabled, stop
-							if(base.parent().hasClass(classes[7]))
+							if(isTrue(classes[7]))
 								return;
 						
 							// determine new position
@@ -541,9 +545,6 @@
 				}
 				
 			}
-			,disabled:	function(){
-				return flag ? $(this).addClass(classes[7]) : $(this).removeClass(classes[7]);
-			}
 		};
 		
 		// overwrite the native jQuery val() function.
@@ -553,7 +554,7 @@
 				: $VAL.apply(this, arguments);
 		}
 
-		return options == "disabled" ? methods.disabled.apply(this) : methods.create.apply(this);
+		return methods.create.apply(this);
 
 	}
 	
