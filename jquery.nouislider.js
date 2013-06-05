@@ -49,12 +49,12 @@ $.fn.noUiSlider = function(options){
 			}
 		}
 		,"connect": {
-			 t: function(o,q){ 
+			 t: function(o,q){
 				return ( q === true || q === false || q === 'lower' || q === 'upper' );
 			 }
 		}
 		,"orientation": {
-			 t: function(o,q){ 
+			 t: function(o,q){
 				return ( q == "horizontal" || q == "vertical" );
 			}
 		}
@@ -110,11 +110,11 @@ $.fn.noUiSlider = function(options){
 		}
 		,"slide": {
 			 t: function(o,q){
-			return typeof q === "function"; 
+			return typeof q === "function";
 			}
 		}
 		,"step": {
-			 t: function(o,q,w){ 
+			 t: function(o,q,w){
 				return this.parent.margin.t(o,q,w);
 			}
 		}
@@ -342,7 +342,7 @@ $.fn.noUiSlider = function(options){
 				}
 			}
 				
-			// Run options tests, test method will throw errors 
+			// Run options tests, test method will throw errors
 			// so there is no need to capture the result of this call.
 			test(options,$(this));
 			
@@ -386,7 +386,7 @@ $.fn.noUiSlider = function(options){
 					
 					// create inputs for handles and initialize them
 					handles[i].data('input', input(
-						 i 
+						 i
 						,handles[i]
 						,base
 						,options.serialization
