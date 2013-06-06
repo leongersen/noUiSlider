@@ -513,7 +513,7 @@ $.fn.noUiSlider = function(options){
 					// get base
 					var base = $(this).children();
 				
-					base.children().each(function(i,v){
+					base.children('b').each(function(i,v){
 						
 						var handle = $(this);
 					
