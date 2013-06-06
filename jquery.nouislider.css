@@ -14,6 +14,7 @@
 		-webkit-user-select: none;
 		-moz-user-select: none;
 		-ms-user-select: none;
+		-ms-touch-action: none;
 	}
 	body[data-nouislider-active] * {
 		cursor: default !important;
@@ -30,6 +31,8 @@
 		z-index: 1;
 	}
 	.noUi-slider b + b {
+		/* Fallback for older browsers... :( */
+		background: #d9d7cb !important;
 		background: inherit !important;
 	}
 	.noUi-horizontal {
@@ -75,12 +78,13 @@
 		border-radius: 3px;
 		background: #efefef;
 		-webkit-transition: all 0.2s;
-	}
-	.noUi-vertical i {
-		margin: -9px 0 0 -4px;
+		transition: all 0.2s;
 	}
 	.noUi-horizontal i {
 		margin: -4px 0 0 -9px;
+	}
+	.noUi-vertical i {
+		margin: -9px 0 0 -4px;
 	}
 
 	/*	Hover and active states
@@ -96,6 +100,10 @@
 		width: 26px;
 		height: 26px;
 		margin: -8px 0 0 -13px;
+	}
+	.noUi-vertical i.noUi-active,
+	.noUi-vertical i:hover {
+		margin: -4px 0 0 -9px;
 	}
 
 	/*	Disabled

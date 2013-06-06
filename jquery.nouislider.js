@@ -5,7 +5,6 @@ $.fn.noUiSlider = function(options){
 	var
 	// Default test and correction set.
 	// Might extend the plugin and documentation to make this optional/external.
-	// = NOT READY TO BE REMOVED =
 	// Requirements:
 	// - Item for every option used.
 	//	 - 'r' sets 'required'
@@ -166,7 +165,7 @@ $.fn.noUiSlider = function(options){
 	,input			= function(i, handle, base, serialization, initialize){
 
 		var split = (serialization.resolution = serialization.resolution || 0.01).toString().split('.');
-		handle.data('noui-res',(split[0] == 1 ? 0 : split[1].length));
+		handle.data(store_res,(split[0] == 1 ? 0 : split[1].length));
 
 		// if name
 		if (typeof serialization.to[i] == 'string') {
@@ -257,7 +256,7 @@ $.fn.noUiSlider = function(options){
 			// if value is required but not set,
 			// or if the test fails
 			if((v.r && (!o[i] && o[i] !== 0)) || ((o[i] || o[i] == 0) && !v.t(o,o[i],i))){
-				// if console available, log error.
+				// if available, log error.
 				if(console&&console.log){
 					console.log(
 						"Slider:\t\t\t",	set,
@@ -276,10 +275,22 @@ $.fn.noUiSlider = function(options){
 		return '<div class="'+c+'"></div>';
 	}
 	,location		= function(e){
-		// extend me.
-		return [e.pageX,e.pageY];
+		
+		try {
+		
+			return [
+				( e.pageX || e.originalEvent.pageX || e.originalEvent.touches[0].pageX ),
+				( e.pageY || e.originalEvent.pageY || e.originalEvent.touches[0].pageY ),
+			];
+			
+		}catch (e) {
+		
+			return ['x','y'];
+			
+		}
+		
 	}
-	,isTrue		= function(a){
+	,isTrue			= function(a){
 		return typeof a !== 'undefined' && typeof a !== false
 	}
 	,substract		= function(a,b){
@@ -430,6 +441,10 @@ $.fn.noUiSlider = function(options){
 							var  cur_location = location(f)
 								,cur_proposal;
 							
+							// ie7 is crazy.
+							if(cur_location[0]=='x')
+								return;
+							
 							substract(cur_location,ori_location);
 						
 							// come up with a new proposal
@@ -455,47 +470,47 @@ $.fn.noUiSlider = function(options){
 							
 						}).on(events.off,function(f){
 							
-							// trigger change event
-							base.parent().change();
 							// remove classes from body and handle
 							bas_handle.removeClass(classes[6]);
 							cur_handle.removeClass(classes[10]);
 							// unbind events
 							$(document).add($('body').removeAttr(active)).off(bind);
+							// trigger change event
+							base.parent().change();
 						
 						});
 						
 					}).on(events.click, function(e){
 						e.stopPropagation();
 					});
-					
-					// allow the slider to be moved by clicking
-					base.on(events.click, function(e){
-					
-						// if disabled, stop
-						if(isTrue(classes[7]))
-							return;
-					
-						// determine new position
-						var  cur_location = location(e)
-							,cur_proposal = ((cur_location[orientation] - base.offset()[pos]) * 100) / (orientation ? base.height() : base.width())
-							,handle;
-							
-						if(handles.length == 1){
-							handle = handles[0];
-						} else {
-							handle = (cur_location[orientation] < (handles[0].offset()[pos] + handles[1].offset()[pos]) / 2 ? handles[0] : handles[1]);
-						}
 
-						// move handle, fire events
-						place(handle,pos,correct(cur_proposal, base, handle), base);
-						call([options.slide,options.__DB], base.parent());
-						base.parent().change();
-					
-					});
-					
 				}
 				
+				// allow the slider to be moved by clicking
+				base.on(events.click, function(e){
+				
+					// if disabled, stop
+					if(isTrue(base.parent().attr('disabled')))
+						return;
+				
+					// determine new position
+					var  cur_location = location(e)
+						,cur_proposal = ((cur_location[orientation] - base.offset()[pos]) * 100) / (orientation ? base.height() : base.width())
+						,handle;
+					
+					if(handles.length == 1){
+						handle = handles[0];
+					} else {
+						handle = (cur_location[orientation] < (handles[0].offset()[pos] + handles[1].offset()[pos]) / 2 ? handles[0] : handles[1]);
+					}
+
+					// move handle, fire events
+					place(handle,pos,correct(cur_proposal, base, handle), base);
+					call([options.slide,options.__DB], base.parent());
+					base.parent().change();
+
+				});
+
 			});
 		
 		}
