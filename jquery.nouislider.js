@@ -80,6 +80,7 @@
 		// simplified defaults
 		var defaults = {
 			handles : 2,
+			handlehtml: '<a><div></div></a>',
 			serialization : {
 				to : ['', ''],
 				resolution : 0.01
@@ -100,7 +101,7 @@
 					var
 					settings = $.extend(defaults, options),
 					// handles
-					handlehtml = '<a><div></div></a>',
+					handlehtml = settings.handlehtml,
 					// save this to variable, // allows identification
 					slider = $(this).data('_isnS_', true),
 					// array of handles
