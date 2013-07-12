@@ -16,7 +16,8 @@
 		position: absolute;
 		z-index: 1;
 	}
-	.noUiSlider a:nth-child(2) {
+	.noUiSlider a:nth-child(2),
+	.noUiSlider a + a {
 		background: inherit !important;
 	}
 	.noUiSlider.vertical a {
