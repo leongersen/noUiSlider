@@ -1,6 +1,7 @@
 /* noUiSlider 3.2.1 */
 (function ($) {
 
+    var jQuery = $;
 	$.fn.noUiSlider = function (options, flag) {
 
 		// test for mouse, pointer or touch
