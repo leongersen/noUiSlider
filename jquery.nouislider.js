@@ -742,8 +742,14 @@
 		function val ( args, ignore ) {
 
 			// Setter
-			if( args && args.length ){
+			if( args !== UNDEF ){
 
+				// If the val is to be set to a number, which is valid
+				// when using a one-handle slider, wrap it in an array.
+				if(!$.isArray(args)){
+					args = [args];
+				}
+			
 				// Setting is handled properly for each slider in the data set.
 				return this.each(function(){
 
