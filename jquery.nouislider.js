@@ -531,17 +531,18 @@
 				,style = base.data('style')
 				,eventXY = event[style === 'left' ? 'x' : 'y']
 				,baseSize = style === 'left' ? base.width() : base.height()
+				
 			// Create a standard set off offsets compensated with the
 			// scroll distance. When required, correct for scrolling.
+			// This is a bug, as far as I can see, in IE(10?).
 				,correction = {
 					 x: ( event.t[2] ? window.pageXOffset : 0 )
-					,y: ( event.t[2] ? window.pageYOffset : 0 )
 				}
 				,offset = {
 					 handles: []
 					,base: {
 						 left: base.offset().left - correction.x
-						,top: base.offset().top// - correction.y
+						,top: base.offset().top
 					}
 				};
 				
@@ -549,12 +550,10 @@
 			for (i = 0; i < handles.length; i++ ) {
 				offset.handles.push({
 					 left: handles[i].offset().left - correction.x
-					,top: handles[i].offset().top// - correction.y
+					,top: handles[i].offset().top
 				});
 			}
 			
-			console.log('Correction: ' + correction.y + ' Handle offset: ' + offset.handles[0].top, ' Event: ' + eventXY + ' Base offset: ' + offset.base.top);
-		
 			// Calculate the central point between the handles;
 			var handleCenter = handles.length === 1 ? 0 :
 				(( offset.handles[0][style] + offset.handles[1][style] ) / 2 );
