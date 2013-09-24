@@ -9,7 +9,7 @@ A full documentation, including examples, is available on the [noUiSlider docume
 Changes
 -------
 
-**Changelog for version 4.2:**  
+**Changelog for version 4.0.2:**  
 _[current patch release]_
 + Fixed some minor CSS issues in the default theme
 + The slider will no longer force an arbitrary width or height
