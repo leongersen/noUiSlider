@@ -1,5 +1,5 @@
 # noUiSlider
-_Current version: 4.0.2_
+_Current version: 4.0.3_
 
 noUiSlider is a super tiny jQuery plugin that allows you to create range sliders.  
 It fully supports touch, and it is way(!) less bloated than the jQueryUI library.
@@ -8,6 +8,9 @@ A full documentation, including examples, is available on the [noUiSlider docume
 
 Changes
 -------
+
+**Changelog for version 4.0.3:**  
++ Missed a file while updating to 4.0.2.
 
 **Changelog for version 4.0.2:**  
 _[current patch release]_
