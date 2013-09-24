@@ -1,7 +1,7 @@
 
 /*	General CSS resets;
  *		The target itself is not affected, allowing
- *		the remainder of the document to use an 
+ *		the remainder of the document to use an
  *		alternate box-sizing model;
  *		Support for box-sizing is wide spread:
  *		http://caniuse.com/#search=box-sizing
@@ -19,17 +19,21 @@
 	}
 
 /*	Main slider bar;
+ *		Standard styles no longer incorrectly force a
+ *		width or height on the slider.
  */
 	.noUi-base {
 		height: 40px;
-		width: 300px;
 		position: relative;
 		max-width: 100%;
+		max-height: 100%;
 		border: 1px solid #bfbfbf;
 		z-index: 1;
 	}
 
 /*	Handles + active state;
+ *		The :after pseudo-element wont inherit
+ *		box-sizing, so it needs to applied manually.
  */
 	.noUi-handle {
 		background: #EEE;
@@ -42,6 +46,9 @@
 		background: #E9E9E9;
 	}
 	.noUi-active:after {
+-webkit-box-sizing: border-box;
+   -moz-box-sizing: border-box;
+		box-sizing: border-box;
 		content: "";
 		display: block;
 		height: 100%;
@@ -76,13 +83,13 @@
 	.noUi-z-index {
 		z-index: 10;
 	}
-	
+
 /*	Adaptations for the vertical slider;
+ *		Some standard styles have been extended to keep
+ *		exceptions for the vertical slider as minimal as possible.
  */
 	.noUi-vertical {
-		height: 300px;
 		width: 40px;
-		max-height: 100%;
 	}
 	.noUi-vertical .noUi-origin {
 		bottom: 0;
@@ -93,11 +100,11 @@
 	}
 
 /*	Various alternate slider states;
- *	Support for transition is widely available,
- *	Only IE7, IE8 and IE9 will ignore these rules.
- *	Since this is merely a progressive enhancement,
- *	this is no problem at all.
- *	http://caniuse.com/#search=transition
+ *		Support for transition is widely available,
+ *		Only IE7, IE8 and IE9 will ignore these rules.
+ *		Since this is merely a progressive enhancement,
+ *		this is no problem at all.
+ *		http://caniuse.com/#search=transition
  */
 	.noUi-target[disabled] .noUi-base {
 		background: #999;
