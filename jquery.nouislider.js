@@ -382,8 +382,16 @@
 				,dec = handle.data('nui').decimals
 				,hLimit;
 
+			// Make sure the value can be parsed.
+			if( !$.isNumeric(to) ) {
+				return false;
+			}
+
+			// Parse to float so numerical comparisons make sense.
+			to = parseFloat(to);
+
 			// Ignore the call if the handle won't move anyway.
-			if(to === handle[0].getPercentage(style)) {
+			if( to === handle[0].getPercentage(style) ) {
 				return false;
 			}
 
@@ -396,7 +404,7 @@
 			}
 
 			// Stop handling this call if the handle won't step to a new value.
-			if(to === handle[0].getPercentage(style)) {
+			if( to === handle[0].getPercentage(style) ) {
 				return false;
 			}
 
@@ -416,7 +424,7 @@
 				}
 
 				// Stop handling this call if the handle can't move past another.
-				if(to === handle[0].getPercentage(style)) {
+				if( to === handle[0].getPercentage(style) ) {
 					return false;
 				}
 
@@ -425,7 +433,7 @@
 			// Fix for the z-index issue where the lower handle gets stuck
 			// below the upper one. Since this function is called for every
 			// movement, toggleClass cannot be used.
-			if(handle.data('nui').number === 0 && to > 95){
+			if( handle.data('nui').number === 0 && to > 95 ){
 				handle.addClass(clsList[14]);
 			} else {
 				handle.removeClass(clsList[14]);
