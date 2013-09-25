@@ -449,15 +449,18 @@
 				S.to[i].keydown(function (e) {
 					var arr = [null, null];
 					arr[i] = parseInt($(this).val(), 10);
-					if (e.which === 38) {
-						arr[i] += handle.data('nui').options.step;
+					if(!isNaN(arr[i])) {
+						if (e.which === 38) {
+							arr[i] += handle.data('nui').options.step;
+						}
+					
+						if (e.which === 40) {
+							arr[i] -= handle.data('nui').options.step;
+						}
+					
+						handle.data('nui').target.val(arr, true);
 					}
-				
-					if (e.which === 40) {
-						arr[i] -= handle.data('nui').options.step;
-					}
-				
-					handle.data('nui').target.val(arr, true);
+					
 				});
 
 				// Attach a change event to the supplied jQuery object,
