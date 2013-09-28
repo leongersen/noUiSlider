@@ -553,6 +553,7 @@
 			$('body').off(namespace);
 
 			event.data.base.data('target').change();
+			event.data.base.data('target').trigger('slide_end');
 
 		}
 
