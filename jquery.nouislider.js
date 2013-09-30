@@ -116,27 +116,23 @@
 			// Fetch the event where jQuery didn't make any modifications.
 			e = e.originalEvent;
 
-			if (touch) {
+			if ( touch ) {
 				// noUiSlider supports one movement at a time, for now.
 				// It is therefore safe to select the first 'changedTouch'.
 				x = e.changedTouches[0].pageX;
 				y = e.changedTouches[0].pageY;
 			}
-			if (mouse) {
+			if ( mouse || pointer ) {
 
 				// Polyfill the pageXOffset and pageYOffset
 				// variables for IE7 and IE8;
-				if(window.pageXOffset === UNDEF){
+				if( !pointer && window.pageXOffset === UNDEF ){
 					window.pageXOffset = document.documentElement.scrollLeft;
 					window.pageYOffset = document.documentElement.scrollTop;
 				}
 
 				x = e.clientX + window.pageXOffset;
 				y = e.clientY + window.pageYOffset;
-			}
-			if (pointer) {
-				x = e.pageX;
-				y = e.pageY;
 			}
 
 			return { pass: jQueryEvent.data, e:e, x:x, y:y, t: [touch, mouse, pointer] };
@@ -620,17 +616,10 @@
 				,style = base.data('style')
 				,eventXY = event[style === 'left' ? 'x' : 'y']
 				,baseSize = style === 'left' ? base.width() : base.height()
-
-			// Create a standard set off offsets compensated with the
-			// scroll distance. When required, correct for scrolling.
-			// This is a bug, as far as I can see, in IE(10?).
-				,correction = {
-					 x: ( event.t[2] ? window.pageXOffset : 0 )
-				}
 				,offset = {
 					 handles: []
 					,base: {
-						 left: base.offset().left - correction.x
+						 left: base.offset().left
 						,top: base.offset().top
 					}
 				};
@@ -638,7 +627,7 @@
 			// Loop handles and add data to the offset list.
 			for (i = 0; i < handles.length; i++ ) {
 				offset.handles.push({
-					 left: handles[i].offset().left - correction.x
+					 left: handles[i].offset().left
 					,top: handles[i].offset().top
 				});
 			}
