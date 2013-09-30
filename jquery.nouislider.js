@@ -74,13 +74,20 @@
 		}
 
 		// Shorthand for stopping propagation on an object.
-		// Calling a function prevents having to define one inline.
+		// Calling a function prevents having to define one within other code.
 		function stopPropagation ( e ) {
 			e.stopPropagation();
 		}
 
 		// Test an array of objects, and calls them if they are a function.
 		function call ( f, scope, args ) {
+
+			// Allow the passing of an unwrapped function.
+			// Leaves other code a more comprehensible.
+			if( !$.isArray(f) ){
+				f = [f];
+			}
+
 			$.each(f,function(i,q){
 				if (typeof q === "function") {
 					q.call(scope, args);
@@ -98,7 +105,8 @@
 
 			// Required (in at the very least Chrome) to prevent
 			// scrolling and panning while attempting to slide.
-			// The tap event also depends on this.
+			// The tap event also depends on this. This doesn't 
+			// seem to prevent panning in Firefox, which is an issue.
 			if( preventDefault ) {
 				e.preventDefault();
 			}
@@ -308,11 +316,20 @@
 				 */
 				,"slide": {
 					 t: function(o,q){
-					return typeof q === "function";
+						return typeof q === "function";
 					}
 				}
-				/*	Slide.
-				 *	Not required. Tested using the 'margin' function.
+				/*	End.
+				 *	Not required. Must be a function.
+				 *	Tested using the 'slide' test.
+				 */
+				,"end": {
+					 t: function(o,q){
+						return this.parent.slide.t(o,q,w);
+					}
+				}
+				/*	Step.
+				 *	Not required. Tested using the 'margin' test.
 				 */
 				,"step": {
 					 t: function(o,q,w){
@@ -383,12 +400,12 @@
 				,hLimit;
 
 			// Make sure the value can be parsed.
+			// This will catch any potential NaN, even though
+			// no internal function calling setHandle should pass
+			// invalided parameters.
 			if( !$.isNumeric(to) ) {
 				return false;
 			}
-
-			// Parse to float so numerical comparisons make sense.
-			to = parseFloat(to);
 
 			// Ignore the call if the handle won't move anyway.
 			if( to === handle[0].getPercentage(style) ) {
@@ -443,7 +460,7 @@
 			handle.css( style , to + '%');
 
 			// Write the value to the serialization object.
-			handle.data('store').val(percentage.is(nui.range, to).toFixed(dec));
+			handle.data('store').val( percentage.is(nui.range, to).toFixed(dec) );
 
 			return true;
 
@@ -455,14 +472,43 @@
 
 			if( S.to[i] instanceof $ ) {
 
+				// Modify the passed jQuery element, then return it
+				// so it can be stored on a handle element.
+				return S.to[i]
+				
+				// Apply some data to the element,
+				// so that it can be used in the bound events.
+				.data({
+					 target: handle.data('nui').target
+					,handle: handle
+				})
+				
 				// Attach a change event to the supplied jQuery object,
 				// which will just trigger the val function on the parent.
 				// In some cases, the change event will not fire on select elements,
 				// so listen to 'blur' too.
-				return S.to[i].on('change'+namespace+' blur'+namespace, function(){
+				.on('change'+namespace+' blur'+namespace, function(){
+					
+					// Create an array with two positions,
+					// the write the value to be changed to the relevant position.
 					var arr = [null, null];
 					arr[i] = $(this).val();
-					handle.data('nui').target.val(arr, true);
+					
+					// The input in this field has not been validated,
+					// the val method should be aware of that.
+					$(this).data('target').val(arr, {
+						untrusted: true
+					});
+				})
+				
+				// Triggering the 'end' callback should not occur on the 'blur'
+				// event, so bind it only to 'change'.
+				.on('change'+namespace, function(){
+
+					// Call the end callback when this field triggers 'change'.
+					call( $(this).data('handle').data('nui').options.end
+						 ,$(this).data('target') );
+			
 				});
 
 			}
@@ -530,10 +576,8 @@
 			setHandle( event.pass.handle, proposal );
 
 			// Trigger the 'slide' event, pass the target so that it is 'this'.
-			call(
-				 [ event.pass.base.data('options').slide ]
-				,event.pass.base.data('target')
-			);
+			call( base.data('options').slide
+				 ,base.data('target') );
 
 		}
 
@@ -543,16 +587,27 @@
 				return;
 			}
 
-			// Handle is no longer active;
-			event.data.handle.children().removeClass(clsList[4]);
+			var  base = event.data.base
+				,handle = event.data.handle;
+
+			// The handle is no longer active, so remove
+			// the class.
+			handle.children().removeClass(clsList[4]);
 
 			// Unbind move and end events, to prevent
 			// them stacking up over and over;
 			all.off(actions.move);
 			all.off(actions.end);
+
+			// Some text-selection events are bound to the body.
 			$('body').off(namespace);
 
-			event.data.base.data('target').change();
+			// Trigger the change event.
+			base.data('target').change();
+
+			// Trigger the 'end' callback.
+			call( handle.data('nui').options.end
+				 ,base.data('target') );
 
 		}
 
@@ -670,11 +725,11 @@
 				,(((eventXY - offset.base[style]) * 100) / baseSize)
 			);
 
-			// Trigger the 'slide' event, pass the target so that it is 'this'.
-			call(
-				 [ handle.data('nui').options.slide ]
-				,base.data('target')
-			);
+			// Trigger the 'slide' and 'end' callbacks,
+			// pass the target so that it is 'this'.
+			call( [ handle.data('nui').options.slide
+				   ,handle.data('nui').options.end ]
+				 ,base.data('target') );
 
 			base.data('target').change();
 
@@ -732,8 +787,10 @@
 				// very well, so shorten it.
 				options.S = options.serialization;
 
-
-				// INCOMPLETE
+				// Apply the required connection classes to the elements
+				// that need them. Some classes are made up for several segments
+				// listed in the class list, to allow easy renaming and provide
+				// a minor compression benefit.
 				if( options.connect ) {
 					cls.origin[0].push(clsList[9]);
 					if( options.connect === "lower" ){
@@ -831,46 +888,61 @@
 
 		}
 
-		function val ( args, ignore ) {
+		function val ( args, modifiers ) {
 
-			// Setter
+			// Passing the modifiers argument is not required.
+			// The input might also be 'true', to indicate that the
+			// 'set' event should be called.
+			modifiers = modifiers === true ? { trigger: true } : ( modifiers || {} );
+
+			// When this method is called with arguments,
+			// act as a 'setter'.
 			if( args !== UNDEF ){
 
 				// If the val is to be set to a number, which is valid
 				// when using a one-handle slider, wrap it in an array.
-				if(!$.isArray(args)){
+				if( !$.isArray(args) ){
 					args = [args];
 				}
 
 				// Setting is handled properly for each slider in the data set.
-				return this.each(function(){
+				// Note that the val method is called on the target, which can
+				// therefore be used in the function.
+				return this.each(function(i, target){
 
-					$.each($(this).data(clsList[12]), function(i, handle){
+					$.each( $(this).data(clsList[12]), function( j, handle ){
 
 						// The set request might want to ignore this handle.
-						if( args[i] === null ) {
+						if( args[j] === null ) {
 							return;
 						}
 
 						// Calculate a new position for the handle.
-						var  value, current
+						var  value, current, ignore = !modifiers.untrusted
 							,range = handle.data('nui').options.range
 							,to = percentage.to(
 									 range
-									,parseFloat(args[i])
+									,parseFloat(args[j])
 								 ),
 
 						// Set handle to new location, and make sure developer
 						// input is always accepted. The ignore flag indicates
 						// input from user facing elements.
-						result = setHandle(handle, to, (ignore === true ? false : true));
+						result = setHandle( handle, to, ignore );
+
+						// The 'val' method allows for an external modifier,
+						// to specify a request for an 'end' event.
+						if( modifiers.trigger ) {
+							call( handle.data('nui').options.end
+								 ,target );
+						}
 
 						// If the value of the input doesn't match the slider,
 						// reset it.
-						if(!result){
+						if( !result ){
 
 							// Get the 'store' object, which can be an input element
-							// or a wrapper arround a 'data' call.
+							// or a wrapper around a 'data' call.
 							value = handle.data('store').val();
 							current = percentage.is(range,
 										handle[0].getPercentage(handle.data('nui').style)
@@ -880,7 +952,7 @@
 							// has rejected. This can occur when using 'select' or
 							// 'input[type="number"]' elements. In this case,
 							// set the value back to the input.
-							if(value !== current){
+							if( value !== current ){
 								handle.data('store').val(current);
 							}
 						}
@@ -904,7 +976,7 @@
 
 			// If the slider has just one handle, return a single value.
 			// Otherwise, return an array.
-			return ( re.length === 1 ? re[0] : re) ;
+			return ( re.length === 1 ? re[0] : re);
 
 		}
 
