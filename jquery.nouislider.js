@@ -865,6 +865,13 @@
 						// input from user facing elements.
 						result = setHandle(handle, to, (ignore === true ? false : true));
 
+						// Trigger the 'slide' event, once the value was changed programatically
+                        // pass the target so that it is 'this'.
+                        call(
+                             [ handle.data('nui').options.slide ]
+                            ,handle.closest('.' + clsList[6])
+                        );
+
 						// If the value of the input doesn't match the slider,
 						// reset it.
 						if(!result){
