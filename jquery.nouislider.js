@@ -176,7 +176,8 @@
 			method which appends the parent object to all children.
 	**/
 			var TESTS = {
-				/*	Handles. Has default, can be 1 or 2;
+				/*	Handles.
+				 *	Has default, can be 1 or 2.
 				 */
 				 "handles": {
 					 r: true
@@ -653,6 +654,9 @@
 
 		function tap ( event ) {
 
+			// If the event is blocked, or the target contains an active
+			// handle, don't trigger this event. Tapping shouldn't be
+			// possible while dragging.
 			if ( blocked( event ) || event.data.base.find('.' + clsList[4]).length ) {
 				return;
 			}
@@ -933,9 +937,16 @@
 							// Get the 'store' object, which can be an input element
 							// or a wrapper around a 'data' call.
 							value = handle.data('store').val();
-							current = percentage.is(range,
-										handle[0].getPercentage(handle.data('nui').style)
-									).toFixed(handle.data('nui').decimals);
+							
+							// Get the value for the current position.
+							current = percentage.is(
+								 range
+								,handle[0].getPercentage(handle.data('nui').style)
+							);
+							
+							// Round the value to the resolution that was set 
+							// with the serialization options.
+							current.toFixed(handle.data('nui').decimals);
 
 							// Sometimes the input is changed to a value the slider
 							// has rejected. This can occur when using 'select' or
