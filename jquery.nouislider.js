@@ -4,9 +4,9 @@
 	$.fn.noUiSlider = function( options ){
 
 		var  namespace = '.nui'
-			// Create a shorthand for document event binding
+			// Create a shorthand for document event binding.
 			,all = $(document)
-			// Create a map of touch and mouse actions
+			// Create a map of touch and mouse actions.
 			,actions = {
 				 start: 'mousedown' + namespace + ' touchstart' + namespace
 				,move: 'mousemove' + namespace + ' touchmove' + namespace
@@ -105,7 +105,7 @@
 
 			// Required (in at the very least Chrome) to prevent
 			// scrolling and panning while attempting to slide.
-			// The tap event also depends on this. This doesn't 
+			// The tap event also depends on this. This doesn't
 			// seem to prevent panning in Firefox, which is an issue.
 			if( preventDefault ) {
 				e.preventDefault();
@@ -143,7 +143,7 @@
 				y = e.clientY + window.pageYOffset;
 			}
 
-			return { pass: jQueryEvent.data, e:e, x:x, y:y, t: [touch, mouse, pointer] };
+			return { pass: jQueryEvent.data, e:e, x:x, y:y };
 
 		}
 
@@ -162,7 +162,6 @@
 			function ser(r){
 				return ( r instanceof $ || typeof r === 'string' || r === false );
 			}
-
 
 	/**
 			These tests are structured with an item for every option available.
@@ -262,9 +261,11 @@
 					}
 				}
 				/*	Serialization.
-				 *	Required, but has default. Resolution option can be missing,
-				 *	'to' can't. Must be an array when using two handles, can
-				 *	be a singular value when using one handle.
+				 *	Required, but has default. 'resolution' and 'mark' option,
+				 *	are allowed to be missing, 'to' isn't. Must be an array
+				 *	when using two handles, can be a single value
+				 *	when using one handle. 'mark' can only be period (.) or
+				 *	comma (,) to make sure the value can be parsed properly.
 				 */
 				,"serialization": {
 					 r: true
@@ -284,6 +285,12 @@
 								default:
 									return false;
 							}
+						}
+
+						if(!q.mark){
+							o.serialization.mark = '.';
+						} else {
+							return ( q.mark === '.' || q.mark === ',' );
 						}
 
 						if(q.to){
@@ -316,13 +323,13 @@
 						return typeof q === "function";
 					}
 				}
-				/*	End.
+				/*	Set.
 				 *	Not required. Must be a function.
 				 *	Tested using the 'slide' test.
 				 */
-				,"end": {
+				,"set": {
 					 t: function(o,q){
-						return this.parent.slide.t(o,q,w);
+						return this.parent.slide.t(o,q);
 					}
 				}
 				/*	Step.
@@ -336,7 +343,7 @@
 				/*	[init]
 				 *	Not an option test. Calling this method will return the
 				 *	parent object with some cross references that allow crawling
-				 *	the object upward, which normally isn't possible in Javascript.
+				 *	the object upward, which normally isn't possible in JavaScript.
 				 */
 				,"init": function(){
 					var obj = this;
@@ -349,11 +356,11 @@
 			},
 
 			// Prepare a set of tests, by adding some internal reference
-			// values not available in native Javascript object implementation.
+			// values not available in native JavaScript object implementation.
 			a = TESTS.init();
 
 			// Loop all provided tests;
-			// v is the option set, i is the index for the current test.
+			// 'v' is the option set, 'i' is the index for the current test.
 			$.each(a, function( i, v ){
 
 				// If the value is required but not set,
@@ -385,6 +392,17 @@
 			return Math.round(value / to) * to;
 		}
 
+		function format ( value, target ) {
+
+			// Round the value to the resolution that was set
+			// with the serialization options.
+			value = value.toFixed( target.data('decimals') );
+
+			// Apply the proper decimal mark to the value.
+			return value.replace( '.', target.data('mark') );
+
+		}
+
 		function setHandle ( handle, to, forgive ) {
 
 			var  nui = handle.data('nui').options
@@ -393,7 +411,6 @@
 				,handles = handle.data('nui').base.data(clsList[12])
 				// Get some settings from the handle;
 				,style = handle.data('nui').style
-				,dec = handle.data('nui').decimals
 				,hLimit;
 
 			// Make sure the value can be parsed.
@@ -454,10 +471,12 @@
 			}
 
 			// Set handle to new location
-			handle.css( style , to + '%');
+			handle.css( style , to + '%' );
 
 			// Write the value to the serialization object.
-			handle.data('store').val( percentage.is(nui.range, to).toFixed(dec) );
+			handle.data('store').val(
+				format ( percentage.is( nui.range, to ), handle.data('nui').target )
+			);
 
 			return true;
 
@@ -472,40 +491,40 @@
 				// Modify the passed jQuery element, then return it
 				// so it can be stored on a handle element.
 				return S.to[i]
-				
+
 				// Apply some data to the element,
 				// so that it can be used in the bound events.
 				.data({
 					 target: handle.data('nui').target
 					,handle: handle
 				})
-				
+
 				// Attach a change event to the supplied jQuery object,
 				// which will just trigger the val function on the parent.
 				// In some cases, the change event will not fire on select elements,
 				// so listen to 'blur' too.
 				.on('change'+namespace+' blur'+namespace, function(){
-					
+
 					// Create an array with two positions,
 					// the write the value to be changed to the relevant position.
 					var arr = [null, null];
 					arr[i] = $(this).val();
-					
+
 					// The input in this field has not been validated,
 					// the val method should be aware of that.
 					$(this).data('target').val(arr, {
-						untrusted: true
+						trusted: false
 					});
 				})
-				
-				// Triggering the 'end' callback should not occur on the 'blur'
+
+				// Triggering the 'set' callback should not occur on the 'blur'
 				// event, so bind it only to 'change'.
 				.on('change'+namespace, function(){
 
-					// Call the end callback when this field triggers 'change'.
-					call( $(this).data('handle').data('nui').options.end
+					// Call the 'set' callback when this field triggers 'change'.
+					call( $(this).data('handle').data('nui').options.set
 						 ,$(this).data('target') );
-			
+
 				});
 
 			}
@@ -603,7 +622,7 @@
 			base.data('target').change();
 
 			// Trigger the 'end' callback.
-			call( handle.data('nui').options.end
+			call( handle.data('nui').options.set
 				 ,base.data('target') );
 
 		}
@@ -718,10 +737,10 @@
 				,(((eventXY - offset.base[style]) * 100) / baseSize)
 			);
 
-			// Trigger the 'slide' and 'end' callbacks,
+			// Trigger the 'slide' and 'set' callbacks,
 			// pass the target so that it is 'this'.
 			call( [ handle.data('nui').options.slide
-				   ,handle.data('nui').options.end ]
+				   ,handle.data('nui').options.set ]
 				 ,base.data('target') );
 
 			base.data('target').change();
@@ -766,6 +785,7 @@
 					options.serialization = {
 						 to : [false, false]
 						,resolution : 0.01
+						,mark: '.'
 					};
 				}
 
@@ -819,6 +839,13 @@
 				// Merge base classes with default;
 				base.addClass(cls.base.join(" ")).data('target', target);
 
+				// Make data accessible in functions throughout the plugin.
+				target.data({
+					 base: base
+					,mark: options.S.mark
+					,decimals: decimals
+				});
+
 				for (i = 0; i < options.handles; i++ ) {
 
 					handle = $('<div><div/></i>').appendTo(base);
@@ -868,10 +895,9 @@
 					,style: style
 				});
 
-				// Add a downstream reference to the target as well.
+				// Add a reference to the handles on the target as well.
 				target.data({
-					 base: base
-					,handles: handles
+					handles: handles
 				});
 
 				// The tap event.
@@ -903,30 +929,52 @@
 				// therefore be used in the function.
 				return this.each(function(i, target){
 
+					// Make sure 'target' is a jQuery element.
+					target = $(target);
+
 					$.each( $(this).data(clsList[12]), function( j, handle ){
 
 						// The set request might want to ignore this handle.
-						if( args[j] === null ) {
+						// Test for 'undefined' too, as a two-handle slider
+						// can still be set with an integer.
+						if( args[j] === null || args[j] === UNDEF ) {
 							return;
 						}
 
 						// Calculate a new position for the handle.
-						var  value, current, ignore = !modifiers.untrusted
+						var  value, current
 							,range = handle.data('nui').options.range
-							,to = percentage.to(
-									 range
-									,parseFloat(args[j])
-								 ),
+							,to = args[j], result;
+
+						// Handle user facing input correction. The value is
+						// 'trusted' when a developer provides it from the 'val'
+						// method, not when it comes from an input element.
+						if ( modifiers.trusted !== false ) {
+							modifiers.trusted = true;
+						}
+
+						// Add support for the comma (,) as a decimal symbol.
+						// Replace it by a period so it is handled properly by
+						// parseFloat. Omitting this would result in a removal
+						// of decimals. This is relevant on trusted input too,
+						// as a developer might input a comma separated string
+						// using the 'val' method.
+						if( $.type(to) === "string" ) {
+							to = to.replace(',', '.');
+						}
+
+						// Calculate the new handle position
+						to = percentage.to( range, parseFloat( to ) );
 
 						// Set handle to new location, and make sure developer
-						// input is always accepted. The ignore flag indicates
-						// input from user facing elements.
-						result = setHandle( handle, to, ignore );
+						// input is always accepted. The 'trusted' flag indicates
+						// input that is not coming from user facing elements.
+						result = setHandle( handle, to, modifiers.trusted );
 
 						// The 'val' method allows for an external modifier,
-						// to specify a request for an 'end' event.
+						// to specify a request for an 'set' event.
 						if( modifiers.trigger ) {
-							call( handle.data('nui').options.end
+							call( handle.data('nui').options.set
 								 ,target );
 						}
 
@@ -937,23 +985,19 @@
 							// Get the 'store' object, which can be an input element
 							// or a wrapper around a 'data' call.
 							value = handle.data('store').val();
-							
+
 							// Get the value for the current position.
 							current = percentage.is(
 								 range
 								,handle[0].getPercentage(handle.data('nui').style)
 							);
-							
-							// Round the value to the resolution that was set 
-							// with the serialization options.
-							current.toFixed(handle.data('nui').decimals);
 
 							// Sometimes the input is changed to a value the slider
 							// has rejected. This can occur when using 'select' or
 							// 'input[type="number"]' elements. In this case,
 							// set the value back to the input.
 							if( value !== current ){
-								handle.data('store').val(current);
+								handle.data('store').val( format( current, target ) );
 							}
 						}
 
