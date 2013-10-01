@@ -909,119 +909,116 @@
 
 		function val ( args, modifiers ) {
 
+			// If the function is called without arguments,
+			// act as a 'getter'.
+			if( args === UNDEF ){
+
+				var re = [];
+
+				// Loop the handles, and get the value from the input
+				// for every handle on its' own.
+				$.each($(this).data(clsList[12]), function(i, handle){
+					re.push( handle.data('store').val() );
+				});
+
+				// If the slider has just one handle, return a single value.
+				// Otherwise, return an array.
+				return ( re.length === 1 ? re[0] : re);
+
+			}
+		
+			// When this method is called with arguments,
+			// act as a 'setter'.
+			
 			// Passing the modifiers argument is not required.
 			// The input might also be 'true', to indicate that the
 			// 'set' event should be called.
 			modifiers = modifiers === true ? { trigger: true } : ( modifiers || {} );
 
-			// When this method is called with arguments,
-			// act as a 'setter'.
-			if( args !== UNDEF ){
-
-				// If the val is to be set to a number, which is valid
-				// when using a one-handle slider, wrap it in an array.
-				if( !$.isArray(args) ){
-					args = [args];
-				}
-
-				// Setting is handled properly for each slider in the data set.
-				// Note that the val method is called on the target, which can
-				// therefore be used in the function.
-				return this.each(function(i, target){
-
-					// Make sure 'target' is a jQuery element.
-					target = $(target);
-
-					$.each( $(this).data(clsList[12]), function( j, handle ){
-
-						// The set request might want to ignore this handle.
-						// Test for 'undefined' too, as a two-handle slider
-						// can still be set with an integer.
-						if( args[j] === null || args[j] === UNDEF ) {
-							return;
-						}
-
-						// Calculate a new position for the handle.
-						var  value, current
-							,range = handle.data('nui').options.range
-							,to = args[j], result;
-
-						// Handle user facing input correction. The value is
-						// 'trusted' when a developer provides it from the 'val'
-						// method, not when it comes from an input element.
-						if ( modifiers.trusted !== false ) {
-							modifiers.trusted = true;
-						}
-
-						// Add support for the comma (,) as a decimal symbol.
-						// Replace it by a period so it is handled properly by
-						// parseFloat. Omitting this would result in a removal
-						// of decimals. This is relevant on trusted input too,
-						// as a developer might input a comma separated string
-						// using the 'val' method.
-						if( $.type(to) === "string" ) {
-							to = to.replace(',', '.');
-						}
-
-						// Calculate the new handle position
-						to = percentage.to( range, parseFloat( to ) );
-
-						// Set handle to new location, and make sure developer
-						// input is always accepted. The 'trusted' flag indicates
-						// input that is not coming from user facing elements.
-						result = setHandle( handle, to, modifiers.trusted );
-
-						// The 'val' method allows for an external modifier,
-						// to specify a request for an 'set' event.
-						if( modifiers.trigger ) {
-							call( handle.data('nui').options.set
-								 ,target );
-						}
-
-						// If the value of the input doesn't match the slider,
-						// reset it.
-						if( !result ){
-
-							// Get the 'store' object, which can be an input element
-							// or a wrapper around a 'data' call.
-							value = handle.data('store').val();
-
-							// Get the value for the current position.
-							current = percentage.is(
-								 range
-								,handle[0].getPercentage(handle.data('nui').style)
-							);
-
-							// Sometimes the input is changed to a value the slider
-							// has rejected. This can occur when using 'select' or
-							// 'input[type="number"]' elements. In this case,
-							// set the value back to the input.
-							if( value !== current ){
-								handle.data('store').val( format( current, target ) );
-							}
-						}
-
-					});
-
-				});
-
+			// If the val is to be set to a number, which is valid
+			// when using a one-handle slider, wrap it in an array.
+			if( !$.isArray(args) ){
+				args = [args];
 			}
 
-			// Or, if the function was called without arguments,
-			// act as a 'getter';
+			// Setting is handled properly for each slider in the data set.
+			// Note that the val method is called on the target, which can
+			// therefore be used in the function.
+			return this.each(function(i, target){
 
-			var re = [];
+				// Make sure 'target' is a jQuery element.
+				target = $(target);
 
-			// Loop the handles, and get the value from the input
-			// for every handle on its' own.
-			$.each($(this).data(clsList[12]), function(i, handle){
-				re.push( handle.data('store').val() );
+				$.each( $(this).data(clsList[12]), function( j, handle ){
+
+					// The set request might want to ignore this handle.
+					// Test for 'undefined' too, as a two-handle slider
+					// can still be set with an integer.
+					if( args[j] === null || args[j] === UNDEF ) {
+						return;
+					}
+
+					// Calculate a new position for the handle.
+					var  value, current
+						,range = handle.data('nui').options.range
+						,to = args[j], result;
+
+					// Handle user facing input correction. The value is
+					// 'trusted' when a developer provides it from the 'val'
+					// method, not when it comes from an input element.
+					if ( modifiers.trusted !== false ) {
+						modifiers.trusted = true;
+					}
+
+					// Add support for the comma (,) as a decimal symbol.
+					// Replace it by a period so it is handled properly by
+					// parseFloat. Omitting this would result in a removal
+					// of decimals. This is relevant on trusted input too,
+					// as a developer might input a comma separated string
+					// using the 'val' method.
+					if( $.type(to) === "string" ) {
+						to = to.replace(',', '.');
+					}
+
+					// Calculate the new handle position
+					to = percentage.to( range, parseFloat( to ) );
+
+					// Set handle to new location, and make sure developer
+					// input is always accepted. The 'trusted' flag indicates
+					// input that is not coming from user facing elements.
+					result = setHandle( handle, to, modifiers.trusted );
+
+					// The 'val' method allows for an external modifier,
+					// to specify a request for an 'set' event.
+					if( modifiers.trigger ) {
+						call( handle.data('nui').options.set
+							 ,target );
+					}
+
+					// If the value of the input doesn't match the slider,
+					// reset it.
+					if( !result ){
+
+						// Get the 'store' object, which can be an input element
+						// or a wrapper around a 'data' call.
+						value = handle.data('store').val();
+
+						// Get the value for the current position.
+						current = percentage.is(
+							 range
+							,handle[0].getPercentage(handle.data('nui').style)
+						);
+
+						// Sometimes the input is changed to a value the slider
+						// has rejected. This can occur when using 'select' or
+						// 'input[type="number"]' elements. In this case,
+						// set the value back to the input.
+						if( value !== current ){
+							handle.data('store').val( format( current, target ) );
+						}
+					}
+				});
 			});
-
-			// If the slider has just one handle, return a single value.
-			// Otherwise, return an array.
-			return ( re.length === 1 ? re[0] : re);
-
 		}
 
 		// Overwrite the native jQuery val() function
