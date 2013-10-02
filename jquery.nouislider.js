@@ -41,10 +41,10 @@
 				,origin: [clsList[1]]
 				,handle: [clsList[2]]
 			}
-			// The percentage object contains some well tested math to turn values
-			// to and from percentages. It can be a bit strange to wrap your head
-			// around the individual calls, but they'll do their job with all positive
-			// and negative input values.
+			// The percentage object contains some well tested math to turn
+			// values to and from percentages. It can be a bit strange to wrap
+			// your head around the individual calls, but they'll do their job
+			// with all positive and negative input values.
 			,percentage = {
 				 to: function ( range, value ) {
 					value = range[0] < 0 ? value + Math.abs(range[0]) : value - range[0];
@@ -96,7 +96,7 @@
 		}
 
 		// Test if there is anything that should prevent an event from being
-		// handled, such as a disabled state of a slider moving in the 'tap' event.
+		// handled, such as a disabled state or an active 'tap' transition.
 		function blocked ( e ) {
 			 return ( e.data.base.data('target').is('[class*="noUi-state-"], [disabled]') );
 		}
@@ -163,17 +163,16 @@
 				return ( r instanceof $ || typeof r === 'string' || r === false );
 			}
 
-	/**
-			These tests are structured with an item for every option available.
-			Every item contains an 'r' flag, which marks a required option, and
-			a 't' function, which in turn takes some arguments:
-			- a reference to options object
-			- the value for the option
-			- the option name (optional);
-			The testing function returns false when an error is detected,
-			or true when everything is OK. Every test also has an 'init'
-			method which appends the parent object to all children.
-	**/
+		//	These tests are structured with an item for every option available.
+		//	Every item contains an 'r' flag, which marks a required option, and
+		//	a 't' function, which in turn takes some arguments:
+		//	- a reference to options object
+		//	- the value for the option
+		//	- the option name (optional);
+		//	The testing function returns false when an error is detected,
+		//	or true when everything is OK. Every test also has an 'init'
+		//	method which appends the parent object to all children.
+
 			var TESTS = {
 				/*	Handles.
 				 *	Has default, can be 1 or 2.
@@ -204,6 +203,10 @@
 						// When this test is run for range, the values can't
 						// be identical.
 						if(w==="range" && q[0] === q[1]){
+							return false;
+						}
+						// The lowest value must really be the lowest value.
+						if(q[1]<q[0]){
 							return false;
 						}
 						o[w]=q;
@@ -342,8 +345,9 @@
 				}
 				/*	[init]
 				 *	Not an option test. Calling this method will return the
-				 *	parent object with some cross references that allow crawling
-				 *	the object upward, which normally isn't possible in JavaScript.
+				 *	parent object with some cross references that allow
+				 *	crawling the object in an upward direction, which
+				 *	normally isn't possible in JavaScript.
 				 */
 				,"init": function(){
 					var obj = this;
@@ -422,7 +426,7 @@
 			}
 
 			// Ignore the call if the handle won't move anyway.
-			if( to === handle[0].getPercentage(style) ) {
+			if( to === handle[0].gPct(style) ) {
 				return false;
 			}
 
@@ -435,7 +439,7 @@
 			}
 
 			// Stop handling this call if the handle won't step to a new value.
-			if( to === handle[0].getPercentage(style) ) {
+			if( to === handle[0].gPct(style) ) {
 				return false;
 			}
 
@@ -447,15 +451,15 @@
 				// Otherwise, the handle should bounce,
 				// and stop at the other handle.
 				if ( handle.data('nui').number ) {
-					hLimit = handles[0][0].getPercentage(style) + nui.margin;
+					hLimit = handles[0][0].gPct(style) + nui.margin;
 					to = to < hLimit ? hLimit : to;
 				} else {
-					hLimit = handles[1][0].getPercentage(style) - nui.margin;
+					hLimit = handles[1][0].gPct(style) - nui.margin;
 					to = to > hLimit ? hLimit : to;
 				}
 
 				// Stop handling this call if the handle can't move past another.
-				if( to === handle[0].getPercentage(style) ) {
+				if( to === handle[0].gPct(style) ) {
 					return false;
 				}
 
@@ -642,7 +646,7 @@
 			}
 
 			var  handle = event.pass.handle
-				,position = handle[0].getPercentage( handle.data('nui').style );
+				,position = handle[0].gPct( handle.data('nui').style );
 
 			handle.children().addClass('noUi-active');
 
@@ -659,8 +663,10 @@
 
 			// Prevent text selection when dragging the handles.
 			// This doesn't prevent the browser defaulting to the I like cursor.
-			$('body').on('selectstart' + namespace, function(){ return false; });
-
+			$('body').on(
+				 'selectstart' + namespace
+				,function( e ){ return false; }
+			);
 		}
 
 		function selfEnd( event ) {
@@ -878,7 +884,7 @@
 
 					// Attach a function to the native DOM element,
 					// since jQuery wont let me get the current value in percentages.
-					handle[0].getPercentage = getPercentage;
+					handle[0].gPct = getPercentage;
 
 					// Make handles loop-able
 					handles.push(handle);
@@ -926,10 +932,10 @@
 				return ( re.length === 1 ? re[0] : re);
 
 			}
-		
+
 			// When this method is called with arguments,
 			// act as a 'setter'.
-			
+
 			// Passing the modifiers argument is not required.
 			// The input might also be 'true', to indicate that the
 			// 'set' event should be called.
@@ -963,11 +969,19 @@
 						,range = handle.data('nui').options.range
 						,to = args[j], result;
 
+					// Assume the input can be trusted.
+					modifiers.trusted = true;
+
 					// Handle user facing input correction. The value is
 					// 'trusted' when a developer provides it from the 'val'
 					// method, not when it comes from an input element.
-					if ( modifiers.trusted !== false ) {
-						modifiers.trusted = true;
+					if ( modifiers.trusted === false || args.length === 1 ) {
+						modifiers.trusted = false;
+					}
+
+					// If one handle isn't set, the other can't move past it.
+					if ( args.length === 2 && $.inArray( null, args ) >= 0 ) {
+						modifiers.trusted = false;
 					}
 
 					// Add support for the comma (,) as a decimal symbol.
@@ -999,14 +1013,14 @@
 					// reset it.
 					if( !result ){
 
-						// Get the 'store' object, which can be an input element
-						// or a wrapper around a 'data' call.
+						// Get the 'store' object, which can be an input
+						// element or a wrapper around a 'data' call.
 						value = handle.data('store').val();
 
 						// Get the value for the current position.
 						current = percentage.is(
 							 range
-							,handle[0].getPercentage(handle.data('nui').style)
+							,handle[0].gPct(handle.data('nui').style)
 						);
 
 						// Sometimes the input is changed to a value the slider
