@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link href="jquery.nouislider.css" rel="stylesheet">
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="jquery.nouislider.js"></script>
+	<style>
+	
+	html {
+		background: grey;
+	}
+	
+	body {
+		width: 800px;
+		padding: 50px;
+		margin: 50px auto;
+		max-width: 100%;
+		background: white;
+	}
+	
+	#log {
+		width: 100%;
+		height: 200px;
+		overflow-y: scroll;
+		font-family: monospace;
+		padding-bottom: 20px;
+	}
+		.slide {
+			color: green;
+		}
+		.change {
+			color: red;
+		}
+		.set {
+			color: blue;
+		}
+		.input-one {
+			color: purple;
+		}
+		.input-two {
+			color: orange;
+		}
+		.custom {
+			color: magenta;
+		}
+		.system {
+			color: grey;
+		}
+	
+		#log > div:before {
+			content: "[system] ";
+		}
+		#log > div.custom:before {
+			content: "[custom] ";
+		}
+	
+	input {
+		margin: 20px 5px 5px 0;
+	}
+	
+	textarea {
+		height: 60px;
+		width: 100%;
+		padding: 10px;
+	}
+	
+	label {
+		padding: 5px;
+		border: 1px solid #bfbfbf;
+	}
+	
+	.vertical {
+		float: right;
+		margin: 20px;
+	}
+	
+	#low,#high {
+		padding: 5px;
+		display: block;
+		margin: 5px 0;
+	}
+	
+	#sliderDemo2 {
+		height: 350px;
+		margin-bottom: 40px;
+	}
+	
+	</style>	
+</head>
+<body>
+
+	<div class="demo" id="sliderDemo"></div>
+	
+	<p>Some dummy text you won't select when draging a handle. Bok choy courgette bell pepper mung bean komatsuna amaranth beetroot bush tomato avocado carrot potato broccoli azuki bean parsley salsify arugula. Kakadu plum salsify azuki bean gumbo celtuce maize tatsoi kakadu plum lentil bitterleaf seakale kale nori tigernut. Celery desert raisin lentil winter purslane tatsoi asparagus. Bush tomato napa cabbage endive corn ricebean bamboo shoot. Summer purslane endive gourd nori squash kombu welsh onion pumpkin epazote.</p>
+	
+	<input id="one" name="one" type="text">
+	<input id="two" name="two" type="text">
+	
+	<hr>
+	
+	<button id="setOne">Set handle one</button>
+	<button id="setTwo">Set handle two</button>
+	<button id="setBoth">Set both handles</button>
+	<button id="trigger">Trigger set on/off</button>
+	
+	
+	<div class="vertical">
+		<div class="demo" id="sliderDemo2"></div>
+		<select id="low"></select>
+		
+		<input type="number" min="-20" max="40" step="1" id="high">
+	</div>
+	
+	
+	<div style="width:80%;">
+		
+		<h3>Custom scripting</h3>
+		
+		<textarea placeholder="Write any scripting you want to execute here. The slider can be accessed using the 'slider' variable. Use the 'write' function to log to the below area, or the 'clear' function to empty the log."></textarea>
+		
+		<span>Run code on:</span>
+		<label><input type="checkbox" id="onSet">'set'</label>
+		<label><input type="checkbox" id="onSlide">'slide'</label>
+		<label><input type="checkbox" id="onChange">'change'</label>
+		
+		<h3>Event log</h3>
+		
+		<div id="log"></div>
+		
+		<button id="clr">Clear</button>
+		
+	</div>
+	
+	<script> /* User facing */
+	
+		function write ( text ) {
+			log ( 'custom', text );
+		}
+		function clear ( ) {
+			logElement.empty();
+		}
+	
+	</script>
+		
+	<script> /* Elements */
+	
+		var set = true;
+
+		$('#clr').click(clear);
+		
+		$("#setOne").click(function(){
+			sliders.val(30, set);
+		});
+		$("#setTwo").click(function(){
+			sliders.val([null, 70], set);
+		});
+		$("#setBoth").click(function(){
+			sliders.val([40, 60], set);
+		});
+		$("#trigger").click(function(){
+			set = !set;
+			log( 'system', 'trigger \'set\' on .val(): ' + set);
+		});
+		
+		$('input[type="text"], input[type="number"], select').change(function(){
+			log ( 'input-' + $(this).attr('id'), 'change input ' + $(this).attr('id') );
+		});
+		
+	</script>
+	
+	<script> /* Logging */
+	
+		var  logElement = $('#log')
+			,last
+			,sequential
+			,keep = false;
+	
+		function setSequential ( ) {
+		
+			keep = true;
+		
+			clearTimeout(sequential);
+		
+			sequential = setTimeout(function(){
+				keep = false;
+			}, 150);
+		
+		}
+		
+		function log ( event, name ) {
+		
+			if ( ( last = logElement.children().last() ).hasClass( event ) && keep && event !== 'set' ) {
+			
+				last.attr('data-count', parseInt(last.attr('data-count'), 10) + 1).text(( name || event ) + ' (' + last.attr('data-count') + ')');
+				
+			} else {
+				
+				logElement.append( '<div class="' + event + '" data-count="1">' + ( name || event ) + '</div>' );
+				logElement[0].scrollTop = logElement[0].scrollHeight;
+				
+			}
+			
+			setSequential();
+			
+		}
+	
+	</script>
+	
+	<script> /* Slider 1 */
+	
+		var slider = $('#sliderDemo').noUiSlider({
+		
+			 range: [-20,800]
+			,start: [20,80]
+			,handles: 2
+			,serialization: {
+				 to: [ $('#one'), $('#two') ]
+				,resolution: 0.001
+				,mark: ','
+			}
+			,slide: function(){
+			
+				log( 'slide', '[slider 1] slide' );
+			
+				if( $('#onSlide').prop('checked') ){
+					eval($('textarea').val());
+				}
+			
+			//	console.log($(this).is(slider));
+		
+			}
+			,set: function(){
+			
+				console.log( $(this).val() );
+				
+				log( 'set', '[slider 1] set' );
+				
+				if( $('#onSet').prop('checked') ){
+					eval($('textarea').val());
+				}
+			
+			//	console.log($(this).is(slider));
+		
+			}
+			
+		}).change(function(){
+		
+			log( 'change', '[slider 1] change' );
+			
+			if( $('#onChange').prop('checked') ){
+				eval($('textarea').val());
+			}
+		
+		//	console.log($(this).is(slider));
+		
+		});
+		
+	</script>
+		
+	<script> /* Slider 2 */
+	
+		var i;
+
+		for(i = -20; i <= 40; i++){
+			$('#low').append(
+				'<option value="' + i + '">'
+				+ i +
+				'</option>'
+			);
+		}
+
+		var sliders = slider.add($('#sliderDemo2').noUiSlider({
+			 range: [-20, 40]
+			,start: [10,30]
+			,handles: 2
+			,margin: 10
+			,connect: true
+			,orientation: "vertical"
+			,serialization: {
+				 to: [$('#low'), $('#high')]
+				,resolution: 1
+			}
+			,slide: function(){
+			
+				log( 'slide', '[slider 2] slide' );
+			
+				if( $('#onSlide').prop('checked') ){
+					eval($('textarea').val());
+				}
+			
+			}
+			,set: function(){
+			
+				log( 'set', '[slider 2] set' );
+				
+				if( $('#onSet').prop('checked') ){
+					eval($('textarea').val());
+				}
+			
+			}
+			
+		}).change(function(){
+		
+			log( 'change', '[slider 2] change' );
+			
+			if( $('#onChange').prop('checked') ){
+				eval($('textarea').val());
+			}
+		
+		}));
+		
+	</script>
+
+	<hr>
+	
+	<h3>Options tests</h3>
+	
+	<div class="demo" id="sliderDemo3"></div>
+	<span></span>
+	
+	<script>
+	
+		$("#sliderDemo3").noUiSlider({
+			 range: [-80,-10]
+			,start: -40
+			,handles: 1
+			,connect: "upper"
+			,set: function(){
+				var value = $(this).val();
+				$(this).next().text(value);
+			}
+		}).val(-50, true);
+		
+	</script>
+
+	<div class="demo" id="sliderDemo4"></div>
+	
+	<script>
+	
+		$("#sliderDemo4").noUiSlider({
+			 range: [0,50]
+			,start: 10
+			,handles: 1
+			,connect: "lower"
+		}).change(function(){
+			$(this).val(closest( $(this).val(), 5 ));
+		}); 
+
+		function closest( value, to ){
+			return Math.round(value / to) * to;
+		}
+	
+	</script>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</body>
+</html>
+	

@@ -37,7 +37,7 @@
 			// structure elements in the slider. These can be extended by simply
 			// pushing to the array, which reduces '.addClass()' calls.
 			,stdCls = {
-				 base: [clsList[0], clsList[13]]
+				 base: [clsList[0]]
 				,origin: [clsList[1]]
 				,handle: [clsList[2]]
 			}
@@ -639,7 +639,8 @@
 				return;
 			}
 
-			event = fixEvent( event );
+			// True to prevent Chrome from setting a text-cursor. 
+			event = fixEvent( event, true );
 
 			if(!event) {
 				return;
@@ -648,7 +649,7 @@
 			var  handle = event.pass.handle
 				,position = handle[0].gPct( handle.data('nui').style );
 
-			handle.children().addClass('noUi-active');
+			handle.children().addClass(clsList[4]);
 
 			// Attach the move event handler, while
 			// passing all relevant information along.
@@ -665,7 +666,7 @@
 			// This doesn't prevent the browser defaulting to the I like cursor.
 			$('body').on(
 				 'selectstart' + namespace
-				,function( e ){ return false; }
+				,function( ){ return false; }
 			);
 		}
 
@@ -811,7 +812,7 @@
 				// listed in the class list, to allow easy renaming and provide
 				// a minor compression benefit.
 				if( options.connect ) {
-					cls.origin[0].push(clsList[9]);
+				
 					if( options.connect === "lower" ){
 						// Add some styling classes to the base;
 						cls.base.push(clsList[9], clsList[9] + clsList[7]);
@@ -819,8 +820,12 @@
 						// handle, and thus only one origin.
 						cls.origin[0].push(clsList[13]);
 					} else {
-						cls.base.push(clsList[9] + clsList[8]);
+						cls.base.push(clsList[9] + clsList[8], clsList[13]);
+						cls.origin[0].push(clsList[9]);
 					}
+					
+				} else {
+					cls.base.push(clsList[13]);
 				}
 
 				// Parse the syntactic sugar that is the serialization
