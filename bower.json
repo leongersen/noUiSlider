@@ -1,0 +1,16 @@
+{
+	"name": "nouislider",
+	"version": "3.2.1",
+	"main": [
+		"jquery.nouislider.js",
+		"jquery.nouislider.min.js",
+		"nouislider.fox.css",
+		"nouislider.space.css"
+	],
+	"ignore": [
+		"**/.*"
+	],
+	"dependencies": {
+		"jquery": ">= 1.7.0"
+	}
+}
