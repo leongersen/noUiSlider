@@ -13,25 +13,6 @@ Changes
 + Fixed a long standing scrolling issue in IE10.
 + Several minor bugfixes.
 
-**Changelog for version 4.0.3:**  
-+ Missed a file while updating to 4.0.2.
-
-**Changelog for version 4.0.2:**  
-+ Fixed some minor CSS issues in the default theme
-+ The slider will no longer force an arbitrary width or height
-+ Changed source to comply to more JsLint suggestions
-+ Removed compressed versions from the tracking system.  They'll still be produced and provided, but they'll only be bundled in the [Github Releases Feature](https://github.com/blog/1547-release-your-software).
-+ Some very small changes to internal input testing
-
-**Changelog for version 4:**  
-+ Massive update overhauling the entire code style
-+ Better styling possibilities
-+ Brand new Flat theme
-+ Windows Phone 8 support
-+ Performance improvements
-+ New way of handling disabled sliders
-+ Internal option testing provides feedback on issues
-
 Version numbering
 ------------------------------
 Version numbering follows the 'Semantic versioning' style.  
