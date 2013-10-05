@@ -17,7 +17,6 @@ Changes
 + Missed a file while updating to 4.0.2.
 
 **Changelog for version 4.0.2:**  
-_[current patch release]_
 + Fixed some minor CSS issues in the default theme
 + The slider will no longer force an arbitrary width or height
 + Changed source to comply to more JsLint suggestions
@@ -25,8 +24,6 @@ _[current patch release]_
 + Some very small changes to internal input testing
 
 **Changelog for version 4:**  
-_[current major release]_
-
 + Massive update overhauling the entire code style
 + Better styling possibilities
 + Brand new Flat theme
