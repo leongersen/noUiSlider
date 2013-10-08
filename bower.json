@@ -1,0 +1,30 @@
+{
+	"name": "nouislider",
+	"description": "A lightweight, highly customizable range slider without bloat. Touch support on all modern devices and responsive design ready!",
+	"keywords": [
+		"jquery",
+		"slider",
+		"form",
+		"range",
+		"handles",
+		"touch",
+		"input",
+		"slide"  
+	],
+	"main": [
+		"jquery.nouislider.js",
+		"jquery.nouislider.css"  
+	],
+	"dependencies": {
+		"jquery": ">= 1.7.0"
+	},
+	"ignore": [
+		"**/.*",
+		"**/*.json"
+	],
+	"license": "http://refreshless.com/nouislider/terms-of-use",
+	"homepage": "http://refreshless.com/nouislider/",
+	"author": {
+		"name": "Léon Gersen"
+	}
+}

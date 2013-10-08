@@ -1,35 +1,17 @@
 # noUiSlider
-_Current version: 4.0.3_
 
-noUiSlider is a super tiny jQuery plugin that allows you to create range sliders.  
-It fully supports touch, and it is way(!) less bloated than the jQueryUI library.
+noUiSlider is lightweight plugin that was developed to be a jQuery UI alternative. It features cross-browser support, a `just-another-input-type` style of getting and setting values, a wide range of options and support for a bunch off touch devices. It works wonders on Android phones, iPhone & iPad, Windows phone and touch-screen laptops and tablets. The end result? A lean, extendible and bloat-less plugin that'll just do its job. Oh, and the licensing terms are simple: [just do what you want](http://refreshless.com/nouislider/terms-of-use).
 
 A full documentation, including examples, is available on the [noUiSlider documentation page](http://refreshless.com/nouislider/).
 
 Changes
 -------
 
-**Changelog for version 4.0.3:**  
-+ Missed a file while updating to 4.0.2.
-
-**Changelog for version 4.0.2:**  
-_[current patch release]_
-+ Fixed some minor CSS issues in the default theme
-+ The slider will no longer force an arbitrary width or height
-+ Changed source to comply to more JsLint suggestions
-+ Removed compressed versions from the tracking system.  They'll still be produced and provided, but they'll only be bundled in the [Github Releases Feature](https://github.com/blog/1547-release-your-software).
-+ Some very small changes to internal input testing
-
-**Changelog for version 4:**  
-_[current major release]_
-
-+ Massive update overhauling the entire code style
-+ Better styling possibilities
-+ Brand new Flat theme
-+ Windows Phone 8 support
-+ Performance improvements
-+ New way of handling disabled sliders
-+ Internal option testing provides feedback on issues
+**Changelog for version 4.1.0:**  
++ Added a new option to 'serialization' to set a decimal separator: 'mark'.
++ Added a much requested 'slide' callback to cover the gap between change and slide.
++ Fixed a long standing scrolling issue in IE10.
++ Several minor bugfixes.
 
 Version numbering
 ------------------------------
@@ -60,11 +42,8 @@ Please note that while some errors remain without these options, they are merely
 
 Known issues
 ------------
-There are some minor issues remaining in noUiSlider 4. It is a priority to fix these issues.
+There are some minor issues remaining in noUiSlider 4.1. It is a priority to fix these issues.
 
 + Firefox will prefer scrolling to dragging the slider on touch events. The `preventDefault()` call that prevents this in other browser seems to fail here.
-+ In IE10, tapping the slider to move it will fail in with these conditions:
-    + The paged is zoomed;
-	+ The slider uses the `orientation: vertical` option
-	+ The page is scrolled, so that `scrollTop` > 0  
-	This issue affects both IE10 in Windows 8 and Windows Phone 8.
++ Safari for windows has the same issue, but only on vertical scrolling.
+
