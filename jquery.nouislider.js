@@ -482,7 +482,7 @@
 			// Write the value to the serialization object.
 			handle.data('store').val(
 				format ( percentage.is( nui.range, to ), handle.data('nui').target )
-			);
+			).trigger("change");
 
 			return true;
 
