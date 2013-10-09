@@ -97,8 +97,8 @@
 
 		// Test if there is anything that should prevent an event from being
 		// handled, such as a disabled state or an active 'tap' transition.
-		function blocked ( e ) {
-			 return ( e.data.base.data('target').is('[class*="noUi-state-"], [disabled]') );
+		function blocked ( e, options ) {
+			 return ( options.base.data('target').is('[class*="noUi-state-"], [disabled]') );
 		}
 
 		function fixEvent ( e, preventDefault ) {
@@ -122,7 +122,9 @@
 				,x,y;
 
 			// Fetch the event where jQuery didn't make any modifications.
-			e = e.originalEvent;
+			if ($() instanceof $) {
+                e = e.originalEvent;
+            }
 
 			if ( touch ) {
 				// noUiSlider supports one movement at a time, for now.
@@ -143,7 +145,7 @@
 				y = e.clientY + window.pageYOffset;
 			}
 
-			return { pass: jQueryEvent.data, e:e, x:x, y:y };
+			return { e:e, x:x, y:y, t: [touch, mouse, pointer] };
 
 		}
 
@@ -382,7 +384,7 @@
 					}
 					// Since 'error' will prevent further script execution,
 					// log the error first.
-					$.error("Error on noUiSlider initialisation.");
+					new Error("Error on noUiSlider initialisation.");
 					return false;
 				}
 
@@ -421,7 +423,7 @@
 			// This will catch any potential NaN, even though
 			// no internal function calling setHandle should pass
 			// invalided parameters.
-			if( !$.isNumeric(to) ) {
+			if( !(!isNaN(parseFloat(to)) && isFinite(to)) ) {
 				return false;
 			}
 
@@ -480,7 +482,7 @@
 			// Write the value to the serialization object.
 			handle.data('store').val(
 				format ( percentage.is( nui.range, to ), handle.data('nui').target )
-			);
+			).trigger("change");
 
 			return true;
 
@@ -490,7 +492,7 @@
 
 			var i = handle.data('nui').number;
 
-			if( S.to[i] instanceof $ ) {
+			if( S.to[i] instanceof $ || ($.zepto && $.zepto.isZ(S.to[i])) ) {
 
 				// Modify the passed jQuery element, then return it
 				// so it can be stored on a handle element.
@@ -579,21 +581,21 @@
 				return;
 			}
 
-			var  base = event.pass.base
+			var  base = this.base
 				,style = base.data('style')
 			// Subtract the initial movement from the current event,
 			// while taking vertical sliders into account.
-				,proposal = event.x - event.pass.startEvent.x
+				,proposal = event.x - this.startEvent.x
 				,baseSize = style === 'left' ? base.width() : base.height();
 
 			// This loop prevents a long ternary for the proposal variable.
 			if(style === 'top') {
-				proposal = event.y - event.pass.startEvent.y;
+				proposal = event.y - this.startEvent.y;
 			}
 
-			proposal = event.pass.position + ( ( proposal * 100 ) / baseSize );
+			proposal = this.position + ( ( proposal * 100 ) / baseSize );
 
-			setHandle( event.pass.handle, proposal );
+			setHandle( this.handle, proposal );
 
 			// Trigger the 'slide' event, pass the target so that it is 'this'.
 			call( base.data('options').slide
@@ -603,12 +605,12 @@
 
 		function end ( event ) {
 
-			if ( blocked( event ) ) {
+			if ( blocked( event, this ) ) {
 				return;
 			}
 
-			var  base = event.data.base
-				,handle = event.data.handle;
+			var  base = this.base
+				,handle = this.handle;
 
 			// The handle is no longer active, so remove
 			// the class.
@@ -635,7 +637,8 @@
 
 			// When the slider is in a transitional state, stop.
 			// Also prevents interaction with disabled sliders.
-			if ( blocked( event ) ) {
+            var that = this;
+			if ( blocked( event, this ) ) {
 				return;
 			}
 
@@ -646,21 +649,21 @@
 				return;
 			}
 
-			var  handle = event.pass.handle
+			var  handle = this.handle
 				,position = handle[0].gPct( handle.data('nui').style );
 
 			handle.children().addClass(clsList[4]);
 
 			// Attach the move event handler, while
 			// passing all relevant information along.
-			all.on(actions.move, {
+			all.on(actions.move, $.proxy(move, {
 				 startEvent: event
 				,position: position
-				,base: event.pass.base
+				,base: that.base
 				,handle: handle
-			}, move);
+			}));
 
-			all.on(actions.end, { base: event.pass.base, handle: handle }, end);
+			all.on(actions.end, $.proxy(end, { base: that.base, handle: handle }));
 
 			// Prevent text selection when dragging the handles.
 			// This doesn't prevent the browser defaulting to the I like cursor.
@@ -673,7 +676,7 @@
 		function selfEnd( event ) {
 			// Trigger the end handler. Supply correct data using a
 			// fake object that contains all required information;
-			end({ data: { base: event.data.base, handle: event.data.handle } });
+			$.proxy(end, { base: this.base, handle: this.handle } );
 			// Stop propagation so that the tap handler doesn't interfere;
 			event.stopPropagation();
 		}
@@ -683,7 +686,7 @@
 			// If the event is blocked, or the target contains an active
 			// handle, don't trigger this event. Tapping shouldn't be
 			// possible while dragging.
-			if ( blocked( event ) || event.data.base.find('.' + clsList[4]).length ) {
+			if ( blocked( event ) || this.base.find('.' + clsList[4]).length ) {
 				return;
 			}
 
@@ -696,8 +699,8 @@
 
 			// Getting variables from the event is not required, but
 			// shortens other expressions and is far more convenient;
-			var  i, handle, hCenter, base = event.pass.base
-				,handles = event.pass.handles
+			var  i, handle, hCenter, base = this.base
+				,handles = this.handles
 				,style = base.data('style')
 				,eventXY = event[style === 'left' ? 'x' : 'y']
 				,baseSize = style === 'left' ? base.width() : base.height()
@@ -869,8 +872,8 @@
 					// These events are only bound to the visual handle element,
 					// not the 'real' origin element.
 					handle.children()
-						.on(actions.start, { base: base, handle: handle }, start)
-						.on(actions.end, { base: base, handle: handle }, selfEnd);
+						.on(actions.start, $.proxy(start, { base: base, handle: handle }))
+						.on(actions.end, $.proxy(selfEnd, { base: base, handle: handle }));
 
 					// Make sure every handle has access to all primary
 					// variables. Can't uses jQuery's .data( obj ) structure
@@ -1053,4 +1056,4 @@
 
 	};
 
-}(jQuery));
+}($));
