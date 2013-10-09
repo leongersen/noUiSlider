@@ -1,5 +1,5 @@
 /* noUiSlider - refreshless.com/nouislider/ */
-(function($, UNDEF){
+(function( $, undefined ){
 
 	$.fn.noUiSlider = function( options ){
 
@@ -8,9 +8,9 @@
 			,all = $(document)
 			// Create a map of touch and mouse actions.
 			,actions = {
-				 start: 'mousedown' + namespace + ' touchstart' + namespace
-				,move: 'mousemove' + namespace + ' touchmove' + namespace
-				,end: 'mouseup' + namespace + ' touchend' + namespace
+				 start: 'mousedown touchstart'
+				,move: 'mousemove touchmove'
+				,end: 'mouseup touchend'
 			}
 			// Make a copy of the current val function.
 			,$VAL = $.fn.val
@@ -67,9 +67,9 @@
 		// and convenient to use.
 		if ( window.navigator.msPointerEnabled ) {
 			actions = {
-				 start: 'MSPointerDown' + namespace
-				,move: 'MSPointerMove' + namespace
-				,end: 'MSPointerUp' + namespace
+				 start: 'MSPointerDown'
+				,move: 'MSPointerMove'
+				,end: 'MSPointerUp'
 			};
 		}
 
@@ -95,34 +95,23 @@
 			});
 		}
 
-		// Test if there is anything that should prevent an event from being
-		// handled, such as a disabled state or an active 'tap' transition.
-		function blocked ( e ) {
-			 return ( e.data.base.data('target').is('[class*="noUi-state-"], [disabled]') );
-		}
-
-		function fixEvent ( e, preventDefault ) {
+		function fixEvent ( e ) {
 
 			// Required (in at the very least Chrome) to prevent
 			// scrolling and panning while attempting to slide.
 			// The tap event also depends on this. This doesn't
 			// seem to prevent panning in Firefox, which is an issue.
-			if( preventDefault ) {
-				e.preventDefault();
-			}
+			// Prevent-default will also stop Chrome from setting a text-cursor.
+			e.preventDefault();
 
 			// Filter the event to register the type,
 			// which can be touch, mouse or pointer. Since noUiSlider 4
 			// so longer binds touch OR mouse, but rather touch AND mouse,
 			// offset changes need to be made on an event specific basis.
-			var  jQueryEvent = e
-				,touch = e.type.indexOf('touch') === 0
+			var  touch = e.type.indexOf('touch') === 0
 				,mouse = e.type.indexOf('mouse') === 0
 				,pointer = e.type.indexOf('MSPointer') === 0
 				,x,y;
-
-			// Fetch the event where jQuery didn't make any modifications.
-			e = e.originalEvent;
 
 			if ( touch ) {
 				// noUiSlider supports one movement at a time, for now.
@@ -134,7 +123,7 @@
 
 				// Polyfill the pageXOffset and pageYOffset
 				// variables for IE7 and IE8;
-				if( !pointer && window.pageXOffset === UNDEF ){
+				if( !pointer && window.pageXOffset === undefined ){
 					window.pageXOffset = document.documentElement.scrollLeft;
 					window.pageYOffset = document.documentElement.scrollTop;
 				}
@@ -143,20 +132,52 @@
 				y = e.clientY + window.pageYOffset;
 			}
 
-			return { pass: jQueryEvent.data, e:e, x:x, y:y };
+			return $.extend( e, { x:x, y:y } );
 
 		}
 
+		// Handler for attaching events trough a proxy
+		function attach ( events, target, callback, scope ) {
+
+			scope.callback = callback;
+			// Add the noUiSlider namespace to all events.
+			events = events.replace( /\s/g, namespace + ' ' ) + namespace;
+			target.on( events, $.proxy( function( e ){
+
+				// Get the original callback from the 'this' element,
+				// then delete is before passing it along to the
+				// event handler.
+				var handler = this.callback;
+			//	delete this.callback;
+
+				// Test if there is anything that should prevent an event
+				// from being handled, such as a disabled state or an active
+				// 'tap' transition. Prevent interaction with disabled sliders.
+				if( this.target.is('[class*="noUi-state-"], [disabled]') ) {
+					return false;
+				}
+
+				// Call the event handler with the original event as argument.
+				// The handler won't know it has been passed trough this
+				// proxy, and it won't have to filter event validity, because
+				// that was done here.
+				handler.call( this, fixEvent ( e ) );
+
+			}, scope ));
+		}
+
+		// Checks whether a variable is numerical.
+		function isNumeric ( a ) {
+			return !isNaN( parseFloat( a ) ) && isFinite( a );
+		}
+
+		// jQuery doesn't have a method to return a CSS value as a percentage.
 		function getPercentage( a ){
 			return parseFloat(this.style[a]);
 		}
 
 		function test ( o, set ){
 
-			// Checks whether a variable is numerical.
-			function num(e){
-				return !isNaN(e) && isFinite(e);
-			}
 			// Checks whether a variable is a candidate to be a
 			// valid serialization target.
 			function ser(r){
@@ -179,7 +200,7 @@
 				 */
 				 "handles": {
 					 r: true
-					,t: function(o,q){
+					,t: function(q){
 						q = parseInt(q, 10);
 						return ( q === 1 || q === 2 );
 					}
@@ -190,14 +211,14 @@
 				 */
 				,"range": {
 					 r: true
-					,t: function(o,q,w){
+					,t: function(q,o,w){
 						if(q.length!==2){
 							return false;
 						}
 						// Reset the array to floats
 						q = [parseFloat(q[0]),parseFloat(q[1])];
 						// Test if those floats are numerical
-						if(!num(q[0])||!num(q[1])){
+						if(!isNumeric(q[0])||!isNumeric(q[1])){
 							return false;
 						}
 						// When this test is run for range, the values can't
@@ -220,16 +241,16 @@
 				 */
 				,"start": {
 					 r: true
-					,t: function(o,q,w){
+					,t: function(q,o,w){
 						if(o.handles === 1){
 							if($.isArray(q)){
 								q=q[0];
 							}
 							q = parseFloat(q);
 							o.start = [q];
-							return num(q);
+							return isNumeric(q);
 						}
-						return this.parent.range.t(o,q,w);
+						return this.parent.range.t(q,o,w);
 					}
 				}
 				/*	Connect.
@@ -237,7 +258,7 @@
 				 *	Can use 'lower' and 'upper' when handles = 1.
 				 */
 				,"connect": {
-					 t: function(o,q){
+					 t: function(q,o){
 						return (   q === true
 								|| q === false
 								|| ( q === 'lower' && o.handles === 1)
@@ -248,7 +269,7 @@
 				 *	Will default to horizontal, not required.
 				 */
 				,"orientation": {
-					 t: function(o,q){
+					 t: function(q){
 						return ( q === "horizontal" || q === "vertical" );
 					}
 				}
@@ -257,10 +278,10 @@
 				 */
 				,"margin": {
 					 r: true
-					,t: function(o,q,w){
+					,t: function(q,o,w){
 						q = parseFloat(q);
 						o[w]=q;
-						return num(q);
+						return isNumeric(q);
 					}
 				}
 				/*	Serialization.
@@ -272,7 +293,7 @@
 				 */
 				,"serialization": {
 					 r: true
-					,t: function(o,q){
+					,t: function(q,o){
 
 						if(!q.resolution){
 							o.serialization.resolution = 0.01;
@@ -299,7 +320,7 @@
 						if(q.to){
 
 							if(o.handles === 1){
-								// Wrap the value for one handle into an array;
+								// Wrap the value for one handle into an array.
 								if(!$.isArray(q.to)){
 									q.to = [q.to];
 								}
@@ -322,7 +343,7 @@
 				 *	Not required. Must be a function.
 				 */
 				,"slide": {
-					 t: function(o,q){
+					 t: function(q){
 						return typeof q === "function";
 					}
 				}
@@ -331,16 +352,16 @@
 				 *	Tested using the 'slide' test.
 				 */
 				,"set": {
-					 t: function(o,q){
-						return this.parent.slide.t(o,q);
+					 t: function(q,o){
+						return this.parent.slide.t(q,o);
 					}
 				}
 				/*	Step.
 				 *	Not required. Tested using the 'margin' test.
 				 */
 				,"step": {
-					 t: function(o,q,w){
-						return this.parent.margin.t(o,q,w);
+					 t: function(q,o,w){
+						return this.parent.margin.t(q,o,w);
 					}
 				}
 				/*	[init]
@@ -369,21 +390,21 @@
 
 				// If the value is required but not set,
 				// or if the test fails, throw an error.
-				if((v.r && (!o[i] && o[i] !== 0)) || ((o[i] || o[i] === 0) && !v.t(o,o[i],i))){
+				if((v.r && (!o[i] && o[i] !== 0)) || ((o[i] || o[i] === 0) && !v.t(o[i],o,i))){
 
-					// For debugging purposes it might be very useful
-					// to know what option caused the trouble.
-					if(console&&console.log){
-						console.log(
-							"Slider:\t\t\t",	set,
-							"\nOption:\t\t\t",	i,
-							"\nValue:\t\t\t",	o[i]
-						);
+					// For debugging purposes it might be very useful to know
+					// what option caused the trouble. Since throwing an error
+					// will prevent further script execution, log the error
+					// first. Test for console, as it might not be available.
+					if( console && console.log && console.group ){
+						console.group( "Invalid noUiSlider initialisation:" );
+						console.log( "Option:\t", i );
+						console.log( "Value:\t", o[i] );
+						console.log( "Slider:\t", set[0] );
+						console.groupEnd();
 					}
-					// Since 'error' will prevent further script execution,
-					// log the error first.
-					$.error("Error on noUiSlider initialisation.");
-					return false;
+
+					throw new Error("noUiSlider");
 				}
 
 			});
@@ -421,7 +442,7 @@
 			// This will catch any potential NaN, even though
 			// no internal function calling setHandle should pass
 			// invalided parameters.
-			if( !$.isNumeric(to) ) {
+			if( !isNumeric(to) ) {
 				return false;
 			}
 
@@ -503,7 +524,7 @@
 					,handle: handle
 				})
 
-				// Attach a change event to the supplied jQuery object,
+				// Add a change event to the supplied jQuery object,
 				// which will just trigger the val function on the parent.
 				// In some cases, the change event will not fire on select elements,
 				// so listen to 'blur' too.
@@ -550,7 +571,7 @@
 					 val : function(a) {
 						// Value function provides a getter and a setter.
 						// Can't just test for !a, as a might be 0.
-						if ( a === UNDEF ) {
+						if ( a === undefined ) {
 							// Either set...
 							return this.handleElement.data('nui-val');
 						}
@@ -573,27 +594,21 @@
 
 			// This function is called often, keep it light.
 
-			event = fixEvent( event, true );
-
-			if(!event) {
-				return;
-			}
-
-			var  base = event.pass.base
+			var  base = this.base
 				,style = base.data('style')
 			// Subtract the initial movement from the current event,
 			// while taking vertical sliders into account.
-				,proposal = event.x - event.pass.startEvent.x
+				,proposal = event.x - this.startEvent.x
 				,baseSize = style === 'left' ? base.width() : base.height();
 
 			// This loop prevents a long ternary for the proposal variable.
 			if(style === 'top') {
-				proposal = event.y - event.pass.startEvent.y;
+				proposal = event.y - this.startEvent.y;
 			}
 
-			proposal = event.pass.position + ( ( proposal * 100 ) / baseSize );
+			proposal = this.position + ( ( proposal * 100 ) / baseSize );
 
-			setHandle( event.pass.handle, proposal );
+			setHandle( this.handle, proposal );
 
 			// Trigger the 'slide' event, pass the target so that it is 'this'.
 			call( base.data('options').slide
@@ -601,14 +616,10 @@
 
 		}
 
-		function end ( event ) {
+		function end ( ) {
 
-			if ( blocked( event ) ) {
-				return;
-			}
-
-			var  base = event.data.base
-				,handle = event.data.handle;
+			var  base = this.base
+				,handle = this.handle;
 
 			// The handle is no longer active, so remove
 			// the class.
@@ -633,34 +644,26 @@
 
 		function start ( event ) {
 
-			// When the slider is in a transitional state, stop.
-			// Also prevents interaction with disabled sliders.
-			if ( blocked( event ) ) {
-				return;
-			}
-
-			// True to prevent Chrome from setting a text-cursor. 
-			event = fixEvent( event, true );
-
-			if(!event) {
-				return;
-			}
-
-			var  handle = event.pass.handle
+			var  handle = this.handle
 				,position = handle[0].gPct( handle.data('nui').style );
 
 			handle.children().addClass(clsList[4]);
 
 			// Attach the move event handler, while
 			// passing all relevant information along.
-			all.on(actions.move, {
+			attach ( actions.move, all, move, {
 				 startEvent: event
 				,position: position
-				,base: event.pass.base
+				,base: this.base
+				,target: this.target
 				,handle: handle
-			}, move);
+			});
 
-			all.on(actions.end, { base: event.pass.base, handle: handle }, end);
+			attach ( actions.end, all, end, {
+				 base: this.base
+				,target: this.target
+				,handle: handle
+			});
 
 			// Prevent text selection when dragging the handles.
 			// This doesn't prevent the browser defaulting to the I like cursor.
@@ -671,33 +674,27 @@
 		}
 
 		function selfEnd( event ) {
-			// Trigger the end handler. Supply correct data using a
-			// fake object that contains all required information;
-			end({ data: { base: event.data.base, handle: event.data.handle } });
+
 			// Stop propagation so that the tap handler doesn't interfere;
 			event.stopPropagation();
+			
+			// Trigger the end handler. Supply the current scope,
+			// which contains all required information.
+			end.call( this );
 		}
 
 		function tap ( event ) {
 
-			// If the event is blocked, or the target contains an active
-			// handle, don't trigger this event. Tapping shouldn't be
-			// possible while dragging.
-			if ( blocked( event ) || event.data.base.find('.' + clsList[4]).length ) {
-				return;
-			}
-
-			event = fixEvent( event );
-
-			// The event handler might have rejected this event.
-			if(!event) {
+			// If the target contains an active handle, don't trigger
+			// this event. Tapping shouldn't be possible while dragging.
+			if ( this.base.find('.' + clsList[4]).length ) {
 				return;
 			}
 
 			// Getting variables from the event is not required, but
 			// shortens other expressions and is far more convenient;
-			var  i, handle, hCenter, base = event.pass.base
-				,handles = event.pass.handles
+			var  i, handle, hCenter, base = this.base
+				,handles = this.handles
 				,style = base.data('style')
 				,eventXY = event[style === 'left' ? 'x' : 'y']
 				,baseSize = style === 'left' ? base.width() : base.height()
@@ -812,7 +809,7 @@
 				// listed in the class list, to allow easy renaming and provide
 				// a minor compression benefit.
 				if( options.connect ) {
-				
+
 					if( options.connect === "lower" ){
 						// Add some styling classes to the base;
 						cls.base.push(clsList[9], clsList[9] + clsList[7]);
@@ -823,7 +820,7 @@
 						cls.base.push(clsList[9] + clsList[8], clsList[13]);
 						cls.origin[0].push(clsList[9]);
 					}
-					
+
 				} else {
 					cls.base.push(clsList[13]);
 				}
@@ -859,7 +856,7 @@
 
 				for (i = 0; i < options.handles; i++ ) {
 
-					handle = $('<div><div/></i>').appendTo(base);
+					handle = $('<div><div/></div>').appendTo(base);
 
 					// Add all default and option-specific classes to the
 					// origins and handles.
@@ -868,9 +865,17 @@
 
 					// These events are only bound to the visual handle element,
 					// not the 'real' origin element.
-					handle.children()
-						.on(actions.start, { base: base, handle: handle }, start)
-						.on(actions.end, { base: base, handle: handle }, selfEnd);
+					attach ( actions.start, handle.children(), start, {
+						 base: base
+						,target: target
+						,handle: handle
+					});
+
+					attach ( actions.end, handle.children(), selfEnd, {
+						 base: base
+						,target: target
+						,handle: handle
+					});
 
 					// Make sure every handle has access to all primary
 					// variables. Can't uses jQuery's .data( obj ) structure
@@ -887,8 +892,8 @@
 						,options.S
 					));
 
-					// Attach a function to the native DOM element,
-					// since jQuery wont let me get the current value in percentages.
+					// Write a function to the native DOM element, since
+					// jQuery wont let me get the current value in percentages.
 					handle[0].gPct = getPercentage;
 
 					// Make handles loop-able
@@ -911,10 +916,30 @@
 					handles: handles
 				});
 
-				// The tap event.
-				base.on(actions.end, { base: base, handles: handles }, tap);
+				// Attach the the tap event to the slider base.
+				attach ( actions.end, base, tap, {
+					 base: base
+					,target: target
+					,handles: handles
+				});
 
 			});
+
+		}
+
+		function getValue ( ) {
+
+			var re = [];
+
+			// Loop the handles, and get the value from the input
+			// for every handle on its' own.
+			$.each( $(this).data(clsList[12]), function( i, handle ){
+				re.push( handle.data('store').val() );
+			});
+
+			// If the slider has just one handle, return a single value.
+			// Otherwise, return an array.
+			return ( re.length === 1 ? re[0] : re );
 
 		}
 
@@ -922,19 +947,11 @@
 
 			// If the function is called without arguments,
 			// act as a 'getter'.
-			if( args === UNDEF ){
+			if( args === undefined ){
 
-				var re = [];
-
-				// Loop the handles, and get the value from the input
-				// for every handle on its' own.
-				$.each($(this).data(clsList[12]), function(i, handle){
-					re.push( handle.data('store').val() );
-				});
-
-				// If the slider has just one handle, return a single value.
-				// Otherwise, return an array.
-				return ( re.length === 1 ? re[0] : re);
+				// Call the getValue function in the same scope
+				// as this call.
+				return getValue.call( this );
 
 			}
 
@@ -955,7 +972,7 @@
 			// Setting is handled properly for each slider in the data set.
 			// Note that the val method is called on the target, which can
 			// therefore be used in the function.
-			return this.each(function(i, target){
+			return this.each(function( index, target ){
 
 				// Make sure 'target' is a jQuery element.
 				target = $(target);
@@ -965,7 +982,7 @@
 					// The set request might want to ignore this handle.
 					// Test for 'undefined' too, as a two-handle slider
 					// can still be set with an integer.
-					if( args[j] === null || args[j] === UNDEF ) {
+					if( args[j] === null || args[j] === undefined ) {
 						return;
 					}
 
