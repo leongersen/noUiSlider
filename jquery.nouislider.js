@@ -1,6 +1,8 @@
 /* noUiSlider - refreshless.com/nouislider/ */
 (function( $, undefined ){
 
+	"use strict";
+
 	$.fn.noUiSlider = function( options ){
 
 		var  namespace = '.nui'
@@ -107,6 +109,10 @@
 			});
 		}
 
+		function instance ( object ) {
+			return object instanceof $ || ( $.zepto && $.zepto.isZ ( object ) );
+		}
+
 		function fixEvent ( e ) {
 
 			// Required (in at the very least Chrome) to prevent
@@ -201,15 +207,15 @@
 			// Checks whether a variable is a candidate to be a
 			// valid serialization target.
 			function ser(r){
-				return ( r instanceof $ || typeof r === 'string' || r === false );
+				return ( instance ( r ) || typeof r === 'string' || r === false );
 			}
 
 		//	These tests are structured with an item for every option available.
 		//	Every item contains an 'r' flag, which marks a required option, and
 		//	a 't' function, which in turn takes some arguments:
-		//	- a reference to options object
 		//	- the value for the option
-		//	- the option name (optional);
+		//	- [optional] a reference to options object
+		//	- [optional] the option name
 		//	The testing function returns false when an error is detected,
 		//	or true when everything is OK. Every test also has an 'init'
 		//	method which appends the parent object to all children.
@@ -424,7 +430,7 @@
 						console.groupEnd();
 					}
 
-					throw new Error("noUiSlider");
+					throw new RangeError("noUiSlider");
 				}
 
 			});
@@ -536,7 +542,7 @@
 				,i: i
 			};
 
-			if( S.to[i] instanceof $ ) {
+			if( instance ( S.to[i] ) ) {
 
 				// Add a change event to the supplied jQuery object, which
 				// will just trigger the 'val' function on the parent. In some
@@ -756,7 +762,7 @@
 
 		}
 
-		function create ( ) {
+		function create ( options ) {
 
 			return this.each(function( index, target ){
 
@@ -945,23 +951,16 @@
 			// If the slider has just one handle, return a single value.
 			// Otherwise, return an array.
 			return ( re.length === 1 ? re[0] : re );
-
 		}
 
 		function val ( args, modifiers ) {
 
 			// If the function is called without arguments,
-			// act as a 'getter'.
+			// act as a 'getter'. Call the getValue function
+			// in the same scope as this call.
 			if( args === undefined ){
-
-				// Call the getValue function in the same scope
-				// as this call.
 				return getValue.call( this );
-
 			}
-
-			// When this method is called with arguments,
-			// act as a 'setter'.
 
 			// Passing the modifiers argument is not required.
 			// The input might also be 'true', to indicate that the
@@ -1071,8 +1070,18 @@
 				: $VAL.apply(this, arguments);
 		};
 
-		return create.apply(this, arguments);
+		// noUiSlider will provide access to all internal
+		// methods if the options contain an 'expose' property.
+		if ( options.expose ) {
+			var out = {};
+			$.each(options.expose, function( index, value ){
+				out[ value ] = eval(this);
+			});
+			return out;
+		}
+		
+		return create.call( this, options );
 
 	};
 
-}(jQuery));
+}( $ ));
