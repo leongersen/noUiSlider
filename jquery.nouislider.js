@@ -29,9 +29,8 @@
 				,'noUi-connect'		// 9
 				,'noUi-vertical'	// 10
 				,'noUi-horizontal'	// 11
-				,'handles'			// 12
-				,'noUi-background'	// 13
-				,'noUi-z-index'		// 14
+				,'noUi-background'	// 12
+				,'noUi-z-index'		// 13
 			]
 			// Define an extendible object with base classes for the various
 			// structure elements in the slider. These can be extended by simply
@@ -41,7 +40,7 @@
 				,origin: [clsList[1]]
 				,handle: [clsList[2]]
 			}
-			// The percentage object contains some well tested math to turn
+			// This object contains some well tested functions to convert
 			// values to and from percentages. It can be a bit strange to wrap
 			// your head around the individual calls, but they'll do their job
 			// with all positive and negative input values.
@@ -59,7 +58,26 @@
 				,len: function ( range ) {
 					return (range[0] > range[1] ? range[0] - range[1] : range[1] - range[0]);
 				}
-			};
+			}
+			// Event handlers bound to elements to perform basic tasks.
+			,eventHandlers = [
+				// Assign input field values to the slider,
+				// and signal unevaluated input.
+				 function ( ) {
+
+					this.target.val([
+						 !this.i ? this.val() : null
+						, this.i ? this.val() : null
+					], { trusted: false });
+
+				}
+				// Shorthand for stopping propagation on an object.
+				// Calling a function prevents having to define
+				// one within other code.
+				,function ( e ) {
+					e.stopPropagation();
+				}
+			];
 
 		// When the browser supports MsPointerEvents,
 		// Don't bind touch or mouse events. The touch events are
@@ -71,12 +89,6 @@
 				,move: 'MSPointerMove'
 				,end: 'MSPointerUp'
 			};
-		}
-
-		// Shorthand for stopping propagation on an object.
-		// Calling a function prevents having to define one within other code.
-		function stopPropagation ( e ) {
-			e.stopPropagation();
 		}
 
 		// Test an array of objects, and calls them if they are a function.
@@ -137,18 +149,25 @@
 		}
 
 		// Handler for attaching events trough a proxy
-		function attach ( events, target, callback, scope ) {
+		function attach ( events, target, callback, scope, noAbstraction ) {
 
-			scope.callback = callback;
 			// Add the noUiSlider namespace to all events.
 			events = events.replace( /\s/g, namespace + ' ' ) + namespace;
-			target.on( events, $.proxy( function( e ){
 
-				// Get the original callback from the 'this' element,
-				// then delete is before passing it along to the
-				// event handler.
-				var handler = this.callback;
-			//	delete this.callback;
+			// The 'noAbstraction' argument can be set to prevent
+			// event checking, and instead just proxy the event to
+			// the right namespace. 'noAbstraction' can be level 1 or 2.
+			if ( noAbstraction ) {
+				if ( noAbstraction > 1 ){
+					scope = $.extend(target, scope);
+				}
+				return target.on( events, $.proxy( callback, scope ));
+			}
+
+			// Make the callback available in a lower scope
+			scope.handler = callback;
+
+			return target.on( events, $.proxy( function( e ){
 
 				// Test if there is anything that should prevent an event
 				// from being handled, such as a disabled state or an active
@@ -160,8 +179,9 @@
 				// Call the event handler with the original event as argument.
 				// The handler won't know it has been passed trough this
 				// proxy, and it won't have to filter event validity, because
-				// that was done here.
-				handler.call( this, fixEvent ( e ) );
+				// that was done here. Since the scope can just be 'this',
+				// there is no need to use .call().
+				this.handler( fixEvent ( e ) );
 
 			}, scope ));
 		}
@@ -433,7 +453,7 @@
 			var  nui = handle.data('nui').options
 				// Get the array of handles from the base.
 				// Will be undefined at initialisation.
-				,handles = handle.data('nui').base.data(clsList[12])
+				,handles = handle.data('nui').base.data('handles')
 				// Get some settings from the handle;
 				,style = handle.data('nui').style
 				,hLimit;
@@ -490,9 +510,9 @@
 			// below the upper one. Since this function is called for every
 			// movement, toggleClass cannot be used.
 			if( handle.data('nui').number === 0 && to > 95 ){
-				handle.addClass(clsList[14]);
+				handle.addClass(clsList[13]);
 			} else {
-				handle.removeClass(clsList[14]);
+				handle.removeClass(clsList[13]);
 			}
 
 			// Set handle to new location
@@ -509,58 +529,44 @@
 
 		function store ( handle, S ) {
 
-			var i = handle.data('nui').number;
+			var i = handle.data('nui').number, scope = {
+				 target: handle.data('nui').target
+				,options: handle.data('nui').options
+				,handle: handle
+				,i: i
+			};
 
 			if( S.to[i] instanceof $ ) {
 
-				// Modify the passed jQuery element, then return it
-				// so it can be stored on a handle element.
-				return S.to[i]
-
-				// Apply some data to the element,
-				// so that it can be used in the bound events.
-				.data({
-					 target: handle.data('nui').target
-					,handle: handle
-				})
-
-				// Add a change event to the supplied jQuery object,
-				// which will just trigger the val function on the parent.
-				// In some cases, the change event will not fire on select elements,
+				// Add a change event to the supplied jQuery object, which
+				// will just trigger the 'val' function on the parent. In some
+				// cases, the change event will not fire on select elements,
 				// so listen to 'blur' too.
-				.on('change'+namespace+' blur'+namespace, function(){
-
-					// Create an array with two positions,
-					// the write the value to be changed to the relevant position.
-					var arr = [null, null];
-					arr[i] = $(this).val();
-
-					// The input in this field has not been validated,
-					// the val method should be aware of that.
-					$(this).data('target').val(arr, {
-						trusted: false
-					});
-				})
+				attach ( 'change blur'
+						,S.to[i]
+						,eventHandlers[0]
+						,scope
+						,2 );
 
 				// Triggering the 'set' callback should not occur on the 'blur'
 				// event, so bind it only to 'change'.
-				.on('change'+namespace, function(){
+				attach ( 'change'
+						,S.to[i]
+						,scope.options.set
+						,scope.target
+						,1 );
 
-					// Call the 'set' callback when this field triggers 'change'.
-					call( $(this).data('handle').data('nui').options.set
-						 ,$(this).data('target') );
-
-				});
-
+				return S.to[i];
 			}
 
 			if ( typeof S.to[i] === "string" ) {
 
 				// Append a new object to the noUiSlider base,
 				// prevent change events flowing upward.
-				return $('<input type="hidden" class="'+clsList[3]+'" name="' + S.to[i] + '">')
-					.appendTo(handle).change(stopPropagation);
-
+				return $('<input type="hidden" name="' + S.to[i] + '">')
+					.appendTo(handle)
+					.addClass(clsList[3])
+					.change(eventHandlers[1]);
 			}
 
 			if ( S.to[i] === false ) {
@@ -571,11 +577,11 @@
 					 val : function(a) {
 						// Value function provides a getter and a setter.
 						// Can't just test for !a, as a might be 0.
+						// When no argument is provided, return the value.
+						// Otherwise, set the value.
 						if ( a === undefined ) {
-							// Either set...
 							return this.handleElement.data('nui-val');
 						}
-						// ... or return;
 						this.handleElement.data('nui-val', a);
 					}
 					// The object could be mistaken for a jQuery object,
@@ -587,7 +593,6 @@
 					,handleElement: handle
 				};
 			}
-
 		}
 
 		function move( event ) {
@@ -677,7 +682,7 @@
 
 			// Stop propagation so that the tap handler doesn't interfere;
 			event.stopPropagation();
-			
+
 			// Trigger the end handler. Supply the current scope,
 			// which contains all required information.
 			end.call( this );
@@ -815,14 +820,14 @@
 						cls.base.push(clsList[9], clsList[9] + clsList[7]);
 						// When using the option 'Lower', there is only one
 						// handle, and thus only one origin.
-						cls.origin[0].push(clsList[13]);
+						cls.origin[0].push(clsList[12]);
 					} else {
-						cls.base.push(clsList[9] + clsList[8], clsList[13]);
+						cls.base.push(clsList[9] + clsList[8], clsList[12]);
 						cls.origin[0].push(clsList[9]);
 					}
 
 				} else {
-					cls.base.push(clsList[13]);
+					cls.base.push(clsList[12]);
 				}
 
 				// Parse the syntactic sugar that is the serialization
@@ -933,7 +938,7 @@
 
 			// Loop the handles, and get the value from the input
 			// for every handle on its' own.
-			$.each( $(this).data(clsList[12]), function( i, handle ){
+			$.each( $(this).data('handles'), function( i, handle ){
 				re.push( handle.data('store').val() );
 			});
 
@@ -977,7 +982,7 @@
 				// Make sure 'target' is a jQuery element.
 				target = $(target);
 
-				$.each( $(this).data(clsList[12]), function( j, handle ){
+				$.each( $(this).data('handles'), function( j, handle ){
 
 					// The set request might want to ignore this handle.
 					// Test for 'undefined' too, as a two-handle slider
