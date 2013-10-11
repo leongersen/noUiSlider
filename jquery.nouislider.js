@@ -1,7 +1,14 @@
-/* noUiSlider - refreshless.com/nouislider/ */
+/** noUiSlider
+ ** @author: Léon Gersen
+ ** @documentation:	http://refreshless.com/nouislider/
+ **/
 (function( $, undefined ){
 
 	"use strict";
+
+	if ( Zepto && !$.fn.removeData ) {
+		throw new ReferenceError("Zepto is loaded without the data module.");
+	}
 
 	$.fn.noUiSlider = function( options ){
 
@@ -14,7 +21,7 @@
 				,move: 'mousemove touchmove'
 				,end: 'mouseup touchend'
 			}
-			// Make a copy of the current val function.
+			// Make a copy of the current 'val' function.
 			,$VAL = $.fn.val
 			// Define a set of standard HTML classes for
 			// the various structures noUiSlider uses.
@@ -129,8 +136,14 @@
 			var  touch = e.type.indexOf('touch') === 0
 				,mouse = e.type.indexOf('mouse') === 0
 				,pointer = e.type.indexOf('MSPointer') === 0
-				,x,y;
+				,x,y, event = e;
 
+			// Get the originalEvent, if the event has been wrapped
+			// by jQuery. Zepto doesn't wrap the event.
+			if ( e.originalEvent ) {
+				e = e.originalEvent;
+			}
+			
 			if ( touch ) {
 				// noUiSlider supports one movement at a time, for now.
 				// It is therefore safe to select the first 'changedTouch'.
@@ -150,7 +163,7 @@
 				y = e.clientY + window.pageYOffset;
 			}
 
-			return $.extend( e, { x:x, y:y } );
+			return $.extend( event, { x:x, y:y } );
 
 		}
 
@@ -1061,7 +1074,7 @@
 			});
 		}
 
-		// Overwrite the native jQuery val() function
+		// Overwrite the native jQuery 'val' function
 		// with a simple handler. noUiSlider will use the internal
 		// value method, anything else will use the standard method.
 		$.fn.val = function(){
@@ -1070,16 +1083,6 @@
 				: $VAL.apply(this, arguments);
 		};
 
-		// noUiSlider will provide access to all internal
-		// methods if the options contain an 'expose' property.
-		if ( options.expose ) {
-			var out = {};
-			$.each(options.expose, function( index, value ){
-				out[ value ] = eval(this);
-			});
-			return out;
-		}
-		
 		return create.call( this, options );
 
 	};
