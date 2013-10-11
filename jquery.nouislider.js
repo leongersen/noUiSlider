@@ -6,7 +6,7 @@
 
 	"use strict";
 
-	if ( Zepto && !$.fn.removeData ) {
+	if ( $.zepto && !$.fn.removeData ) {
 		throw new ReferenceError("Zepto is loaded without the data module.");
 	}
 
