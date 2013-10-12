@@ -1,7 +1,8 @@
 /** noUiSlider
  ** @author: Léon Gersen
- ** @documentation:	http://refreshless.com/nouislider/
+ ** @documentation: http://refreshless.com/nouislider/
  **/
+/*jslint browser: true, devel: true, plusplus: true, white: true, unparam: true */
 (function( $, undefined ){
 
 	"use strict";
