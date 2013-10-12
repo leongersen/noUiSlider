@@ -143,7 +143,7 @@
 			if ( e.originalEvent ) {
 				e = e.originalEvent;
 			}
-			
+
 			if ( touch ) {
 				// noUiSlider supports one movement at a time, for now.
 				// It is therefore safe to select the first 'changedTouch'.
@@ -626,10 +626,10 @@
 				,baseSize = style === 'left' ? base.width() : base.height();
 
 			// This loop prevents a long ternary for the proposal variable.
-			if(style === 'top') {
+			if( style === 'top' ) {
 				proposal = event.y - this.startEvent.y;
 			}
-
+			
 			proposal = this.position + ( ( proposal * 100 ) / baseSize );
 
 			setHandle( this.handle, proposal );
