@@ -90,10 +90,17 @@
 			];
 
 		// When the browser supports MsPointerEvents,
-		// Don't bind touch or mouse events. The touch events are
-		// currently only implemented by IE(10), but they are stable
-		// and convenient to use.
-		if ( window.navigator.msPointerEnabled ) {
+		// don't bind touch or mouse events. The touch events are
+		// currently only implemented by IE10, but they are stable
+		// and convenient to use. IE11 implements pointerEvents without
+		// a prefix, which breaks compatibility with the IE10 implementation.
+		if( window.navigator.pointerEnabled ) {
+			actions = {
+				 start: 'pointerdown'
+				,move: 'pointermove'
+				,end: 'pointerup'
+			};
+		} else if ( window.navigator.msPointerEnabled ) {
 			actions = {
 				 start: 'MSPointerDown'
 				,move: 'MSPointerMove'
