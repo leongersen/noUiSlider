@@ -10,7 +10,7 @@ An extended documentation, including **examples**, **options** and **configurati
 Changes
 -------
 
-**Changelog for version 4.2.1:**  
+**Changelog for version 4.2.2:**  
 + Changed implementation of pointerEvents to be compatible with IE11.
 
 Version numbering
