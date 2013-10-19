@@ -143,8 +143,14 @@
 			// offset changes need to be made on an event specific basis.
 			var  touch = e.type.indexOf('touch') === 0
 				,mouse = e.type.indexOf('mouse') === 0
-				,pointer = e.type.indexOf('MSPointer') === 0
+				,pointer = e.type.indexOf('pointer') === 0
 				,x,y, event = e;
+
+			// IE10 implemented pointer events with a prefix,
+			// so we'll needs to check for those, too.
+			if ( e.type.indexOf('MSPointer') === 0 ) {
+				pointer = true;
+			}
 
 			// Get the originalEvent, if the event has been wrapped
 			// by jQuery. Zepto doesn't wrap the event.
