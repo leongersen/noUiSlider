@@ -643,7 +643,7 @@
 			if( style === 'top' ) {
 				proposal = event.y - this.startEvent.y;
 			}
-			
+
 			proposal = this.position + ( ( proposal * 100 ) / baseSize );
 
 			setHandle( this.handle, proposal );

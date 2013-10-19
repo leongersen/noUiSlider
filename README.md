@@ -1,6 +1,6 @@
 # noUiSlider
 
-noUiSlider is lightweight plugin that was developed to be a jQuery UI alternative. It features cross-browser support, a `just-another-input-type` style of getting and setting values, a wide range of options and support for a bunch off touch devices. It works wonders on Android phones, iPhone & iPad, Windows phone and touch-screen laptops and tablets. The end result? A lean, extendible and bloat-less plugin that'll just do its job. To add even more flexibility, noUiSlider is compatible with both jQuery and Zepto.js. Oh, and the licensing terms are simple: [just do what you want](http://refreshless.com/nouislider/terms-of-use).
+noUiSlider is lightweight plugin that was developed to be a jQuery UI alternative. It features cross-browser support, a `just-another-input-type` style of getting and setting values, a wide range of options and support for a bunch off touch devices. It works wonders on Android phones, iPhone & iPad, Windows phone and touch-screen laptops and tablets. It works excellent on the desktop too; All modern browsers and IE7+ are supported. The end result? A lean, extendible and bloat-less plugin that'll just do its job. To add even more flexibility, noUiSlider is compatible with both jQuery and Zepto.js. Oh, and the licensing terms are simple: [just do what you want](http://refreshless.com/nouislider/terms-of-use).
 
 Documentation
 -------
@@ -10,8 +10,8 @@ An extended documentation, including **examples**, **options** and **configurati
 Changes
 -------
 
-**Changelog for version 4.2.0:**  
-+ Added compatibilty with [Zepto.js](http://zeptojs.com/).
+**Changelog for version 4.2.1:**  
++ Changed implementation of pointerEvents to be compatible with IE11.
 
 Version numbering
 ------------------------------
