@@ -370,6 +370,10 @@
 							return ( q.mark === '.' || q.mark === ',' );
 						}
 
+						if( q.to === false ) {
+							q.to = [ false, false ];
+						}
+
 						if(q.to){
 
 							if(o.handles === 1){
@@ -483,33 +487,28 @@
 
 		function setHandle ( handle, to, forgive ) {
 
-			var  nui = handle.data('nui').options
+			var  settings = handle.data('options')
 				// Get the array of handles from the base.
 				// Will be undefined at initialisation.
-				,handles = handle.data('nui').base.data('handles')
+				,handles = handle.data('base').data('handles')
 				// Get some settings from the handle;
-				,style = handle.data('nui').style
+				,style = handle.data('style')
 				,hLimit;
 
-			// Make sure the value can be parsed.
-			// This will catch any potential NaN, even though
-			// no internal function calling setHandle should pass
-			// invalided parameters.
-			if( !isNumeric(to) ) {
-				return false;
-			}
-
-			// Ignore the call if the handle won't move anyway.
-			if( to === handle[0].gPct(style) ) {
+			// Make sure the value can be parsed. This will catch 
+			// any potential NaN, even though no internal function 
+			// calling 'setHandle' should pass invalided parameters.
+			// We'll also ignore the call if the handle won't move anyway.
+			if( !isNumeric(to) || to === handle[0].gPct(style) ) {
 				return false;
 			}
 
 			// Limit 'to' to 0 - 100
 			to = to < 0 ? 0 : to > 100 ? 100 : to;
 
-			// Handle the step option, or ignore it.
-			if( nui.step && !forgive ){
-				to = closest( to, percentage.from(nui.range, nui.step));
+			// Handle the step option.
+			if( settings.step && !forgive ){
+				to = closest( to, percentage.from( settings.range, settings.step ));
 			}
 
 			// Stop handling this call if the handle won't step to a new value.
@@ -520,15 +519,15 @@
 			// We're done if this is the only handle,
 			// if the handle bounce is trusted to the user
 			// or on initialisation when handles isn't defined yet.
-			if( handle.siblings('.' + clsList[1]).length && !forgive && handles ){
+			if( !forgive && handles && handles.length > 1 ){
 
 				// Otherwise, the handle should bounce,
 				// and stop at the other handle.
-				if ( handle.data('nui').number ) {
-					hLimit = handles[0][0].gPct(style) + nui.margin;
+				if ( handle.data('number') ) {
+					hLimit = handles[0][0].gPct(style) + settings.margin;
 					to = to < hLimit ? hLimit : to;
 				} else {
-					hLimit = handles[1][0].gPct(style) - nui.margin;
+					hLimit = handles[1][0].gPct(style) - settings.margin;
 					to = to > hLimit ? hLimit : to;
 				}
 
@@ -536,16 +535,6 @@
 				if( to === handle[0].gPct(style) ) {
 					return false;
 				}
-
-			}
-
-			// Fix for the z-index issue where the lower handle gets stuck
-			// below the upper one. Since this function is called for every
-			// movement, toggleClass cannot be used.
-			if( handle.data('nui').number === 0 && to > 95 ){
-				handle.addClass(clsList[13]);
-			} else {
-				handle.removeClass(clsList[13]);
 			}
 
 			// Set handle to new location
@@ -553,18 +542,17 @@
 
 			// Write the value to the serialization object.
 			handle.data('store').val(
-				format ( percentage.is( nui.range, to ), handle.data('nui').target )
+				format ( percentage.is( settings.range, to ), handle.data('target') )
 			);
 
 			return true;
-
 		}
 
 		function store ( handle, S ) {
 
-			var i = handle.data('nui').number, scope = {
-				 target: handle.data('nui').target
-				,options: handle.data('nui').options
+			var i = handle.data('number'), scope = {
+				 target: handle.data('target')
+				,options: handle.data('options')
 				,handle: handle
 				,i: i
 			};
@@ -656,69 +644,53 @@
 
 		function end ( ) {
 
-			var  base = this.base
-				,handle = this.handle;
+			// The handle is no longer active, so remove the class.
+			this.handle.children().removeClass(clsList[4]);
 
-			// The handle is no longer active, so remove
-			// the class.
-			handle.children().removeClass(clsList[4]);
-
-			// Unbind move and end events, to prevent
-			// them stacking up over and over;
-			all.off(actions.move);
-			all.off(actions.end);
-
-			// Some text-selection events are bound to the body.
-			$('body').off(namespace);
+			// Unbind move and end events, to prevent them stacking
+			// over and over. Text-selection events are bound to the body.
+			all.add( $('body').css( 'cursor', '' ) ).off( namespace );
 
 			// Trigger the change event.
-			base.data('target').change();
+			this.base.data('target').change();
 
 			// Trigger the 'end' callback.
-			call( handle.data('nui').options.set
-				 ,base.data('target') );
-
+			call( this.handle.data('options').set
+				 ,this.base.data('target') );
 		}
 
 		function start ( event ) {
 
-			var  handle = this.handle
-				,position = handle[0].gPct( handle.data('nui').style );
+			// Find the last used handle, and remove the
+			// z-index class from it.
+			this.base.find( '.' + clsList[13] ).removeClass( clsList[13] );
 
-			handle.children().addClass(clsList[4]);
+			// Add the z-index class to this one, and mark
+			// the handle as 'active' so it can be properly styled.
+			this.handle.children().addClass( clsList[4] + ' ' + clsList[13] );
 
 			// Attach the move event handler, while
 			// passing all relevant information along.
 			attach ( actions.move, all, move, {
 				 startEvent: event
-				,position: position
+				,position: this.handle[0].gPct( this.handle.data('style') )
 				,base: this.base
 				,target: this.target
-				,handle: handle
+				,handle: this.handle
 			});
 
 			attach ( actions.end, all, end, {
 				 base: this.base
 				,target: this.target
-				,handle: handle
+				,handle: this.handle
 			});
 
 			// Prevent text selection when dragging the handles.
 			// This doesn't prevent the browser defaulting to the I like cursor.
-			$('body').on(
+			$('body').css('cursor', 'default').on(
 				 'selectstart' + namespace
 				,function( ){ return false; }
 			);
-		}
-
-		function selfEnd( event ) {
-
-			// Stop propagation so that the tap handler doesn't interfere;
-			event.stopPropagation();
-
-			// Trigger the end handler. Supply the current scope,
-			// which contains all required information.
-			end.call( this );
 		}
 
 		function tap ( event ) {
@@ -781,8 +753,8 @@
 
 			// Trigger the 'slide' and 'set' callbacks,
 			// pass the target so that it is 'this'.
-			call( [ handle.data('nui').options.slide
-				   ,handle.data('nui').options.set ]
+			call( [ handle.data('options').slide
+				   ,handle.data('options').set ]
 				 ,base.data('target') );
 
 			base.data('target').change();
@@ -863,10 +835,10 @@
 					cls.base.push(clsList[12]);
 				}
 
-				// Parse the syntactic sugar that is the serialization
-				// resolution option to a usable integer.
 				style = options.orientation === 'vertical' ? 'top' : 'left';
 
+				// Parse the syntactic sugar that is the serialization
+				// resolution option to a usable integer.
 				decimals = options.S.resolution.toString().split('.');
 
 				// Checking for a string "1", since the resolution needs
@@ -909,16 +881,8 @@
 						,handle: handle
 					});
 
-					attach ( actions.end, handle.children(), selfEnd, {
-						 base: base
-						,target: target
-						,handle: handle
-					});
-
-					// Make sure every handle has access to all primary
-					// variables. Can't uses jQuery's .data( obj ) structure
-					// here, as 'store' needs some values from the 'nui' object.
-					handle.data('nui', {
+					// Make sure every handle has access to all variables.
+					handle.data({
 						 target: target
 						,decimals: decimals
 						,options: options
@@ -939,7 +903,6 @@
 
 					// Set the handle to its initial position;
 					setHandle(handle, percentage.to(options.range, options.start[i]));
-
 				}
 
 				// The base could use the handles too;
@@ -955,7 +918,7 @@
 				});
 
 				// Attach the the tap event to the slider base.
-				attach ( actions.end, base, tap, {
+				attach ( actions.start, base, tap, {
 					 base: base
 					,target: target
 					,handles: handles
@@ -980,14 +943,7 @@
 			return ( re.length === 1 ? re[0] : re );
 		}
 
-		function val ( args, modifiers ) {
-
-			// If the function is called without arguments,
-			// act as a 'getter'. Call the getValue function
-			// in the same scope as this call.
-			if( args === undefined ){
-				return getValue.call( this );
-			}
+		function setValue ( args, modifiers ) {
 
 			// Passing the modifiers argument is not required.
 			// The input might also be 'true', to indicate that the
@@ -1019,7 +975,7 @@
 
 					// Calculate a new position for the handle.
 					var  value, current
-						,range = handle.data('nui').options.range
+						,range = handle.data('options').range
 						,to = args[j], result;
 
 					// Assume the input can be trusted.
@@ -1058,7 +1014,7 @@
 					// The 'val' method allows for an external modifier,
 					// to specify a request for an 'set' event.
 					if( modifiers.trigger ) {
-						call( handle.data('nui').options.set
+						call( handle.data('options').set
 							 ,target );
 					}
 
@@ -1073,7 +1029,7 @@
 						// Get the value for the current position.
 						current = percentage.is(
 							 range
-							,handle[0].gPct(handle.data('nui').style)
+							,handle[0].gPct( handle.data('style') )
 						);
 
 						// Sometimes the input is changed to a value the slider
@@ -1092,13 +1048,23 @@
 		// with a simple handler. noUiSlider will use the internal
 		// value method, anything else will use the standard method.
 		$.fn.val = function(){
-			return this.hasClass(clsList[6])
-				? val.apply(this, arguments)
-				: $VAL.apply(this, arguments);
+
+			// If the function is called without arguments,
+			// act as a 'getter'. Call the getValue function
+			// in the same scope as this call.
+			if ( this.hasClass( clsList[6] ) ){
+				return arguments.length
+					? setValue.apply( this, arguments )
+					: getValue.apply( this );
+			}
+
+			// If this isn't noUiSlider, continue with jQuery's
+			// original method.
+			return $VAL.apply( this, arguments );
 		};
 
 		return create.call( this, options );
 
 	};
 
-}( $ ));
+}( window.jQuery || window.Zepto ));
