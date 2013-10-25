@@ -312,10 +312,10 @@
 				 */
 				,"connect": {
 					 t: function(q,o){
-						return (   q === true
-								|| q === false
-								|| ( q === 'lower' && o.handles === 1)
-								|| ( q === 'upper' && o.handles === 1));
+						return (	 q === true
+								||	 q === false
+								|| ( q === 'lower' && o.handles === 1 )
+								|| ( q === 'upper' && o.handles === 1 ) );
 					 }
 				}
 				/*	Connect.
@@ -333,7 +333,7 @@
 					 r: true
 					,t: function(q,o,w){
 						q = parseFloat(q);
-						o[w]=q;
+						o[w]= percentage.from(o.range, q);
 						return isNumeric(q);
 					}
 				}
@@ -414,11 +414,13 @@
 					}
 				}
 				/*	Step.
-				 *	Not required. Tested using the 'margin' test.
+				 *	Not required.
 				 */
 				,"step": {
 					 t: function(q,o,w){
-						return this.parent.margin.t(q,o,w);
+						q = parseFloat(q);
+						o[w]= q;
+						return isNumeric(q);
 					}
 				}
 				/*	[init]
@@ -485,7 +487,7 @@
 
 		}
 
-		function setHandle ( handle, to, forgive ) {
+		function setHandle ( handle, to ) {
 
 			var  settings = handle.data('options')
 				// Get the array of handles from the base.
@@ -495,19 +497,19 @@
 				,style = handle.data('style')
 				,hLimit;
 
-			// Make sure the value can be parsed. This will catch 
-			// any potential NaN, even though no internal function 
+			// Make sure the value can be parsed. This will catch
+			// any potential NaN, even though no internal function
 			// calling 'setHandle' should pass invalided parameters.
 			// We'll also ignore the call if the handle won't move anyway.
 			if( !isNumeric(to) || to === handle[0].gPct(style) ) {
 				return false;
 			}
 
-			// Limit 'to' to 0 - 100
+			// Catch any attemt to drag beyond the slider edges.
 			to = to < 0 ? 0 : to > 100 ? 100 : to;
 
 			// Handle the step option.
-			if( settings.step && !forgive ){
+			if( settings.step ){
 				to = closest( to, percentage.from( settings.range, settings.step ));
 			}
 
@@ -519,7 +521,7 @@
 			// We're done if this is the only handle,
 			// if the handle bounce is trusted to the user
 			// or on initialisation when handles isn't defined yet.
-			if( !forgive && handles && handles.length > 1 ){
+			if( handles && handles.length > 1 ){
 
 				// Otherwise, the handle should bounce,
 				// and stop at the other handle.
@@ -536,6 +538,9 @@
 					return false;
 				}
 			}
+
+			// Limit 'to' to 0 - 100 again after all modifications
+			to = to < 0 ? 0 : to > 100 ? 100 : to;
 
 			// Set handle to new location
 			handle.css( style , to + '%' );
@@ -634,12 +639,11 @@
 
 			proposal = this.position + ( ( proposal * 100 ) / baseSize );
 
-			setHandle( this.handle, proposal );
+			if ( setHandle( this.handle, proposal ) ) {
 
-			// Trigger the 'slide' event, pass the target so that it is 'this'.
-			call( base.data('options').slide
-				 ,base.data('target') );
-
+				// Trigger the 'slide' event, if the handle was moved.
+				call( base.data('options').slide, base.data('target') );
+			}
 		}
 
 		function end ( ) {
@@ -655,8 +659,7 @@
 			this.base.data('target').change();
 
 			// Trigger the 'end' callback.
-			call( this.handle.data('options').set
-				 ,this.base.data('target') );
+			call( this.handle.data('options').set, this.base.data('target') );
 		}
 
 		function start ( event ) {
@@ -758,7 +761,6 @@
 				 ,base.data('target') );
 
 			base.data('target').change();
-
 		}
 
 		function create ( options ) {
@@ -769,6 +771,10 @@
 				// scripting interaction. It has no styling and serves no
 				// other function.
 				target = $(target);
+
+				if ( target.hasClass(clsList[6]) && !target.is(':empty') ) {
+					throw new Error("Slider was already initialized.");
+				}
 				target.addClass(clsList[6]);
 
 				// Base is the internal main 'bar'.
@@ -964,41 +970,32 @@
 				// Make sure 'target' is a jQuery element.
 				target = $(target);
 
-				$.each( $(this).data('handles'), function( j, handle ){
+				var i, handles = Array.prototype.slice.call(
+									$(this).data('handles') , 0),
+					range = handles[0].data('options').range,
+					to, current;
+
+				if ( handles.length > 1 ) {
+					handles[2] = handles[0];
+				}
+
+				for ( i = 0; i < handles.length; i++ ){
+
+					// Calculate a new position for the handle.
+					to = args[ i%2 ];
 
 					// The set request might want to ignore this handle.
 					// Test for 'undefined' too, as a two-handle slider
 					// can still be set with an integer.
-					if( args[j] === null || args[j] === undefined ) {
+					if( to === null || to === undefined ) {
 						return;
-					}
-
-					// Calculate a new position for the handle.
-					var  value, current
-						,range = handle.data('options').range
-						,to = args[j], result;
-
-					// Assume the input can be trusted.
-					modifiers.trusted = true;
-
-					// Handle user facing input correction. The value is
-					// 'trusted' when a developer provides it from the 'val'
-					// method, not when it comes from an input element.
-					if ( modifiers.trusted === false || args.length === 1 ) {
-						modifiers.trusted = false;
-					}
-
-					// If one handle isn't set, the other can't move past it.
-					if ( args.length === 2 && $.inArray( null, args ) >= 0 ) {
-						modifiers.trusted = false;
 					}
 
 					// Add support for the comma (,) as a decimal symbol.
 					// Replace it by a period so it is handled properly by
 					// parseFloat. Omitting this would result in a removal
-					// of decimals. This is relevant on trusted input too,
-					// as a developer might input a comma separated string
-					// using the 'val' method.
+					// of decimals. The developer might input a comma separated
+					// string using the 'val' method, which works too.
 					if( $.type(to) === "string" ) {
 						to = to.replace(',', '.');
 					}
@@ -1006,41 +1003,32 @@
 					// Calculate the new handle position
 					to = percentage.to( range, parseFloat( to ) );
 
-					// Set handle to new location, and make sure developer
-					// input is always accepted. The 'trusted' flag indicates
-					// input that is not coming from user facing elements.
-					result = setHandle( handle, to, modifiers.trusted );
-
-					// The 'val' method allows for an external modifier,
-					// to specify a request for an 'set' event.
-					if( modifiers.trigger ) {
-						call( handle.data('options').set
-							 ,target );
-					}
-
 					// If the value of the input doesn't match the slider,
-					// reset it.
-					if( !result ){
-
-						// Get the 'store' object, which can be an input
-						// element or a wrapper around a 'data' call.
-						value = handle.data('store').val();
+					// reset it. Sometimes the input is changed to a value the
+					// slider has rejected. This can occur when using 'select'
+					// or 'input[type="number"]' elements. In this case, set
+					// the value back to the input.
+					if ( !setHandle( handles[i], to ) ){
 
 						// Get the value for the current position.
 						current = percentage.is(
 							 range
-							,handle[0].gPct( handle.data('style') )
+							,handles[i][0].gPct( handles[i].data('style') )
 						);
 
-						// Sometimes the input is changed to a value the slider
-						// has rejected. This can occur when using 'select' or
-						// 'input[type="number"]' elements. In this case,
-						// set the value back to the input.
-						if( value !== current ){
-							handle.data('store').val( format( current, target ) );
+						if( handles[i].data('store').val() !== current ){
+							handles[i].data('store').val(
+								format( current, target )
+							);
 						}
 					}
-				});
+
+					// The 'val' method allows for an external modifier,
+					// to specify a request for an 'set' event.
+					if( modifiers.trigger ) {
+						call( handles[i].data('options').set, target );
+					}
+				}
 			});
 		}
 
