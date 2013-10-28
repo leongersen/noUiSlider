@@ -265,25 +265,31 @@
 				,"range": {
 					 r: true
 					,t: function(q,o,w){
-						if(q.length!==2){
+					
+						if ( q.length !== 2 ){
 							return false;
 						}
+						
 						// Reset the array to floats
-						q = [parseFloat(q[0]),parseFloat(q[1])];
+						q = [ parseFloat(q[0]), parseFloat(q[1]) ];
+						
 						// Test if those floats are numerical
-						if(!isNumeric(q[0])||!isNumeric(q[1])){
+						if( !isNumeric(q[0]) || !isNumeric(q[1]) ){
 							return false;
 						}
+						
 						// When this test is run for range, the values can't
 						// be identical.
-						if(w==="range" && q[0] === q[1]){
+						if( w==="range" && q[0] === q[1] ){
 							return false;
 						}
+						
 						// The lowest value must really be the lowest value.
-						if(q[1]<q[0]){
+						if( q[1] < q[0] ){
 							return false;
 						}
-						o[w]=q;
+						
+						o[w] = q;
 						return true;
 					}
 				 }
@@ -295,9 +301,9 @@
 				,"start": {
 					 r: true
 					,t: function(q,o,w){
-						if(o.handles === 1){
-							if($.isArray(q)){
-								q=q[0];
+						if( o.handles === 1 ){
+							if( $.isArray(q) ){
+								q = q[0];
 							}
 							q = parseFloat(q);
 							o.start = [q];
@@ -312,10 +318,9 @@
 				 */
 				,"connect": {
 					 t: function(q,o){
-						return (	 q === true
-								||	 q === false
-								|| ( q === 'lower' && o.handles === 1 )
-								|| ( q === 'upper' && o.handles === 1 ) );
+						return typeof q === "boolean" ||
+								( o.handles === 1 &&
+									( q === 'lower' || q === 'upper' ) );
 					 }
 				}
 				/*	Connect.
@@ -333,7 +338,7 @@
 					 r: true
 					,t: function(q,o,w){
 						q = parseFloat(q);
-						o[w]= percentage.from(o.range, q);
+						o[w] = percentage.from(o.range, q);
 						return isNumeric(q);
 					}
 				}
@@ -348,7 +353,7 @@
 					 r: true
 					,t: function(q,o){
 
-						if(!q.resolution){
+						if ( !q.resolution ){
 							o.serialization.resolution = 0.01;
 						} else {
 							switch(q.resolution){
@@ -364,36 +369,34 @@
 							}
 						}
 
-						if(!q.mark){
+						if ( !q.mark ){
 							o.serialization.mark = '.';
+						} else if ( q.mark !== '.' && q.mark !== ',' ) {
+							return false;
+						}
+
+						if ( !q.to ) {
+							o.serialization.to = [ false, false ];
 						} else {
-							return ( q.mark === '.' || q.mark === ',' );
-						}
 
-						if( q.to === false ) {
-							q.to = [ false, false ];
-						}
+							var i = 0;
 
-						if(q.to){
-
-							if(o.handles === 1){
-								// Wrap the value for one handle into an array.
-								if(!$.isArray(q.to)){
-									q.to = [q.to];
-								}
-								// Write back to the options object;
-								o.serialization.to = q.to;
-								// Run test for valid serialization target.
-								return ser(q.to[0]);
+							// Wrap the value for one handle into an array.
+							if ( !$.isArray(q.to) ){
+								o.serialization.to = [q.to];
 							}
-							return (q.to.length === 2 && ser(q.to[0]) && ser(q.to[1]));
 
+							// Write back to the options object;
+							for ( i; i < o.handles; i++ ){
+
+								// Test if this is a valid serialization target.
+								if( !ser(o.serialization.to[i]) ) {
+									return false;
+								}
+							}
 						}
 
-						// If no 'to' option is specified,
-						// the serialization option is invalid.
-						return false;
-
+						return true;
 					}
 				}
 				/*	Slide.
@@ -419,7 +422,7 @@
 				,"step": {
 					 t: function(q,o,w){
 						q = parseFloat(q);
-						o[w]= q;
+						o[w] = q;
 						return isNumeric(q);
 					}
 				}
@@ -465,9 +468,7 @@
 
 					throw new RangeError("noUiSlider");
 				}
-
 			});
-
 		}
 
 		function closest( value, to ){
@@ -800,14 +801,8 @@
 					,orientation: "horizontal"
 				}, options) || {};
 
-				// Set a default for serialization;
-				if(!options.serialization){
-					options.serialization = {
-						 to : [false, false]
-						,resolution : 0.01
-						,mark: '.'
-					};
-				}
+				// Make sure the test for serialization runs.
+				options.serialization = options.serialization || {};
 
 				// Run all options through a testing mechanism to ensure correct
 				// input. The test function will throw errors, so there is
