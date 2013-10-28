@@ -15,6 +15,8 @@
    -moz-user-select: none;
     -ms-user-select: none;
 		cursor: default;
+-webkit-transition: background 0.6s;
+		transition: background 0.6s;
 	}
 
 /*	Main slider bar;
@@ -96,20 +98,27 @@
 		left: -3px;
 	}
 
-/*	Various alternate slider states;
+/*	Slider disabled state;
+ */
+	[disabled] .noUi-base {
+		background: #DDD;
+	}
+	[disabled] .noUi-handle {
+		background: #F7F7F7;
+		cursor: not-allowed;
+	}
+	[disabled] .noUi-connect {
+		background: #EEE;
+	}
+
+/*	Handle transition state;
  *		Support for transition is widely available,
  *		Only IE7, IE8 and IE9 will ignore these rules.
  *		Since this is merely a progressive enhancement,
  *		this is no problem at all.
  *		http://caniuse.com/#search=transition
  */
-	.noUi-target[disabled] .noUi-base {
-		background: #999;
-	}
-	.noUi-target[disabled] .noUi-connect {
-		background: #BBB;
-	}
-	.noUi-state-tap .noUi-origin {
+	[class*="noUi-state-"] .noUi-origin {
 		-webkit-transition: left 0.3s, top 0.3s;
 		transition: left 0.3s, top 0.3s;
 	}
