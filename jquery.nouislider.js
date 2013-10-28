@@ -265,30 +265,30 @@
 				,"range": {
 					 r: true
 					,t: function(q,o,w){
-					
+
 						if ( q.length !== 2 ){
 							return false;
 						}
-						
+
 						// Reset the array to floats
 						q = [ parseFloat(q[0]), parseFloat(q[1]) ];
-						
+
 						// Test if those floats are numerical
 						if( !isNumeric(q[0]) || !isNumeric(q[1]) ){
 							return false;
 						}
-						
+
 						// When this test is run for range, the values can't
 						// be identical.
 						if( w==="range" && q[0] === q[1] ){
 							return false;
 						}
-						
+
 						// The lowest value must really be the lowest value.
 						if( q[1] < q[0] ){
 							return false;
 						}
-						
+
 						o[w] = q;
 						return true;
 					}
@@ -477,15 +477,14 @@
 			return Math.round(value / to) * to;
 		}
 
-		function format ( value, target ) {
+		function format ( value, options ) {
 
 			// Round the value to the resolution that was set
 			// with the serialization options.
-			value = value.toFixed( target.data('decimals') );
+			value = value.toFixed( options.decimals );
 
 			// Apply the proper decimal mark to the value.
-			return value.replace( '.', target.data('mark') );
-
+			return value.replace( '.', options.serialization.mark );
 		}
 
 		function setHandle ( handle, to ) {
@@ -495,7 +494,7 @@
 				// Will be undefined at initialisation.
 				,handles = handle.data('base').data('handles')
 				// Get some settings from the handle;
-				,style = handle.data('style')
+				,style = handle.data('base').data('style')
 				,hLimit;
 
 			// Make sure the value can be parsed. This will catch
@@ -522,11 +521,11 @@
 			// We're done if this is the only handle,
 			// if the handle bounce is trusted to the user
 			// or on initialisation when handles isn't defined yet.
-			if( handles && handles.length > 1 ){
+			if( handles.length > 1 ){
 
 				// Otherwise, the handle should bounce,
 				// and stop at the other handle.
-				if ( handle.data('number') ) {
+				if ( handle.is(handles[1]) ) {
 					hLimit = handles[0][0].gPct(style) + settings.margin;
 					to = to < hLimit ? hLimit : to;
 				} else {
@@ -548,19 +547,18 @@
 
 			// Write the value to the serialization object.
 			handle.data('store').val(
-				format ( percentage.is( settings.range, to ), handle.data('target') )
+				format ( percentage.is( settings.range, to ), settings )
 			);
 
 			return true;
 		}
 
-		function store ( handle, S ) {
+		function store ( handle, i, S ) {
 
-			var i = handle.data('number'), scope = {
+			var scope = {
 				 target: handle.data('target')
 				,options: handle.data('options')
 				,handle: handle
-				,i: i
 			};
 
 			if( instance ( S.to[i] ) ) {
@@ -600,16 +598,16 @@
 
 				// Create an object capable of handling all jQuery calls.
 				return {
-					// The value will be stored a data on the handle.
+					// The value will be stored on the handle element.
 					 val : function(a) {
 						// Value function provides a getter and a setter.
 						// Can't just test for !a, as a might be 0.
 						// When no argument is provided, return the value.
 						// Otherwise, set the value.
 						if ( a === undefined ) {
-							return this.handleElement.data('nui-val');
+							return this.handleElement.data('value');
 						}
-						this.handleElement.data('nui-val', a);
+						this.handleElement.data('value', a);
 					}
 					// The object could be mistaken for a jQuery object,
 					// make sure that doesn't trigger any errors.
@@ -677,7 +675,7 @@
 			// passing all relevant information along.
 			attach ( actions.move, all, move, {
 				 startEvent: event
-				,position: this.handle[0].gPct( this.handle.data('style') )
+				,position: this.handle[0].gPct( this.base.data('style') )
 				,base: this.base
 				,target: this.target
 				,handle: this.handle
@@ -708,7 +706,7 @@
 			// Getting variables from the event is not required, but
 			// shortens other expressions and is far more convenient;
 			var  i, handle, hCenter, base = this.base
-				,handles = this.handles
+				,handles = base.data('handles')
 				,style = base.data('style')
 				,eventXY = event[style === 'left' ? 'x' : 'y']
 				,baseSize = style === 'left' ? base.width() : base.height()
@@ -779,9 +777,8 @@
 				target.addClass(clsList[6]);
 
 				// Base is the internal main 'bar'.
-				var  i, style, decimals, handle
+				var  i, style, handle
 					,base = $('<div/>').appendTo(target)
-					,handles = []
 					,cls = {
 					 base: stdCls.base
 						,origin: [
@@ -811,10 +808,6 @@
 				// wrapping integers in arrays.
 				test(options, target);
 
-				// I can't type serialization any more, and it doesn't compress
-				// very well, so shorten it.
-				options.S = options.serialization;
-
 				// Apply the required connection classes to the elements
 				// that need them. Some classes are made up for several segments
 				// listed in the class list, to allow easy renaming and provide
@@ -840,11 +833,12 @@
 
 				// Parse the syntactic sugar that is the serialization
 				// resolution option to a usable integer.
-				decimals = options.S.resolution.toString().split('.');
-
 				// Checking for a string "1", since the resolution needs
 				// to be cast to a string to split in on the period.
-				decimals = decimals[0] === "1" ? 0 : decimals[1].length;
+				options.decimals = (function(d){
+					d = d.toString().split('.');
+					return d[0] === "1" ? 0 : d[1].length;
+				}( options.serialization.resolution ));
 
 				// Add classes for horizontal and vertical sliders.
 				// The horizontal class is provided for completeness,
@@ -855,15 +849,17 @@
 					cls.base.push(clsList[11]);
 				}
 
-				// Merge base classes with default;
-				base.addClass(cls.base.join(" ")).data('target', target);
+				// Merge base classes with default,
+				// and store relevant data on the base element.
+				base.addClass( cls.base.join(" ") ).data({
+					 target: target
+					,options: options
+					,style: style
+					,handles: []
+				});
 
 				// Make data accessible in functions throughout the plugin.
-				target.data({
-					 base: base
-					,mark: options.S.mark
-					,decimals: decimals
-				});
+				target.data('base', base);
 
 				for (i = 0; i < options.handles; i++ ) {
 
@@ -884,49 +880,32 @@
 
 					// Make sure every handle has access to all variables.
 					handle.data({
-						 target: target
-						,decimals: decimals
+						 base: base
+						,target: target
 						,options: options
-						,base: base
-						,style: style
-						,number: i
-					}).data('store', store (
-						 handle
-						,options.S
-					));
+					});
+
+					handle.data({
+						store: store(handle, i, options.serialization)
+					});
 
 					// Write a function to the native DOM element, since
 					// jQuery wont let me get the current value in percentages.
 					handle[0].gPct = getPercentage;
 
-					// Make handles loop-able
-					handles.push(handle);
+					// Store handles on the base
+					base.data('handles').push(handle);
 
 					// Set the handle to its initial position;
 					setHandle(handle, percentage.to(options.range, options.start[i]));
 				}
 
-				// The base could use the handles too;
-				base.data({
-					 options: options
-					,handles: handles
-					,style: style
-				});
-
-				// Add a reference to the handles on the target as well.
-				target.data({
-					handles: handles
-				});
-
 				// Attach the the tap event to the slider base.
 				attach ( actions.start, base, tap, {
 					 base: base
 					,target: target
-					,handles: handles
 				});
-
 			});
-
 		}
 
 		function getValue ( ) {
@@ -935,7 +914,7 @@
 
 			// Loop the handles, and get the value from the input
 			// for every handle on its' own.
-			$.each( $(this).data('handles'), function( i, handle ){
+			$.each( $(this).data('base').data('handles'), function( i, handle ){
 				re.push( handle.data('store').val() );
 			});
 
@@ -965,8 +944,8 @@
 				// Make sure 'target' is a jQuery element.
 				target = $(target);
 
-				var i, handles = Array.prototype.slice.call(
-									$(this).data('handles') , 0),
+				var i, base = target.data('base'),
+					handles = Array.prototype.slice.call(base.data('handles'), 0),
 					range = handles[0].data('options').range,
 					to, current;
 
@@ -1008,12 +987,12 @@
 						// Get the value for the current position.
 						current = percentage.is(
 							 range
-							,handles[i][0].gPct( handles[i].data('style') )
+							,handles[i][0].gPct( base.data('style') )
 						);
 
 						if( handles[i].data('store').val() !== current ){
 							handles[i].data('store').val(
-								format( current, target )
+								format( current, handles[i].data('options') )
 							);
 						}
 					}
@@ -1036,9 +1015,9 @@
 			// act as a 'getter'. Call the getValue function
 			// in the same scope as this call.
 			if ( this.hasClass( clsList[6] ) ){
-				return arguments.length
-					? setValue.apply( this, arguments )
-					: getValue.apply( this );
+				return arguments.length ?
+					setValue.apply( this, arguments ) :
+					getValue.apply( this );
 			}
 
 			// If this isn't noUiSlider, continue with jQuery's
