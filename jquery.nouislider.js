@@ -226,7 +226,21 @@
 
 		// jQuery doesn't have a method to return a CSS value as a percentage.
 		function getPercentage( a ){
-			return parseFloat(this.style[a]);
+			return parseFloat(this.style[$(this).data('style')]);
+		}
+
+		function zIndex ( handle ) {
+
+			// Remove the z-index class from the last used handle,
+			// add the z-index class to the current handle, and mark
+			// the handle as 'active' so it can be properly styled.
+			$.each([ handle.data('base').find( '.' + clsList[13] )
+					,handle.children() ], function(i, item){
+						item.toggleClass( clsList[13] );
+					});
+
+			// Return the handle so this function is chainable;
+			return handle;
 		}
 
 		function test ( o, set ){
@@ -318,9 +332,9 @@
 				 */
 				,"connect": {
 					 t: function(q,o){
-						return typeof q === "boolean" ||
-								( o.handles === 1 &&
-									( q === 'lower' || q === 'upper' ) );
+							return o.handles === 1 ?
+								( q === 'lower' || q === 'upper' ) :
+								typeof q === "boolean";
 					 }
 				}
 				/*	Connect.
@@ -490,18 +504,14 @@
 		function setHandle ( handle, to ) {
 
 			var  settings = handle.data('options')
-				// Get the array of handles from the base.
-				// Will be undefined at initialisation.
 				,handles = handle.data('base').data('handles')
-				// Get some settings from the handle;
-				,style = handle.data('base').data('style')
 				,hLimit;
 
 			// Make sure the value can be parsed. This will catch
 			// any potential NaN, even though no internal function
 			// calling 'setHandle' should pass invalided parameters.
 			// We'll also ignore the call if the handle won't move anyway.
-			if( !isNumeric(to) || to === handle[0].gPct(style) ) {
+			if( !isNumeric(to) || to === handle[0].gPct() ) {
 				return false;
 			}
 
@@ -514,7 +524,7 @@
 			}
 
 			// Stop handling this call if the handle won't step to a new value.
-			if( to === handle[0].gPct(style) ) {
+			if( to === handle[0].gPct() ) {
 				return false;
 			}
 
@@ -526,15 +536,15 @@
 				// Otherwise, the handle should bounce,
 				// and stop at the other handle.
 				if ( handle.is(handles[1]) ) {
-					hLimit = handles[0][0].gPct(style) + settings.margin;
+					hLimit = handles[0][0].gPct() + settings.margin;
 					to = to < hLimit ? hLimit : to;
 				} else {
-					hLimit = handles[1][0].gPct(style) - settings.margin;
+					hLimit = handles[1][0].gPct() - settings.margin;
 					to = to > hLimit ? hLimit : to;
 				}
 
 				// Stop handling this call if the handle can't move past another.
-				if( to === handle[0].gPct(style) ) {
+				if( to === handle[0].gPct() ) {
 					return false;
 				}
 			}
@@ -543,7 +553,7 @@
 			to = to < 0 ? 0 : to > 100 ? 100 : to;
 
 			// Set handle to new location
-			handle.css( style , to + '%' );
+			handle.css( handle.data('style'), to + '%' );
 
 			// Write the value to the serialization object.
 			handle.data('store').val(
@@ -622,18 +632,16 @@
 
 		function move( event ) {
 
-			// This function is called often, keep it light.
+			var base = this.base, proposal, baseSize;
 
-			var  base = this.base
-				,style = base.data('style')
 			// Subtract the initial movement from the current event,
 			// while taking vertical sliders into account.
-				,proposal = event.x - this.startEvent.x
-				,baseSize = style === 'left' ? base.width() : base.height();
-
-			// This loop prevents a long ternary for the proposal variable.
-			if( style === 'top' ) {
+			if ( this.handle.data('style') === 'left' ) {
+				proposal = event.x - this.startEvent.x;
+				baseSize = base.width();
+			} else {
 				proposal = event.y - this.startEvent.y;
+				baseSize = base.height();
 			}
 
 			proposal = this.position + ( ( proposal * 100 ) / baseSize );
@@ -652,7 +660,7 @@
 
 			// Unbind move and end events, to prevent them stacking
 			// over and over. Text-selection events are bound to the body.
-			all.add( $('body').css( 'cursor', '' ) ).off( namespace );
+			$('body').css('cursor', '').add( all ).off( namespace );
 
 			// Trigger the change event.
 			this.base.data('target').change();
@@ -663,19 +671,16 @@
 
 		function start ( event ) {
 
-			// Find the last used handle, and remove the
-			// z-index class from it.
-			this.base.find( '.' + clsList[13] ).removeClass( clsList[13] );
+			// Prevent triggering of the 'tap' event.
+			event.stopPropagation();
 
-			// Add the z-index class to this one, and mark
-			// the handle as 'active' so it can be properly styled.
-			this.handle.children().addClass( clsList[4] + ' ' + clsList[13] );
+			zIndex(this.handle).children().addClass(clsList[4]);
 
 			// Attach the move event handler, while
 			// passing all relevant information along.
 			attach ( actions.move, all, move, {
 				 startEvent: event
-				,position: this.handle[0].gPct( this.base.data('style') )
+				,position: this.handle[0].gPct()
 				,base: this.base
 				,target: this.target
 				,handle: this.handle
@@ -688,7 +693,6 @@
 			});
 
 			// Prevent text selection when dragging the handles.
-			// This doesn't prevent the browser defaulting to the I like cursor.
 			$('body').css('cursor', 'default').on(
 				 'selectstart' + namespace
 				,function( ){ return false; }
@@ -707,7 +711,7 @@
 			// shortens other expressions and is far more convenient;
 			var  i, handle, hCenter, base = this.base
 				,handles = base.data('handles')
-				,style = base.data('style')
+				,style = handles[0].data('style')
 				,eventXY = event[style === 'left' ? 'x' : 'y']
 				,baseSize = style === 'left' ? base.width() : base.height()
 				,offset = {
@@ -777,9 +781,8 @@
 				target.addClass(clsList[6]);
 
 				// Base is the internal main 'bar'.
-				var  i, style, handle
-					,base = $('<div/>').appendTo(target)
-					,cls = {
+				var i, handle, base = $('<div/>').appendTo(target),
+					cls = {
 					 base: stdCls.base
 						,origin: [
 							 stdCls.origin.concat([clsList[1] + clsList[7]])
@@ -829,8 +832,6 @@
 					cls.base.push(clsList[12]);
 				}
 
-				style = options.orientation === 'vertical' ? 'top' : 'left';
-
 				// Parse the syntactic sugar that is the serialization
 				// resolution option to a usable integer.
 				// Checking for a string "1", since the resolution needs
@@ -854,7 +855,6 @@
 				base.addClass( cls.base.join(" ") ).data({
 					 target: target
 					,options: options
-					,style: style
 					,handles: []
 				});
 
@@ -883,6 +883,7 @@
 						 base: base
 						,target: target
 						,options: options
+						,style: options.orientation === 'vertical' ? 'top' : 'left'
 					});
 
 					handle.data({
@@ -898,6 +899,10 @@
 
 					// Set the handle to its initial position;
 					setHandle(handle, percentage.to(options.range, options.start[i]));
+
+					if ( !i && handle[0].gPct() > 50 ) {
+						zIndex(handle);
+					}
 				}
 
 				// Attach the the tap event to the slider base.
@@ -987,7 +992,7 @@
 						// Get the value for the current position.
 						current = percentage.is(
 							 range
-							,handles[i][0].gPct( base.data('style') )
+							,handles[i][0].gPct()
 						);
 
 						if( handles[i].data('store').val() !== current ){
@@ -995,6 +1000,10 @@
 								format( current, handles[i].data('options') )
 							);
 						}
+					}
+
+					if ( !i && handles[i][0].gPct() > 50 ) {
+						zIndex(handles[i]);
 					}
 
 					// The 'val' method allows for an external modifier,
