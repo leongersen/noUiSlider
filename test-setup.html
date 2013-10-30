@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+	<title>Testing</title>
+
+	<link href="jquery.nouislider.css" rel="stylesheet">
+
+	<style>
+
+		section {
+			padding: 40px;
+		}
+		[data-side] {
+			width: 130px;
+			display: inline-block;
+		}
+		[data-side] .noUi-target {
+			height: 200px;
+		}
+
+	</style>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="jquery.nouislider.js"></script>
+
+	<script>
+
+		window.Rapport = function( name ){
+			return !console ? function(){} : function() {
+				console.log($(this).attr('id'), name, name === 'slide' ? '...' : $(this).val());
+			}
+		}
+
+		var Count = 0;
+
+		function Create( options, setter ) {
+
+			Count++;
+			var s = $('<section/>').appendTo($('body')),
+				id = 'slider' + Count;
+
+			if ( setter || options.orientation === "vertical" ) {
+				s.attr('data-side','');
+			}
+
+			window[id] = $('<div/>').appendTo(s).attr('id', id);
+
+			if ( typeof options === "string" ) {
+				s.append(options);
+			} else {
+				window[id].noUiSlider(options);
+			}
+
+			return window[id];
+		}
+
+	</script>
+
+	<body>
+		<script>
+
+			Create({
+				 range: [20, 50]
+				,start: [20, 50]
+				,handles: 1
+				,set: Rapport('set')
+				,slide: Rapport('slide')
+			});
+
+			Create({
+				 range: [-20, 90]
+				,start: [0, 20]
+				,handles: 2
+				,connect: true
+				,set: Rapport('set')
+				,slide: Rapport('slide')
+			});
+
+			Create({
+				 range: [-20, 90]
+				,start: [0, 20]
+				,handles: 2
+				,margin: 10
+				,connect: true
+				,set: Rapport('set')
+				,slide: Rapport('slide')
+			});
+
+			Create({
+				 range: [-30, -10]
+				,start: [-30, 0]
+				,handles: 2
+				,orientation: "vertical"
+				,connect: true
+				,set: Rapport('set')
+				,slide: Rapport('slide')
+			});
+
+			Create({
+				 range: [0, 10]
+				,start: [0, 5]
+				,handles: 2
+				,step: 2
+				,serialization: {
+					 to: false
+					,mark: ','
+					,resolution: 0.0001
+				}
+				,orientation: "vertical"
+				,connect: true
+				,set: Rapport('set')
+				,slide: Rapport('slide')
+			});
+
+			Create({
+				 range: [-12, 67]
+				,start: 11
+				,handles: 1
+				,step: 2
+				,serialization: {
+					 to: false
+					,mark: '.'
+					,resolution: 0.0001
+				}
+				,set: Rapport('set')
+				,orientation: "vertical"
+				,connect: 'lower'
+			}).val(100);
+
+			Create('<input id="field1">\
+					<input id="field2">\
+					<input id="field3">', true)
+			.noUiSlider({
+				 range: [-1000, 1500]
+				,start: [0, 2000]
+				,handles: 2
+				,step: 2
+				,direction: 'rtl'
+				,serialization: {
+					 to: [ $('#field1, #field2'), $('#field3') ]
+					,mark: '.'
+					,resolution: 0.0001
+				}
+				,set: Rapport('set')
+				,orientation: "vertical"
+				,connect: true
+			});
+
+			Create({
+				 range: [0, 10]
+				,start: [10,10]
+				,handles: 2
+				,direction: 'rtl'
+				,serialization: {
+					 to: false
+					,mark: '.'
+					,resolution: 0.0001
+				}
+				,connect: true
+			});
+			
+			Create('<input id="low1"><input id="high1">')
+				.noUiSlider({
+					 range: [10, 20]
+					,start: [19.9, 20]
+					,handles: 2
+					,serialization: {
+						to: [ $("#low1"), $("#high1") ]
+					}
+				});
+				
+			Create('<input id="low2"><input id="high2">')
+				.noUiSlider({
+					 range: [10, 20]
+					,start: [10, 10.1]
+					,handles: 2
+					,direction: 'rtl'
+					,serialization: {
+						to: [ $("#low2"), $("#high2") ]
+					}
+				});
+
+		</script>
+
+	</body>

@@ -447,7 +447,7 @@
 				,"direction": {
 					 r: true
 					,t: function(q,o,w){
-						o[w] = q === 'rtl' ? 100 : q === 'ltr' ? 0 : -1;
+						o[w] = q === 'rtl' ? 1 : q === 'ltr' ? 0 : -1;
 						return o[w] >= 0;
 					}
 				}
@@ -1019,7 +1019,7 @@
 						if ( settings.direction ) {
 							to = 100 - to;
 						}
-					
+
 						// Get the value for the current position.
 						current = percentage.is( settings.range, to );
 
@@ -1032,7 +1032,7 @@
 
 					// Make sure the proper handles gets the z-index class,
 					// so handles won't get stacked in the wrong order.
-					if ( !i && handles[i][0].gPct() > 50 ) {
+					if ( !(i%2) && handles[i][0].gPct() > 50 ) {
 						zIndex(handles[i]);
 					}
 
