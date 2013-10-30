@@ -66,7 +66,7 @@
 					return ((value * this.len(range)) / 100) + range[0];
 				}
 				,len: function ( range ) {
-					return (range[0] > range[1] ? range[0] - range[1] : range[1] - range[0]);
+					return (range[1] - range[0]);
 				}
 			}
 			// Event handlers bound to elements to perform basic tasks.
@@ -78,8 +78,7 @@
 					this.target.val([
 						 !this.i ? this.val() : null
 						, this.i ? this.val() : null
-					], { trusted: false });
-
+					]);
 				}
 				// Shorthand for stopping propagation on an object.
 				// Calling a function prevents having to define
@@ -159,8 +158,8 @@
 			}
 
 			if ( touch ) {
-				// noUiSlider supports one movement at a time, for now.
-				// It is therefore safe to select the first 'changedTouch'.
+				// noUiSlider supports one movement at a time,
+				// so we can select the first 'changedTouch'.
 				x = e.changedTouches[0].pageX;
 				y = e.changedTouches[0].pageY;
 			}
@@ -225,8 +224,9 @@
 		}
 
 		// jQuery doesn't have a method to return a CSS value as a percentage.
+		// Return -1 if the element doesn't have an offset yet.
 		function getPercentage( a ){
-			return parseFloat(this.style[$(this).data('style')]);
+			return parseFloat(this.style[$(this).data('style')]) || -1;
 		}
 
 		function zIndex ( handle ) {
@@ -440,10 +440,21 @@
 						return isNumeric(q);
 					}
 				}
+				/*	Direction.
+				 *	Required, can be 'ltr' or 'rtl'.
+				 *
+				 */
+				,"direction": {
+					 r: true
+					,t: function(q,o,w){
+						o[w] = q === 'rtl' ? 100 : q === 'ltr' ? 0 : -1;
+						return o[w] >= 0;
+					}
+				}
 				/*	[init]
 				 *	Not an option test. Calling this method will return the
 				 *	parent object with some cross references that allow
-				 *	crawling the object in an upward direction, which
+				 *	crawling the object in an upward manner, which
 				 *	normally isn't possible in JavaScript.
 				 */
 				,"init": function(){
@@ -528,13 +539,10 @@
 				return false;
 			}
 
-			// We're done if this is the only handle,
-			// if the handle bounce is trusted to the user
-			// or on initialisation when handles isn't defined yet.
 			if( handles.length > 1 ){
 
-				// Otherwise, the handle should bounce,
-				// and stop at the other handle.
+				// If there are multiple handles, they can't pass
+				// each other, and they'll be limited to the other handle.
 				if ( handle.is(handles[1]) ) {
 					hLimit = handles[0][0].gPct() + settings.margin;
 					to = to < hLimit ? hLimit : to;
@@ -542,18 +550,22 @@
 					hLimit = handles[1][0].gPct() - settings.margin;
 					to = to > hLimit ? hLimit : to;
 				}
-
-				// Stop handling this call if the handle can't move past another.
-				if( to === handle[0].gPct() ) {
-					return false;
-				}
 			}
 
 			// Limit 'to' to 0 - 100 again after all modifications
 			to = to < 0 ? 0 : to > 100 ? 100 : to;
 
+			// Stop handling this call if the handle can't move past another.
+			if( to === handle[0].gPct() ) {
+				return false;
+			}
+
 			// Set handle to new location
 			handle.css( handle.data('style'), to + '%' );
+
+			if ( settings.direction ) {
+				to = 100 - to;
+			}
 
 			// Write the value to the serialization object.
 			handle.data('store').val(
@@ -798,6 +810,7 @@
 				options = $.extend({
 					 handles: 2
 					,margin: 0
+					,direction: "ltr"
 					,orientation: "horizontal"
 				}, options) || {};
 
@@ -896,14 +909,9 @@
 
 					// Store handles on the base
 					base.data('handles').push(handle);
-
-					// Set the handle to its initial position;
-					setHandle(handle, percentage.to(options.range, options.start[i]));
-
-					if ( !i && handle[0].gPct() > 50 ) {
-						zIndex(handle);
-					}
 				}
+
+				target.val( options.start );
 
 				// Attach the the tap event to the slider base.
 				attach ( actions.start, base, tap, {
@@ -924,8 +932,15 @@
 			});
 
 			// If the slider has just one handle, return a single value.
-			// Otherwise, return an array.
-			return ( re.length === 1 ? re[0] : re );
+			// Otherwise, return an array, which is in reverse order
+			// if the slider is used RTL.
+			if ( re.length === 1 ) {
+				return re[0];
+			} else if ( $(this).data('base').data('options').direction ) {
+				return re.reverse();
+			} else {
+				return re;
+			}
 		}
 
 		function setValue ( args, modifiers ) {
@@ -951,11 +966,17 @@
 
 				var i, base = target.data('base'),
 					handles = Array.prototype.slice.call(base.data('handles'), 0),
-					range = handles[0].data('options').range,
+					settings = handles[0].data('options'),
 					to, current;
 
 				if ( handles.length > 1 ) {
 					handles[2] = handles[0];
+				}
+
+				// The RTL settings is implemented by reversing the front-end,
+				// internal mechanisms are the same.
+				if ( settings.direction ) {
+					args.reverse();
 				}
 
 				for ( i = 0; i < handles.length; i++ ){
@@ -980,7 +1001,11 @@
 					}
 
 					// Calculate the new handle position
-					to = percentage.to( range, parseFloat( to ) );
+					to = percentage.to( settings.range, parseFloat( to ) );
+
+					if ( settings.direction ) {
+						to = 100 - to;
+					}
 
 					// If the value of the input doesn't match the slider,
 					// reset it. Sometimes the input is changed to a value the
@@ -989,19 +1014,24 @@
 					// the value back to the input.
 					if ( !setHandle( handles[i], to ) ){
 
+						// Read the value from the handle.
+						to = handles[i][0].gPct();
+						if ( settings.direction ) {
+							to = 100 - to;
+						}
+					
 						// Get the value for the current position.
-						current = percentage.is(
-							 range
-							,handles[i][0].gPct()
-						);
+						current = percentage.is( settings.range, to );
 
 						if( handles[i].data('store').val() !== current ){
 							handles[i].data('store').val(
-								format( current, handles[i].data('options') )
+								format( current, settings )
 							);
 						}
 					}
 
+					// Make sure the proper handles gets the z-index class,
+					// so handles won't get stacked in the wrong order.
 					if ( !i && handles[i][0].gPct() > 50 ) {
 						zIndex(handles[i]);
 					}
@@ -1009,7 +1039,7 @@
 					// The 'val' method allows for an external modifier,
 					// to specify a request for an 'set' event.
 					if( modifiers.trigger ) {
-						call( handles[i].data('options').set, target );
+						call( settings.set, target );
 					}
 				}
 			});
@@ -1035,7 +1065,6 @@
 		};
 
 		return create.call( this, options );
-
 	};
 
 }( window.jQuery || window.Zepto ));
