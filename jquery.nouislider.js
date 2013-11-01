@@ -27,20 +27,23 @@
 			// Define a set of standard HTML classes for
 			// the various structures noUiSlider uses.
 			,clsList = [
-				 'noUi-base'		// 0
-				,'noUi-origin'		// 1
-				,'noUi-handle'		// 2
-				,'noUi-input'		// 3
-				,'noUi-active'		// 4
-				,'noUi-state-tap'	// 5
-				,'noUi-target'		// 6
-				,'-lower'			// 7
-				,'-upper'			// 8
-				,'noUi-connect'		// 9
-				,'noUi-vertical'	// 10
-				,'noUi-horizontal'	// 11
-				,'noUi-background'	// 12
-				,'noUi-z-index'		// 13
+				 'noUi-base'			// 0
+				,'noUi-origin'			// 1
+				,'noUi-handle'			// 2
+				,'noUi-input'			// 3
+				,'noUi-active'			// 4
+				,'noUi-state-tap'		// 5
+				,'noUi-target'			// 6
+				,'-lower'				// 7
+				,'-upper'				// 8
+				,'noUi-connect'			// 9
+				,'noUi-vertical'		// 10
+				,'noUi-horizontal'		// 11
+				,'noUi-background'		// 12
+				,'noUi-z-index'			// 13
+				,'noUi-blocked'			// 14
+				,'noUi-state-blocked'	// 15
+				,'-'
 			]
 			// Define an extendible object with base classes for the various
 			// structure elements in the slider. These can be extended by simply
@@ -87,6 +90,8 @@
 					e.stopPropagation();
 				}
 			];
+
+		clsList[16] = clsList[14] + ' ' + clsList[15];
 
 		// When the browser supports MsPointerEvents,
 		// don't bind touch or mouse events. The touch events are
@@ -177,7 +182,6 @@
 			}
 
 			return $.extend( event, { x:x, y:y } );
-
 		}
 
 		// Handler for attaching events trough a proxy
@@ -428,6 +432,15 @@
 						return this.parent.slide.t(q,o);
 					}
 				}
+				/*	Block.
+				 *	Not required. Must be a function.
+				 *	Tested using the 'slide' test.
+				 */
+				,"block": {
+					 t: function(q,o){
+						return this.parent.slide.t(q,o);
+					}
+				}
 				/*	Step.
 				 *	Not required.
 				 */
@@ -499,10 +512,22 @@
 			return value.replace( '.', options.serialization.mark );
 		}
 
+		function block ( base ) {
+			if ( !base.hasClass(clsList[14]) ){
+				base.addClass(clsList[16]);
+				setTimeout(function(){
+					base.removeClass(clsList[15]);
+				}, 600);
+				call( base.data('options').block, base.data('target') );
+			}
+			return false;
+		}
+
 		function setHandle ( handle, to ) {
 
 			var  settings = handle.data('options')
-				,handles = handle.data('base').data('handles')
+				,base = handle.data('base')
+				,handles = base.data('handles')
 				,hLimit;
 
 			// Make sure the value can be parsed. This will catch
@@ -523,7 +548,7 @@
 
 			// Stop handling this call if the handle won't step to a new value.
 			if( to === handle[0].gPct() ) {
-				return false;
+				return block(base);
 			}
 
 			if( handles.length > 1 ){
@@ -544,9 +569,10 @@
 
 			// Stop handling this call if the handle can't move past another.
 			if( to === handle[0].gPct() ) {
-				console.log('bounce');
-				return false;
+				return block(base);
 			}
+
+			base.removeClass(clsList[16]);
 
 			// Set handle to new location
 			handle.css( handle.data('style'), to + '%' );

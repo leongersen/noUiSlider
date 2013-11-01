@@ -111,14 +111,17 @@
 		background: #EEE;
 	}
 
-/*	Handle transition state;
+/*	Transition states;
  *		Support for transition is widely available,
  *		Only IE7, IE8 and IE9 will ignore these rules.
  *		Since this is merely a progressive enhancement,
  *		this is no problem at all.
  *		http://caniuse.com/#search=transition
  */
-	[class*="noUi-state-"] .noUi-origin {
+	.noUi-state-tap .noUi-origin {
 		-webkit-transition: left 0.3s, top 0.3s;
 		transition: left 0.3s, top 0.3s;
+	}
+	.noUi-state-blocked .noUi-connect {
+		background: #7f8c8d;
 	}

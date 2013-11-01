@@ -237,6 +237,10 @@
 				,margin: 3
 				,handles: 2
 				,direction: 'rtl'
+				,connect: true
+				,blocked: function(){
+					console.log('he');
+				}
 			});
 
 			// Form change rtl serialization
