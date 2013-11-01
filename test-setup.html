@@ -52,7 +52,7 @@
 			Count++;
 			var s = $('<section/>').appendTo($('body')),
 				id = 'slider' + Count;
-
+				
 			if ( vertical || options.orientation === "vertical" ) {
 				s.attr('data-side','');
 			}
@@ -69,12 +69,13 @@
 
 			return window[id];
 		}
-
+		
 	</script>
 
 	<body>
 		<script>
 
+			// Basic test
 			Create({
 				 range: [20, 50]
 				,start: [20, 50]
@@ -83,6 +84,7 @@
 				,slide: Rapport('slide')
 			});
 
+			// Negative values
 			Create({
 				 range: [-20, 90]
 				,start: [0, 20]
@@ -92,6 +94,7 @@
 				,slide: Rapport('slide')
 			});
 
+			// Connect'
 			Create({
 				 range: [-20, 90]
 				,start: [0, 20]
@@ -102,6 +105,7 @@
 				,slide: Rapport('slide')
 			});
 
+			// Vertical connect
 			Create({
 				 range: [-30, -10]
 				,start: [-30, 0]
@@ -112,6 +116,7 @@
 				,slide: Rapport('slide')
 			});
 
+			// False serialization, comma
 			Create({
 				 range: [0, 10]
 				,start: [0, 5]
@@ -128,6 +133,7 @@
 				,slide: Rapport('slide')
 			});
 
+			// Negative and positive, connect
 			Create({
 				 range: [-12, 67]
 				,start: 11
@@ -143,6 +149,7 @@
 				,connect: 'lower'
 			}).val(100);
 
+			// Multiple serialization fields
 			Create('<input id="field1">\
 					<input id="field2">\
 					<input id="field3">', true)
@@ -162,6 +169,7 @@
 				,connect: true
 			});
 
+			// Serialization to select
 			Create('<select id="select">\
 						<option value="0">0</option>\
 						<option value="1">1</option>\
@@ -185,6 +193,7 @@
 				}
 			});
 
+			// Rtl 100% placement
 			Create({
 				 range: [0, 10]
 				,start: [10,10]
@@ -198,6 +207,7 @@
 				,connect: true
 			});
 
+			// Left to right z-indexing
 			Create('<input id="low1"><input id="high1">')
 			.noUiSlider({
 				 range: [10, 20]
@@ -208,6 +218,7 @@
 				}
 			});
 
+			// Right to left, test z-indexing
 			Create('<input id="low2"><input id="high2">')
 			.noUiSlider({
 				 range: [10, 20]
@@ -219,6 +230,7 @@
 				}
 			});
 
+			// Rtl placement
 			Create({
 				 range: [10, 20]
 				,start: [10, 10]
@@ -227,6 +239,7 @@
 				,direction: 'rtl'
 			});
 
+			// Form change rtl serialization
 			Create('<form id="form1"></form>', true, true)
 			.noUiSlider({
 				 range: [-3, -2]
@@ -239,6 +252,7 @@
 				,direction: 'rtl'
 			}).change(Rapport('change')).parent().change(Rapport('change'));
 
+			// Serialization ltr
 			Create('<form id="form2"></form>', true, true)
 			.noUiSlider({
 				 range: [5, 50]
@@ -249,6 +263,18 @@
 					to: ['lower', 'upper']
 				}
 			}).change(Rapport('change')).parent().change(Rapport('change'));
+
+			// One input, one hidden, test change event triggers
+			Create('<form id="form3"><input id="half" name="half-id"></form>', false, true)
+			.noUiSlider({
+				 range: [10, 20]
+				,start: [18.99, 20]
+				,step: 2
+				,handles: 2
+				,serialization: {
+					to: [$('#half'), 'half']
+				}
+			}).val([5,5]).parent().change(Rapport('change'));
 
 		</script>
 

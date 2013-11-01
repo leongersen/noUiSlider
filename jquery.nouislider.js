@@ -229,20 +229,6 @@
 			return parseFloat(this.style[$(this).data('style')]) || -1;
 		}
 
-		function zIndex ( handle ) {
-
-			// Remove the z-index class from the last used handle,
-			// add the z-index class to the current handle, and mark
-			// the handle as 'active' so it can be properly styled.
-			$.each([ handle.data('base').find( '.' + clsList[13] )
-					,handle.children() ], function(i, item){
-						item.toggleClass( clsList[13] );
-					});
-
-			// Return the handle so this function is chainable;
-			return handle;
-		}
-
 		function test ( o, set ){
 
 			// Checks whether a variable is a candidate to be a
@@ -558,11 +544,16 @@
 
 			// Stop handling this call if the handle can't move past another.
 			if( to === handle[0].gPct() ) {
+				console.log('bounce');
 				return false;
 			}
 
 			// Set handle to new location
 			handle.css( handle.data('style'), to + '%' );
+
+			if ( handle.is(handles[0]) ) {
+				handle.children('.' + clsList[2]).toggleClass(clsList[13], to > 50 );
+			}
 
 			if ( settings.direction ) {
 				to = 100 - to;
@@ -669,7 +660,7 @@
 		function end ( ) {
 
 			// The handle is no longer active, so remove the class.
-			this.handle.children().removeClass(clsList[4]);
+			this.handle.children('.' + clsList[2]).removeClass(clsList[4]);
 
 			// Unbind move and end events, to prevent them stacking
 			// over and over. Text-selection events are bound to the body.
@@ -684,10 +675,11 @@
 
 		function start ( event ) {
 
+			// Mark the handle as 'active' so it can be properly styled.
+			this.handle.children('.' + clsList[2]).addClass(clsList[4]);
+
 			// Prevent triggering of the 'tap' event.
 			event.stopPropagation();
-
-			zIndex(this.handle).children().addClass(clsList[4]);
 
 			// Attach the move event handler, while
 			// passing all relevant information along.
@@ -970,7 +962,16 @@
 					settings = handles[0].data('options'),
 					to, current;
 
-				if ( handles.length > 1 ) {
+				base.find('.' + clsList[13]).removeClass(clsList[13]);
+
+				if ( handles.length > 1 &&
+					 handles[0] !== null &&
+					 handles[1] !== null ) {
+
+					// If there are multiple handles to be set, and none of
+					// the new settings is 'ignore', run the setting mechanism
+					// twice for the first handle, to make sure it can be
+					// bounced of the second one properly.
 					handles[2] = handles[0];
 				}
 
@@ -1029,12 +1030,6 @@
 								format( current, settings )
 							);
 						}
-					}
-
-					// Make sure the proper handles gets the z-index class,
-					// so handles won't get stacked in the wrong order.
-					if ( !(i%2) && handles[i][0].gPct() > 50 ) {
-						zIndex(handles[i]);
 					}
 
 					// The 'val' method allows for an external modifier,
