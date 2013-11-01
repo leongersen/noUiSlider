@@ -356,6 +356,16 @@
 						return isNumeric(q);
 					}
 				}
+				/*	Direction.
+				 *	Required, can be 'ltr' or 'rtl'.
+				 */
+				,"direction": {
+					 r: true
+					,t: function(q,o,w){
+						o[w] = q === 'rtl' ? 1 : q === 'ltr' ? 0 : -1;
+						return o[w] >= 0;
+					}
+				}
 				/*	Serialization.
 				 *	Required, but has default. 'resolution' and 'mark' option,
 				 *	are allowed to be missing, 'to' isn't. Must be an array
@@ -398,6 +408,8 @@
 							// Wrap the value for one handle into an array.
 							if ( !$.isArray(q.to) ){
 								o.serialization.to = [q.to];
+							} else if ( o.direction ) {
+								o.serialization.to.reverse();
 							}
 
 							// Write back to the options object;
@@ -438,17 +450,6 @@
 						q = parseFloat(q);
 						o[w] = q;
 						return isNumeric(q);
-					}
-				}
-				/*	Direction.
-				 *	Required, can be 'ltr' or 'rtl'.
-				 *
-				 */
-				,"direction": {
-					 r: true
-					,t: function(q,o,w){
-						o[w] = q === 'rtl' ? 1 : q === 'ltr' ? 0 : -1;
-						return o[w] >= 0;
 					}
 				}
 				/*	[init]

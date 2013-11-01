@@ -10,11 +10,23 @@
 			padding: 40px;
 		}
 		[data-side] {
-			width: 130px;
+			width: 80px;
 			display: inline-block;
+			vertical-align: top;
 		}
 		[data-side] .noUi-target {
 			height: 200px;
+		}
+		
+		input {
+			width: 70px;
+		}
+		input:first-of-type {
+			margin-top: 40px;
+		}
+		select {
+			width: 50px;
+			margin: 40px 0;
 		}
 
 	</style>
@@ -26,28 +38,33 @@
 
 		window.Rapport = function( name ){
 			return !console ? function(){} : function() {
-				console.log($(this).attr('id'), name, name === 'slide' ? '...' : $(this).val());
+				console.log($(this).attr('id'), name, 
+					name === 'slide' ? '...' : 
+					$(this).is('form') ? $(this).serialize() : $(this).val()
+				);
 			}
 		}
 
 		var Count = 0;
 
-		function Create( options, setter ) {
+		function Create( options, vertical, inner ) {
 
 			Count++;
 			var s = $('<section/>').appendTo($('body')),
 				id = 'slider' + Count;
 
-			if ( setter || options.orientation === "vertical" ) {
+			if ( vertical || options.orientation === "vertical" ) {
 				s.attr('data-side','');
 			}
 
-			window[id] = $('<div/>').appendTo(s).attr('id', id);
+			window[id] = $('<div/>').attr('id', id);
 
-			if ( typeof options === "string" ) {
-				s.append(options);
+			if ( typeof options === "string" && inner ) {
+				$(options).appendTo(s).append(window[id]);
+			} else if ( typeof options === "string" ) {
+				window[id].prependTo(s.append(options));
 			} else {
-				window[id].noUiSlider(options);
+				window[id].appendTo(s).noUiSlider(options);
 			}
 
 			return window[id];
@@ -145,6 +162,29 @@
 				,connect: true
 			});
 
+			Create('<select id="select">\
+						<option value="0">0</option>\
+						<option value="1">1</option>\
+						<option value="2">2</option>\
+						<option value="3">3</option>\
+						<option value="4">4</option>\
+						<option value="5">5</option>\
+					</select>', true)
+			.noUiSlider({
+				 range: [0, 5]
+				,start: [10, 10]
+				,margin: 3
+				,step: 1
+				,handles: 1
+				,set: Rapport('set')
+				,orientation: "vertical"
+				,serialization: {
+					 mark: ','
+					,resolution: 1
+					,to: [$('#select')]
+				}
+			});
+
 			Create({
 				 range: [0, 10]
 				,start: [10,10]
@@ -157,27 +197,58 @@
 				}
 				,connect: true
 			});
-			
+
 			Create('<input id="low1"><input id="high1">')
-				.noUiSlider({
-					 range: [10, 20]
-					,start: [19.9, 20]
-					,handles: 2
-					,serialization: {
-						to: [ $("#low1"), $("#high1") ]
-					}
-				});
-				
+			.noUiSlider({
+				 range: [10, 20]
+				,start: [19.9, 20]
+				,handles: 2
+				,serialization: {
+					to: [ $("#low1"), $("#high1") ]
+				}
+			});
+
 			Create('<input id="low2"><input id="high2">')
-				.noUiSlider({
-					 range: [10, 20]
-					,start: [10, 10.1]
-					,handles: 2
-					,direction: 'rtl'
-					,serialization: {
-						to: [ $("#low2"), $("#high2") ]
-					}
-				});
+			.noUiSlider({
+				 range: [10, 20]
+				,start: [10, 10.1]
+				,handles: 2
+				,direction: 'rtl'
+				,serialization: {
+					to: [ $("#low2"), $("#high2") ]
+				}
+			});
+
+			Create({
+				 range: [10, 20]
+				,start: [10, 10]
+				,margin: 3
+				,handles: 2
+				,direction: 'rtl'
+			});
+
+			Create('<form id="form1"></form>', true, true)
+			.noUiSlider({
+				 range: [-3, -2]
+				,start: [10, 10]
+				,handles: 2
+				,orientation: "vertical"
+				,serialization: {
+					to: ['lower', 'upper']
+				}
+				,direction: 'rtl'
+			}).change(Rapport('change')).parent().change(Rapport('change'));
+
+			Create('<form id="form2"></form>', true, true)
+			.noUiSlider({
+				 range: [5, 50]
+				,start: [10, 10]
+				,handles: 2
+				,orientation: "vertical"
+				,serialization: {
+					to: ['lower', 'upper']
+				}
+			}).change(Rapport('change')).parent().change(Rapport('change'));
 
 		</script>
 
