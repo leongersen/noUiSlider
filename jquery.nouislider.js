@@ -42,10 +42,8 @@
 			/* 12 */ ,'noUi-background'
 			/* 13 */ ,'noUi-z-index'
 			/* 14 */ ,'noUi-block'
-			/* 15 */ ,'noUi-blocked'
-			/* 16 */ ,'noUi-state-blocked'
-			/* 17 */ ,'-'
-			/* 18 */ ,'noUi-rtl'
+			/* 15 */ ,'noUi-state-blocked'
+			/* 17 */ ,'noUi-rtl'
 			]
 			// Define an extendible object with base classes for the various
 			// structure elements in the slider. These can be extended by simply
@@ -101,8 +99,6 @@
 					return false;
 				}
 			];
-
-		clsList[17] = clsList[14] + ' ' + clsList[15] + ' ' + clsList[16];
 
 		// When the browser supports MsPointerEvents,
 		// don't bind touch or mouse events. The touch events are
@@ -218,7 +214,7 @@
 				// Test if there is anything that should prevent an event
 				// from being handled, such as a disabled state or an active
 				// 'tap' transition. Prevent interaction with disabled sliders.
-				if( this.target.is('[class*="noUi-state-"], [disabled]') ) {
+				if( this.target.is('.noUi-state-tap, [disabled]') ) {
 					return false;
 				}
 
@@ -239,8 +235,9 @@
 
 		// jQuery doesn't have a method to return a CSS value as a percentage.
 		// Return -1 if the element doesn't have an offset yet.
-		function getPercentage( a ){
-			return parseFloat(this.style[$(this).data('style')]) || -1;
+		function getPercentage( ){
+			var value = parseFloat(this.style[$(this).data('style')]);
+			return isNaN(value) ? -1 : value;
 		}
 
 		function test ( o, set ){
@@ -522,34 +519,37 @@
 			return value.replace( '.', options.serialization.mark );
 		}
 
-		function block ( base ) {
-			if ( !base.hasClass(clsList[14]) ){
-				base.addClass(clsList[17]);
+		function block ( base, ignore ) {
+
+			if ( ignore ) {
+				return false;
+			}
+
+			var target = base.data('target');
+
+			if ( !target.hasClass(clsList[14]) ){
+				target.addClass(clsList[14] + ' ' + clsList[15]);
 				setTimeout(function(){
-					base.removeClass(clsList[16]);
+					target.removeClass(clsList[15]);
 				}, 600);
-				call( base.data('options').block, base.data('target') );
+				call( base.data('options').block, target );
 			}
 			return false;
 		}
 
-		function setHandle ( handle, to ) {
+		function setHandle ( handle, to, ignore ) {
 
 			var  settings = handle.data('options')
 				,base = handle.data('base')
 				,handles = base.data('handles')
-				,hLimit;
-
-			// Make sure the value can be parsed. This will catch
-			// any potential NaN, even though no internal function
-			// calling 'setHandle' should pass invalided parameters.
-			// We'll also ignore the call if the handle won't move anyway.
-			if( !isNumeric(to) || to === handle[0].gPct() ) {
-				return false;
-			}
+				,edge, initial = handle[0].gPct();
 
 			// Catch any attemt to drag beyond the slider edges.
 			to = to < 0 ? 0 : to > 100 ? 100 : to;
+
+			if( to === initial ) {
+				return false;
+			}
 
 			// Handle the step option.
 			if( settings.step ){
@@ -557,8 +557,8 @@
 			}
 
 			// Stop handling this call if the handle won't step to a new value.
-			if( to === handle[0].gPct() ) {
-				return block(base);
+			if( to === initial ) {
+				return false;
 			}
 
 			if( handles.length > 1 ){
@@ -566,11 +566,11 @@
 				// If there are multiple handles, they can't pass
 				// each other, and they'll be limited to the other handle.
 				if ( handle.is(handles[1]) ) {
-					hLimit = handles[0][0].gPct() + settings.margin;
-					to = to < hLimit ? hLimit : to;
+					edge = handles[0][0].gPct() + settings.margin;
+					to = to < edge ? edge : to;
 				} else {
-					hLimit = handles[1][0].gPct() - settings.margin;
-					to = to > hLimit ? hLimit : to;
+					edge = handles[1][0].gPct() - settings.margin;
+					to = to > edge ? edge : to;
 				}
 			}
 
@@ -578,11 +578,11 @@
 			to = to < 0 ? 0 : to > 100 ? 100 : to;
 
 			// Stop handling this call if the handle can't move past another.
-			if( to === handle[0].gPct() ) {
-				return block(base);
+			if( to === initial ) {
+				return block( base, ignore );
 			}
 
-			base.removeClass(clsList[16]);
+			base.removeClass(clsList[14]);
 
 			// Set handle to new location
 			handle.css( handle.data('style'), to + '%' );
@@ -711,10 +711,10 @@
 			all.off( namespace );
 
 			// Trigger the change event.
-			this.base.removeClass(clsList[14]).data('target').change();
+			this.target.removeClass(clsList[14]).change();
 
 			// Trigger the 'end' callback.
-			call( this.handle.data('options').set, this.base.data('target') );
+			call( this.handle.data('options').set, this.target );
 		}
 
 		function start ( event ) {
@@ -904,7 +904,7 @@
 				}
 
 				if ( options.direction ) {
-					target.addClass(clsList[18]);
+					target.addClass(clsList[17]);
 				}
 
 				// Merge base classes with default,
@@ -1067,7 +1067,7 @@
 					// slider has rejected. This can occur when using 'select'
 					// or 'input[type="number"]' elements. In this case, set
 					// the value back to the input.
-					if ( !setHandle( handles[i], to ) ){
+					if ( !setHandle( handles[i], to, true ) ){
 
 						// Read the value from the handle.
 						to = handles[i][0].gPct();
