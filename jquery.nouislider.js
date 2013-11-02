@@ -14,8 +14,8 @@
 	$.fn.noUiSlider = function( options ){
 
 		var  namespace = '.nui'
-			// Create a shorthand for document event binding.
 			,all = $(document)
+			,body = $('body')
 			// Create a map of touch and mouse actions.
 			,actions = {
 				 start: 'mousedown touchstart'
@@ -27,23 +27,25 @@
 			// Define a set of standard HTML classes for
 			// the various structures noUiSlider uses.
 			,clsList = [
-				 'noUi-base'			// 0
-				,'noUi-origin'			// 1
-				,'noUi-handle'			// 2
-				,'noUi-input'			// 3
-				,'noUi-active'			// 4
-				,'noUi-state-tap'		// 5
-				,'noUi-target'			// 6
-				,'-lower'				// 7
-				,'-upper'				// 8
-				,'noUi-connect'			// 9
-				,'noUi-vertical'		// 10
-				,'noUi-horizontal'		// 11
-				,'noUi-background'		// 12
-				,'noUi-z-index'			// 13
-				,'noUi-blocked'			// 14
-				,'noUi-state-blocked'	// 15
-				,'-'
+			/*  0 */  'noUi-base'
+			/*  1 */ ,'noUi-origin'
+			/*  2 */ ,'noUi-handle'
+			/*  3 */ ,'noUi-input'
+			/*  4 */ ,'noUi-active'
+			/*  5 */ ,'noUi-state-tap'
+			/*  6 */ ,'noUi-target'
+			/*  7 */ ,'-lower'
+			/*  8 */ ,'-upper'
+			/*  9 */ ,'noUi-connect'
+			/* 10 */ ,'noUi-vertical'
+			/* 11 */ ,'noUi-horizontal'
+			/* 12 */ ,'noUi-background'
+			/* 13 */ ,'noUi-z-index'
+			/* 14 */ ,'noUi-block'
+			/* 15 */ ,'noUi-blocked'
+			/* 16 */ ,'noUi-state-blocked'
+			/* 17 */ ,'-'
+			/* 18 */ ,'noUi-rtl'
 			]
 			// Define an extendible object with base classes for the various
 			// structure elements in the slider. These can be extended by simply
@@ -78,9 +80,13 @@
 				// and signal unevaluated input.
 				 function ( ) {
 
+					if ( this.options.direction ) {
+						this.which = !this.which;
+					}
+
 					this.target.val([
-						 !this.i ? this.val() : null
-						, this.i ? this.val() : null
+						 !this.which ? this.val() : null
+						, this.which ? this.val() : null
 					]);
 				}
 				// Shorthand for stopping propagation on an object.
@@ -89,9 +95,14 @@
 				,function ( e ) {
 					e.stopPropagation();
 				}
+				// Shorthand for returning false on events
+				// that need to be cancelled.
+				,function( ){
+					return false;
+				}
 			];
 
-		clsList[16] = clsList[14] + ' ' + clsList[15];
+		clsList[17] = clsList[14] + ' ' + clsList[15] + ' ' + clsList[16];
 
 		// When the browser supports MsPointerEvents,
 		// don't bind touch or mouse events. The touch events are
@@ -138,7 +149,6 @@
 			// scrolling and panning while attempting to slide.
 			// The tap event also depends on this. This doesn't
 			// seem to prevent panning in Firefox, which is an issue.
-			// Prevent-default will also stop Chrome from setting a text-cursor.
 			e.preventDefault();
 
 			// Filter the event to register the type,
@@ -181,7 +191,7 @@
 				y = e.clientY + window.pageYOffset;
 			}
 
-			return $.extend( event, { x:x, y:y } );
+			return $.extend( event, { x:x, y:y, cursor: mouse } );
 		}
 
 		// Handler for attaching events trough a proxy
@@ -514,9 +524,9 @@
 
 		function block ( base ) {
 			if ( !base.hasClass(clsList[14]) ){
-				base.addClass(clsList[16]);
+				base.addClass(clsList[17]);
 				setTimeout(function(){
-					base.removeClass(clsList[15]);
+					base.removeClass(clsList[16]);
 				}, 600);
 				call( base.data('options').block, base.data('target') );
 			}
@@ -599,6 +609,7 @@
 				 target: handle.data('target')
 				,options: handle.data('options')
 				,handle: handle
+				,which: !!i
 			};
 
 			if( instance ( S.to[i] ) ) {
@@ -683,17 +694,24 @@
 			}
 		}
 
-		function end ( ) {
+		function end ( event ) {
 
 			// The handle is no longer active, so remove the class.
 			this.handle.children('.' + clsList[2]).removeClass(clsList[4]);
 
+			if ( event.cursor ) {
+
+				// Remove cursor styles and text-selection events
+				// which are bound to the body.
+				body.css('cursor', '').off( namespace );
+			}
+
 			// Unbind move and end events, to prevent them stacking
-			// over and over. Text-selection events are bound to the body.
-			$('body').css('cursor', '').add( all ).off( namespace );
+			// over and over.
+			all.off( namespace );
 
 			// Trigger the change event.
-			this.base.data('target').change();
+			this.base.removeClass(clsList[14]).data('target').change();
 
 			// Trigger the 'end' callback.
 			call( this.handle.data('options').set, this.base.data('target') );
@@ -723,11 +741,14 @@
 				,handle: this.handle
 			});
 
-			// Prevent text selection when dragging the handles.
-			$('body').css('cursor', 'default').on(
-				 'selectstart' + namespace
-				,function( ){ return false; }
-			);
+			if ( event.cursor ) {
+
+				// Prevent the 'I' cursor.
+				body.css('cursor', 'default');
+
+				// Prevent text selection when dragging the handles.
+				body.on('selectstart' + namespace, eventHandlers[2]);
+			}
 		}
 
 		function tap ( event ) {
@@ -876,10 +897,14 @@
 				// Add classes for horizontal and vertical sliders.
 				// The horizontal class is provided for completeness,
 				// as it isn't used in the default theme.
-				if( options.orientation === "vertical" ){
+				if ( options.orientation === "vertical" ){
 					cls.base.push(clsList[10]);
 				} else {
 					cls.base.push(clsList[11]);
+				}
+
+				if ( options.direction ) {
+					target.addClass(clsList[18]);
 				}
 
 				// Merge base classes with default,
@@ -942,24 +967,26 @@
 
 		function getValue ( ) {
 
-			var re = [];
+			var base = $(this).data('base'), answer = [];
 
 			// Loop the handles, and get the value from the input
 			// for every handle on its' own.
-			$.each( $(this).data('base').data('handles'), function( i, handle ){
-				re.push( handle.data('store').val() );
+			$.each( base.data('handles'), function( i, handle ){
+				answer.push( handle.data('store').val() );
 			});
 
 			// If the slider has just one handle, return a single value.
 			// Otherwise, return an array, which is in reverse order
 			// if the slider is used RTL.
-			if ( re.length === 1 ) {
-				return re[0];
-			} else if ( $(this).data('base').data('options').direction ) {
-				return re.reverse();
-			} else {
-				return re;
+			if ( answer.length === 1 ) {
+				return answer[0];
 			}
+
+			if ( base.data('options').direction ) {
+				return answer.reverse();
+			}
+
+			return answer;
 		}
 
 		function setValue ( args, modifiers ) {
@@ -969,7 +996,7 @@
 			// 'set' event should be called.
 			modifiers = modifiers === true ? { trigger: true } : ( modifiers || {} );
 
-			// If the val is to be set to a number, which is valid
+			// If the value is to be set to a number, which is valid
 			// when using a one-handle slider, wrap it in an array.
 			if( !$.isArray(args) ){
 				args = [args];
