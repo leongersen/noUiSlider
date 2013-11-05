@@ -10,8 +10,20 @@ An extended documentation, including **examples**, **options** and **configurati
 Changes
 -------
 
-**Changelog for version 4.2.2:**  
-+ Changed implementation of pointerEvents to be compatible with IE11.
+**Changelog for version 4.3.0:**
++ Added support for inverted sliders. (**RTL**)
++ Simplified handle stacking order. **Check your css when upgrading!** A minor change is required. See the chapter on [styling](http://refreshless.com/nouislider/slider-design-styles) for more information.
++ Added a new `block` callback.
++ Fixed implementation of the `margin` option.
++ Fixed certain browsers showing the text selection cursor on drag.
++ All settings within serialization are now optional.
++ Fixed an issue where an unintended `mouseup` on a slider might cause a 'tap'.
++ Settings for `margin` and `step` are now applied to `.val()` input.
++ Serialization fields are now filling upon initialization.
++ Reduced redundant event firing to make performance on older devices snappier. Events will no longer keep firing endlessly when a handle has hit a limit.
++ Fixed compatibility with `$.noConflict()`.
++ **Re-licensed** to [WTFPL](http://www.wtfpl.net/about/). This changes nothing but the license name. The text and terms are identical!
+
 
 Version numbering
 ------------------------------
@@ -24,8 +36,7 @@ Compression and Error checking
 The stylesheet is trimmed of whitespace and comments to provide a `min` version.
 
 **JS** ([Google Closure Compiler](http://closure-compiler.appspot.com/home))  
-The plugin is compressed using the Google Closure compiler, using the 'simple' optimization option.  
-
+The plugin is compressed using the Google Closure compiler, using the 'simple' optimization option.
 
 **Code** ([JsLint](http://jslint.com/))  
 The plugin code is checked using JsLint, with the following options:

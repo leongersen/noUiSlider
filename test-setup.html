@@ -29,6 +29,11 @@
 			margin: 40px 0;
 		}
 
+		.noUi-rtl,
+		.noUi-rtl * {
+			border-color: red !important;
+		}
+		
 	</style>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -144,6 +149,7 @@
 					,mark: '.'
 					,resolution: 0.0001
 				}
+				,slide: Rapport('slide')
 				,set: Rapport('set')
 				,orientation: "vertical"
 				,connect: 'lower'
@@ -238,7 +244,7 @@
 				,handles: 2
 				,direction: 'rtl'
 				,connect: true
-				,blocked: function(){
+				,block: function(){
 					console.log('he');
 				}
 			});
@@ -282,4 +288,6 @@
 
 		</script>
 
+		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ultricies vestibulum felis, pulvinar pharetra metus tristique quis. Suspendisse libero urna, gravida ac arcu in, vestibulum eleifend dui. Quisque elit libero, ultrices at velit sed, congue porttitor quam. Quisque facilisis magna nisl, vel fringilla urna placerat sit amet. Fusce mattis venenatis sem eu dapibus. Maecenas pellentesque leo vel magna dapibus, vel condimentum risus vehicula. Praesent sem ligula, pulvinar et diam ut, malesuada porttitor metus. Fusce vel neque ut velit scelerisque adipiscing et ut velit.</p>
+		
 	</body>

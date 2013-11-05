@@ -12,11 +12,11 @@
 	],
 	"licenses": [
 		{
-			"type": "noUiSlider Public License",
-			"url": "http://refreshless.com/nouislider/license.txt"
+			"type": "WTFPL",
+			"url": "http://www.wtfpl.net/"
 		}
 	],
-	"version": "4.2.2",
+	"version": "4.3.0",
 	"author": {
 		"name": "Léon Gersen",
 		"url": "https://twitter.com/LeonGersen"

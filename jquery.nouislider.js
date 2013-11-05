@@ -1,7 +1,12 @@
-/** noUiSlider
- ** @author: Léon Gersen
- ** @documentation: http://refreshless.com/nouislider/
- **/
+/*!	$.noUiSlider
+ *	Documentation available at:
+ *	http://refreshless.com/nouislider/
+ *
+ *	Copyright Léon Gersen, https://twitter.com/LeonGersen
+ *	Released under the WTFPL license
+ *	http://www.wtfpl.net/about/
+ */
+
 /*jslint browser: true, devel: true, plusplus: true, white: true, unparam: true */
 (function( $, undefined ){
 
@@ -43,7 +48,7 @@
 			/* 13 */ ,'noUi-z-index'
 			/* 14 */ ,'noUi-block'
 			/* 15 */ ,'noUi-state-blocked'
-			/* 17 */ ,'noUi-rtl'
+			/* 16 */ ,'noUi-rtl'
 			]
 			// Define an extendible object with base classes for the various
 			// structure elements in the slider. These can be extended by simply
@@ -582,7 +587,7 @@
 				return block( base, ignore );
 			}
 
-			base.removeClass(clsList[14]);
+			base.data('target').removeClass(clsList[14]);
 
 			// Set handle to new location
 			handle.css( handle.data('style'), to + '%' );
@@ -904,7 +909,7 @@
 				}
 
 				if ( options.direction ) {
-					target.addClass(clsList[17]);
+					target.addClass(clsList[16]);
 				}
 
 				// Merge base classes with default,
