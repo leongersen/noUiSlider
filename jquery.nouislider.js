@@ -603,7 +603,7 @@
 					}, 600);
 				}
 
-				target.addClass(clsList[14];
+				target.addClass(clsList[14]);
 				call( base.data('options').block, target );
 			}
 

@@ -16,14 +16,15 @@ Changes
 + Added new options and features to `serialization`:  
   + Added option to serialize to a `function`.
   + Added option to serialize to any jQuery/Zepto element using any function.
-  + Serialization fields are now filling upon initialization.
+  + Serialization fields are now filled upon initialization.
   + All settings within serialization are now optional.
   + The `to` option now optionally accepts an array of items to serialize to.
 + Fixed implementation of the `margin` option.
 + Fixed certain browsers showing the text selection cursor on drag.
 + Fixed an issue where an unintended `mouseup` on a slider might cause a 'tap'.
 + Fixed compatibility with `$.noConflict()`.
-+ Simplified handle stacking order. **Check your css when upgrading!** A minor change is required. See the chapter on [styling](http://refreshless.com/nouislider/slider-design-styles) for more information.
++ Simplified handle stacking order. **Check your css when upgrading!**  
+  A minor change is required. See the chapter on [styling](http://refreshless.com/nouislider/slider-design-styles) for more information.
 + Re-licensed to [WTFPL](http://www.wtfpl.net/about/). This changes nothing but the license name. The text and terms are identical.
 + Settings for `margin` and `step` are now applied to `.val()` input and the `start` option.
 + Reduced redundant event firing to make performance on older devices snappier. Events will no longer keep firing endlessly when a handle has hit a limit.
