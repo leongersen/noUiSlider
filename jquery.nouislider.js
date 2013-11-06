@@ -7,7 +7,7 @@
  *	http://www.wtfpl.net/about/
  */
 
-/*jslint browser: true, devel: true, plusplus: true, white: true, unparam: true */
+/*jslint browser: true, devel: true, plusplus: true, white: true, unparam: true, continue: true */
 (function( $, undefined ){
 
 	"use strict";
@@ -79,18 +79,13 @@
 			}
 			// Event handlers bound to elements to perform basic tasks.
 			,eventHandlers = [
-				// Assign input field values to the slider,
-				// and signal unevaluated input.
+				// Assign input field values to the slider
 				 function ( ) {
+					var val = [null, null];
+					val[this.which] = this.val();
 
-					if ( this.options.direction ) {
-						this.which = !this.which;
-					}
-
-					this.target.val([
-						 !this.which ? this.val() : null
-						, this.which ? this.val() : null
-					]);
+					// Trigger the 'set' callback
+					this.target.val(val, true);
 				}
 				// Shorthand for stopping propagation on an object.
 				// Calling a function prevents having to define
@@ -100,8 +95,36 @@
 				}
 				// Shorthand for returning false on events
 				// that need to be cancelled.
-				,function( ){
+				,function ( ) {
 					return false;
+				}
+				// Storing the a value on a handle
+				,function ( a ) {
+
+					// Re-scope target
+					var target = this.target;
+
+					// Get the value for this handle
+					if ( a === undefined ) {
+						return this.element.data('value');
+					}
+
+					// Write the value to all serialization objects
+					// or store a new value on the handle
+					if ( a === true ) {
+						a = this.element.data('value');
+					} else {
+						this.element.data('value', a);
+					}
+
+					// Call the function.
+					$.each( this.elements, function(i,o) {
+						if ( typeof o === 'function' ) {
+							o.call(target, a);
+						} else {
+							o[0][o[1]](a);
+						}
+					});
 				}
 			];
 
@@ -203,12 +226,10 @@
 
 			// The 'noAbstraction' argument can be set to prevent
 			// event checking, and instead just proxy the event to
-			// the right namespace. 'noAbstraction' can be level 1 or 2.
+			// the right namespace.
 			if ( noAbstraction ) {
-				if ( noAbstraction > 1 ){
-					scope = $.extend(target, scope);
-				}
-				return target.on( events, $.proxy( callback, scope ));
+				return target.on( events,
+					$.proxy( callback, $.extend(target, scope) ));
 			}
 
 			// Make the callback available in a lower scope
@@ -246,12 +267,6 @@
 		}
 
 		function test ( o, set ){
-
-			// Checks whether a variable is a candidate to be a
-			// valid serialization target.
-			function ser(r){
-				return ( instance ( r ) || typeof r === 'string' || r === false );
-			}
 
 		//	These tests are structured with an item for every option available.
 		//	Every item contains an 'r' flag, which marks a required option, and
@@ -377,10 +392,80 @@
 				 */
 				,"serialization": {
 					 r: true
-					,t: function(q,o){
+					,t: function(q,o,w){
+
+						// Checks whether a variable is a candidate to be a
+						// valid serialization target.
+						function ser(r){
+							return instance ( r )
+								|| typeof r === 'string'
+								|| typeof r === 'function'
+								|| r === false
+								|| ( instance ( r[0] ) &&
+									 typeof r[0][r[1]] === 'function' );
+						}
+
+						// Flatten the serialization array into a reliable
+						// set of elements, which can be tested and looped.
+						function filter ( value, position ) {
+
+							var items = [[],[]];
+
+							// If a single value is provided it can be pushed
+							// immediately.
+							if ( ser(value) ) {
+								items[0].push(value);
+							} else {
+
+								// Otherwise, determine whether this is an
+								// array of single elements or sets.
+								$.each(value, function(i, val) {
+
+									// Don't handle an overflow of elements.
+									if( i > 1 ){
+										return;
+									}
+
+									if( ser(val) ){
+										items[i].push(val);
+									} else {
+										items[i] = items[i].concat(val);
+									}
+								});
+							}
+
+							return items;
+						}
+
+						if ( !q.to ) {
+							o[w].to = [ [false], [false] ];
+						} else {
+
+							var i, j;
+
+							// Flatten the serialization array
+							q.to = filter ( q.to, 0 );
+
+							// Reverse the API for RTL sliders.
+							if ( o.direction ) {
+								q.to.reverse();
+							}
+
+							// Test all elements in the flattened array.
+							for ( i = 0; i < o.handles; i++ ) {
+								for ( j = 0; j < q.to[i].length; j++ ) {
+									if( !ser(q.to[i][j]) ){
+										return false;
+									}
+								}
+							}
+
+							// Write the new values back
+							o[w].to = q.to;
+						}
 
 						if ( !q.resolution ){
-							o.serialization.resolution = 0.01;
+							o[w].resolution = 0.01;
 						} else {
 							switch(q.resolution){
 								case 1:
@@ -396,32 +481,9 @@
 						}
 
 						if ( !q.mark ){
-							o.serialization.mark = '.';
+							o[w].mark = '.';
 						} else if ( q.mark !== '.' && q.mark !== ',' ) {
 							return false;
-						}
-
-						if ( !q.to ) {
-							o.serialization.to = [ false, false ];
-						} else {
-
-							var i = 0;
-
-							// Wrap the value for one handle into an array.
-							if ( !$.isArray(q.to) ){
-								o.serialization.to = [q.to];
-							} else if ( o.direction ) {
-								o.serialization.to.reverse();
-							}
-
-							// Write back to the options object;
-							for ( i; i < o.handles; i++ ){
-
-								// Test if this is a valid serialization target.
-								if( !ser(o.serialization.to[i]) ) {
-									return false;
-								}
-							}
 						}
 
 						return true;
@@ -524,7 +586,7 @@
 			return value.replace( '.', options.serialization.mark );
 		}
 
-		function block ( base, ignore ) {
+		function block ( base, ignore, stateless ) {
 
 			if ( ignore ) {
 				return false;
@@ -533,12 +595,18 @@
 			var target = base.data('target');
 
 			if ( !target.hasClass(clsList[14]) ){
-				target.addClass(clsList[14] + ' ' + clsList[15]);
-				setTimeout(function(){
-					target.removeClass(clsList[15]);
-				}, 600);
+
+				if ( !stateless ) {
+					target.addClass(clsList[15]);
+					setTimeout(function(){
+						target.removeClass(clsList[15]);
+					}, 600);
+				}
+
+				target.addClass(clsList[14];
 				call( base.data('options').block, target );
 			}
+
 			return false;
 		}
 
@@ -549,10 +617,11 @@
 				,handles = base.data('handles')
 				,edge, initial = handle[0].gPct();
 
-			// Catch any attemt to drag beyond the slider edges.
+			// Catch any attempt to drag beyond the slider edges.
 			to = to < 0 ? 0 : to > 100 ? 100 : to;
 
-			if( to === initial ) {
+			// Catch invalid user input
+			if( !isNumeric( to ) || to === initial ) {
 				return false;
 			}
 
@@ -584,14 +653,17 @@
 
 			// Stop handling this call if the handle can't move past another.
 			if( to === initial ) {
-				return block( base, ignore );
+				return block( base, ignore, !settings.margin );
 			}
 
+			// If the slider can move, remove the class
+			// indicating the block state.
 			base.data('target').removeClass(clsList[14]);
 
 			// Set handle to new location
 			handle.css( handle.data('style'), to + '%' );
 
+			// Force proper handle stacking
 			if ( handle.is(handles[0]) ) {
 				handle.children('.' + clsList[2]).toggleClass(clsList[13], to > 50 );
 			}
@@ -610,70 +682,49 @@
 
 		function store ( handle, i, S ) {
 
-			var scope = {
-				 target: handle.data('target')
-				,options: handle.data('options')
-				,handle: handle
-				,which: !!i
+			var elements = [];
+
+			$.each ( S.to[i], function ( i, item ) {
+
+				if( instance ( item ) ) {
+
+					// Add a change event to the supplied jQuery objects, which
+					// will trigger the 'val' function on the parent.
+					item.each(function(){
+
+						attach ( 'change', $(this), eventHandlers[0], {
+							 target: handle.data('target')
+							,handle: handle
+							,which: ( handle.data('options').direction ?
+										( i ? 0 : 1 ) : i )
+						}, true );
+
+						elements.push ( [ $(this), 'val' ] );
+					});
+
+				} else if ( typeof item === "string" ) {
+
+					// Append a new object to the noUiSlider base,
+					// but prevent the change event from flowing upward.
+					elements.push([
+						 $('<input type="hidden">').appendTo(handle)
+							.addClass(clsList[3])
+							.attr('name', item)
+							.change(eventHandlers[1])
+						,'val']);
+
+				} else if ( item !== false ) {
+
+					elements.push ( item );
+				}
+			});
+
+			return {
+				 element: handle
+				,elements: elements
+				,target: handle.data('target')
+				,val: eventHandlers[3]
 			};
-
-			if( instance ( S.to[i] ) ) {
-
-				// Add a change event to the supplied jQuery object, which
-				// will just trigger the 'val' function on the parent. In some
-				// cases, the change event will not fire on select elements,
-				// so listen to 'blur' too.
-				attach ( 'change blur'
-						,S.to[i]
-						,eventHandlers[0]
-						,scope
-						,2 );
-
-				// Triggering the 'set' callback should not occur on the 'blur'
-				// event, so bind it only to 'change'.
-				attach ( 'change'
-						,S.to[i]
-						,scope.options.set
-						,scope.target
-						,1 );
-
-				return S.to[i];
-			}
-
-			if ( typeof S.to[i] === "string" ) {
-
-				// Append a new object to the noUiSlider base,
-				// prevent change events flowing upward.
-				return $('<input type="hidden" name="' + S.to[i] + '">')
-					.appendTo(handle)
-					.addClass(clsList[3])
-					.change(eventHandlers[1]);
-			}
-
-			if ( S.to[i] === false ) {
-
-				// Create an object capable of handling all jQuery calls.
-				return {
-					// The value will be stored on the handle element.
-					 val : function(a) {
-						// Value function provides a getter and a setter.
-						// Can't just test for !a, as a might be 0.
-						// When no argument is provided, return the value.
-						// Otherwise, set the value.
-						if ( a === undefined ) {
-							return this.handleElement.data('value');
-						}
-						this.handleElement.data('value', a);
-					}
-					// The object could be mistaken for a jQuery object,
-					// make sure that doesn't trigger any errors.
-					,hasClass: function(){
-						return false;
-					}
-					// The val function needs access to the handle.
-					,handleElement: handle
-				};
-			}
 		}
 
 		function move( event ) {
@@ -994,12 +1045,7 @@
 			return answer;
 		}
 
-		function setValue ( args, modifiers ) {
-
-			// Passing the modifiers argument is not required.
-			// The input might also be 'true', to indicate that the
-			// 'set' event should be called.
-			modifiers = modifiers === true ? { trigger: true } : ( modifiers || {} );
+		function setValue ( args, set ) {
 
 			// If the value is to be set to a number, which is valid
 			// when using a one-handle slider, wrap it in an array.
@@ -1017,19 +1063,14 @@
 
 				var i, base = target.data('base'),
 					handles = Array.prototype.slice.call(base.data('handles'), 0),
-					settings = handles[0].data('options'),
-					to, current;
+					settings = handles[0].data('options'), to;
 
 				base.find('.' + clsList[13]).removeClass(clsList[13]);
 
-				if ( handles.length > 1 &&
-					 handles[0] !== null &&
-					 handles[1] !== null ) {
-
-					// If there are multiple handles to be set, and none of
-					// the new settings is 'ignore', run the setting mechanism
-					// twice for the first handle, to make sure it can be
-					// bounced of the second one properly.
+				// If there are multiple handles to be set run the setting
+				// mechanism twice for the first handle, to make sure it
+				// can be bounced of the second one properly.
+				if ( handles.length > 1) {
 					handles[2] = handles[0];
 				}
 
@@ -1048,7 +1089,7 @@
 					// Test for 'undefined' too, as a two-handle slider
 					// can still be set with an integer.
 					if( to === null || to === undefined ) {
-						return;
+						continue;
 					}
 
 					// Add support for the comma (,) as a decimal symbol.
@@ -1073,26 +1114,12 @@
 					// or 'input[type="number"]' elements. In this case, set
 					// the value back to the input.
 					if ( !setHandle( handles[i], to, true ) ){
-
-						// Read the value from the handle.
-						to = handles[i][0].gPct();
-						if ( settings.direction ) {
-							to = 100 - to;
-						}
-
-						// Get the value for the current position.
-						current = percentage.is( settings.range, to );
-
-						if( handles[i].data('store').val() !== current ){
-							handles[i].data('store').val(
-								format( current, settings )
-							);
-						}
+						handles[i].data('store').val( true );
 					}
 
 					// The 'val' method allows for an external modifier,
 					// to specify a request for an 'set' event.
-					if( modifiers.trigger ) {
+					if( set === true ) {
 						call( settings.set, target );
 					}
 				}

@@ -17,7 +17,7 @@
 		[data-side] .noUi-target {
 			height: 200px;
 		}
-		
+
 		input {
 			width: 70px;
 		}
@@ -33,7 +33,7 @@
 		.noUi-rtl * {
 			border-color: red !important;
 		}
-		
+
 	</style>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -43,11 +43,15 @@
 
 		window.Rapport = function( name ){
 			return !console ? function(){} : function() {
-				console.log($(this).attr('id'), name, 
-					name === 'slide' ? '...' : 
+				console.log($(this).attr('id'), name,
+					name === 'slide' ? '...' :
 					$(this).is('form') ? $(this).serialize() : $(this).val()
 				);
 			}
+		}
+
+		function Logger ( value ) {
+			console.log($(this).attr('id'), value);
 		}
 
 		var Count = 0;
@@ -57,7 +61,7 @@
 			Count++;
 			var s = $('<section/>').appendTo($('body')),
 				id = 'slider' + Count;
-				
+
 			if ( vertical || options.orientation === "vertical" ) {
 				s.attr('data-side','');
 			}
@@ -74,7 +78,7 @@
 
 			return window[id];
 		}
-		
+
 	</script>
 
 	<body>
@@ -156,9 +160,9 @@
 			}).val(100);
 
 			// Multiple serialization fields
-			Create('<input id="field1">\
-					<input id="field2">\
-					<input id="field3">', true)
+			Create('<input id="field3">\
+					<input id="field1">\
+					<input id="field2">', true)
 			.noUiSlider({
 				 range: [-1000, 1500]
 				,start: [0, 2000]
@@ -170,7 +174,25 @@
 					,mark: '.'
 					,resolution: 0.0001
 				}
-				,set: Rapport('set')
+				,orientation: "vertical"
+				,connect: true
+			});
+
+			// Function reference
+			Create('<input id="field4">\
+				<input id="field5">\
+				<input id="field6"><span id="spanval"/>', true)
+			.noUiSlider({
+				 range: [-1000, 1500]
+				,start: [0, 2000]
+				,handles: 2
+				,step: 2
+				,serialization: {
+					 to: [ $('#field4, #field5'),
+						   [ $('#field6'), [$('#spanval'), 'html'], Logger ]]
+					,mark: '.'
+					,resolution: 0.0001
+				}
 				,orientation: "vertical"
 				,connect: true
 			});
@@ -250,14 +272,14 @@
 			});
 
 			// Form change rtl serialization
-			Create('<form id="form1"></form>', true, true)
+			Create('<form id="form1"><span id="cake"></form>', true, true)
 			.noUiSlider({
 				 range: [-3, -2]
 				,start: [10, 10]
 				,handles: 2
 				,orientation: "vertical"
 				,serialization: {
-					to: ['lower', 'upper']
+					to: ['lower', [$('#cake'), 'html']]
 				}
 				,direction: 'rtl'
 			}).change(Rapport('change')).parent().change(Rapport('change'));
@@ -289,5 +311,5 @@
 		</script>
 
 		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ultricies vestibulum felis, pulvinar pharetra metus tristique quis. Suspendisse libero urna, gravida ac arcu in, vestibulum eleifend dui. Quisque elit libero, ultrices at velit sed, congue porttitor quam. Quisque facilisis magna nisl, vel fringilla urna placerat sit amet. Fusce mattis venenatis sem eu dapibus. Maecenas pellentesque leo vel magna dapibus, vel condimentum risus vehicula. Praesent sem ligula, pulvinar et diam ut, malesuada porttitor metus. Fusce vel neque ut velit scelerisque adipiscing et ut velit.</p>
-		
+
 	</body>
