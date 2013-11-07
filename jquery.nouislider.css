@@ -15,36 +15,31 @@
    -moz-user-select: none;
     -ms-user-select: none;
 		cursor: default;
--webkit-transition: background 0.6s;
-		transition: background 0.6s;
 	}
 
 /*	Main slider bar;
- *		Standard styles no longer incorrectly force a
- *		width or height on the slider.
+ *		Use outline instead of border to keep absolute
+ *		positioning unrelated to the styling.
  */
 	.noUi-base {
 		width: 100%;
-		height: 40px;
+		margin: 1px;
+		height: 38px;
 		position: relative;
-		max-width: 100%;
-		max-height: 100%;
-		border: 1px solid #BFBFBF;
+		outline: 1px solid #BFBFBF;
 	}
 
 /*	Handles + active state;
- *		The :after pseudo-element wont inherit
- *		box-sizing, so it needs to applied manually.
  */
 	.noUi-handle {
-		background: #EEE;
-		height: 44px;
-		width: 44px;
-		border: 1px solid #BFBFBF;
-		position: relative;
-		z-index: 1;
 		top: -3px;
 		left: -23px;
+		width: 44px;
+		height: 44px;
+		z-index: 1;
+		position: relative;
+		background: #EEE;
+		border: 1px solid #BFBFBF;
 	}
 	.noUi-active {
 		background: #E9E9E9;
@@ -57,6 +52,8 @@
  */
 	.noUi-connect {
 		background: Teal;
+-webkit-transition: background 0.6s;
+		transition: background 0.6s;
 	}
 	.noUi-background {
 		background: #DDD;
@@ -86,7 +83,7 @@
  *		exceptions for the vertical slider as minimal as possible.
  */
 	.noUi-vertical {
-		width: 40px;
+		width: 38px;
 		height: 100%;
 	}
 	.noUi-vertical .noUi-origin {

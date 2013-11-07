@@ -76,57 +76,7 @@
 				,len: function ( range ) {
 					return (range[1] - range[0]);
 				}
-			}
-			// Event handlers bound to elements to perform basic tasks.
-			,eventHandlers = [
-				// Assign input field values to the slider
-				 function ( ) {
-					var val = [null, null];
-					val[this.which] = this.val();
-
-					// Trigger the 'set' callback
-					this.target.val(val, true);
-				}
-				// Shorthand for stopping propagation on an object.
-				// Calling a function prevents having to define
-				// one within other code.
-				,function ( e ) {
-					e.stopPropagation();
-				}
-				// Shorthand for returning false on events
-				// that need to be cancelled.
-				,function ( ) {
-					return false;
-				}
-				// Storing the a value on a handle
-				,function ( a ) {
-
-					// Re-scope target
-					var target = this.target;
-
-					// Get the value for this handle
-					if ( a === undefined ) {
-						return this.element.data('value');
-					}
-
-					// Write the value to all serialization objects
-					// or store a new value on the handle
-					if ( a === true ) {
-						a = this.element.data('value');
-					} else {
-						this.element.data('value', a);
-					}
-
-					// Call the function.
-					$.each( this.elements, function(i,o) {
-						if ( typeof o === 'function' ) {
-							o.call(target, a);
-						} else {
-							o[0][o[1]](a);
-						}
-					});
-				}
-			];
+			};
 
 		// When the browser supports MsPointerEvents,
 		// don't bind touch or mouse events. The touch events are
@@ -261,9 +211,47 @@
 
 		// jQuery doesn't have a method to return a CSS value as a percentage.
 		// Return -1 if the element doesn't have an offset yet.
-		function getPercentage( ){
+		function getPercentage ( ) {
 			var value = parseFloat(this.style[$(this).data('style')]);
 			return isNaN(value) ? -1 : value;
+		}
+
+		// Storing the a value on a handle
+		function serialize ( a ) {
+
+			// Re-scope target
+			var target = this.target;
+
+			// Get the value for this handle
+			if ( a === undefined ) {
+				return this.element.data('value');
+			}
+
+			// Write the value to all serialization objects
+			// or store a new value on the handle
+			if ( a === true ) {
+				a = this.element.data('value');
+			} else {
+				this.element.data('value', a);
+			}
+
+			// Call the function.
+			$.each( this.elements, function(i,o) {
+				if ( typeof o === 'function' ) {
+					o.call(target, a);
+				} else {
+					o[0][o[1]](a);
+				}
+			});
+		}
+
+		function inputValue ( ) {
+
+			var val = [null, null];
+			val[this.which] = this.val();
+
+			// Trigger the 'set' callback
+			this.target.val(val, true);
 		}
 
 		function test ( o, set ){
@@ -379,8 +367,12 @@
 				,"direction": {
 					 r: true
 					,t: function(q,o,w){
-						o[w] = q === 'rtl' ? 1 : q === 'ltr' ? 0 : -1;
-						return o[w] >= 0;
+						switch ( q ) {
+							case 'ltr': o[w] = 0; break;
+							case 'rtl': o[w] = 1; break;
+							default: return false;
+						}
+						return true;
 					}
 				}
 				/*	Serialization.
@@ -426,6 +418,7 @@
 										return;
 									}
 
+									// Decide if this is a group or not
 									if( ser(val) ){
 										items[i].push(val);
 									} else {
@@ -438,7 +431,7 @@
 						}
 
 						if ( !q.to ) {
-							o[w].to = [ [false], [false] ];
+							o[w].to = [[],[]];
 						} else {
 
 							var i, j;
@@ -454,8 +447,16 @@
 							// Test all elements in the flattened array.
 							for ( i = 0; i < o.handles; i++ ) {
 								for ( j = 0; j < q.to[i].length; j++ ) {
+
+									// Return false on invalid input
 									if( !ser(q.to[i][j]) ){
 										return false;
+									}
+
+									// Remove 'false' elements, since those
+									// won't be handled anyway.
+									if( !q.to[i][j] ){
+										q.to[i].splice(j, 1);
 									}
 								}
 							}
@@ -561,7 +562,7 @@
 						console.group( "Invalid noUiSlider initialisation:" );
 						console.log( "Option:\t", i );
 						console.log( "Value:\t", o[i] );
-						console.log( "Slider:\t", set[0] );
+						console.log( "Slider:\t", set );
 						console.groupEnd();
 					}
 
@@ -680,50 +681,66 @@
 			return true;
 		}
 
-		function store ( handle, i, S ) {
+		function storeElement ( handle, item, number ) {
+
+			// Add a change event to the supplied jQuery objects,
+			// which triggers the 'val' function on the parent.
+			if ( instance( item ) ) {
+
+				var elements = [];
+
+				// Link the field to the other handle if the
+				// slider is inverted.
+				if ( handle.data('options').direction ) {
+					number = number ? 0 : 1;
+				}
+
+				// Loop all items so the change event is properly bound,
+				// and the items can individually be added to the array.
+				item.each(function(){
+
+					attach ( 'change', $(this), inputValue, {
+						 target: handle.data('target')
+						,handle: handle
+						,which: number
+					}, true );
+
+					elements.push ( [ $(this), 'val' ] );
+				});
+
+				return elements;
+			}
+
+			// Append a new input to the noUiSlider base.
+			// Prevent the change event from flowing upward.
+			if ( typeof item === "string" ) {
+
+				item = [ $('<input type="hidden" name="'+ name +'">')
+					.appendTo(handle)
+					.addClass(clsList[3])
+					.change(function ( e ) {
+						e.stopPropagation();
+					}), 'val'];
+			}
+
+			return [item];
+		}
+
+		function store ( handle, number, serialization ) {
 
 			var elements = [];
 
-			$.each ( S.to[i], function ( i, item ) {
-
-				if( instance ( item ) ) {
-
-					// Add a change event to the supplied jQuery objects, which
-					// will trigger the 'val' function on the parent.
-					item.each(function(){
-
-						attach ( 'change', $(this), eventHandlers[0], {
-							 target: handle.data('target')
-							,handle: handle
-							,which: ( handle.data('options').direction ?
-										( i ? 0 : 1 ) : i )
-						}, true );
-
-						elements.push ( [ $(this), 'val' ] );
-					});
-
-				} else if ( typeof item === "string" ) {
-
-					// Append a new object to the noUiSlider base,
-					// but prevent the change event from flowing upward.
-					elements.push([
-						 $('<input type="hidden">').appendTo(handle)
-							.addClass(clsList[3])
-							.attr('name', item)
-							.change(eventHandlers[1])
-						,'val']);
-
-				} else if ( item !== false ) {
-
-					elements.push ( item );
-				}
+			$.each( serialization.to[number], function( index, value ){
+				elements = elements.concat(
+					storeElement( handle, value, number )
+				);
 			});
 
 			return {
 				 element: handle
 				,elements: elements
 				,target: handle.data('target')
-				,val: eventHandlers[3]
+				,val: serialize
 			};
 		}
 
@@ -803,7 +820,9 @@
 				body.css('cursor', 'default');
 
 				// Prevent text selection when dragging the handles.
-				body.on('selectstart' + namespace, eventHandlers[2]);
+				body.on('selectstart' + namespace, function( ){
+					return false;
+				});
 			}
 		}
 
@@ -876,22 +895,33 @@
 
 		function create ( options ) {
 
-			return this.each(function( index, target ){
+			// Set defaults where applicable;
+			options = $.extend({
+				 handles: 2
+				,margin: 0
+				,direction: "ltr"
+				,orientation: "horizontal"
+			}, options) || {};
+
+			// Make sure the test for serialization runs.
+			options.serialization = options.serialization || {};
+
+			// Run all options through a testing mechanism to ensure correct
+			// input. The test function will throw errors, so there is
+			// no need to capture the result of this call. It should be noted
+			// that options might get modified to be handled properly. E.g.
+			// wrapping integers in arrays.
+			test( options, this );
+
+			return this.each(function(){
 
 				// Target is the wrapper that will receive all external
 				// scripting interaction. It has no styling and serves no
-				// other function.
-				target = $(target);
-
-				if ( target.hasClass(clsList[6]) && !target.is(':empty') ) {
-					throw new Error("Slider was already initialized.");
-				}
-				target.addClass(clsList[6]);
-
-				// Base is the internal main 'bar'.
-				var i, handle, base = $('<div/>').appendTo(target),
-					cls = {
-					 base: stdCls.base
+				// other function. Base is the internal main 'bar'.
+				var target = $(this).addClass(clsList[6]), i, handle,
+					base = $('<div/>').appendTo(target),
+					classes = {
+						 base: stdCls.base
 						,origin: [
 							 stdCls.origin.concat([clsList[1] + clsList[7]])
 							,stdCls.origin.concat([clsList[1] + clsList[8]])
@@ -902,24 +932,6 @@
 						]
 					};
 
-				// Set defaults where applicable;
-				options = $.extend({
-					 handles: 2
-					,margin: 0
-					,direction: "ltr"
-					,orientation: "horizontal"
-				}, options) || {};
-
-				// Make sure the test for serialization runs.
-				options.serialization = options.serialization || {};
-
-				// Run all options through a testing mechanism to ensure correct
-				// input. The test function will throw errors, so there is
-				// no need to capture the result of this call. It should be noted
-				// that options might get modified to be handled properly. E.g.
-				// wrapping integers in arrays.
-				test(options, target);
-
 				// Apply the required connection classes to the elements
 				// that need them. Some classes are made up for several segments
 				// listed in the class list, to allow easy renaming and provide
@@ -928,17 +940,17 @@
 
 					if( options.connect === "lower" ){
 						// Add some styling classes to the base;
-						cls.base.push(clsList[9], clsList[9] + clsList[7]);
+						classes.base.push(clsList[9], clsList[9] + clsList[7]);
 						// When using the option 'Lower', there is only one
 						// handle, and thus only one origin.
-						cls.origin[0].push(clsList[12]);
+						classes.origin[0].push(clsList[12]);
 					} else {
-						cls.base.push(clsList[9] + clsList[8], clsList[12]);
-						cls.origin[0].push(clsList[9]);
+						classes.base.push(clsList[9] + clsList[8], clsList[12]);
+						classes.origin[0].push(clsList[9]);
 					}
 
 				} else {
-					cls.base.push(clsList[12]);
+					classes.base.push(clsList[12]);
 				}
 
 				// Parse the syntactic sugar that is the serialization
@@ -954,9 +966,9 @@
 				// The horizontal class is provided for completeness,
 				// as it isn't used in the default theme.
 				if ( options.orientation === "vertical" ){
-					cls.base.push(clsList[10]);
+					classes.base.push(clsList[10]);
 				} else {
-					cls.base.push(clsList[11]);
+					classes.base.push(clsList[11]);
 				}
 
 				if ( options.direction ) {
@@ -965,7 +977,7 @@
 
 				// Merge base classes with default,
 				// and store relevant data on the base element.
-				base.addClass( cls.base.join(" ") ).data({
+				base.addClass( classes.base.join(" ") ).data({
 					 target: target
 					,options: options
 					,handles: []
@@ -980,8 +992,8 @@
 
 					// Add all default and option-specific classes to the
 					// origins and handles.
-					handle.addClass(cls.origin[i].join(" "));
-					handle.children().addClass(cls.handle[i].join(" "));
+					handle.addClass(classes.origin[i].join(" "));
+					handle.children().addClass(classes.handle[i].join(" "));
 
 					// These events are only bound to the visual handle element,
 					// not the 'real' origin element.
