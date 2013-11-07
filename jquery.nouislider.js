@@ -715,7 +715,7 @@
 			// Prevent the change event from flowing upward.
 			if ( typeof item === "string" ) {
 
-				item = [ $('<input type="hidden" name="'+ name +'">')
+				item = [ $('<input type="hidden" name="'+ item +'">')
 					.appendTo(handle)
 					.addClass(clsList[3])
 					.change(function ( e ) {
