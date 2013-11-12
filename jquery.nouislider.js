@@ -10,27 +10,30 @@
 /*jslint browser: true, devel: true, plusplus: true, white: true, unparam: true, continue: true */
 (function( $, undefined ){
 
-	"use strict";
+	'use strict';
 
 	if ( $.zepto && !$.fn.removeData ) {
-		throw new ReferenceError("Zepto is loaded without the data module.");
+		throw new ReferenceError('Zepto is loaded without the data module.');
 	}
 
 	$.fn.noUiSlider = function( options ){
 
-		var  namespace = '.nui'
-			,all = $(document)
+		// Cache the document and body selectors;
+		// Define a namespace for all events;
+		// Create a map of touch and mouse actions;
+		// Make a copy of the current value function.
+		// Define a set of standard HTML classes for
+		//   the various structures noUiSlider uses;
+
+		var  all = $(document)
 			,body = $('body')
-			// Create a map of touch and mouse actions.
+			,namespace = '.nui'
 			,actions = {
 				 start: 'mousedown touchstart'
 				,move: 'mousemove touchmove'
 				,end: 'mouseup touchend'
 			}
-			// Make a copy of the current 'val' function.
 			,$VAL = $.fn.val
-			// Define a set of standard HTML classes for
-			// the various structures noUiSlider uses.
 			,clsList = [
 			/*  0 */  'noUi-base'
 			/*  1 */ ,'noUi-origin'
@@ -50,14 +53,6 @@
 			/* 15 */ ,'noUi-state-blocked'
 			/* 16 */ ,'noUi-rtl'
 			]
-			// Define an extendible object with base classes for the various
-			// structure elements in the slider. These can be extended by simply
-			// pushing to the array, which reduces '.addClass()' calls.
-			,stdCls = {
-				 base: [clsList[0]]
-				,origin: [clsList[1]]
-				,handle: [clsList[2]]
-			}
 			// This object contains some well tested functions to convert
 			// values to and from percentages. It can be a bit strange to wrap
 			// your head around the individual calls, but they'll do their job
@@ -79,8 +74,8 @@
 			};
 
 		// When the browser supports MsPointerEvents,
-		// don't bind touch or mouse events. The touch events are
-		// currently only implemented by IE10, but they are stable
+		// don't bind touch or mouse events. These touch events are
+		// currently only implemented by IE > 10, but they are stable
 		// and convenient to use. IE11 implements pointerEvents without
 		// a prefix, which breaks compatibility with the IE10 implementation.
 		if( window.navigator.pointerEnabled ) {
@@ -107,7 +102,7 @@
 			}
 
 			$.each(f,function(i,q){
-				if (typeof q === "function") {
+				if (typeof q === 'function') {
 					q.call(scope, args);
 				}
 			});
@@ -235,7 +230,9 @@
 				this.element.data('value', a);
 			}
 
-			// Call the function.
+			// If the provided element was a function,
+			// call it with the slider as scope. Otherwise,
+			// simply call the function on the object.
 			$.each( this.elements, function(i,o) {
 				if ( typeof o === 'function' ) {
 					o.call(target, a);
@@ -247,6 +244,8 @@
 
 		function inputValue ( ) {
 
+			// Determine the correct position to set,
+			// leave the other one unchanged.
 			var val = [null, null];
 			val[this.which] = this.val();
 
@@ -256,21 +255,26 @@
 
 		function test ( o, set ){
 
-		//	These tests are structured with an item for every option available.
-		//	Every item contains an 'r' flag, which marks a required option, and
-		//	a 't' function, which in turn takes some arguments:
-		//	- the value for the option
-		//	- [optional] a reference to options object
-		//	- [optional] the option name
-		//	The testing function returns false when an error is detected,
-		//	or true when everything is OK. Every test also has an 'init'
-		//	method which appends the parent object to all children.
+		/*
+		 *	Every input option is tested and parsed. This'll prevent
+		 *	endless validation in internal methods. These tests are
+		 *	structured with an item for every option available. An
+		 *	option can be marked as required by setting the 'r' flag.
+		 *	The testing function is provided with three arguments:
+		 *		- The provided value for the option;
+		 *		- A reference to the options object;
+		 *		- The name for the option;
+		 *
+		 *	The testing function returns false when an error is detected,
+		 *	or true when everything is OK. It can also modify the option
+		 *	object, to make sure all values can be correctly looped elsewhere.
+		 */
 
 			var TESTS = {
 				/*	Handles.
 				 *	Has default, can be 1 or 2.
 				 */
-				 "handles": {
+				 'handles': {
 					 r: true
 					,t: function(q){
 						q = parseInt(q, 10);
@@ -281,7 +285,7 @@
 				 *	Must be an array of two numerical floats,
 				 *	which can't be identical.
 				 */
-				,"range": {
+				,'range': {
 					 r: true
 					,t: function(q,o,w){
 
@@ -299,7 +303,7 @@
 
 						// When this test is run for range, the values can't
 						// be identical.
-						if( w==="range" && q[0] === q[1] ){
+						if( w==='range' && q[0] === q[1] ){
 							return false;
 						}
 
@@ -317,7 +321,7 @@
 				 *	Uses 'range' test.
 				 *	When handles = 1, a single float is also allowed.
 				 */
-				,"start": {
+				,'start': {
 					 r: true
 					,t: function(q,o,w){
 						if( o.handles === 1 ){
@@ -335,25 +339,25 @@
 				 *	Must be true or false when handles = 2;
 				 *	Can use 'lower' and 'upper' when handles = 1.
 				 */
-				,"connect": {
+				,'connect': {
 					 t: function(q,o){
 							return o.handles === 1 ?
 								( q === 'lower' || q === 'upper' ) :
-								typeof q === "boolean";
+								typeof q === 'boolean';
 					 }
 				}
 				/*	Connect.
 				 *	Will default to horizontal, not required.
 				 */
-				,"orientation": {
+				,'orientation': {
 					 t: function(q){
-						return ( q === "horizontal" || q === "vertical" );
+						return ( q === 'horizontal' || q === 'vertical' );
 					}
 				}
 				/*	Margin.
 				 *	Must be a float, has a default value.
 				 */
-				,"margin": {
+				,'margin': {
 					 r: true
 					,t: function(q,o,w){
 						q = parseFloat(q);
@@ -364,7 +368,7 @@
 				/*	Direction.
 				 *	Required, can be 'ltr' or 'rtl'.
 				 */
-				,"direction": {
+				,'direction': {
 					 r: true
 					,t: function(q,o,w){
 						switch ( q ) {
@@ -382,7 +386,7 @@
 				 *	when using one handle. 'mark' can only be period (.) or
 				 *	comma (,) to make sure the value can be parsed properly.
 				 */
-				,"serialization": {
+				,'serialization': {
 					 r: true
 					,t: function(q,o,w){
 
@@ -493,16 +497,16 @@
 				/*	Slide.
 				 *	Not required. Must be a function.
 				 */
-				,"slide": {
+				,'slide': {
 					 t: function(q){
-						return typeof q === "function";
+						return typeof q === 'function';
 					}
 				}
 				/*	Set.
 				 *	Not required. Must be a function.
 				 *	Tested using the 'slide' test.
 				 */
-				,"set": {
+				,'set': {
 					 t: function(q,o){
 						return this.parent.slide.t(q,o);
 					}
@@ -511,7 +515,7 @@
 				 *	Not required. Must be a function.
 				 *	Tested using the 'slide' test.
 				 */
-				,"block": {
+				,'block': {
 					 t: function(q,o){
 						return this.parent.slide.t(q,o);
 					}
@@ -519,7 +523,7 @@
 				/*	Step.
 				 *	Not required.
 				 */
-				,"step": {
+				,'step': {
 					 t: function(q,o,w){
 						q = parseFloat(q);
 						o[w] = q;
@@ -532,7 +536,7 @@
 				 *	crawling the object in an upward manner, which
 				 *	normally isn't possible in JavaScript.
 				 */
-				,"init": function(){
+				,'init': function(){
 					var obj = this;
 					$.each(obj,function(i,c){
 						c.parent = obj;
@@ -559,14 +563,14 @@
 					// will prevent further script execution, log the error
 					// first. Test for console, as it might not be available.
 					if( console && console.log && console.group ){
-						console.group( "Invalid noUiSlider initialisation:" );
-						console.log( "Option:\t", i );
-						console.log( "Value:\t", o[i] );
-						console.log( "Slider:\t", set );
+						console.group( 'Invalid noUiSlider initialisation:' );
+						console.log( 'Option:\t', i );
+						console.log( 'Value:\t', o[i] );
+						console.log( 'Slider:\t', set );
 						console.groupEnd();
 					}
 
-					throw new RangeError("noUiSlider");
+					throw new RangeError('noUiSlider');
 				}
 			});
 		}
@@ -589,6 +593,7 @@
 
 		function block ( base, ignore, stateless ) {
 
+			// Optionality disable calls to this function
 			if ( ignore ) {
 				return false;
 			}
@@ -597,6 +602,7 @@
 
 			if ( !target.hasClass(clsList[14]) ){
 
+				// The visual effect should not always be applied.
 				if ( !stateless ) {
 					target.addClass(clsList[15]);
 					setTimeout(function(){
@@ -684,7 +690,7 @@
 		function storeElement ( handle, item, number ) {
 
 			// Add a change event to the supplied jQuery objects,
-			// which triggers the 'val' function on the parent.
+			// which triggers the value-setting function on the target.
 			if ( instance( item ) ) {
 
 				var elements = [];
@@ -713,7 +719,7 @@
 
 			// Append a new input to the noUiSlider base.
 			// Prevent the change event from flowing upward.
-			if ( typeof item === "string" ) {
+			if ( typeof item === 'string' ) {
 
 				item = [ $('<input type="hidden" name="'+ item +'">')
 					.appendTo(handle)
@@ -730,6 +736,10 @@
 
 			var elements = [];
 
+			// Loops all items in the provided serialization setting,
+			// add the proper events to them or create new input fields,
+			// and add them as data to the handle so they can be kept
+			// in sync with the slider value.
 			$.each( serialization.to[number], function( index, value ){
 				elements = elements.concat(
 					storeElement( handle, value, number )
@@ -814,6 +824,8 @@
 				,handle: this.handle
 			});
 
+			// Text selection isn't an issue on touch devices,
+			// so adding additional callbacks isn't required.
 			if ( event.cursor ) {
 
 				// Prevent the 'I' cursor.
@@ -899,8 +911,8 @@
 			options = $.extend({
 				 handles: 2
 				,margin: 0
-				,direction: "ltr"
-				,orientation: "horizontal"
+				,direction: 'ltr'
+				,orientation: 'horizontal'
 			}, options) || {};
 
 			// Make sure the test for serialization runs.
@@ -921,14 +933,14 @@
 				var target = $(this).addClass(clsList[6]), i, handle,
 					base = $('<div/>').appendTo(target),
 					classes = {
-						 base: stdCls.base
+						 base: clsList[0]
 						,origin: [
-							 stdCls.origin.concat([clsList[1] + clsList[7]])
-							,stdCls.origin.concat([clsList[1] + clsList[8]])
+							 [ clsList[1], clsList[1] + clsList[7] ]
+							,[ clsList[1], clsList[1] + clsList[8] ]
 						]
 						,handle: [
-							 stdCls.handle.concat([clsList[2] + clsList[7]])
-							,stdCls.handle.concat([clsList[2] + clsList[8]])
+							 [ clsList[2], clsList[2] + clsList[7] ]
+							,[ clsList[2], clsList[2] + clsList[8] ]
 						]
 					};
 
@@ -938,7 +950,7 @@
 				// a minor compression benefit.
 				if( options.connect ) {
 
-					if( options.connect === "lower" ){
+					if( options.connect === 'lower' ){
 						// Add some styling classes to the base;
 						classes.base.push(clsList[9], clsList[9] + clsList[7]);
 						// When using the option 'Lower', there is only one
@@ -955,17 +967,17 @@
 
 				// Parse the syntactic sugar that is the serialization
 				// resolution option to a usable integer.
-				// Checking for a string "1", since the resolution needs
+				// Checking for a string '1', since the resolution needs
 				// to be cast to a string to split in on the period.
 				options.decimals = (function(d){
 					d = d.toString().split('.');
-					return d[0] === "1" ? 0 : d[1].length;
+					return d[0] === '1' ? 0 : d[1].length;
 				}( options.serialization.resolution ));
 
 				// Add classes for horizontal and vertical sliders.
 				// The horizontal class is provided for completeness,
 				// as it isn't used in the default theme.
-				if ( options.orientation === "vertical" ){
+				if ( options.orientation === 'vertical' ){
 					classes.base.push(clsList[10]);
 				} else {
 					classes.base.push(clsList[11]);
@@ -977,7 +989,7 @@
 
 				// Merge base classes with default,
 				// and store relevant data on the base element.
-				base.addClass( classes.base.join(" ") ).data({
+				base.addClass( classes.base.join(' ') ).data({
 					 target: target
 					,options: options
 					,handles: []
@@ -992,8 +1004,8 @@
 
 					// Add all default and option-specific classes to the
 					// origins and handles.
-					handle.addClass(classes.origin[i].join(" "));
-					handle.children().addClass(classes.handle[i].join(" "));
+					handle.addClass(classes.origin[i].join(' '));
+					handle.children().addClass(classes.handle[i].join(' '));
 
 					// These events are only bound to the visual handle element,
 					// not the 'real' origin element.
@@ -1108,14 +1120,15 @@
 					// Replace it by a period so it is handled properly by
 					// parseFloat. Omitting this would result in a removal
 					// of decimals. The developer might input a comma separated
-					// string using the 'val' method, which works too.
-					if( $.type(to) === "string" ) {
+					// string using the value method, which works too.
+					if( $.type(to) === 'string' ) {
 						to = to.replace(',', '.');
 					}
 
 					// Calculate the new handle position
 					to = percentage.to( settings.range, parseFloat( to ) );
 
+					// Invert the value if this is an right-to-left slider.
 					if ( settings.direction ) {
 						to = 100 - to;
 					}
@@ -1129,8 +1142,7 @@
 						handles[i].data('store').val( true );
 					}
 
-					// The 'val' method allows for an external modifier,
-					// to specify a request for an 'set' event.
+					// Optionally trigger the 'set' event.
 					if( set === true ) {
 						call( settings.set, target );
 					}
@@ -1138,7 +1150,7 @@
 			});
 		}
 
-		// Overwrite the native jQuery 'val' function
+		// Overwrite the native jQuery value function
 		// with a simple handler. noUiSlider will use the internal
 		// value method, anything else will use the standard method.
 		$.fn.val = function(){
