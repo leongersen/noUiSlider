@@ -1,14 +1,19 @@
-/*!	$.noUiSlider
- *	Documentation available at:
- *	http://refreshless.com/nouislider/
+/*! $.noUiSlider
+ *  Documentation available at:
+ *  http://refreshless.com/nouislider/
  *
- *	Copyright Léon Gersen, https://twitter.com/LeonGersen
- *	Released under the WTFPL license
- *	http://www.wtfpl.net/about/
+ *  Copyright Léon Gersen, https://twitter.com/LeonGersen
+ *  Released under the WTFPL license
+ *  http://www.wtfpl.net/about/
  */
 
-/*jslint browser: true, devel: true, plusplus: true, white: true, unparam: true, continue: true */
-(function( $, undefined ){
+/*jslint browser: true  */
+/*jslint devel: true    */
+/*jslint continue: true */
+/*jslint plusplus: true */
+/*jslint white: true    */
+
+(function( $ ){
 
 	'use strict';
 
@@ -18,92 +23,81 @@
 
 	$.fn.noUiSlider = function( options ){
 
+		var
 		// Cache the document and body selectors;
-		// Define a namespace for all events;
-		// Create a map of touch and mouse actions;
-		// Make a copy of the current value function.
-		// Define a set of standard HTML classes for
-		//   the various structures noUiSlider uses;
+		 doc = $(document)
+		,body = $('body')
 
-		var  all = $(document)
-			,body = $('body')
-			,namespace = '.nui'
-			,actions = {
-				 start: 'mousedown touchstart'
-				,move: 'mousemove touchmove'
-				,end: 'mouseup touchend'
-			}
-			,$VAL = $.fn.val
-			,clsList = [
-			/*  0 */  'noUi-base'
-			/*  1 */ ,'noUi-origin'
-			/*  2 */ ,'noUi-handle'
-			/*  3 */ ,'noUi-input'
-			/*  4 */ ,'noUi-active'
-			/*  5 */ ,'noUi-state-tap'
-			/*  6 */ ,'noUi-target'
-			/*  7 */ ,'-lower'
-			/*  8 */ ,'-upper'
-			/*  9 */ ,'noUi-connect'
-			/* 10 */ ,'noUi-vertical'
-			/* 11 */ ,'noUi-horizontal'
-			/* 12 */ ,'noUi-background'
-			/* 13 */ ,'noUi-z-index'
-			/* 14 */ ,'noUi-block'
-			/* 15 */ ,'noUi-state-blocked'
-			/* 16 */ ,'noUi-rtl'
-			]
-			// This object contains some well tested functions to convert
-			// values to and from percentages. It can be a bit strange to wrap
-			// your head around the individual calls, but they'll do their job
-			// with all positive and negative input values.
-			,percentage = {
-				 to: function ( range, value ) {
-					value = range[0] < 0 ? value + Math.abs(range[0]) : value - range[0];
-					return (value * 100) / this.len(range);
-				}
-				,from: function ( range, value ) {
-					return (value * 100) / this.len(range);
-				}
-				,is: function ( range, value ) {
-					return ((value * this.len(range)) / 100) + range[0];
-				}
-				,len: function ( range ) {
-					return (range[1] - range[0]);
-				}
-			};
+		// Namespace for binding and unbinding slider events;
+		,namespace = '.nui'
 
-		// When the browser supports MsPointerEvents,
-		// don't bind touch or mouse events. These touch events are
-		// currently only implemented by IE > 10, but they are stable
-		// and convenient to use. IE11 implements pointerEvents without
+		// Copy of the current value function;
+		,$VAL = $.fn.val
+
+		// Re-usable list of classes;
+		,clsList = [
+		/*  0 */  'noUi-base'
+		/*  1 */ ,'noUi-origin'
+		/*  2 */ ,'noUi-handle'
+		/*  3 */ ,'noUi-input'
+		/*  4 */ ,'noUi-active'
+		/*  5 */ ,'noUi-state-tap'
+		/*  6 */ ,'noUi-target'
+		/*  7 */ ,'-lower'
+		/*  8 */ ,'-upper'
+		/*  9 */ ,'noUi-connect'
+		/* 10 */ ,'noUi-vertical'
+		/* 11 */ ,'noUi-horizontal'
+		/* 12 */ ,'noUi-background'
+		/* 13 */ ,'noUi-z-index'
+		/* 14 */ ,'noUi-block'
+		/* 15 */ ,'noUi-state-blocked'
+		/* 16 */ ,'noUi-rtl'
+		]
+
+		// Determine the events to bind. IE11 implements pointerEvents without
 		// a prefix, which breaks compatibility with the IE10 implementation.
-		if( window.navigator.pointerEnabled ) {
-			actions = {
-				 start: 'pointerdown'
-				,move: 'pointermove'
-				,end: 'pointerup'
-			};
-		} else if ( window.navigator.msPointerEnabled ) {
-			actions = {
-				 start: 'MSPointerDown'
-				,move: 'MSPointerMove'
-				,end: 'MSPointerUp'
-			};
+		,actions = window.navigator.pointerEnabled ? {
+			 start: 'pointerdown'
+			,move: 'pointermove'
+			,end: 'pointerup'
+		} : window.navigator.msPointerEnabled ? {
+			 start: 'MSPointerDown'
+			,move: 'MSPointerMove'
+			,end: 'MSPointerUp'
+		} : {
+			 start: 'mousedown touchstart'
+			,move: 'mousemove touchmove'
+			,end: 'mouseup touchend'
+		};
+
+		// (percentage) How many percent is this value of this range?
+		function fromPercentage ( range, value ) {
+			return (value * 100) / ( range[1] - range[0] );
+		}
+		// (percentage) Where is this value on this range?
+		function toPercentage ( range, value ) {
+			return fromPercentage( range, range[0] < 0 ?
+				value + Math.abs(range[0]) :
+					value - range[0] );
+		}
+		// (value) How much is this percentage on this range?
+		function isPercentage ( range, value ) {
+			return ((value * ( range[1] - range[0] )) / 100) + range[0];
 		}
 
 		// Test an array of objects, and calls them if they are a function.
-		function call ( f, scope, args ) {
+		function call ( functions, scope, args ) {
 
 			// Allow the passing of an unwrapped function.
 			// Leaves other code a more comprehensible.
-			if( !$.isArray(f) ){
-				f = [f];
+			if( !$.isArray( functions ) ){
+				functions = [ functions ];
 			}
 
-			$.each(f,function(i,q){
-				if (typeof q === 'function') {
-					q.call(scope, args);
+			$.each( functions, function(){
+				if (typeof this === 'function') {
+					this.call(scope, args);
 				}
 			});
 		}
@@ -114,23 +108,19 @@
 
 		function fixEvent ( e ) {
 
-			// Required (in at the very least Chrome) to prevent
-			// scrolling and panning while attempting to slide.
-			// The tap event also depends on this. This doesn't
-			// seem to prevent panning in Firefox, which is an issue.
+			// Prevent scrolling and panning on touch events, while
+			// attempting to slide. The tap event also depends on this.
 			e.preventDefault();
 
-			// Filter the event to register the type,
-			// which can be touch, mouse or pointer. Since noUiSlider 4
-			// so longer binds touch OR mouse, but rather touch AND mouse,
-			// offset changes need to be made on an event specific basis.
+			// Filter the event to register the type, which can be
+			// touch, mouse or pointer. Offset changes need to be
+			// made on an event specific basis.
 			var  touch = e.type.indexOf('touch') === 0
 				,mouse = e.type.indexOf('mouse') === 0
 				,pointer = e.type.indexOf('pointer') === 0
 				,x,y, event = e;
 
-			// IE10 implemented pointer events with a prefix,
-			// so we'll needs to check for those, too.
+			// IE10 implemented pointer events with a prefix;
 			if ( e.type.indexOf('MSPointer') === 0 ) {
 				pointer = true;
 			}
@@ -233,11 +223,11 @@
 			// If the provided element was a function,
 			// call it with the slider as scope. Otherwise,
 			// simply call the function on the object.
-			$.each( this.elements, function(i,o) {
-				if ( typeof o === 'function' ) {
-					o.call(target, a);
+			$.each( this.elements, function() {
+				if ( typeof this === 'function' ) {
+					this.call(target, a);
 				} else {
-					o[0][o[1]](a);
+					this[0][this[1]](a);
 				}
 			});
 		}
@@ -253,7 +243,7 @@
 			this.target.val(val, true);
 		}
 
-		function test ( o, set ){
+		function test ( input, sliders ){
 
 		/*
 		 *	Every input option is tested and parsed. This'll prevent
@@ -270,7 +260,7 @@
 		 *	object, to make sure all values can be correctly looped elsewhere.
 		 */
 
-			var TESTS = {
+			var tests = {
 				/*	Handles.
 				 *	Has default, can be 1 or 2.
 				 */
@@ -332,7 +322,7 @@
 							o.start = [q];
 							return isNumeric(q);
 						}
-						return this.parent.range.t(q,o,w);
+						return tests.range.t(q,o,w);
 					}
 				}
 				/*	Connect.
@@ -361,7 +351,7 @@
 					 r: true
 					,t: function(q,o,w){
 						q = parseFloat(q);
-						o[w] = percentage.from(o.range, q);
+						o[w] = fromPercentage(o.range, q);
 						return isNumeric(q);
 					}
 				}
@@ -403,7 +393,7 @@
 
 						// Flatten the serialization array into a reliable
 						// set of elements, which can be tested and looped.
-						function filter ( value, position ) {
+						function filter ( value ) {
 
 							var items = [[],[]];
 
@@ -508,7 +498,7 @@
 				 */
 				,'set': {
 					 t: function(q,o){
-						return this.parent.slide.t(q,o);
+						return tests.slide.t(q,o);
 					}
 				}
 				/*	Block.
@@ -517,7 +507,7 @@
 				 */
 				,'block': {
 					 t: function(q,o){
-						return this.parent.slide.t(q,o);
+						return tests.slide.t(q,o);
 					}
 				}
 				/*	Step.
@@ -530,33 +520,16 @@
 						return isNumeric(q);
 					}
 				}
-				/*	[init]
-				 *	Not an option test. Calling this method will return the
-				 *	parent object with some cross references that allow
-				 *	crawling the object in an upward manner, which
-				 *	normally isn't possible in JavaScript.
-				 */
-				,'init': function(){
-					var obj = this;
-					$.each(obj,function(i,c){
-						c.parent = obj;
-					});
-					delete this.init;
-					return this;
-				}
-			},
+			};
 
-			// Prepare a set of tests, by adding some internal reference
-			// values not available in native JavaScript object implementation.
-			a = TESTS.init();
+			$.each( tests, function( name, test ){
 
-			// Loop all provided tests;
-			// 'v' is the option set, 'i' is the index for the current test.
-			$.each(a, function( i, v ){
+				var value = input[name], isSet = ( value || value === 0 );
 
-				// If the value is required but not set,
-				// or if the test fails, throw an error.
-				if((v.r && (!o[i] && o[i] !== 0)) || ((o[i] || o[i] === 0) && !v.t(o[i],o,i))){
+				// If the value is required but not set, fail.
+				if( ( test.r && !isSet ) ||
+				// If the test returns false, fail.
+					( isSet && !test.t( value, input, name ) ) ){
 
 					// For debugging purposes it might be very useful to know
 					// what option caused the trouble. Since throwing an error
@@ -564,9 +537,9 @@
 					// first. Test for console, as it might not be available.
 					if( console && console.log && console.group ){
 						console.group( 'Invalid noUiSlider initialisation:' );
-						console.log( 'Option:\t', i );
-						console.log( 'Value:\t', o[i] );
-						console.log( 'Slider:\t', set );
+						console.log( 'Option:\t', name );
+						console.log( 'Value:\t', value );
+						console.log( 'Slider(s):\t', sliders );
 						console.groupEnd();
 					}
 
@@ -634,10 +607,14 @@
 
 			// Handle the step option.
 			if( settings.step ){
-				to = closest( to, percentage.from( settings.range, settings.step ));
+				to = closest( to, fromPercentage(
+									 settings.range
+									,settings.step )
+							);
 			}
 
-			// Stop handling this call if the handle won't step to a new value.
+			// Stop handling this call if the handle
+			// won't step to a new value.
 			if( to === initial ) {
 				return false;
 			}
@@ -672,7 +649,9 @@
 
 			// Force proper handle stacking
 			if ( handle.is(handles[0]) ) {
-				handle.children('.' + clsList[2]).toggleClass(clsList[13], to > 50 );
+				handle
+					.children('.' + clsList[2])
+					.toggleClass(clsList[13], to > 50 );
 			}
 
 			if ( settings.direction ) {
@@ -681,7 +660,7 @@
 
 			// Write the value to the serialization object.
 			handle.data('store').val(
-				format ( percentage.is( settings.range, to ), settings )
+				format ( isPercentage( settings.range, to ), settings )
 			);
 
 			return true;
@@ -732,7 +711,7 @@
 			return [item];
 		}
 
-		function store ( handle, number, serialization ) {
+		function store ( handle, i, serialization ) {
 
 			var elements = [];
 
@@ -740,10 +719,8 @@
 			// add the proper events to them or create new input fields,
 			// and add them as data to the handle so they can be kept
 			// in sync with the slider value.
-			$.each( serialization.to[number], function( index, value ){
-				elements = elements.concat(
-					storeElement( handle, value, number )
-				);
+			$.each( serialization.to[i], function(){
+				elements = elements.concat( storeElement( handle, this, i ) );
 			});
 
 			return {
@@ -791,7 +768,7 @@
 
 			// Unbind move and end events, to prevent them stacking
 			// over and over.
-			all.off( namespace );
+			doc.off( namespace );
 
 			// Trigger the change event.
 			this.target.removeClass(clsList[14]).change();
@@ -810,7 +787,7 @@
 
 			// Attach the move event handler, while
 			// passing all relevant information along.
-			attach ( actions.move, all, move, {
+			attach ( actions.move, doc, move, {
 				 startEvent: event
 				,position: this.handle[0].gPct()
 				,base: this.base
@@ -818,7 +795,7 @@
 				,handle: this.handle
 			});
 
-			attach ( actions.end, all, end, {
+			attach ( actions.end, doc, end, {
 				 base: this.base
 				,target: this.target
 				,handle: this.handle
@@ -933,7 +910,7 @@
 				var target = $(this).addClass(clsList[6]), i, handle,
 					base = $('<div/>').appendTo(target),
 					classes = {
-						 base: clsList[0]
+						 base: [ clsList[0] ]
 						,origin: [
 							 [ clsList[1], clsList[1] + clsList[7] ]
 							,[ clsList[1], clsList[1] + clsList[8] ]
@@ -945,9 +922,9 @@
 					};
 
 				// Apply the required connection classes to the elements
-				// that need them. Some classes are made up for several segments
-				// listed in the class list, to allow easy renaming and provide
-				// a minor compression benefit.
+				// that need them. Some classes are made up for several
+				// segments listed in the class list, to allow easy
+				// renaming and provide a minor compression benefit.
 				if( options.connect ) {
 
 					if( options.connect === 'lower' ){
@@ -1007,8 +984,8 @@
 					handle.addClass(classes.origin[i].join(' '));
 					handle.children().addClass(classes.handle[i].join(' '));
 
-					// These events are only bound to the visual handle element,
-					// not the 'real' origin element.
+					// These events are only bound to the visual handle
+					// element, not the 'real' origin element.
 					attach ( actions.start, handle.children(), start, {
 						 base: base
 						,target: target
@@ -1020,7 +997,8 @@
 						 base: base
 						,target: target
 						,options: options
-						,style: options.orientation === 'vertical' ? 'top' : 'left'
+						,style: options.orientation === 'vertical' ?
+									'top' : 'left'
 					});
 
 					handle.data({
@@ -1028,7 +1006,8 @@
 					});
 
 					// Write a function to the native DOM element, since
-					// jQuery wont let me get the current value in percentages.
+					// jQuery doesn't have a way to get the current
+					// value as a percentage.
 					handle[0].gPct = getPercentage;
 
 					// Store handles on the base
@@ -1051,8 +1030,8 @@
 
 			// Loop the handles, and get the value from the input
 			// for every handle on its' own.
-			$.each( base.data('handles'), function( i, handle ){
-				answer.push( handle.data('store').val() );
+			$.each( base.data('handles'), function(){
+				answer.push( $(this).data('store').val() );
 			});
 
 			// If the slider has just one handle, return a single value.
@@ -1078,18 +1057,13 @@
 			}
 
 			// Setting is handled properly for each slider in the data set.
-			// Note that the val method is called on the target, which can
-			// therefore be used in the function.
-			return this.each(function( index, target ){
+			return this.each(function(){
 
-				// Make sure 'target' is a jQuery element.
-				target = $(target);
+				var handles = Array.prototype.slice.call(
+								$(this).data('base').data('handles'), 0),
+					i, settings = handles[0].data('options'), to;
 
-				var i, base = target.data('base'),
-					handles = Array.prototype.slice.call(base.data('handles'), 0),
-					settings = handles[0].data('options'), to;
-
-				base.find('.' + clsList[13]).removeClass(clsList[13]);
+				$(this).find('.' + clsList[13]).removeClass(clsList[13]);
 
 				// If there are multiple handles to be set run the setting
 				// mechanism twice for the first handle, to make sure it
@@ -1119,14 +1093,14 @@
 					// Add support for the comma (,) as a decimal symbol.
 					// Replace it by a period so it is handled properly by
 					// parseFloat. Omitting this would result in a removal
-					// of decimals. The developer might input a comma separated
-					// string using the value method, which works too.
+					// of decimals. This way, the developer can also
+					// input a comma separated string.
 					if( $.type(to) === 'string' ) {
 						to = to.replace(',', '.');
 					}
 
 					// Calculate the new handle position
-					to = percentage.to( settings.range, parseFloat( to ) );
+					to = toPercentage( settings.range, parseFloat( to ) );
 
 					// Invert the value if this is an right-to-left slider.
 					if ( settings.direction ) {
@@ -1144,7 +1118,7 @@
 
 					// Optionally trigger the 'set' event.
 					if( set === true ) {
-						call( settings.set, target );
+						call( settings.set, $(this) );
 					}
 				}
 			});
