@@ -204,7 +204,7 @@
 		// Storing the a value on a handle
 		function serialize ( a ) {
 
-			// Re-scope target
+			// Re-scope target for availability within .each;
 			var target = this.target;
 
 			// Get the value for this handle
@@ -245,20 +245,18 @@
 
 		function test ( input, sliders ){
 
-		/*
-		 *	Every input option is tested and parsed. This'll prevent
-		 *	endless validation in internal methods. These tests are
-		 *	structured with an item for every option available. An
-		 *	option can be marked as required by setting the 'r' flag.
-		 *	The testing function is provided with three arguments:
-		 *		- The provided value for the option;
-		 *		- A reference to the options object;
-		 *		- The name for the option;
-		 *
-		 *	The testing function returns false when an error is detected,
-		 *	or true when everything is OK. It can also modify the option
-		 *	object, to make sure all values can be correctly looped elsewhere.
-		 */
+		//	Every input option is tested and parsed. This'll prevent
+		//	endless validation in internal methods. These tests are
+		//	structured with an item for every option available. An
+		//	option can be marked as required by setting the 'r' flag.
+		//	The testing function is provided with three arguments:
+		//		- The provided value for the option;
+		//		- A reference to the options object;
+		//		- The name for the option;
+		//
+		//	The testing function returns false when an error is detected,
+		//	or true when everything is OK. It can also modify the option
+		//	object, to make sure all values can be correctly looped elsewhere.
 
 			var tests = {
 				/*	Handles.
@@ -1061,9 +1059,7 @@
 
 				var handles = Array.prototype.slice.call(
 								$(this).data('base').data('handles'), 0),
-					i, settings = handles[0].data('options'), to;
-
-				$(this).find('.' + clsList[13]).removeClass(clsList[13]);
+					settings = handles[0].data('options'), to, i;
 
 				// If there are multiple handles to be set run the setting
 				// mechanism twice for the first handle, to make sure it

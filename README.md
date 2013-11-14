@@ -23,7 +23,7 @@ Changes
 + Fixed certain browsers showing the text selection cursor on drag.
 + Fixed an issue where an unintended `mouseup` on a slider might cause a 'tap'.
 + Fixed compatibility with `$.noConflict()`.
-+ Simplified handle stacking order. **Check your css when upgrading!**  
++ Simplified handle stacking order. **Check your CSS when upgrading!**  
   A minor change is required. See the chapter on [styling](http://refreshless.com/nouislider/slider-design-styles) for more information.
 + Re-licensed to [WTFPL](http://www.wtfpl.net/about/). This changes nothing but the license name. The text and terms are identical.
 + Settings for `margin` and `step` are now applied to `.val()` input and the `start` option.
@@ -49,13 +49,12 @@ The plugin code is checked using JsLint, with the following options:
 browser: true
 devel: true
 plusplus: true
-unparam: true
 white: true
 continue: true
 ```
 
 Known issues
 ------------
-There are some minor issues remaining in noUiSlider. It is a priority to fix these issues, but they may be fixed by browser changes in the future.
+There are some minor issues remaining in noUiSlider. It is a priority to fix these issues, but they may be fixed by browser updates in the future.
 
 + Firefox and Safari on Windows will emulate mouse-events on touch screens, but prefer scrolling to dragging the slider.
