@@ -102,6 +102,7 @@
 			});
 		}
 
+		// Test in an object is an instance of jQuery or Zepto.
 		function instance ( object ) {
 			return object instanceof $ || ( $.zepto && $.zepto.isZ ( object ) );
 		}
@@ -175,8 +176,9 @@
 				// Test if there is anything that should prevent an event
 				// from being handled, such as a disabled state or an active
 				// 'tap' transition. Prevent interaction with disabled sliders.
-				if( this.target.is('.noUi-state-tap, [disabled]') ) {
-					return false;
+				if( this.target.hasClass('noUi-state-tap') ||
+					this.target.attr('disabled')) {
+						return false;
 				}
 
 				// Call the event handler with the original event as argument.
@@ -621,7 +623,7 @@
 
 				// If there are multiple handles, they can't pass
 				// each other, and they'll be limited to the other handle.
-				if ( handle.is(handles[1]) ) {
+				if ( handle[0] === handles[1][0] ) {
 					edge = handles[0][0].gPct() + settings.margin;
 					to = to < edge ? edge : to;
 				} else {
@@ -646,10 +648,9 @@
 			handle.css( handle.data('style'), to + '%' );
 
 			// Force proper handle stacking
-			if ( handle.is(handles[0]) ) {
-				handle
-					.children('.' + clsList[2])
-					.toggleClass(clsList[13], to > 50 );
+			if ( handle[0] === handles[0][0] ) {
+				handle.children('.' + clsList[2])
+						.toggleClass(clsList[13], to > 50 );
 			}
 
 			if ( settings.direction ) {
@@ -999,6 +1000,8 @@
 									'top' : 'left'
 					});
 
+					// Every handle has a storage point, which takes care
+					// of triggering the proper serialization callbacks.
 					handle.data({
 						store: store(handle, i, options.serialization)
 					});
@@ -1012,6 +1015,7 @@
 					base.data('handles').push(handle);
 				}
 
+				// Use the public value method to set the start values.
 				target.val( options.start );
 
 				// Attach the the tap event to the slider base.
