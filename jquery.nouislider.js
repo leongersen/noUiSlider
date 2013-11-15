@@ -151,7 +151,7 @@
 				y = e.clientY + window.pageYOffset;
 			}
 
-			return $.extend( event, { x:x, y:y, cursor: mouse } );
+			return $.extend( event, { pointX: x, pointY: y, cursor: mouse } );
 		}
 
 		// Handler for attaching events trough a proxy
@@ -737,10 +737,10 @@
 			// Subtract the initial movement from the current event,
 			// while taking vertical sliders into account.
 			if ( this.handle.data('style') === 'left' ) {
-				proposal = event.x - this.startEvent.x;
+				proposal = event.pointX - this.startEvent.pointX;
 				baseSize = base.width();
 			} else {
-				proposal = event.y - this.startEvent.y;
+				proposal = event.pointY - this.startEvent.pointY;
 				baseSize = base.height();
 			}
 
@@ -827,22 +827,16 @@
 			var  i, handle, hCenter, base = this.base
 				,handles = base.data('handles')
 				,style = handles[0].data('style')
-				,eventXY = event[style === 'left' ? 'x' : 'y']
+				,eventXY = event[style === 'left' ? 'pointX' : 'pointY']
 				,baseSize = style === 'left' ? base.width() : base.height()
 				,offset = {
 					 handles: []
-					,base: {
-						 left: base.offset().left
-						,top: base.offset().top
-					}
+					,base: base.offset()
 				};
 
 			// Loop handles and add data to the offset list.
 			for (i = 0; i < handles.length; i++ ) {
-				offset.handles.push({
-					 left: handles[i].offset().left
-					,top: handles[i].offset().top
-				});
+				offset.handles.push( handles[i].offset() );
 			}
 
 			// Calculate the central point between the handles;
