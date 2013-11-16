@@ -53,6 +53,8 @@
 		/* 14 */ ,'noUi-block'
 		/* 15 */ ,'noUi-state-blocked'
 		/* 16 */ ,'noUi-rtl'
+		/* 17 */ ,'noUi-dragable'
+		/* 18 */ ,'noUi-drag-range'
 		]
 
 		// Determine the events to bind. IE11 implements pointerEvents without
@@ -369,6 +371,44 @@
 						return true;
 					}
 				}
+				/*	Behaviour.
+				 *	Required, defines responses to tapping and
+				 *	dragging elements.
+				 */
+				,'behaviour': {
+					 r: true
+					,t: function(q,o,w){
+
+						o[w] = {
+							 tap: false
+							,drag: false
+							,move: true
+						};
+
+						if ( o.handles === 1 &&
+							( q !== 'tap' && q !== 'none' ) ) {
+							return false;
+						}
+
+						switch (q) {
+							case 'tap-drag':
+								o[w].drag = true;
+							case 'tap':
+								o[w].tap = true;
+							break;
+							case 'drag-fixed':
+								o[w].move = false;
+							case 'drag':
+								o[w].drag = true;
+							break;
+							case 'none': break;
+							default:
+								return false;
+						}
+
+						return true;
+					}
+				}
 				/*	Serialization.
 				 *	Required, but has default. 'resolution' and 'mark' option,
 				 *	are allowed to be missing, 'to' isn't. Must be an array
@@ -590,12 +630,16 @@
 			return false;
 		}
 
-		function setHandle ( handle, to, ignore ) {
+		function setHandle ( handle, to, ignore, margin ) {
 
 			var  settings = handle.data('options')
 				,base = handle.data('base')
 				,handles = base.data('handles')
 				,edge, initial = handle[0].gPct();
+
+			if( !margin ) {
+				margin = settings.margin;
+			}
 
 			// Catch any attempt to drag beyond the slider edges.
 			to = to < 0 ? 0 : to > 100 ? 100 : to;
@@ -607,10 +651,8 @@
 
 			// Handle the step option.
 			if( settings.step ){
-				to = closest( to, fromPercentage(
-									 settings.range
-									,settings.step )
-							);
+				to = closest( to, fromPercentage (
+					settings.range, settings.step ));
 			}
 
 			// Stop handling this call if the handle
@@ -624,10 +666,10 @@
 				// If there are multiple handles, they can't pass
 				// each other, and they'll be limited to the other handle.
 				if ( handle[0] === handles[1][0] ) {
-					edge = handles[0][0].gPct() + settings.margin;
+					edge = handles[0][0].gPct() + margin;
 					to = to < edge ? edge : to;
 				} else {
-					edge = handles[1][0].gPct() - settings.margin;
+					edge = handles[1][0].gPct() - margin;
 					to = to > edge ? edge : to;
 				}
 			}
@@ -637,7 +679,7 @@
 
 			// Stop handling this call if the handle can't move past another.
 			if( to === initial ) {
-				return block( base, ignore, !settings.margin );
+				return block( base, ignore, !margin );
 			}
 
 			// If the slider can move, remove the class
@@ -650,7 +692,7 @@
 			// Force proper handle stacking
 			if ( handle[0] === handles[0][0] ) {
 				handle.children('.' + clsList[2])
-						.toggleClass(clsList[13], to > 50 );
+					.toggleClass(clsList[13], to > 50 );
 			}
 
 			if ( settings.direction ) {
@@ -748,7 +790,10 @@
 
 			proposal = this.position + ( ( proposal * 100 ) / baseSize );
 
-			if ( setHandle( this.handle, proposal ) ) {
+			// The slide callback should only be called once
+			// when moving the slider by dragging the range.
+			if ( setHandle( this.handle, proposal, this.margin, this.margin ) &&
+				 !this.noEvents ) {
 
 				// Trigger the 'slide' event, if the handle was moved.
 				call( base.data('options').slide, base.data('target') );
@@ -758,7 +803,9 @@
 		function end ( event ) {
 
 			// The handle is no longer active, so remove the class.
-			this.handle.children('.' + clsList[2]).removeClass(clsList[4]);
+			if ( this.handle ) {
+				this.handle.children('.' + clsList[2]).removeClass(clsList[4]);
+			}
 
 			if ( event.cursor ) {
 
@@ -775,7 +822,7 @@
 			this.target.removeClass(clsList[14]).change();
 
 			// Trigger the 'end' callback.
-			call( this.handle.data('options').set, this.target );
+			call( this.options.set, this.target );
 		}
 
 		function start ( event ) {
@@ -800,6 +847,7 @@
 				 base: this.base
 				,target: this.target
 				,handle: this.handle
+				,options: this.handle.data('options')
 			});
 
 			// Text selection isn't an issue on touch devices,
@@ -877,6 +925,47 @@
 			base.data('target').change();
 		}
 
+		function drag ( event ) {
+
+			// Return clean value, since the public value method was used.
+			function clean ( a ) {
+				return parseFloat(a.replace(',', '.'));
+			}
+
+			// Determine the current distance between the handles.
+			// This will also force the 'start' distance if 'drag-fixed' is set.
+			var i, margin = (function( v, r ){
+				return fromPercentage( r, Math.abs(clean(v[1]) - clean(v[0])) );
+			}( this.target.val(), this.base.data('options').range ));
+
+			// The tap handler shouldn't fire when the slider is moved
+			// by dragging the range.
+			event.stopPropagation();
+
+			// Dragging the range triggers a move on both handles, so
+			// attach the move event twice.
+			for ( i = 0; i < 2; i++ ){
+
+				attach ( actions.move, doc, move, {
+					 startEvent: event
+					,position: this.handles[i][0].gPct()
+					,base: this.base
+					,target: this.target
+					,handle: this.handles[i]
+					,margin: margin
+					,noEvents: !!i
+				});
+			}
+
+			// The end event is identical to the event used for standard
+			// handle movement.
+			attach ( actions.end, doc, end, {
+				 base: this.base
+				,target: this.target
+				,options: this.base.data('options')
+			});
+		}
+
 		function create ( options ) {
 
 			// Set defaults where applicable;
@@ -884,6 +973,7 @@
 				 handles: 2
 				,margin: 0
 				,direction: 'ltr'
+				,behaviour: 'tap'
 				,orientation: 'horizontal'
 			}, options) || {};
 
@@ -903,17 +993,20 @@
 				// scripting interaction. It has no styling and serves no
 				// other function. Base is the internal main 'bar'.
 				var target = $(this).addClass(clsList[6]), i, handle,
-					base = $('<div/>').appendTo(target),
-					d = options.direction,
+					base = $('<div/>').appendTo(target), dragable,
 					classes = {
 						 base: [ clsList[0] ]
 						,origin: [
-							 [ clsList[1], clsList[1] + clsList[d?8:7] ]
-							,[ clsList[1], clsList[1] + clsList[d?7:8] ]
+							 [ clsList[1]
+							  ,clsList[1] + clsList[options.direction?8:7] ]
+							,[ clsList[1]
+							  ,clsList[1] + clsList[options.direction?7:8] ]
 						]
 						,handle: [
-							 [ clsList[2], clsList[2] + clsList[d?8:7] ]
-							,[ clsList[2], clsList[2] + clsList[d?7:8] ]
+							 [ clsList[2]
+							  ,clsList[2] + clsList[options.direction?8:7] ]
+							,[ clsList[2]
+							  ,clsList[2] + clsList[options.direction?7:8] ]
 						]
 					};
 
@@ -923,8 +1016,7 @@
 				// renaming and provide a minor compression benefit.
 				if( options.connect ) {
 
-					if ( d ) {
-
+					if ( options.direction ) {
 						if ( options.connect === 'lower' ) {
 							options.connect = 'upper';
 						} else if ( options.connect === 'upper' ) {
@@ -973,10 +1065,11 @@
 					,handles: []
 				});
 
-				// Make data accessible in functions throughout the plugin.
+				// Set as little as possible data on the
+				// public facing target element.
 				target.data('base', base);
 
-				if ( d ) {
+				if ( options.direction ) {
 					target.addClass(clsList[16]);
 				}
 
@@ -991,11 +1084,13 @@
 
 					// These events are only bound to the visual handle
 					// element, not the 'real' origin element.
-					attach ( actions.start, handle.children(), start, {
-						 base: base
-						,target: target
-						,handle: handle
-					});
+					if ( options.behaviour.move ) {
+						attach ( actions.start, handle.children(), start, {
+							 base: base
+							,target: target
+							,handle: handle
+						});
+					}
 
 					// Make sure every handle has access to all variables.
 					handle.data({
@@ -1025,10 +1120,36 @@
 				target.val( options.start );
 
 				// Attach the the tap event to the slider base.
-				attach ( actions.start, base, tap, {
-					 base: base
-					,target: target
-				});
+				if ( options.behaviour.tap ) {
+					attach ( actions.start, base, tap, {
+						 base: base
+						,target: target
+					});
+				}
+
+				// Make the range dragable.
+				if ( options.behaviour.drag ){
+
+					dragable = base.addClass(clsList[17])
+								.find('.' + clsList[9])
+								.addClass( clsList[18] );
+
+					// When the range is fixed, the entire range can
+					// be dragged by the handles. The handle in the first
+					// origin will propagate the start event upward,
+					// but it needs to be bound manually on the other.
+					if ( options.behaviour.fixed ) {
+						dragable = dragable.add( base.children()
+							.not(dragable)
+							.children('.' + clsList[2]) );
+					}
+
+					attach ( actions.start, dragable, drag, {
+						 base: base
+						,target: target
+						,handles: base.data('handles')
+					});
+				}
 			});
 		}
 

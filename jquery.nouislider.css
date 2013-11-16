@@ -78,6 +78,15 @@
 		z-index: 10;
 	}
 
+/*	Dragable range indication;
+ */
+	.noUi-dragable .noUi-drag-range {
+		cursor: w-resize;
+	}
+	.noUi-dragable.noUi-vertical .noUi-drag-range {
+		cursor: n-resize;
+	}
+
 /*	Adaptations for the vertical slider;
  *		Some standard styles have been extended to keep
  *		exceptions for the vertical slider as minimal as possible.
