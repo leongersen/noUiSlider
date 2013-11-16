@@ -18,7 +18,7 @@
 	}
 
 /*	Main slider bar;
- *		Use outline instead of border to keep absolute
+ *		Use box-shadow instead of border to keep absolute
  *		positioning unrelated to the styling.
  */
 	.noUi-base {
@@ -26,7 +26,7 @@
 		margin: 1px;
 		height: 38px;
 		position: relative;
-		outline: 1px solid #BFBFBF;
+		box-shadow: 0 0 0 1px #BFBFBF;
 	}
 
 /*	Handles + active state;
@@ -71,7 +71,7 @@
 		bottom: 0;
 		border-radius: inherit;
 	}
-	.noUi-origin-upper {
+	.noUi-origin + .noUi-origin {
 		background: inherit !important;
 	}
 	.noUi-z-index {

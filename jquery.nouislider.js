@@ -434,7 +434,7 @@
 							q.to = filter ( q.to, 0 );
 
 							// Reverse the API for RTL sliders.
-							if ( o.direction ) {
+							if ( o.direction && q.to[1].length ) {
 								q.to.reverse();
 							}
 
@@ -718,8 +718,10 @@
 			// add the proper events to them or create new input fields,
 			// and add them as data to the handle so they can be kept
 			// in sync with the slider value.
-			$.each( serialization.to[i], function(){
-				elements = elements.concat( storeElement( handle, this, i ) );
+			$.each( serialization.to[i], function( index ){
+				elements = elements.concat(
+					storeElement( handle, serialization.to[i][index], i )
+				);
 			});
 
 			return {
@@ -902,15 +904,16 @@
 				// other function. Base is the internal main 'bar'.
 				var target = $(this).addClass(clsList[6]), i, handle,
 					base = $('<div/>').appendTo(target),
+					d = options.direction,
 					classes = {
 						 base: [ clsList[0] ]
 						,origin: [
-							 [ clsList[1], clsList[1] + clsList[7] ]
-							,[ clsList[1], clsList[1] + clsList[8] ]
+							 [ clsList[1], clsList[1] + clsList[d?8:7] ]
+							,[ clsList[1], clsList[1] + clsList[d?7:8] ]
 						]
 						,handle: [
-							 [ clsList[2], clsList[2] + clsList[7] ]
-							,[ clsList[2], clsList[2] + clsList[8] ]
+							 [ clsList[2], clsList[2] + clsList[d?8:7] ]
+							,[ clsList[2], clsList[2] + clsList[d?7:8] ]
 						]
 					};
 
@@ -919,6 +922,15 @@
 				// segments listed in the class list, to allow easy
 				// renaming and provide a minor compression benefit.
 				if( options.connect ) {
+
+					if ( d ) {
+
+						if ( options.connect === 'lower' ) {
+							options.connect = 'upper';
+						} else if ( options.connect === 'upper' ) {
+							options.connect = 'lower';
+						}
+					}
 
 					if( options.connect === 'lower' ){
 						// Add some styling classes to the base;
@@ -953,10 +965,6 @@
 					classes.base.push(clsList[11]);
 				}
 
-				if ( options.direction ) {
-					target.addClass(clsList[16]);
-				}
-
 				// Merge base classes with default,
 				// and store relevant data on the base element.
 				base.addClass( classes.base.join(' ') ).data({
@@ -967,6 +975,10 @@
 
 				// Make data accessible in functions throughout the plugin.
 				target.data('base', base);
+
+				if ( d ) {
+					target.addClass(clsList[16]);
+				}
 
 				for (i = 0; i < options.handles; i++ ) {
 
