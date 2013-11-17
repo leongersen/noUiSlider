@@ -10,6 +10,11 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changes
 -------
 
+**Changelog for version 4.4.0:**
++ Added support for dragging the slider range.
++ Added option to disable 'tap'.
++ Added `rebuild` method.
+
 **Changelog for version 4.3.0:**
 + Added support for inverted (right-to-left and bottom-to-top) sliders.
 + Added a new `block` callback.
@@ -39,20 +44,13 @@ You'll find an excellent documentation at [Semver.org](http://semver.org/).
 Compression and Error checking
 ------------------------------
 **CSS** ([CSSMinifier](http://cssminifier.com/))  
-The stylesheet is trimmed of whitespace and comments to provide a `min` version.
+The stylesheet is trimmed to remove whitespace and comments to provide a `min` version.
 
 **JS** ([Google Closure Compiler](http://closure-compiler.appspot.com/home))  
 The plugin is compressed using the Google Closure compiler, using the 'simple' optimization option.
 
 **Code** ([JsLint](http://jslint.com/))  
-The plugin code is checked using JsLint, with the following options:
-```
-browser: true
-devel: true
-plusplus: true
-white: true
-continue: true
-```
+The plugin code is checked using JsLint. Any remaining errors and warnings are intentional.
 
 Known issues
 ------------

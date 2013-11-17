@@ -62,7 +62,8 @@
 /*	Functional styles for handle positioning;
  *		Note that the origins will inherit border radius
  *		from the parent, even though the default theme
- *		doesn't use curved borders.
+ *		doesn't use curved borders. IE7 doesn't support
+ *		inherit, so we'll override the background statically.
  */
 	.noUi-origin {
 		position: absolute;
@@ -72,6 +73,7 @@
 		border-radius: inherit;
 	}
 	.noUi-origin + .noUi-origin {
+		background: #DDD;
 		background: inherit !important;
 	}
 	.noUi-z-index {
@@ -80,10 +82,10 @@
 
 /*	Dragable range indication;
  */
-	.noUi-dragable .noUi-drag-range {
+	.noUi-dragable {
 		cursor: w-resize;
 	}
-	.noUi-dragable.noUi-vertical .noUi-drag-range {
+	.noUi-vertical .noUi-dragable {
 		cursor: n-resize;
 	}
 

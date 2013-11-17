@@ -21,7 +21,7 @@
 		throw new ReferenceError('Zepto is loaded without the data module.');
 	}
 
-	$.fn.noUiSlider = function( options ){
+	$.fn.noUiSlider = function( options, rebuild ){
 
 		var
 		// Cache the document and body selectors;
@@ -54,7 +54,6 @@
 		/* 15 */ ,'noUi-state-blocked'
 		/* 16 */ ,'noUi-rtl'
 		/* 17 */ ,'noUi-dragable'
-		/* 18 */ ,'noUi-drag-range'
 		]
 
 		// Determine the events to bind. IE11 implements pointerEvents without
@@ -968,6 +967,12 @@
 
 		function create ( options ) {
 
+			// Store the original set of options on all targets,
+			// so they can be re-used and re-tested later.
+			// Make sure to break the relation with the options,
+			// which will be changed by the 'test' function.
+			this.data('options', $.extend(true, {}, options));
+
 			// Set defaults where applicable;
 			options = $.extend({
 				 handles: 2
@@ -1070,7 +1075,7 @@
 				target.data('base', base);
 
 				if ( options.direction ) {
-					target.addClass(clsList[16]);
+					base.addClass(clsList[16]);
 				}
 
 				for (i = 0; i < options.handles; i++ ) {
@@ -1130,15 +1135,14 @@
 				// Make the range dragable.
 				if ( options.behaviour.drag ){
 
-					dragable = base.addClass(clsList[17])
-								.find('.' + clsList[9])
-								.addClass( clsList[18] );
+					dragable = base.find( '.' + clsList[9] )
+						.addClass( clsList[17] );
 
 					// When the range is fixed, the entire range can
 					// be dragged by the handles. The handle in the first
 					// origin will propagate the start event upward,
 					// but it needs to be bound manually on the other.
-					if ( options.behaviour.fixed ) {
+					if ( !options.behaviour.move ) {
 						dragable = dragable.add( base.children()
 							.not(dragable)
 							.children('.' + clsList[2]) );
@@ -1251,6 +1255,56 @@
 			});
 		}
 
+		function destroy ( target ) {
+
+			var elements = [];
+
+			// Get the fields bound to both handles.
+			$.each(target.data('base').data('handles'), function(){
+				elements = elements.concat( $(this).data('store').elements );
+			});
+
+			// Remove all events added by noUiSlider.
+			$.each(elements, function(){
+				$(this)[0].off( namespace );
+			});
+
+			// Remove all data from the target and empty it.
+			target.removeClass(clsList[6]).empty().removeData('base options');
+		}
+
+		function build ( options ) {
+
+			return this.each(function(){
+
+				// When uninitialised, jQuery will return '',
+				// Zepto returns undefined. Both are falsy.
+				var values = $(this).val() || false,
+					current = $(this).data('options'),
+				// Extend the current setup with the new options.
+					setup = $.extend( {}, current, options );
+
+				// If there was a slider initialised, remove it first.
+				if ( values !== false ) {
+					destroy( $(this) );
+				}
+
+				// Make the destroy method publicly accessible.
+				if( !options ) {
+					return;
+				}
+
+				// Create a new slider
+				$(this).noUiSlider( setup );
+
+				// Set the slider values back. If the start options changed,
+				// it gets precedence.
+				if ( values !== false && setup.start === current.start ) {
+					$(this).val( values );
+				}
+			});
+		}
+
 		// Overwrite the native jQuery value function
 		// with a simple handler. noUiSlider will use the internal
 		// value method, anything else will use the standard method.
@@ -1270,7 +1324,7 @@
 			return $VAL.apply( this, arguments );
 		};
 
-		return create.call( this, options );
+		return ( rebuild ? build : create ).call( this, options );
 	};
 
 }( window.jQuery || window.Zepto ));
