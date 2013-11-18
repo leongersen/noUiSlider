@@ -555,7 +555,7 @@
 				,'step': {
 					 t: function(q,o,w){
 						q = parseFloat(q);
-						o[w] = q;
+						o[w] = fromPercentage ( o.range, q );
 						return isNumeric(q);
 					}
 				}
@@ -603,12 +603,7 @@
 			return value.replace( '.', options.serialization.mark );
 		}
 
-		function block ( base, ignore, stateless ) {
-
-			// Optionality disable calls to this function
-			if ( ignore ) {
-				return false;
-			}
+		function block ( base, stateless ) {
 
 			var target = base.data('target');
 
@@ -629,61 +624,13 @@
 			return false;
 		}
 
-		function setHandle ( handle, to, ignore, margin ) {
+		function placeHandle ( handle, to, handles ) {
 
-			var  settings = handle.data('options')
-				,base = handle.data('base')
-				,handles = base.data('handles')
-				,edge, initial = handle[0].gPct();
-
-			if( !margin ) {
-				margin = settings.margin;
-			}
-
-			// Catch any attempt to drag beyond the slider edges.
-			to = to < 0 ? 0 : to > 100 ? 100 : to;
-
-			// Catch invalid user input
-			if( !isNumeric( to ) || to === initial ) {
-				return false;
-			}
-
-			// Handle the step option.
-			if( settings.step ){
-				to = closest( to, fromPercentage (
-					settings.range, settings.step ));
-			}
-
-			// Stop handling this call if the handle
-			// won't step to a new value.
-			if( to === initial ) {
-				return false;
-			}
-
-			if( handles.length > 1 ){
-
-				// If there are multiple handles, they can't pass
-				// each other, and they'll be limited to the other handle.
-				if ( handle[0] === handles[1][0] ) {
-					edge = handles[0][0].gPct() + margin;
-					to = to < edge ? edge : to;
-				} else {
-					edge = handles[1][0].gPct() - margin;
-					to = to > edge ? edge : to;
-				}
-			}
-
-			// Limit 'to' to 0 - 100 again after all modifications
-			to = to < 0 ? 0 : to > 100 ? 100 : to;
-
-			// Stop handling this call if the handle can't move past another.
-			if( to === initial ) {
-				return block( base, ignore, !margin );
-			}
+			var settings = handle.data('options');
 
 			// If the slider can move, remove the class
 			// indicating the block state.
-			base.data('target').removeClass(clsList[14]);
+			handle.data('target').removeClass(clsList[14]);
 
 			// Set handle to new location
 			handle.css( handle.data('style'), to + '%' );
@@ -702,7 +649,60 @@
 			handle.data('store').val(
 				format ( isPercentage( settings.range, to ), settings )
 			);
+		}
 
+		function setHandle ( handle, to, noBlock ) {
+
+			function zTh ( to ) {
+				return to < 0 ? 0 : to > 100 ? 100 : to;
+			}
+
+			var  handles = handle.data('base').data('handles')
+				,edge, initial = handle[0].gPct()
+				,step = handle.data('options').step
+				,margin = handle.data('options').margin;
+
+			// Catch any attempt to drag beyond the slider edges.
+			to = zTh(to);
+
+			// Catch invalid user input
+			if ( !isNumeric( to ) || to === initial ) {
+				return false;
+			}
+
+			// Handle the step option.
+			if ( step ){
+				to = closest( to, step );
+			}
+
+			// Stop handling this call if the handle
+			// won't step to a new value.
+			if ( to === initial ) {
+				return false;
+			}
+
+			if ( handles.length > 1 ){
+
+				// If there are multiple handles, they can't pass
+				// each other, and they'll be limited to the other handle.
+				if ( handle[0] === handles[1][0] ) {
+					edge = handles[0][0].gPct() + margin;
+					to = to < edge ? edge : to;
+				} else {
+					edge = handles[1][0].gPct() - margin;
+					to = to > edge ? edge : to;
+				}
+			}
+
+			// Limit 'to' to 0 - 100 again after all modifications
+			to = zTh(to);
+
+			// Stop handling this call if the handle can't move past another.
+			if ( to === initial ) {
+				return noBlock ? false : block( handle.data('base'), !margin );
+			}
+
+			placeHandle ( handle, to, handles );
 			return true;
 		}
 
@@ -773,30 +773,62 @@
 			};
 		}
 
-		function move( event ) {
+// Event handlers
+		function move ( event ) {
 
-			var base = this.base, proposal, baseSize;
+			// Map event movement to a slider percentage.
+			var proposal = (function( xy, size, event, start ){
+				return ( ( event[ xy ] - start[ xy ] ) * 100 ) / size;
+			}( this.size[0], this.size[1], event, this.start ));
 
-			// Subtract the initial movement from the current event,
-			// while taking vertical sliders into account.
-			if ( this.handle.data('style') === 'left' ) {
-				proposal = event.pointX - this.startEvent.pointX;
-				baseSize = base.width();
+			if ( this.handles.length === 1 ) {
+
+				// Run handle placement.
+				if ( !setHandle( this.handles[0], this.pos[0] + proposal )){
+					return;
+				}
+
 			} else {
-				proposal = event.pointY - this.startEvent.pointY;
-				baseSize = base.height();
+
+				// Dragging the range could be implemented by forcing the
+				// 'move' event on both handles, but this solution proved
+				// lagging on slower devices, resulting in range errors. The
+				// slightly ugly solution below is considerably faster.
+				// Bypass the 'setHandle' method, since other checks are needed.
+
+				var l1, u1, l2, u2;
+
+				// Round the proposal to the step setting.
+				if ( this.step ) {
+					proposal = closest( proposal, this.step );
+				}
+
+				// Determine the new position, store it twice. Once for
+				// limiting, once for checking whether placement should occur.
+				l1 = l2 = this.pos[0] + proposal;
+				u1 = u2 = this.pos[1] + proposal;
+
+				// Round the values within a sensible range.
+				if ( l1 < 0 ) {
+					u1 += -1 * l1;
+					l1 = 0;
+				} else if ( u1 > 100 ) {
+					l1 -= ( u1 - 100 );
+					u1 = 100;
+				}
+
+				// Don't perform placement if no handles are to be changed.
+				if ( ( !l2 && l1 ) || ( u1 > 100 && u2 === 100 ) ||
+					 l1 !== l2 || u1 !== u2 ) {
+					return;
+				}
+
+				placeHandle ( this.handles[0], l1, this.handles );
+				placeHandle ( this.handles[1], u1, this.handles );
 			}
 
-			proposal = this.position + ( ( proposal * 100 ) / baseSize );
-
-			// The slide callback should only be called once
-			// when moving the slider by dragging the range.
-			if ( setHandle( this.handle, proposal, this.margin, this.margin ) &&
-				 !this.noEvents ) {
-
-				// Trigger the 'slide' event, if the handle was moved.
-				call( base.data('options').slide, base.data('target') );
-			}
+			// Trigger the 'slide' event, if the handle was moved.
+			call( this.base.data('options').slide, this.target );
 		}
 
 		function end ( event ) {
@@ -826,27 +858,38 @@
 
 		function start ( event ) {
 
-			// Mark the handle as 'active' so it can be properly styled.
-			this.handle.children('.' + clsList[2]).addClass(clsList[4]);
+			var positions = [], i;
 
-			// Prevent triggering of the 'tap' event.
+			for ( i = 0; i < this.handles.length; i++ ) {
+				positions.push(this.handles[i][0].gPct());
+			}
+
+			// Mark the handle as 'active' so it can be styled.
+			if( this.handles.length === 1 ) {
+				this.handles[0].children('.' + clsList[2]).addClass(clsList[4]);
+			}
+
+			// A drag should never propagate up to the 'tap' event.
 			event.stopPropagation();
 
-			// Attach the move event handler, while
-			// passing all relevant information along.
+			// Attach the move event.
 			attach ( actions.move, doc, move, {
-				 startEvent: event
-				,position: this.handle[0].gPct()
+				 start: event
 				,base: this.base
 				,target: this.target
-				,handle: this.handle
+				,handles: this.handles
+				,pos: positions
+				,step: this.base.data('options').step
+				,size: this.handles[0] === 'left' ?
+					['pointX', this.base.width()] :
+					['pointY', this.base.height()]
 			});
 
+			// Unbind all movement when the drag ends.
 			attach ( actions.end, doc, end, {
 				 base: this.base
 				,target: this.target
-				,handle: this.handle
-				,options: this.handle.data('options')
+				,options: this.base.data('options')
 			});
 
 			// Text selection isn't an issue on touch devices,
@@ -924,47 +967,7 @@
 			base.data('target').change();
 		}
 
-		function drag ( event ) {
-
-			// Return clean value, since the public value method was used.
-			function clean ( a ) {
-				return parseFloat(a.replace(',', '.'));
-			}
-
-			// Determine the current distance between the handles.
-			// This will also force the 'start' distance if 'drag-fixed' is set.
-			var i, margin = (function( v, r ){
-				return fromPercentage( r, Math.abs(clean(v[1]) - clean(v[0])) );
-			}( this.target.val(), this.base.data('options').range ));
-
-			// The tap handler shouldn't fire when the slider is moved
-			// by dragging the range.
-			event.stopPropagation();
-
-			// Dragging the range triggers a move on both handles, so
-			// attach the move event twice.
-			for ( i = 0; i < 2; i++ ){
-
-				attach ( actions.move, doc, move, {
-					 startEvent: event
-					,position: this.handles[i][0].gPct()
-					,base: this.base
-					,target: this.target
-					,handle: this.handles[i]
-					,margin: margin
-					,noEvents: !!i
-				});
-			}
-
-			// The end event is identical to the event used for standard
-			// handle movement.
-			attach ( actions.end, doc, end, {
-				 base: this.base
-				,target: this.target
-				,options: this.base.data('options')
-			});
-		}
-
+// API
 		function create ( options ) {
 
 			// Store the original set of options on all targets,
@@ -1087,15 +1090,10 @@
 					handle.addClass(classes.origin[i].join(' '));
 					handle.children().addClass(classes.handle[i].join(' '));
 
-					// These events are only bound to the visual handle
-					// element, not the 'real' origin element.
-					if ( options.behaviour.move ) {
-						attach ( actions.start, handle.children(), start, {
-							 base: base
-							,target: target
-							,handle: handle
-						});
-					}
+					// Write a function to the native DOM element, since
+					// jQuery doesn't have a way to get the current
+					// value as a percentage.
+					handle[0].gPct = getPercentage;
 
 					// Make sure every handle has access to all variables.
 					handle.data({
@@ -1112,11 +1110,6 @@
 						store: store(handle, i, options.serialization)
 					});
 
-					// Write a function to the native DOM element, since
-					// jQuery doesn't have a way to get the current
-					// value as a percentage.
-					handle[0].gPct = getPercentage;
-
 					// Store handles on the base
 					base.data('handles').push(handle);
 				}
@@ -1124,7 +1117,21 @@
 				// Use the public value method to set the start values.
 				target.val( options.start );
 
-				// Attach the the tap event to the slider base.
+				// Attach the standard drag event to the handles.
+				if ( options.behaviour.move ) {
+					for ( i = 0; i < base.data('handles').length; i++ ) {
+
+						// These events are only bound to the visual handle
+						// element, not the 'real' origin element.
+						attach ( actions.start, base.data('handles')[i].children(), start, {
+							 base: base
+							,target: target
+							,handles: [ base.data('handles')[i] ]
+						});
+					}
+				}
+
+				// Attach the tap event to the slider base.
 				if ( options.behaviour.tap ) {
 					attach ( actions.start, base, tap, {
 						 base: base
@@ -1148,7 +1155,7 @@
 							.children('.' + clsList[2]) );
 					}
 
-					attach ( actions.start, dragable, drag, {
+					attach ( actions.start, dragable, start, {
 						 base: base
 						,target: target
 						,handles: base.data('handles')
