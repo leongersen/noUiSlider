@@ -14,6 +14,7 @@ Changes
 + Added support for dragging the slider range.
 + Added option to disable 'tap'.
 + Added `rebuild` method.
++ Added ability to extend tap events to `target` element.
 
 **Changelog for version 4.3.0:**
 + Added support for inverted (right-to-left and bottom-to-top) sliders.

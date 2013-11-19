@@ -54,6 +54,9 @@
 		/* 15 */ ,'noUi-state-blocked'
 		/* 16 */ ,'noUi-rtl'
 		/* 17 */ ,'noUi-dragable'
+		/* 18 */ ,'noUi-outer'
+		/* 19 */ ,'-horizontal'
+		/* 20 */ ,'-vertical'
 		]
 
 		// Determine the events to bind. IE11 implements pointerEvents without
@@ -372,6 +375,27 @@
 			return false;
 		}
 
+	// Handles movement by tapping
+		function jump ( base, handle, to ) {
+
+			// Flag the slider as it is now in a transitional state.
+			// Transition takes 300 ms, so re-enable the slider afterwards.
+			base.addClass(clsList[5]);
+			setTimeout(function(){
+				base.removeClass(clsList[5]);
+			}, 300);
+
+			// Move the handle to the new position.
+			setHandle( handle, to );
+
+			// Trigger the 'slide' and 'set' callbacks,
+			// pass the target so that it is 'this'.
+			call( [ handle.data('options').slide
+				   ,handle.data('options').set ], base.data('target') );
+
+			base.data('target').change();
+		}
+
 	// Change inline style and apply proper classes.
 		function placeHandle ( handle, to, handles ) {
 
@@ -627,24 +651,24 @@
 			handle = closestHandle( base.data('handles'), point, style );
 			to = (( point - base.offset()[ style ] ) * 100 ) / size;
 
-			// Flag the slider as it is now in a transitional state.
-			// Transition takes 300 ms, so re-enable the slider afterwards.
-			base.addClass(clsList[5]);
-			setTimeout(function(){
-				base.removeClass(clsList[5]);
-			}, 300);
-
-			// Move the handle to the new position.
-			setHandle( handle, to );
-
-			// Trigger the 'slide' and 'set' callbacks,
-			// pass the target so that it is 'this'.
-			call( [ handle.data('options').slide
-				   ,handle.data('options').set ], base.data('target') );
-
-			base.data('target').change();
+			jump(base, handle, to);
 		}
 
+	// Move handle to edges when target gets tapped.
+		function edge ( event ) {
+
+			var settings = this.base.data('options'),
+				handles = this.base.data('handles'), to, i;
+
+			i = ( settings.orientation ? event.pointY : event.pointX );
+			i = i < this.base.offset()[settings.style];
+
+			to = i ? 0 : 100;
+
+			i = i ? 0 : handles.length - 1;
+
+			jump ( this.base, handles[i], to );
+		}
 
 // API
 
@@ -790,16 +814,14 @@
 					 r: true
 					,t: function(q,o,w){
 
+						q = q.replace('extend', 'tap');
+
 						o[w] = {
 							 tap: false
+							,extend: q !== o[w]
 							,drag: false
 							,move: true
 						};
-
-						if ( o.handles === 1 &&
-							( q !== 'tap' && q !== 'none' ) ) {
-							return false;
-						}
 
 						switch (q) {
 							case 'tap-drag':
@@ -1170,6 +1192,20 @@
 						 base: base
 						,target: target
 					});
+				}
+
+				// Extend tapping behaviour to target
+				if ( options.behaviour.extend ) {
+					attach ( actions.start, target, edge, {
+						 base: base
+						,target: target.addClass([
+							 clsList[12]
+							,clsList[18]
+							,clsList[18] + clsList[19 + options.orientation]
+						].join(' '))
+					});
+				} else {
+					base.addClass(clsList[18]);
 				}
 
 				// Make the range dragable.

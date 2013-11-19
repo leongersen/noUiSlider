@@ -18,22 +18,35 @@
 	}
 
 /*	Main slider bar;
- *		Use box-shadow instead of border to keep absolute
- *		positioning unrelated to the styling.
  */
 	.noUi-base {
 		width: 100%;
-		margin: 1px;
 		height: 38px;
 		position: relative;
+	}
+
+/*	Visuals for outer styles;
+ *		Can optionally be applied to the target to create
+ *		a design where the handles are contained within the bar.
+ *		Use box-shadow instead of border to keep absolute
+ *		positioning unrelated to the styling.
+ */
+	.noUi-outer {
+		margin: 1px;
 		box-shadow: 0 0 0 1px #BFBFBF;
+	}
+	.noUi-outer-horizontal {
+		padding: 0 19px;
+	}
+	.noUi-outer-vertical {
+		padding: 19px 0;
 	}
 
 /*	Handles + active state;
  */
 	.noUi-handle {
 		top: -3px;
-		left: -23px;
+		left: -22px;
 		width: 44px;
 		height: 44px;
 		z-index: 1;
@@ -102,7 +115,7 @@
 		left: 0;
 	}
 	.noUi-vertical .noUi-handle  {
-		top: -23px;
+		top: -22px;
 		left: -3px;
 	}
 
