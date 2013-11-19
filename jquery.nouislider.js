@@ -136,6 +136,12 @@
 			// with the serialization options.
 			value = value.toFixed( options.decimals );
 
+			// Rounding away decimals might cause a value of -0
+			// when using very small ranges. Remove those cases.
+			if ( parseFloat(value) === 0 ) {
+				value = value.replace('-0', '0');
+			}
+
 			// Apply the proper decimal mark to the value.
 			return value.replace( '.', options.serialization.mark );
 		}
