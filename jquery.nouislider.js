@@ -140,14 +140,6 @@
 			return value.replace( '.', options.serialization.mark );
 		}
 
-	// Get current 'left' or 'top' value, since jQuery doesn't have a method
-	// to return a CSS value as a percentage. Returns -1 if the value for this
-	// element is unset.
-		function getPercentage ( ) {
-			var value = parseFloat(this.style[$(this).data('style')]);
-			return isNaN(value) ? -1 : value;
-		}
-
 
 // Event abstraction
 
@@ -384,7 +376,7 @@
 			handle.data('target').removeClass(clsList[14]);
 
 			// Set handle to new location
-			handle.css( handle.data('style'), to + '%' );
+			handle.css( settings.style, to + '%' ).data('pct', to);
 
 			// Force proper handle stacking
 			if ( handle[0] === handles[0][0] ) {
@@ -410,7 +402,7 @@
 			}
 
 			var  handles = handle.data('base').data('handles')
-				,edge, initial = handle[0].gPct()
+				,edge, initial = handle.data('pct')
 				,step = handle.data('options').step
 				,margin = handle.data('options').margin;
 
@@ -438,10 +430,10 @@
 				// If there are multiple handles, they can't pass
 				// each other, and they'll be limited to the other handle.
 				if ( handle[0] === handles[1][0] ) {
-					edge = handles[0][0].gPct() + margin;
+					edge = handles[0].data('pct') + margin;
 					to = to < edge ? edge : to;
 				} else {
-					edge = handles[1][0].gPct() - margin;
+					edge = handles[1].data('pct') - margin;
 					to = to > edge ? edge : to;
 				}
 			}
@@ -461,7 +453,7 @@
 
 // Event handlers
 
-	//	Handle movement on document for handle and range drag.
+	// Handle movement on document for handle and range drag.
 		function move ( event ) {
 
 			// Map event movement to a slider percentage.
@@ -519,7 +511,7 @@
 			call( this.base.data('options').slide, this.target );
 		}
 
-	//	Unbind move events on document, call callbacks.
+	// Unbind move events on document, call callbacks.
 		function end ( event ) {
 
 			// The handle is no longer active, so remove the class.
@@ -545,13 +537,13 @@
 			call( this.options.set, this.target );
 		}
 
-	//	Bind move events on document.
+	// Bind move events on document.
 		function start ( event ) {
 
-			var positions = [], i;
+			var positions = [], i, settings = this.base.data('options');
 
 			for ( i = 0; i < this.handles.length; i++ ) {
-				positions.push(this.handles[i][0].gPct());
+				positions.push(this.handles[i].data('pct'));
 			}
 
 			// Mark the handle as 'active' so it can be styled.
@@ -569,17 +561,18 @@
 				,target: this.target
 				,handles: this.handles
 				,pos: positions
-				,step: this.base.data('options').step
-				,size: this.handles[0].data('style') === 'left' ?
-					['pointX', this.base.width()] :
-					['pointY', this.base.height()]
+				,step: settings.step
+				,size: settings.orientation ?
+					['pointY', this.base.height()] :
+					['pointX', this.base.width()]
+
 			});
 
 			// Unbind all movement when the drag ends.
 			attach ( actions.end, doc, end, {
 				 base: this.base
 				,target: this.target
-				,options: this.base.data('options')
+				,options: settings
 			});
 
 			// Text selection isn't an issue on touch devices,
@@ -596,44 +589,37 @@
 			}
 		}
 
-	//	Move closest handle to tapped location.
+	// Move closest handle to tapped location.
 		function tap ( event ) {
 
-			// If the target contains an active handle, don't trigger
-			// this event. Tapping shouldn't be possible while dragging.
-			if ( this.base.find('.' + clsList[4]).length ) {
-				return;
+			// Determine the handle closest to the tap.
+			function closestHandle ( handles, location, style ) {
+
+				if ( handles.length === 1 ) {
+					return handles[0];
+				}
+
+				var total = handles[0].offset()[style] +
+							handles[1].offset()[style];
+
+				return handles[ location < total / 2 ? 0 : 1 ];
 			}
 
 			// Getting variables from the event is not required, but
 			// shortens other expressions and is far more convenient;
-			var  i, handle, hCenter, base = this.base
-				,handles = base.data('handles')
-				,style = handles[0].data('style')
-				,eventXY = event[style === 'left' ? 'pointX' : 'pointY']
-				,baseSize = style === 'left' ? base.width() : base.height()
-				,offset = {
-					 handles: []
-					,base: base.offset()
-				};
+			var base = this.base, handle, to, point, size,
+				style = base.data('options').style;
 
-			// Loop handles and add data to the offset list.
-			for (i = 0; i < handles.length; i++ ) {
-				offset.handles.push( handles[i].offset() );
-			}
-
-			// Calculate the central point between the handles;
-			hCenter = handles.length === 1 ? 0 :
-				(( offset.handles[0][style] + offset.handles[1][style] ) / 2 );
-
-			// If there is just one handle,
-			// or the lower handles in closest to the event,
-			// select the first handle. Otherwise, pick the second.
-			if ( handles.length === 1 || eventXY < hCenter ){
-				handle = handles[0];
+			if ( base.data('options').orientation ) {
+				point = event.pointY;
+				size = base.height();
 			} else {
-				handle = handles[1];
+				point = event.pointX;
+				size = base.width();
 			}
+
+			handle = closestHandle( base.data('handles'), point, style );
+			to = (( point - base.offset()[ style ] ) * 100 ) / size;
 
 			// Flag the slider as it is now in a transitional state.
 			// Transition takes 300 ms, so re-enable the slider afterwards.
@@ -642,18 +628,13 @@
 				base.removeClass(clsList[5]);
 			}, 300);
 
-			// Calculate the new position for the handle and
-			// trigger the movement.
-			setHandle(
-				 handle
-				,(((eventXY - offset.base[style]) * 100) / baseSize)
-			);
+			// Move the handle to the new position.
+			setHandle( handle, to );
 
 			// Trigger the 'slide' and 'set' callbacks,
 			// pass the target so that it is 'this'.
 			call( [ handle.data('options').slide
-				   ,handle.data('options').set ]
-				 ,base.data('target') );
+				   ,handle.data('options').set ], base.data('target') );
 
 			base.data('target').change();
 		}
@@ -757,8 +738,17 @@
 				 *	Will default to horizontal, not required.
 				 */
 				,'orientation': {
-					 t: function(q){
-						return ( q === 'horizontal' || q === 'vertical' );
+					 t: function(q,o,w){
+						switch (q){
+							case 'horizontal':
+								o[w] = 0;
+								break;
+							case 'vertical':
+								o[w] = 1;
+								break;
+							default: return false;
+						}
+						return true;
 					}
 				}
 				/*	Margin.
@@ -1003,7 +993,7 @@
 			});
 		}
 
-	//	Parse options, add classes, attach events, create HTML.
+	// Parse options, add classes, attach events, create HTML.
 		function create ( options ) {
 
 			// Store the original set of options on all targets,
@@ -1019,7 +1009,7 @@
 				,direction: 'ltr'
 				,behaviour: 'tap'
 				,orientation: 'horizontal'
-			}, options) || {};
+			}, options);
 
 			// Make sure the test for serialization runs.
 			options.serialization = options.serialization || {};
@@ -1031,13 +1021,16 @@
 			// wrapping integers in arrays.
 			test( options, this );
 
+			// Pre-define the styles.
+			options.style = options.orientation ? 'top' : 'left';
+
 			return this.each(function(){
 
 				// Target is the wrapper that will receive all external
 				// scripting interaction. It has no styling and serves no
 				// other function. Base is the internal main 'bar'.
 				var target = $(this).addClass(clsList[6]), i, handle,
-					base = $('<div/>').appendTo(target), dragable,
+					base = $('<div/>').appendTo(target), dragable, handles = [],
 					classes = {
 						 base: [ clsList[0] ]
 						,origin: [
@@ -1053,6 +1046,11 @@
 							  ,clsList[2] + clsList[options.direction?7:8] ]
 						]
 					};
+
+				// Throw an error if the slider was already initialized.
+				if ( target.data('base') ) {
+					throw new Error('Slider was already initialized.');
+				}
 
 				// Apply the required connection classes to the elements
 				// that need them. Some classes are made up for several
@@ -1095,19 +1093,11 @@
 				// Add classes for horizontal and vertical sliders.
 				// The horizontal class is provided for completeness,
 				// as it isn't used in the default theme.
-				if ( options.orientation === 'vertical' ){
+				if ( options.orientation ){
 					classes.base.push(clsList[10]);
 				} else {
 					classes.base.push(clsList[11]);
 				}
-
-				// Merge base classes with default,
-				// and store relevant data on the base element.
-				base.addClass( classes.base.join(' ') ).data({
-					 target: target
-					,options: options
-					,handles: []
-				});
 
 				// Set as little as possible data on the
 				// public facing target element.
@@ -1126,19 +1116,12 @@
 					handle.addClass(classes.origin[i].join(' '));
 					handle.children().addClass(classes.handle[i].join(' '));
 
-					// Write a function to the native DOM element, since
-					// jQuery doesn't have a way to get the current
-					// value as a percentage.
-					handle[0].gPct = getPercentage;
-
 					// Make sure every handle has access to all variables.
 					handle.data({
 						 base: base
 						,target: target
 						,options: options
-						,style: options.orientation === 'vertical' ?
-									'top' : 'left'
-					});
+					}).attr('data-style', options.style);
 
 					// Every handle has a storage point, which takes care
 					// of triggering the proper serialization callbacks.
@@ -1147,22 +1130,30 @@
 					});
 
 					// Store handles on the base
-					base.data('handles').push(handle);
+					handles.push(handle);
 				}
+
+				// Merge base classes with default,
+				// and store relevant data on the base element.
+				base.addClass( classes.base.join(' ') ).data({
+					 target: target
+					,options: options
+					,handles: handles
+				});
 
 				// Use the public value method to set the start values.
 				target.val( options.start );
 
 				// Attach the standard drag event to the handles.
 				if ( options.behaviour.move ) {
-					for ( i = 0; i < base.data('handles').length; i++ ) {
+					for ( i = 0; i < handles.length; i++ ) {
 
 						// These events are only bound to the visual handle
 						// element, not the 'real' origin element.
-						attach ( actions.start, base.data('handles')[i].children(), start, {
+						attach ( actions.start, handles[i].children(), start, {
 							 base: base
 							,target: target
-							,handles: [ base.data('handles')[i] ]
+							,handles: [ handles[i] ]
 						});
 					}
 				}
@@ -1194,13 +1185,13 @@
 					attach ( actions.start, dragable, start, {
 						 base: base
 						,target: target
-						,handles: base.data('handles')
+						,handles: handles
 					});
 				}
 			});
 		}
 
-	//	Return value for the slider, relative to 'range'.
+	// Return value for the slider, relative to 'range'.
 		function getValue ( ) {
 
 			var base = $(this).data('base'), answer = [];
@@ -1225,7 +1216,7 @@
 			return answer;
 		}
 
-	//	Set value for the slider, relative to 'range'.
+	// Set value for the slider, relative to 'range'.
 		function setValue ( args, set ) {
 
 			// If the value is to be set to a number, which is valid
@@ -1300,7 +1291,7 @@
 			});
 		}
 
-	//	Unbind all attached events, remove classed and HTML.
+	// Unbind all attached events, remove classed and HTML.
 		function destroy ( target ) {
 
 			var elements = [];
@@ -1319,8 +1310,8 @@
 			target.removeClass(clsList[6]).empty().removeData('base options');
 		}
 
-	//	Merge options with current initialization, destroy slider
-	//	and reinitialize.
+	// Merge options with current initialization, destroy slider
+	// and reinitialize.
 		function build ( options ) {
 
 			return this.each(function(){
