@@ -375,27 +375,6 @@
 			return false;
 		}
 
-	// Handles movement by tapping
-		function jump ( base, handle, to ) {
-
-			// Flag the slider as it is now in a transitional state.
-			// Transition takes 300 ms, so re-enable the slider afterwards.
-			base.addClass(clsList[5]);
-			setTimeout(function(){
-				base.removeClass(clsList[5]);
-			}, 300);
-
-			// Move the handle to the new position.
-			setHandle( handle, to );
-
-			// Trigger the 'slide' and 'set' callbacks,
-			// pass the target so that it is 'this'.
-			call( [ handle.data('options').slide
-				   ,handle.data('options').set ], base.data('target') );
-
-			base.data('target').change();
-		}
-
 	// Change inline style and apply proper classes.
 		function placeHandle ( handle, to, handles ) {
 
@@ -410,8 +389,7 @@
 
 			// Force proper handle stacking
 			if ( handle[0] === handles[0][0] ) {
-				handle.children('.' + clsList[2])
-					.toggleClass(clsList[13], to > 50 );
+				handle.data('grab').toggleClass(clsList[13], to > 50 );
 			}
 
 			if ( settings.direction ) {
@@ -480,6 +458,27 @@
 			return true;
 		}
 
+	// Handles movement by tapping
+		function jump ( base, handle, to ) {
+
+			// Flag the slider as it is now in a transitional state.
+			// Transition takes 300 ms, so re-enable the slider afterwards.
+			base.addClass(clsList[5]);
+			setTimeout(function(){
+				base.removeClass(clsList[5]);
+			}, 300);
+
+			// Move the handle to the new position.
+			setHandle( handle, to );
+
+			// Trigger the 'slide' and 'set' callbacks,
+			// pass the target so that it is 'this'.
+			call( [ handle.data('options').slide
+				   ,handle.data('options').set ], base.data('target') );
+
+			base.data('target').change();
+		}
+
 
 // Event handlers
 
@@ -545,26 +544,23 @@
 		function end ( event ) {
 
 			// The handle is no longer active, so remove the class.
-			if ( this.handle ) {
-				this.handle.children('.' + clsList[2]).removeClass(clsList[4]);
+			if ( this.handles.length === 1 ) {
+				this.handles[0].data('grab').removeClass(clsList[4]);
 			}
 
+			// Remove cursor styles and text-selection events bound to the body.
 			if ( event.cursor ) {
-
-				// Remove cursor styles and text-selection events
-				// which are bound to the body.
 				body.css('cursor', '').off( namespace );
 			}
 
-			// Unbind move and end events, to prevent them stacking
-			// over and over.
+			// Unbind the move and end events, which are added on 'start'.
 			doc.off( namespace );
 
 			// Trigger the change event.
 			this.target.removeClass(clsList[14]).change();
 
 			// Trigger the 'end' callback.
-			call( this.options.set, this.target );
+			call( this.callback, this.target );
 		}
 
 	// Bind move events on document.
@@ -578,7 +574,7 @@
 
 			// Mark the handle as 'active' so it can be styled.
 			if( this.handles.length === 1 ) {
-				this.handles[0].children('.' + clsList[2]).addClass(clsList[4]);
+				this.handles[0].data('grab').addClass(clsList[4]);
 			}
 
 			// A drag should never propagate up to the 'tap' event.
@@ -595,22 +591,21 @@
 				,size: settings.orientation ?
 					['pointY', this.base.height()] :
 					['pointX', this.base.width()]
-
 			});
 
 			// Unbind all movement when the drag ends.
 			attach ( actions.end, doc, end, {
-				 base: this.base
+				 callback: settings.set
 				,target: this.target
-				,options: settings
+				,handles: this.handles
 			});
 
 			// Text selection isn't an issue on touch devices,
 			// so adding additional callbacks isn't required.
 			if ( event.cursor ) {
 
-				// Prevent the 'I' cursor.
-				body.css('cursor', 'default');
+				// Prevent the 'I' cursor and extend the range-drag cursor.
+				body.css('cursor', $(event.target).css('cursor'));
 
 				// Prevent text selection when dragging the handles.
 				body.on('selectstart' + namespace, function( ){
@@ -1149,6 +1144,8 @@
 						 base: base
 						,target: target
 						,options: options
+						,grab: handle.children()
+						,pct: -1
 					}).attr('data-style', options.style);
 
 					// Every handle has a storage point, which takes care
@@ -1211,17 +1208,15 @@
 				// Make the range dragable.
 				if ( options.behaviour.drag ){
 
-					dragable = base.find( '.' + clsList[9] )
-						.addClass( clsList[17] );
+					dragable = base.find('.'+clsList[9]).addClass(clsList[17]);
 
 					// When the range is fixed, the entire range can
 					// be dragged by the handles. The handle in the first
 					// origin will propagate the start event upward,
 					// but it needs to be bound manually on the other.
 					if ( !options.behaviour.move ) {
-						dragable = dragable.add( base.children()
-							.not(dragable)
-							.children('.' + clsList[2]) );
+						dragable = dragable
+							.add( base.children().not(dragable).data('grab') );
 					}
 
 					attach ( actions.start, dragable, start, {
@@ -1336,7 +1331,8 @@
 	// Unbind all attached events, remove classed and HTML.
 		function destroy ( target ) {
 
-			var elements = [];
+			// Start the list of elements to be unbound with the target.
+			var elements = [ target ];
 
 			// Get the fields bound to both handles.
 			$.each(target.data('base').data('handles'), function(){
@@ -1348,8 +1344,16 @@
 				$(this)[0].off( namespace );
 			});
 
-			// Remove all data from the target and empty it.
-			target.removeClass(clsList[6]).empty().removeData('base options');
+			// Remove all classes from the target.
+			target.removeClass([
+			  clsList[6]
+			 ,clsList[12]
+			 ,clsList[18]
+			 ,clsList[18] + clsList[19]
+			 ,clsList[18] + clsList[19] ].join(' '));
+
+			// Empty the target and remove all data.
+			target.empty().removeData('base options');
 		}
 
 	// Merge options with current initialization, destroy slider
