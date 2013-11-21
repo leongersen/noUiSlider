@@ -17,29 +17,28 @@
 		cursor: default;
 	}
 
-/*	Main slider bar;
- */
-	.noUi-base {
-		width: 100%;
-		height: 38px;
-		position: relative;
-	}
-
 /*	Visuals for outer styles;
  *		Can optionally be applied to the target to create
  *		a design where the handles are contained within the bar.
- *		Use box-shadow instead of border to keep absolute
- *		positioning unrelated to the styling.
  */
-	.noUi-outer {
-		margin: 1px;
-		box-shadow: 0 0 0 1px #BFBFBF;
+	.noUi-target {
+		border: 1px solid #BFBFBF;
 	}
-	.noUi-outer-horizontal {
-		padding: 0 19px;
+	.noUi-horizontal {
+		height: 38px;
 	}
-	.noUi-outer-vertical {
-		padding: 19px 0;
+	.noUi-vertical {
+		width: 38px;
+	}
+
+/*	Slider measurement area;
+ *	Used for position calculation.
+ */
+	.noUi-base {
+		width: 100%;
+		height: 100%;
+		position: relative;
+		background: inherit;
 	}
 
 /*	Handles + active state;
@@ -93,6 +92,21 @@
 		z-index: 10;
 	}
 
+/*	Sliders with 'contained' handles.
+ */
+	.noUi-extended.noUi-horizontal {
+		padding: 0 19px;
+	}
+	.noUi-extended.noUi-vertical {
+		padding: 19px 0;
+	}
+	.noUi-extended.noUi-horizontal .noUi-origin  {
+		right: -19px;
+	}
+	.noUi-extended.noUi-vertical .noUi-origin  {
+		bottom: -19px;
+	}
+
 /*	Dragable range indication;
  */
 	.noUi-dragable {
@@ -106,12 +120,7 @@
  *		Some standard styles have been extended to keep
  *		exceptions for the vertical slider as minimal as possible.
  */
-	.noUi-vertical {
-		width: 38px;
-		height: 100%;
-	}
 	.noUi-vertical .noUi-origin {
-		bottom: 0;
 		left: 0;
 	}
 	.noUi-vertical .noUi-handle  {
@@ -121,9 +130,6 @@
 
 /*	Slider disabled state;
  */
-	[disabled] .noUi-base {
-		background: #DDD;
-	}
 	[disabled] .noUi-handle {
 		background: #F7F7F7;
 		cursor: not-allowed;

@@ -43,20 +43,19 @@
 		/*  4 */ ,'noUi-active'
 		/*  5 */ ,'noUi-state-tap'
 		/*  6 */ ,'noUi-target'
-		/*  7 */ ,'-lower'
-		/*  8 */ ,'-upper'
+		/*  7 */ ,''
+		/*  8 */ ,''
 		/*  9 */ ,'noUi-connect'
-		/* 10 */ ,'noUi-vertical'
-		/* 11 */ ,'noUi-horizontal'
+		/* 10 */ ,'noUi-horizontal'
+		/* 11 */ ,'noUi-vertical'
 		/* 12 */ ,'noUi-background'
 		/* 13 */ ,'noUi-z-index'
 		/* 14 */ ,'noUi-block'
 		/* 15 */ ,'noUi-state-blocked'
-		/* 16 */ ,'noUi-rtl'
-		/* 17 */ ,'noUi-dragable'
-		/* 18 */ ,'noUi-outer'
-		/* 19 */ ,'-horizontal'
-		/* 20 */ ,'-vertical'
+		/* 16 */ ,'noUi-ltr'
+		/* 17 */ ,'noUi-rtl'
+		/* 18 */ ,'noUi-dragable'
+		/* 19 */ ,'noUi-extended'
 		]
 
 		// Determine the events to bind. IE11 implements pointerEvents without
@@ -753,11 +752,23 @@
 				 *	Can use 'lower' and 'upper' when handles = 1.
 				 */
 				,'connect': {
-					 t: function(q,o){
-							return o.handles === 1 ?
-								( q === 'lower' || q === 'upper' ) :
-								typeof q === 'boolean';
-					 }
+					 r: true
+					,t: function(q,o,w){
+
+						if ( q === 'lower' ) {
+							o[w] = 1;
+						} else if ( q === 'upper' ) {
+							o[w] = 2;
+						} else if ( q === true ) {
+							o[w] = 3;
+						} else if ( q === false ) {
+							o[w] = 0;
+						} else {
+							return false;
+						}
+
+						return true;
+					}
 				}
 				/*	Connect.
 				 *	Will default to horizontal, not required.
@@ -793,11 +804,18 @@
 				,'direction': {
 					 r: true
 					,t: function(q,o,w){
+
 						switch ( q ) {
-							case 'ltr': o[w] = 0; break;
-							case 'rtl': o[w] = 1; break;
-							default: return false;
+							case 'ltr': o[w] = 0;
+								break;
+							case 'rtl': o[w] = 1;
+								// Invert connection for RTL sliders;
+								o.connect = [0,2,1,3][o.connect];
+								break;
+							default:
+								return false;
 						}
+
 						return true;
 					}
 				}
@@ -809,7 +827,7 @@
 					 r: true
 					,t: function(q,o,w){
 
-						q = q.replace('extend', 'tap');
+						q = q.replace('extend', '');
 
 						o[w] = {
 							 tap: false
@@ -892,6 +910,15 @@
 							return items;
 						}
 
+						// Parse the syntactic sugar that is the serialization
+						// resolution option to a usable integer.
+						// Checking for a string '1', since the resolution needs
+						// to be cast to a string to split in on the period.
+						function decimals ( d ) {
+							d = d.toString().split('.');
+							return d[0] === '1' ? 0 : d[1].length;
+						}
+
 						if ( !q.to ) {
 							o[w].to = [[],[]];
 						} else {
@@ -928,7 +955,7 @@
 						}
 
 						if ( !q.resolution ){
-							o[w].resolution = 0.01;
+							o.decimals = 2;
 						} else {
 							switch(q.resolution){
 								case 1:
@@ -937,6 +964,7 @@
 								case 0.001:
 								case 0.0001:
 								case 0.00001:
+									options.decimals = decimals(q.resolution);
 									break;
 								default:
 									return false;
@@ -992,7 +1020,7 @@
 
 			$.each( tests, function( name, test ){
 
-				var value = input[name], isSet = ( value || value === 0 );
+				var value = input[name], isSet = value !== undefined;
 
 				// If the value is required but not set, fail.
 				if( ( test.r && !isSet ) ||
@@ -1029,6 +1057,7 @@
 			options = $.extend({
 				 handles: 2
 				,margin: 0
+				,connect: false
 				,direction: 'ltr'
 				,behaviour: 'tap'
 				,orientation: 'horizontal'
@@ -1052,22 +1081,15 @@
 				// Target is the wrapper that will receive all external
 				// scripting interaction. It has no styling and serves no
 				// other function. Base is the internal main 'bar'.
-				var target = $(this).addClass(clsList[6]), i, handle,
-					base = $('<div/>').appendTo(target), dragable, handles = [],
+				var target = $(this), i, handle, dragable, handles = [],
+					base = $('<div/>').appendTo(target),
 					classes = {
 						 base: [ clsList[0] ]
-						,origin: [
-							 [ clsList[1]
-							  ,clsList[1] + clsList[options.direction?8:7] ]
-							,[ clsList[1]
-							  ,clsList[1] + clsList[options.direction?7:8] ]
-						]
-						,handle: [
-							 [ clsList[2]
-							  ,clsList[2] + clsList[options.direction?8:7] ]
-							,[ clsList[2]
-							  ,clsList[2] + clsList[options.direction?7:8] ]
-						]
+						,target: [ clsList[6],
+								  ,clsList[10 + options.orientation]
+								  ,clsList[16 + options.direction] ]
+						,origin: [ [ clsList[1] ], [ clsList[1] ] ]
+						,handle: [ [ clsList[2] ], [ clsList[2] ] ]
 					};
 
 				// Throw an error if the slider was already initialized.
@@ -1079,56 +1101,18 @@
 				// that need them. Some classes are made up for several
 				// segments listed in the class list, to allow easy
 				// renaming and provide a minor compression benefit.
-				if( options.connect ) {
-
-					if ( options.direction ) {
-						if ( options.connect === 'lower' ) {
-							options.connect = 'upper';
-						} else if ( options.connect === 'upper' ) {
-							options.connect = 'lower';
-						}
-					}
-
-					if( options.connect === 'lower' ){
-						// Add some styling classes to the base;
-						classes.base.push(clsList[9], clsList[9] + clsList[7]);
-						// When using the option 'Lower', there is only one
-						// handle, and thus only one origin.
-						classes.origin[0].push(clsList[12]);
-					} else {
-						classes.base.push(clsList[9] + clsList[8], clsList[12]);
-						classes.origin[0].push(clsList[9]);
-					}
-
-				} else {
-					classes.base.push(clsList[12]);
+				switch ( options.connect ) {
+					case 1:	classes.target.push( clsList[9] );
+							classes.origin[0].push( clsList[12] );
+							break;
+					case 2:
+					case 3: classes.origin[0].push( clsList[9] );
+					case 0: classes.target.push(clsList[12]);
+							break;
 				}
 
-				// Parse the syntactic sugar that is the serialization
-				// resolution option to a usable integer.
-				// Checking for a string '1', since the resolution needs
-				// to be cast to a string to split in on the period.
-				options.decimals = (function(d){
-					d = d.toString().split('.');
-					return d[0] === '1' ? 0 : d[1].length;
-				}( options.serialization.resolution ));
-
-				// Add classes for horizontal and vertical sliders.
-				// The horizontal class is provided for completeness,
-				// as it isn't used in the default theme.
-				if ( options.orientation ){
-					classes.base.push(clsList[10]);
-				} else {
-					classes.base.push(clsList[11]);
-				}
-
-				// Set as little as possible data on the
-				// public facing target element.
-				target.data('base', base);
-
-				if ( options.direction ) {
-					base.addClass(clsList[16]);
-				}
+				// Apply classes and data to the target.
+				target.addClass(classes.target.join(' ')).data('base', base);
 
 				for (i = 0; i < options.handles; i++ ) {
 
@@ -1160,7 +1144,7 @@
 
 				// Merge base classes with default,
 				// and store relevant data on the base element.
-				base.addClass( classes.base.join(' ') ).data({
+				base.addClass(classes.base.join(' ')).data({
 					 target: target
 					,options: options
 					,handles: handles
@@ -1195,20 +1179,14 @@
 				if ( options.behaviour.extend ) {
 					attach ( actions.start, target, edge, {
 						 base: base
-						,target: target.addClass([
-							 clsList[12]
-							,clsList[18]
-							,clsList[18] + clsList[19 + options.orientation]
-						].join(' '))
+						,target: target.addClass( clsList[19] )
 					});
-				} else {
-					base.addClass(clsList[18]);
 				}
 
 				// Make the range dragable.
 				if ( options.behaviour.drag ){
 
-					dragable = base.find('.'+clsList[9]).addClass(clsList[17]);
+					dragable = base.find('.'+clsList[9]).addClass(clsList[18]);
 
 					// When the range is fixed, the entire range can
 					// be dragged by the handles. The handle in the first
@@ -1345,12 +1323,7 @@
 			});
 
 			// Remove all classes from the target.
-			target.removeClass([
-			  clsList[6]
-			 ,clsList[12]
-			 ,clsList[18]
-			 ,clsList[18] + clsList[19]
-			 ,clsList[18] + clsList[19] ].join(' '));
+			target.removeClass(clsList.join(' '));
 
 			// Empty the target and remove all data.
 			target.empty().removeData('base options');
