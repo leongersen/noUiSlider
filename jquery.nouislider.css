@@ -1,154 +1,150 @@
-/*	General CSS resets;
- *		The target itself is not affected, allowing
- *		the remainder of the document to use an
- *		alternate box-sizing model;
- *		Support for box-sizing is wide spread:
- *		http://caniuse.com/#search=box-sizing
+
+/* Functional styling;
+ * These styles are required for noUiSlider to function.
+ * You don't need to change these rules to apply your design.
  */
-	.noUi-target * {
--webkit-box-sizing: border-box;
-   -moz-box-sizing: border-box;
-		box-sizing: border-box;
+.noUi-target,
+.noUi-target * {
 -webkit-touch-callout: none;
-    -ms-touch-action: none;
+-ms-touch-action: none;
 -webkit-user-select: none;
-   -moz-user-select: none;
-    -ms-user-select: none;
-		cursor: default;
-	}
+-moz-user-select: none;
+-ms-user-select: none;
+-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+.noUi-base {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background: inherit;
+	border-radius: inherit;
+}
+.noUi-origin {
+	position: absolute;
+	right: 0;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	border-radius: inherit;
+}
+.noUi-origin + .noUi-origin {
+	background: inherit !important;
+}
+.noUi-handle {
+	position: relative;
+	z-index: 1;
+}
+.noUi-z-index {
+	z-index: 10;
+}
+.noUi-state-tap .noUi-origin {
+-webkit-transition: left 0.3s, top 0.3s;
+	transition: left 0.3s, top 0.3s;
+}
+.noUi-state-drag * {
+	cursor: inherit !important;
+}
 
-/*	Visuals for outer styles;
- *		Can optionally be applied to the target to create
- *		a design where the handles are contained within the bar.
+/* Slider size and handle placement;
  */
-	.noUi-target {
-		border: 1px solid #BFBFBF;
-	}
-	.noUi-horizontal {
-		height: 38px;
-	}
-	.noUi-vertical {
-		width: 38px;
-	}
+.noUi-horizontal {
+	height: 18px;
+}
+.noUi-horizontal .noUi-handle {
+	width: 34px;
+	height: 28px;
+	left: -17px;
+	top: -6px;
+}
+.noUi-horizontal.noUi-extended {
+	padding: 0 15px;
+}
+.noUi-horizontal.noUi-extended .noUi-origin  {
+	right: -15px;
+}
+.noUi-vertical {
+	width: 18px;
+}
+.noUi-vertical .noUi-handle {
+	width: 28px;
+	height: 34px;
+	left: -6px;
+	top: -17px;
+}
+.noUi-vertical.noUi-extended {
+	padding: 15px 0;
+}
+.noUi-vertical.noUi-extended .noUi-origin  {
+	bottom: -15px;
+}
 
-/*	Slider measurement area;
- *	Used for position calculation.
+/* Styling;
  */
-	.noUi-base {
-		width: 100%;
-		height: 100%;
-		position: relative;
-		background: inherit;
-	}
+.noUi-background {
+	background: #FAFAFA;
+	box-shadow: inset 0 1px 1px #f0f0f0;
+}
+.noUi-connect {
+	background: #3FB8AF;
+	box-shadow: inset 0 0 3px rgba(51,51,51,0.45);
+}
+.noUi-target {
+	border-radius: 4px;
+	border: 1px solid #D3D3D3;
+	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
+}
 
-/*	Handles + active state;
+/* Handles and cursors;
  */
-	.noUi-handle {
-		top: -3px;
-		left: -22px;
-		width: 44px;
-		height: 44px;
-		z-index: 1;
-		position: relative;
-		background: #EEE;
-		border: 1px solid #BFBFBF;
-	}
-	.noUi-active {
-		background: #E9E9E9;
-		box-shadow: inset 0 0 5px #DDD;
-	}
+.noUi-dragable {
+	cursor: w-resize;
+}
+.noUi-vertical .noUi-dragable {
+	cursor: n-resize;
+}
+.noUi-handle {
+	border: 1px solid #D9D9D9;
+	border-radius: 3px;
+	background: #FFF;
+	cursor: default;
+	box-shadow: inset 0 0 1px #FFF,
+				inset 0 1px 7px #EBEBEB,
+				0 3px 6px -3px #BBB;
+}
+.noUi-active {
+	box-shadow: inset 0 0 1px #FFF,
+				inset 0 1px 7px #DDD,
+				0 3px 6px -3px #BBB;
+}
 
-/*	Styling-only classes;
- *		Structured to prevent double declarations
- *		for various states of the slider.
+/* Handle stripes;
  */
-	.noUi-connect {
-		background: Teal;
--webkit-transition: background 0.6s;
-		transition: background 0.6s;
-	}
-	.noUi-background {
-		background: #DDD;
-	}
-
-/*	Functional styles for handle positioning;
- *		Note that the origins will inherit border radius
- *		from the parent, even though the default theme
- *		doesn't use curved borders. IE7 doesn't support
- *		inherit, so we'll override the background statically.
- */
-	.noUi-origin {
-		position: absolute;
-		right: 0;
-		top: 0;
-		bottom: 0;
-		border-radius: inherit;
-	}
-	.noUi-origin + .noUi-origin {
-		background: #DDD;
-		background: inherit !important;
-	}
-	.noUi-z-index {
-		z-index: 10;
-	}
-
-/*	Sliders with 'contained' handles.
- */
-	.noUi-extended.noUi-horizontal {
-		padding: 0 19px;
-	}
-	.noUi-extended.noUi-vertical {
-		padding: 19px 0;
-	}
-	.noUi-extended.noUi-horizontal .noUi-origin  {
-		right: -19px;
-	}
-	.noUi-extended.noUi-vertical .noUi-origin  {
-		bottom: -19px;
-	}
-
-/*	Dragable range indication;
- */
-	.noUi-dragable {
-		cursor: w-resize;
-	}
-	.noUi-vertical .noUi-dragable {
-		cursor: n-resize;
-	}
-
-/*	Adaptations for the vertical slider;
- *		Some standard styles have been extended to keep
- *		exceptions for the vertical slider as minimal as possible.
- */
-	.noUi-vertical .noUi-origin {
-		left: 0;
-	}
-	.noUi-vertical .noUi-handle  {
-		top: -22px;
-		left: -3px;
-	}
-
-/*	Slider disabled state;
- */
-	[disabled] .noUi-handle {
-		background: #F7F7F7;
-		cursor: not-allowed;
-	}
-	[disabled] .noUi-connect {
-		background: #EEE;
-	}
-
-/*	Transition states;
- *		Support for transition is widely available,
- *		Only IE7, IE8 and IE9 will ignore these rules.
- *		Since this is merely a progressive enhancement,
- *		this is no problem at all.
- *		http://caniuse.com/#search=transition
- */
-	.noUi-state-tap .noUi-origin {
-		-webkit-transition: left 0.3s, top 0.3s;
-		transition: left 0.3s, top 0.3s;
-	}
-	.noUi-state-blocked .noUi-connect {
-		background: #7f8c8d;
-	}
+.noUi-handle:before,
+.noUi-handle:after {
+	content: "";
+	display: block;
+	position: absolute;
+	height: 14px;
+	width: 1px;
+	background: #E8E7E6;
+	border-color: #FFF;
+	border-style: solid;
+	border-width: 0 0 0 1px;
+	left: 13px;
+	top: 6px;
+}
+.noUi-handle:after {
+	left: 16px;
+}
+.noUi-vertical .noUi-handle:before,
+.noUi-vertical .noUi-handle:after {
+	width: 14px;
+	height: 1px;
+	left: 6px;
+	top: 13px;
+	border-width: 0 0 1px 0;
+}
+.noUi-vertical .noUi-handle:after {
+	top: 16px;
+}

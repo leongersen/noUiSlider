@@ -48,7 +48,7 @@ Compression and Error checking
 The stylesheet is trimmed to remove whitespace and comments to provide a `min` version.
 
 **JS** ([Google Closure Compiler](http://closure-compiler.appspot.com/home))  
-The plugin is compressed using the Google Closure compiler, using the 'simple' optimization option.
+The plugin is compressed using the Google Closure compiler. The source was adapted to facilitate the `ADVANCED_OPTIMIZATIONS` level.
 
 **Code** ([JsLint](http://jslint.com/))  
 The plugin code is checked using JsLint. Any remaining errors and warnings are intentional.
