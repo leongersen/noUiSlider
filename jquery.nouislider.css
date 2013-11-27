@@ -6,10 +6,10 @@
 .noUi-target,
 .noUi-target * {
 -webkit-touch-callout: none;
--ms-touch-action: none;
 -webkit-user-select: none;
--moz-user-select: none;
+-ms-touch-action: none;
 -ms-user-select: none;
+-moz-user-select: none;
 -moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
@@ -29,14 +29,22 @@
 	border-radius: inherit;
 }
 .noUi-origin + .noUi-origin {
+/* Inherit the background styling from the target.
+   IE7 doesn't support inherit, so set a default. */
+	background: #FAFAFA;
 	background: inherit !important;
 }
 .noUi-handle {
 	position: relative;
 	z-index: 1;
 }
-.noUi-z-index {
+.noUi-stacking .noUi-handle {
 	z-index: 10;
+}
+.noUi-stacking + .noUi-origin {
+/* Fix stacking order in IE7, which incorrectly
+   creates a new context for the origins. */
+	*z-index: -1;
 }
 .noUi-state-tap .noUi-origin {
 -webkit-transition: left 0.3s, top 0.3s;
