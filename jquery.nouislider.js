@@ -284,6 +284,11 @@
 				this.element.data('value', a);
 			}
 
+			// Prevent a serialization call if the value wasn't initialized.
+			if ( a === undefined ) {
+				return;
+			}
+
 			// If the provided element was a function,
 			// call it with the slider as scope. Otherwise,
 			// simply call the function on the object.
@@ -1323,7 +1328,7 @@
 		function destroy ( target ) {
 
 			// Start the list of elements to be unbound with the target.
-			var elements = [ target ];
+			var elements = [[target,'']];
 
 			// Get the fields bound to both handles.
 			$.each(target.data('base').data('handles'), function(){
@@ -1332,7 +1337,9 @@
 
 			// Remove all events added by noUiSlider.
 			$.each(elements, function(){
-				$(this)[0].off( namespace );
+				if( this.length > 1 ){
+					this[0].off( namespace );
+				}
 			});
 
 			// Remove all classes from the target.

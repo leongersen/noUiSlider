@@ -156,3 +156,12 @@
 .noUi-vertical .noUi-handle:after {
 	top: 16px;
 }
+
+/* Disabled state;
+ */
+[disabled] .noUi-connect {
+	background: #B8B8B8;
+}
+[disabled] .noUi-handle {
+	cursor: not-allowed;
+}
