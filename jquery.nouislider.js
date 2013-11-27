@@ -516,11 +516,12 @@
 				// Run handle placement.
 				if ( !setHandle( handles[0], Dt.positions[0] + proposal )){
 
-					if ( !Dt.positions[0] || Dt.positions[0] === 100 ) {
+					if ( !handles[0].data('pct') ||
+						 handles[0].data('pct') === 100 ) {
 						return;
 					}
 
-					return block ( Dt.base, Op['margin'] );
+					return block ( Dt.base, !Op['margin'] );
 				}
 
 			} else {
