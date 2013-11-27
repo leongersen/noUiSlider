@@ -16,17 +16,18 @@
 /*jshint smarttabs: true */
 /*jshint sub: true */
 
-/*jslint browser: true  */
-/*jslint devel: true    */
+/*jslint browser: true */
+/*jslint devel: true */
 /*jslint continue: true */
 /*jslint plusplus: true */
-/*jslint white: true    */
+/*jslint white: true */
+/*jslint sub: true */
 
 (function( $ ){
 
 	'use strict';
 
-	if ( $.zepto && !$.fn.removeData ) {
+	if ( $['zepto'] && !$.fn.removeData ) {
 		throw new ReferenceError('Zepto is loaded without the data module.');
 	}
 
@@ -71,17 +72,17 @@
 		// Determine the events to bind. IE11 implements pointerEvents without
 		// a prefix, which breaks compatibility with the IE10 implementation.
 		,actions = window.navigator.pointerEnabled ? {
-			 'start': 'pointerdown'
-			,'move': 'pointermove'
-			,'end': 'pointerup'
+			 start: 'pointerdown'
+			,move: 'pointermove'
+			,end: 'pointerup'
 		} : window.navigator.msPointerEnabled ? {
-			 'start': 'MSPointerDown'
-			,'move': 'MSPointerMove'
-			,'end': 'MSPointerUp'
+			 start: 'MSPointerDown'
+			,move: 'MSPointerMove'
+			,end: 'MSPointerUp'
 		} : {
-			 'start': 'mousedown touchstart'
-			,'move': 'mousemove touchmove'
-			,'end': 'mouseup touchend'
+			 start: 'mousedown touchstart'
+			,move: 'mousemove touchmove'
+			,end: 'mouseup touchend'
 		};
 
 
@@ -139,17 +140,16 @@
 	// Returns a proxy to set a target using the public value method.
 		function setN ( target, number ) {
 
-			return $.proxy(function(){
+			return function(){
 
 				// Determine the correct position to set,
 				// leave the other one unchanged.
 				var val = [null, null];
-				val[this['N']] = this.val();
+				val[ number ] = $(this).val();
 
 				// Trigger the 'set' callback
-				this.target.val(val, true);
-
-			}, { T: target, N: number });
+				target.val(val, true);
+			};
 		}
 
 	// Round a value to the closest 'to'.
@@ -225,26 +225,25 @@
 			return $.extend( event, {
 				 'pointX': x
 				,'pointY': y
-				,'cursor': mouse
+				,cursor: mouse
 			});
 		}
 
 	// Handler for attaching events trough a proxy
-		function attach ( events, target, callback, scope ) {
+		function attach ( events, element, callback, pass ) {
+
+			var target = pass.target;
 
 			// Add the noUiSlider namespace to all events.
 			events = events.replace( /\s/g, namespace + ' ' ) + namespace;
 
-			// Make the callback available in a lower scope
-			scope['handler'] = callback;
-
-			return target.on( events, $.proxy( function( e ){
+			return element.on( events, function( e ){
 
 				// Test if there is anything that should prevent an event
 				// from being handled, such as a disabled state or an active
 				// 'tap' transition. Prevent interaction with disabled sliders.
-				if( this['target'].hasClass('noUi-state-tap') ||
-					this['target'].attr('disabled')) {
+				if( target.hasClass('noUi-state-tap') ||
+					target.attr('disabled')) {
 						return false;
 				}
 
@@ -253,9 +252,12 @@
 				// proxy, and it won't have to filter event validity, because
 				// that was done here. Since the scope can just be 'this',
 				// there is no need to use .call().
-				this['handler']( fixEvent ( e ) );
-
-			}, scope ));
+				callback (
+					 fixEvent( e )
+					,pass
+					,target.data('base').data('options')
+				);
+			});
 		}
 
 
@@ -267,25 +269,25 @@
 			/*jshint validthis: true */
 
 			// Re-scope target for availability within .each;
-			var target = this['target'];
+			var target = this.target;
 
 			// Get the value for this handle
 			if ( a === undefined ) {
-				return this['element'].data('value');
+				return this.element.data('value');
 			}
 
 			// Write the value to all serialization objects
 			// or store a new value on the handle
 			if ( a === true ) {
-				a = this['element'].data('value');
+				a = this.element.data('value');
 			} else {
-				this['element'].data('value', a);
+				this.element.data('value', a);
 			}
 
 			// If the provided element was a function,
 			// call it with the slider as scope. Otherwise,
 			// simply call the function on the object.
-			$.each( this['elements'], function() {
+			$.each( this.elements, function() {
 				if ( typeof this === 'function' ) {
 					this.call(target, a);
 				} else {
@@ -354,9 +356,9 @@
 			});
 
 			return {
-				 'element': handle
-				,'elements': elements
-				,'target': handle.data('target')
+				 element: handle
+				,elements: elements
+				,target: handle.data('target')
 				,'val': serialize
 			};
 		}
@@ -385,13 +387,13 @@
 		}
 
 	// Change inline style and apply proper classes.
-		function placeHandle ( handle, to, handles ) {
+		function placeHandle ( handle, to ) {
 
 			var settings = handle.data('options');
 
 			// Round away insanely small numbers caused
 			// by the floating point implementation.
-			to = parseFloat(to.toFixed(10))
+			to = parseFloat(to.toFixed(10));
 
 			// If the slider can move, remove the class
 			// indicating the block state.
@@ -401,7 +403,7 @@
 			handle.css( settings['style'], to + '%' ).data('pct', to);
 
 			// Force proper handle stacking
-			if ( handle[0] === handles[0][0] ) {
+			if ( handle.is(':first-child') ) {
 				handle.toggleClass(clsList[13], to > 50 );
 			}
 
@@ -418,10 +420,8 @@
 	// Test suggested values and apply margin, step.
 		function setHandle ( handle, to ) {
 
-			var  handles = handle.data('base').data('handles')
-				,step = handle.data('options').step
-				,margin = handle.data('options').margin
-				,lower = 0, upper = 100;
+			var base = handle.data('base'), settings = base.data('options'),
+				handles = base.data('handles'), lower = 0, upper = 100;
 
 			// Catch invalid user input
 			if ( !isNumeric( to ) ){
@@ -429,15 +429,18 @@
 			}
 
 			// Handle the step option.
-			if ( step ){
-				to = closest( to, step );
+			if ( settings.step ){
+				to = closest( to, settings.step );
 			}
 
 			if ( handles.length > 1 ){
 				if ( handle[0] !== handles[0][0] ) {
-					lower = Math.max( handles[0].data('pct') + margin, lower );
+					lower = Math.max(
+						 handles[0].data('pct') + settings.margin
+						,lower
+					);
 				} else {
-					upper = handles[1].data('pct') - margin;
+					upper = handles[1].data('pct') - settings.margin;
 				}
 			}
 
@@ -448,15 +451,13 @@
 				return false;
 			}
 
-			placeHandle ( handle, to, handles );
+			placeHandle ( handle, to );
 
 			return true;
 		}
 
 	// Handles movement by tapping
-		function jump ( base, handle, to ) {
-
-			var settings = handle.data('options');
+		function jump ( base, handle, to, callbacks ) {
 
 			// Flag the slider as it is now in a transitional state.
 			// Transition takes 300 ms, so re-enable the slider afterwards.
@@ -470,8 +471,7 @@
 
 			// Trigger the 'slide' and 'set' callbacks,
 			// pass the target so that it is 'this'.
-			call( [ settings['slide']
-				   ,settings['set'] ], base.data('target') );
+			call( callbacks, base.data('target') );
 
 			base.data('target').change();
 		}
@@ -480,26 +480,24 @@
 // Event handlers
 
 	// Handle movement on document for handle and range drag.
-		function move ( event ) {
-
-			/*jshint validthis: true */
+		function move ( event, Dt, Op ) {
 
 			// Map event movement to a slider percentage.
-			var proposal = (function( xy, size, event, start ){
-				return ( ( event[ xy ] - start[ xy ] ) * 100 ) / size;
-			}( this['size'][0], this['size'][1], event, this['start'] )),
-			pos = this['pos'], handles = this['handles'];
+			var handles = Dt.handles,
+				proposal = event[ Dt.point ] - Dt.start[ Dt.point ];
+
+			proposal = ( proposal * 100 ) / Dt.size;
 
 			if ( handles.length === 1 ) {
 
 				// Run handle placement.
-				if ( !setHandle( handles[0], pos[0] + proposal)){
+				if ( !setHandle( handles[0], Dt.positions[0] + proposal )){
 
-					if ( !pos[0] || pos[0] === 100 ) {
+					if ( !Dt.positions[0] || Dt.positions[0] === 100 ) {
 						return;
 					}
 
-					return block ( this['base'], this['margin'] );
+					return block ( Dt.base, Op['margin'] );
 				}
 
 			} else {
@@ -514,14 +512,14 @@
 				var l1, u1, l2, u2;
 
 				// Round the proposal to the step setting.
-				if ( this['step'] ) {
-					proposal = closest( proposal, this['step'] );
+				if ( Op['step'] ) {
+					proposal = closest( proposal, Op['step'] );
 				}
 
 				// Determine the new position, store it twice. Once for
 				// limiting, once for checking whether placement should occur.
-				l1 = l2 = pos[0] + proposal;
-				u1 = u2 = pos[1] + proposal;
+				l1 = l2 = Dt.positions[0] + proposal;
+				u1 = u2 = Dt.positions[1] + proposal;
 
 				// Round the values within a sensible range.
 				if ( l1 < 0 ) {
@@ -542,26 +540,24 @@
 					return;
 				}
 
-				placeHandle ( handles[0], l1, handles );
-				placeHandle ( handles[1], u1, handles );
+				placeHandle ( handles[0], l1 );
+				placeHandle ( handles[1], u1 );
 			}
 
 			// Trigger the 'slide' event, if the handle was moved.
-			call( this['base'].data('options')['slide'], this['target'] );
+			call( Op['slide'], Dt.target );
 		}
 
 	// Unbind move events on document, call callbacks.
-		function end ( event ) {
-
-			/*jshint validthis: true */
+		function end ( event, Dt, Op ) {
 
 			// The handle is no longer active, so remove the class.
-			if ( this['handles'].length === 1 ) {
-				this['handles'][0].data('grab').removeClass(clsList[4]);
+			if ( Dt.handles.length === 1 ) {
+				Dt.handles[0].data('grab').removeClass(clsList[4]);
 			}
 
 			// Remove cursor styles and text-selection events bound to the body.
-			if ( event['cursor'] ) {
+			if ( event.cursor ) {
 				body.css('cursor', '').off( namespace );
 			}
 
@@ -569,26 +565,18 @@
 			doc.off( namespace );
 
 			// Trigger the change event.
-			this['target'].removeClass( clsList[14] +' '+ clsList[20]).change();
+			Dt.target.removeClass( clsList[14] +' '+ clsList[20]).change();
 
 			// Trigger the 'end' callback.
-			call( this['callback'], this['target'] );
+			call( Op['set'], Dt.target );
 		}
 
 	// Bind move events on document.
-		function start ( event ) {
-
-			/*jshint validthis: true */
-
-			var positions = [], i, settings = this['base'].data('options');
-
-			for ( i = 0; i < this['handles'].length; i++ ) {
-				positions.push(this['handles'][i].data('pct'));
-			}
+		function start ( event, Dt, Op ) {
 
 			// Mark the handle as 'active' so it can be styled.
-			if( this['handles'].length === 1 ) {
-				this['handles'][0].data('grab').addClass(clsList[4]);
+			if( Dt.handles.length === 1 ) {
+				Dt.handles[0].data('grab').addClass(clsList[4]);
 			}
 
 			// A drag should never propagate up to the 'tap' event.
@@ -596,23 +584,20 @@
 
 			// Attach the move event.
 			attach ( actions.move, doc, move, {
-				 'start': event
-				,'base': this['base']
-				,'target': this['target']
-				,'handles': this['handles']
-				,'pos': positions
-				,'margin': settings['margin']
-				,'step': settings['step']
-				,'size': settings['orientation'] ?
-					['pointY', this['base'].height()] :
-					['pointX', this['base'].width()]
+				 start: event
+				,base: Dt.base
+				,target: Dt.target
+				,handles: Dt.handles
+				,positions: [ Dt.handles[0].data('pct')
+					   ,Dt.handles[ Dt.handles.length - 1 ].data('pct') ]
+				,point: Op['orientation'] ? 'pointY' : 'pointX'
+				,size: Op['orientation'] ? Dt.base.height() : Dt.base.width()
 			});
 
 			// Unbind all movement when the drag ends.
 			attach ( actions.end, doc, end, {
-				 'callback': settings['set']
-				,'target': this['target']
-				,'handles': this['handles']
+				 target: Dt.target
+				,handles: Dt.handles
 			});
 
 			// Text selection isn't an issue on touch devices,
@@ -623,8 +608,8 @@
 				body.css('cursor', $(event.target).css('cursor'));
 
 				// Mark the target with a dragging state.
-				if ( this['handles'].length > 1 ) {
-					this['target'].addClass(clsList[20]);
+				if ( Dt.handles.length > 1 ) {
+					Dt.target.addClass(clsList[20]);
 				}
 
 				// Prevent text selection when dragging the handles.
@@ -635,9 +620,7 @@
 		}
 
 	// Move closest handle to tapped location.
-		function tap ( event ) {
-
-			/*jshint validthis: true */
+		function tap ( event, Dt, Op ) {
 
 			// Determine the handle closest to the tap.
 			function closestHandle ( handles, location, style ) {
@@ -652,12 +635,9 @@
 				return handles[ location < total / 2 ? 0 : 1 ];
 			}
 
-			// Getting variables from the event is not required, but
-			// shortens other expressions and is far more convenient;
-			var base = this['base'], handle, to, point, size,
-				style = base.data('options').style;
+			var base = Dt.base, handle, to, point, size;
 
-			if ( base.data('options').orientation ) {
+			if ( Op['orientation'] ) {
 				point = event.pointY;
 				size = base.height();
 			} else {
@@ -665,28 +645,30 @@
 				size = base.width();
 			}
 
-			handle = closestHandle( base.data('handles'), point, style );
-			to = (( point - base.offset()[ style ] ) * 100 ) / size;
+			handle = closestHandle( base.data('handles'), point, Op['style'] );
+			to = (( point - base.offset()[ Op['style'] ] ) * 100 ) / size;
 
-			jump(base, handle, to);
+			jump( base, handle, to, [
+				 Op['slide']
+				,Op['set']
+			]);
 		}
 
 	// Move handle to edges when target gets tapped.
-		function edge ( event ) {
+		function edge ( event, Dt, Op ) {
 
-			/*jshint validthis: true */
+			var handles = Dt.base.data('handles'), to, i;
 
-			var settings = this['base'].data('options'),
-				handles = this['base'].data('handles'), to, i;
-
-			i = ( settings['orientation'] ? event.pointY : event.pointX );
-			i = i < this['base'].offset()[settings['style']];
+			i = Op['orientation'] ? event.pointY : event.pointX;
+			i = i < Dt.base.offset()[Op['style']];
 
 			to = i ? 0 : 100;
-
 			i = i ? 0 : handles.length - 1;
 
-			jump ( this['base'], handles[i], to );
+			jump ( Dt.base, handles[i], to, [
+				 Op['slide']
+				,Op['set']
+			]);
 		}
 
 // API
@@ -730,7 +712,7 @@
 			}
 
 			var serialization = {
-				 'resolution': function(q,o){
+				 resolution: function(q,o){
 
 					// Parse the syntactic sugar that is the serialization
 					// resolution option to a usable integer.
@@ -755,12 +737,14 @@
 
 					return true;
 				}
-				,'mark': function(q,o,w){
+				,mark: function(q,o,w){
+
+					if ( !q ) {
+						o[w]['mark'] = '.';
+						return true;
+					}
 
 					switch( q ){
-						case undefined:
-							o[w]['mark'] = '.';
-						/* falls through */
 						case '.':
 						case ',':
 							return true;
@@ -768,7 +752,7 @@
 							return false;
 					}
 				}
-				,'to': function(q,o,w){
+				,to: function(q,o,w){
 
 					// Checks whether a variable is a candidate to be a
 					// valid serialization target.
@@ -996,9 +980,9 @@
 					 'r': true
 					,'t': function(q,o,w){
 
-						return serialization['to'](q['to'],o,w) &&
-							   serialization['resolution'](q['resolution'],o) &&
-							   serialization['mark'](q['mark'],o,w);
+						return serialization.to( q['to'], o, w ) &&
+							   serialization.resolution( q['resolution'], o ) &&
+							   serialization.mark( q['mark'], o, w );
 					}
 				}
 				/*	Slide.
@@ -1180,9 +1164,9 @@
 						// These events are only bound to the visual handle
 						// element, not the 'real' origin element.
 						attach ( actions.start, handles[i].children(), start, {
-							 'base': base
-							,'target': target
-							,'handles': [ handles[i] ]
+							 base: base
+							,target: target
+							,handles: [ handles[i] ]
 						});
 					}
 				}
@@ -1190,8 +1174,8 @@
 				// Attach the tap event to the slider base.
 				if ( options['behaviour']['tap'] ) {
 					attach ( actions.start, base, tap, {
-						 'base': base
-						,'target': target
+						 base: base
+						,target: target
 					});
 				}
 
@@ -1202,8 +1186,8 @@
 
 					if ( options['behaviour']['tap'] ) {
 						attach ( actions.start, target, edge, {
-							 'base': base
-							,'target': target
+							 base: base
+							,target: target
 						});
 					}
 				}
@@ -1223,9 +1207,9 @@
 					}
 
 					attach ( actions.start, dragable, start, {
-						 'base': base
-						,'target': target
-						,'handles': handles
+						 base: base
+						,target: target
+						,handles: handles
 					});
 				}
 			});
@@ -1272,9 +1256,9 @@
 			// Setting is handled properly for each slider in the data set.
 			return this.each(function(){
 
-				var handles = Array.prototype.slice.call(
-								$(this).data('base').data('handles'), 0),
-					settings = handles[0].data('options'), to, i;
+				var b = $(this).data('base'), to, i,
+					handles = Array.prototype.slice.call(b.data('handles'),0),
+					settings = b.data('options');
 
 				// If there are multiple handles to be set run the setting
 				// mechanism twice for the first handle, to make sure it
@@ -1393,8 +1377,6 @@
 				}
 			});
 		}
-
-
 
 	// Overwrite the native jQuery value function
 	// with a simple handler. noUiSlider will use the internal

@@ -17,14 +17,12 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 			float: left;
 			margin: 10px;
 			padding: 40px;
-			border: 1px solid red;
+			border: 1px solid #000;
 		}
-		
+
 		.noUi-vertical {
 			height: 200px;
 		}
-		
-	/*	.noUi-handle { opacity: 0.6; }	*/
 
 	</style>
 
@@ -662,7 +660,7 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 		</script>
 
 	</div>
-	
+
 	<script>
 		(function(){$("[data-slider]").each(function(){function b(a,b){return parseFloat(a.attr(b)||a.attr("data-"+b))}var a=b($(this),"min"),e=b($(this),"max"),c=b($(this),"step"),d=b($(this),"value"),a=isNaN(a)||isNaN(e)?[0,100]:[a,e],d=isNaN(d)?(a[1]-a[0])/2:d,c={range:a,handles:1,step:isNaN(c)?1:c,start:d,serialization:{resolution:1}};$(this).noUiSlider(c)})})();
 	</script>
