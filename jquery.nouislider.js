@@ -174,6 +174,19 @@
 			return value.replace( '.', options['serialization']['mark'] );
 		}
 
+	// Determine the handle closest to an event.
+		function closestHandle ( handles, location, style ) {
+
+			if ( handles.length === 1 ) {
+				return handles[0];
+			}
+
+			var total = handles[0].offset()[style] +
+						handles[1].offset()[style];
+
+			return handles[ location < total / 2 ? 0 : 1 ];
+		}
+
 
 // Event abstraction
 
@@ -237,21 +250,26 @@
 			// Add the noUiSlider namespace to all events.
 			events = events.replace( /\s/g, namespace + ' ' ) + namespace;
 
+			// Bind a closure on the target.
 			return element.on( events, function( e ){
+
+				// jQuery and Zepto handle unset attributes differently.
+				var disabled = target.attr('disabled');
+					disabled = !( disabled === undefined || disabled === null );
 
 				// Test if there is anything that should prevent an event
 				// from being handled, such as a disabled state or an active
-				// 'tap' transition. Prevent interaction with disabled sliders.
-				if( target.hasClass('noUi-state-tap') ||
-					target.attr('disabled')) {
-						return false;
+				// 'tap' transition.
+				if( target.hasClass('noUi-state-tap') || disabled ) {
+					return false;
 				}
 
-				// Call the event handler with the original event as argument.
-				// The handler won't know it has been passed trough this
-				// proxy, and it won't have to filter event validity, because
-				// that was done here. Since the scope can just be 'this',
-				// there is no need to use .call().
+				// Call the event handler with three arguments:
+				// - The event;
+				// - An object with data for the event;
+				// - The slider options;
+				// Having the slider options as a function parameter prevents
+				// getting it in every function, which muddies things up.
 				callback (
 					 fixEvent( e )
 					,pass
@@ -627,21 +645,9 @@
 	// Move closest handle to tapped location.
 		function tap ( event, Dt, Op ) {
 
-			// Determine the handle closest to the tap.
-			function closestHandle ( handles, location, style ) {
-
-				if ( handles.length === 1 ) {
-					return handles[0];
-				}
-
-				var total = handles[0].offset()[style] +
-							handles[1].offset()[style];
-
-				return handles[ location < total / 2 ? 0 : 1 ];
-			}
-
 			var base = Dt.base, handle, to, point, size;
 
+			// Determine the direction of the slider.
 			if ( Op['orientation'] ) {
 				point = event.pointY;
 				size = base.height();
@@ -650,13 +656,12 @@
 				size = base.width();
 			}
 
+			// Find the closest handle and calculate the tapped point.
 			handle = closestHandle( base.data('handles'), point, Op['style'] );
 			to = (( point - base.offset()[ Op['style'] ] ) * 100 ) / size;
 
-			jump( base, handle, to, [
-				 Op['slide']
-				,Op['set']
-			]);
+			// The set handle to the new position.
+			jump( base, handle, to, [ Op['slide'], Op['set'] ]);
 		}
 
 	// Move handle to edges when target gets tapped.
@@ -670,10 +675,7 @@
 			to = i ? 0 : 100;
 			i = i ? 0 : handles.length - 1;
 
-			jump ( Dt.base, handles[i], to, [
-				 Op['slide']
-				,Op['set']
-			]);
+			jump ( Dt.base, handles[i], to, [ Op['slide'], Op['set'] ]);
 		}
 
 // API
