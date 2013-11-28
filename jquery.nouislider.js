@@ -187,6 +187,10 @@
 			return handles[ location < total / 2 ? 0 : 1 ];
 		}
 
+	// Round away small numbers in floating point implementation.
+		function digits ( value, round ) {
+			return parseFloat(value.toFixed(round));
+		}
 
 // Event abstraction
 
@@ -401,7 +405,7 @@
 					target.addClass(clsList[15]);
 					setTimeout(function(){
 						target.removeClass(clsList[15]);
-					}, 600);
+					}, 450);
 				}
 
 				target.addClass(clsList[14]);
@@ -414,9 +418,7 @@
 
 			var settings = handle.data('options');
 
-			// Round away insanely small numbers caused
-			// by the floating point implementation.
-			to = parseFloat(to.toFixed(10));
+			to = digits(to, 10);
 
 			// If the slider can move, remove the class
 			// indicating the block state.
@@ -467,11 +469,15 @@
 				}
 			}
 
-			to = Math.min( Math.max( to, lower ), upper );
+			// Find boundaries and trim to 7 decimals
+			to = digits(Math.min( Math.max( to, lower ), upper ), 7);
 
 			// Stop handling this call if the handle can't move past another.
+			// Return an array containing the hit limit, so the caller can
+			// provide feedback. ( block callback ).
 			if ( to === handle.data('pct') ) {
-				return false;
+				return [ !lower ? false : lower
+						 ,upper === 100 ? false : upper ];
 			}
 
 			placeHandle ( handle, to );
@@ -506,22 +512,22 @@
 		function move ( event, Dt, Op ) {
 
 			// Map event movement to a slider percentage.
-			var handles = Dt.handles,
+			var handles = Dt.handles, limits,
 				proposal = event[ Dt.point ] - Dt.start[ Dt.point ];
 
 			proposal = ( proposal * 100 ) / Dt.size;
 
 			if ( handles.length === 1 ) {
 
-				// Run handle placement.
-				if ( !setHandle( handles[0], Dt.positions[0] + proposal )){
+				// Run handle placement, receive true for success or an
+				// array with potential limits.
+				limits = setHandle( handles[0], Dt.positions[0] + proposal );
 
-					if ( !handles[0].data('pct') ||
-						 handles[0].data('pct') === 100 ) {
-						return;
+				if ( limits !== true ) {
+					if ( $.inArray ( handles[0].data('pct'), limits ) >= 0 ){
+						block ( Dt.base, !Op['margin'] );
 					}
-
-					return block ( Dt.base, !Op['margin'] );
+					return;
 				}
 
 			} else {
@@ -1315,7 +1321,7 @@
 					// slider has rejected. This can occur when using 'select'
 					// or 'input[type="number"]' elements. In this case, set
 					// the value back to the input.
-					if ( !setHandle( handles[i], to ) ){
+					if ( setHandle( handles[i], to ) !== true ){
 						handles[i].data('store').val( true );
 					}
 
@@ -1335,7 +1341,7 @@
 
 			// Get the fields bound to both handles.
 			$.each(target.data('base').data('handles'), function(){
-				elements = elements.concat( $(this).data('store')['elements'] );
+				elements = elements.concat( $(this).data('store').elements );
 			});
 
 			// Remove all events added by noUiSlider.
