@@ -650,12 +650,15 @@
 
 			var base = Dt.base, handle, to, point, size;
 
+			// The tap event shouldn't propagate up to trigger 'edge'.
+			event.stopPropagation();
+
 			// Determine the direction of the slider.
 			if ( Op['orientation'] ) {
-				point = event.pointY;
+				point = event['pointY'];
 				size = base.height();
 			} else {
-				point = event.pointX;
+				point = event['pointX'];
 				size = base.width();
 			}
 
@@ -672,7 +675,7 @@
 
 			var handles = Dt.base.data('handles'), to, i;
 
-			i = Op['orientation'] ? event.pointY : event.pointX;
+			i = Op['orientation'] ? event['pointY'] : event['pointX'];
 			i = i < Dt.base.offset()[Op['style']];
 
 			to = i ? 0 : 100;
