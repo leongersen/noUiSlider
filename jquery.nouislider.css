@@ -17,8 +17,6 @@
 	width: 100%;
 	height: 100%;
 	position: relative;
-	background: inherit;
-	border-radius: inherit;
 }
 .noUi-origin {
 	position: absolute;
@@ -26,19 +24,14 @@
 	top: 0;
 	left: 0;
 	bottom: 0;
-	border-radius: inherit;
-}
-.noUi-origin + .noUi-origin {
-/* Inherit the background styling from the target.
-   IE7 doesn't support inherit, so set a default. */
-	background: #FAFAFA;
-	background: inherit !important;
 }
 .noUi-handle {
 	position: relative;
 	z-index: 1;
 }
 .noUi-stacking .noUi-handle {
+/* This class is applied to the lower origin when
+   its values is > 50%. */
 	z-index: 10;
 }
 .noUi-stacking + .noUi-origin {
@@ -99,10 +92,16 @@
 -webkit-transition: background 450ms;
 	transition: background 450ms;
 }
+.noUi-origin {
+	border-radius: 2px;
+}
 .noUi-target {
 	border-radius: 4px;
 	border: 1px solid #D3D3D3;
 	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
+}
+.noUi-target.noUi-connect {
+	box-shadow: inset 0 0 3px rgba(51,51,51,0.45), 0 3px 6px -5px #BBB;
 }
 
 /* Handles and cursors;
@@ -138,25 +137,21 @@
 	height: 14px;
 	width: 1px;
 	background: #E8E7E6;
-	border-color: #FFF;
-	border-style: solid;
-	border-width: 0 0 0 1px;
-	left: 13px;
+	left: 14px;
 	top: 6px;
 }
 .noUi-handle:after {
-	left: 16px;
+	left: 17px;
 }
 .noUi-vertical .noUi-handle:before,
 .noUi-vertical .noUi-handle:after {
 	width: 14px;
 	height: 1px;
 	left: 6px;
-	top: 13px;
-	border-width: 0 0 1px 0;
+	top: 14px;
 }
 .noUi-vertical .noUi-handle:after {
-	top: 16px;
+	top: 17px;
 }
 
 /* Disabled state;

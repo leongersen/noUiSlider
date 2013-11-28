@@ -466,8 +466,9 @@
 				}
 			}
 
-			// Limit position to boundaries.
-			to = Math.min( Math.max( to, lower ), upper );
+			// Limit position to boundaries. When the handles aren't set yet,
+			// they return -1 as a percentage value.
+			to = Math.min( Math.max( to, lower ), upper < 0 ? 100 : upper );
 
 			// Stop handling this call if the handle can't move past another.
 			// Return an array containing the hit limit, so the caller can
@@ -1148,8 +1149,9 @@
 					case 1:	target.addClass( clsList[9] );
 							handles[0].addClass( clsList[12] );
 							break;
-					case 2:
-					case 3: handles[0].addClass( clsList[9] );
+					case 3: handles[1].addClass( clsList[12] );
+							/* falls through */
+					case 2: handles[0].addClass( clsList[9] );
 							/* falls through */
 					case 0: target.addClass(clsList[12]);
 							break;
