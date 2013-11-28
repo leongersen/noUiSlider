@@ -454,34 +454,29 @@
 			}
 
 			// Handle the step option.
-			if ( settings.step ){
-				to = closest( to, settings.step );
+			if ( settings['step'] ){
+				to = closest( to, settings['step'] );
 			}
 
 			if ( handles.length > 1 ){
 				if ( handle[0] !== handles[0][0] ) {
-					lower = Math.max(
-						 handles[0].data('pct') + settings.margin
-						,lower
-					);
+					lower = digits(handles[0].data('pct')+settings['margin'],7);
 				} else {
-					upper = handles[1].data('pct') - settings.margin;
+					upper = digits(handles[1].data('pct')-settings['margin'],7);
 				}
 			}
 
-			// Find boundaries and trim to 7 decimals
-			to = digits(Math.min( Math.max( to, lower ), upper ), 7);
+			// Limit position to boundaries.
+			to = Math.min( Math.max( to, lower ), upper );
 
 			// Stop handling this call if the handle can't move past another.
 			// Return an array containing the hit limit, so the caller can
 			// provide feedback. ( block callback ).
 			if ( to === handle.data('pct') ) {
-				return [ !lower ? false : lower
-						 ,upper === 100 ? false : upper ];
+				return [!lower ? false : lower, upper === 100 ? false : upper];
 			}
 
 			placeHandle ( handle, to );
-
 			return true;
 		}
 
