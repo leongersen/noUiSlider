@@ -1,15 +1,14 @@
 /*! $.noUiSlider
- *  Documentation available at:
- *  http://refreshless.com/nouislider/
- *
- *  Copyright Léon Gersen, https://twitter.com/LeonGersen
- *  Released under the WTFPL license
- *  http://www.wtfpl.net/about/
- */
+ @version 5.0.0
+ @author Leon Gersen https://twitter.com/LeonGersen
+ @license WTFPL http://www.wtfpl.net/about/
+ @documentation http://refreshless.com/nouislider/
+*/
 
 // ==ClosureCompiler==
 // @externs_url http://refreshless.com/externs/jquery-1.8.js
 // @compilation_level ADVANCED_OPTIMIZATIONS
+// @warning_level VERBOSE
 // ==/ClosureCompiler==
 
 /*jshint laxcomma: true */
@@ -17,7 +16,6 @@
 /*jshint sub: true */
 
 /*jslint browser: true */
-/*jslint devel: true */
 /*jslint continue: true */
 /*jslint plusplus: true */
 /*jslint white: true */
@@ -418,7 +416,7 @@
 
 			var settings = handle.data('options');
 
-			to = digits(to, 10);
+			to = digits(to, 7);
 
 			// If the slider can move, remove the class
 			// indicating the block state.
@@ -520,6 +518,7 @@
 				limits = setHandle( handles[0], Dt.positions[0] + proposal );
 
 				if ( limits !== true ) {
+
 					if ( $.inArray ( handles[0].data('pct'), limits ) >= 0 ){
 						block ( Dt.base, !Op['margin'] );
 					}
@@ -1037,6 +1036,8 @@
 			};
 
 			$.each( tests, function( name, test ){
+
+				/*jslint devel: true */
 
 				var value = input[name], isSet = value !== undefined;
 
