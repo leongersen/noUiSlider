@@ -69,11 +69,11 @@
 
 		// Determine the events to bind. IE11 implements pointerEvents without
 		// a prefix, which breaks compatibility with the IE10 implementation.
-		,actions = window.navigator.pointerEnabled ? {
+		,actions = window.navigator['pointerEnabled'] ? {
 			 start: 'pointerdown'
 			,move: 'pointermove'
 			,end: 'pointerup'
-		} : window.navigator.msPointerEnabled ? {
+		} : window.navigator['msPointerEnabled'] ? {
 			 start: 'MSPointerDown'
 			,move: 'MSPointerMove'
 			,end: 'MSPointerUp'
