@@ -30,7 +30,7 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 	<script src="jquery.nouislider.js"></script>
 
 	<script>
-	
+
 		var Link = $.noUiSlider.Link;
 
 		function log( what ){
@@ -288,9 +288,9 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,set: onSet
 				,orientation: "vertical"
 				,serialization: {
-					 mark: ','
-					,resolution: 1
-					,to: [$('#select')]
+					 lower: [ new Link($('#select')) ]
+					,decimals: 0
+					,mark: ','
 				}
 			});
 
@@ -474,7 +474,7 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,orientation: "horizontal"
 				,block: onBlock
 				,serialization: {
-					to: [$("#valueGoesHere"), 'text']
+					lower: [ new Link( $("#valueGoesHere"), 'text' ) ]
 				}
 			});
 
@@ -499,10 +499,10 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,step: 1
 				,orientation: "vertical"
 				,serialization: {
-					 resolution: 1
-					,to: function( value ){
-						$("#slider18").toggleClass('off', !!!parseInt(value));
-					}
+					 decimals: 0
+					,lower: [ new Link( function( value ){
+											$("#slider18").toggleClass('off', !!!parseInt(value));
+										}) ]
 				}
 			});
 
