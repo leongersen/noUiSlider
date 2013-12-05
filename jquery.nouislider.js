@@ -29,6 +29,100 @@
 		throw new ReferenceError('Zepto is loaded without the data module.');
 	}
 
+	function Link( target, method, decimals, mark ){
+
+		function isInstance ( a ) {
+			return a instanceof $ || ( $['zepto'] && $['zepto']['isZ'](a) );
+		}
+
+		this.decimals = decimals;
+		this.mark = mark;
+
+		this.slider = false;
+		this.isReady = true;
+
+		switch ( typeof target ) {
+
+			case 'string':
+
+				this.target = document.createElement('input');
+				this.target.name = target;
+				this.target.type = 'hidden';
+				this.isReady = false;
+
+				this.method = 'val';
+
+				return;
+
+			case 'function':
+
+				this.target = target;
+				this.isFunction = true;
+
+				return;
+
+			case 'object':
+
+				if ( isInstance(target) ) {
+
+					this.target = target;
+					this.method = method || 'val';
+
+					if ( !method ) {
+						this.target.on('change.nui', function(){
+							console.log('he');
+						});
+					}
+
+					return;
+				}
+		}
+
+		throw new RangeError('Invalid Link');
+	}
+
+	Link.prototype.write = function ( value, slider ) {
+
+		value = this.format( value );
+
+		if ( this.isFunction ) {
+			this.target.call( slider, value );
+		} else {
+			this.target[ this.method ]( value );
+		}
+	}
+
+	Link.prototype.format = function ( value ) {
+
+		// Round the value to the resolution that was set
+		// with the serialization options.
+		value = value.toFixed( this.decimals );
+
+		// Rounding away decimals might cause a value of -0
+		// when using very small ranges. Remove those cases.
+		if ( parseFloat(value) === 0 ) {
+			value = value.replace('-0', '0');
+		}
+
+		// Apply the proper decimal mark to the value.
+		return value.replace( '.', this.mark );
+	}
+
+	Link.prototype.validate = function ( ) {
+
+		this.decimals = parseInt(this.decimals);
+
+		if (!(this.decimals >= 0 && this.decimals <= 20)) {
+			this.decimals = 2;
+		}
+
+		if ( this.mark !== ',' ) {
+			this.mark = '.';
+		}
+	}
+
+	$['noUiSlider'] = { 'Link': Link };
+
 	$.fn['noUiSlider'] = function( options, rebuild ){
 
 		var
@@ -153,23 +247,6 @@
 	// Round a value to the closest 'to'.
 		function closest ( value, to ){
 			return Math.round(value / to) * to;
-		}
-
-	// Format output value to specified standards.
-		function format ( value, options ) {
-
-			// Round the value to the resolution that was set
-			// with the serialization options.
-			value = value.toFixed( options['decimals'] );
-
-			// Rounding away decimals might cause a value of -0
-			// when using very small ranges. Remove those cases.
-			if ( parseFloat(value) === 0 ) {
-				value = value.replace('-0', '0');
-			}
-
-			// Apply the proper decimal mark to the value.
-			return value.replace( '.', options['serialization']['mark'] );
 		}
 
 	// Determine the handle closest to an event.
@@ -313,73 +390,12 @@
 			// call it with the slider as scope. Otherwise,
 			// simply call the function on the object.
 			$.each( this.elements, function() {
-				if ( typeof this === 'function' ) {
-					this.call(target, a);
-				} else {
-					this[0][this[1]](a);
-				}
+				this.write( a );
 			});
-		}
-
-	// Map serialization to [ element, method ]. Attach events where required.
-		function storeElement ( handle, item, number ) {
-
-			// Add a change event to the supplied jQuery objects,
-			// which triggers the value-setting function on the target.
-			if ( isInstance( item ) ) {
-
-				var elements = [], target = handle.data('target');
-
-				// Link the field to the other handle if the
-				// slider is inverted.
-				if ( handle.data('options').direction ) {
-					number = number ? 0 : 1;
-				}
-
-				// Loop all items so the change event is properly bound,
-				// and the items can individually be added to the array.
-				item.each(function(){
-
-					// Bind the change event.
-					$(this).on('change' + namespace, setN( target, number ));
-
-					// Store the element with the proper handler.
-					elements.push([ $(this), 'val' ]);
-				});
-
-				return elements;
-			}
-
-			// Append a new input to the noUiSlider base.
-			// Prevent the change event from flowing upward.
-			if ( typeof item === 'string' ) {
-
-				item = [ $('<input type="hidden" name="'+ item +'">')
-					.appendTo(handle)
-					.addClass(clsList[3])
-					.change(function ( e ) {
-						e.stopPropagation();
-					}), 'val'];
-			}
-
-			return [item];
 		}
 
 	// Access point and abstraction for serialization.
-		function store ( handle, i, serialization ) {
-
-			var elements = [];
-
-			// Loops all items in the provided serialization setting,
-			// add the proper events to them or create new input fields,
-			// and add them as data to the handle so they can be kept
-			// in sync with the slider value.
-			$.each( serialization['to'][i], function( index ){
-				elements = elements.concat(
-					storeElement( handle, serialization['to'][i][index], i )
-				);
-			});
-
+		function store ( handle, elements ) {
 			return {
 				 element: handle
 				,elements: elements
@@ -387,7 +403,6 @@
 				,'val': serialize
 			};
 		}
-
 
 // Handle placement
 
@@ -435,9 +450,7 @@
 			}
 
 			// Write the value to the serialization object.
-			handle.data('store').val(
-				format ( isPercentage( settings['range'], to ), settings )
-			);
+			handle.data('store').val( isPercentage( settings['range'], to ) );
 		}
 
 	// Test suggested values and apply margin, step.
@@ -723,131 +736,7 @@
 				return a;
 			}
 
-			var serialization = {
-				 resolution: function(q,o){
-
-					// Parse the syntactic sugar that is the serialization
-					// resolution option to a usable integer.
-					// Checking for a string '1', since the resolution needs
-					// to be cast to a string to split in on the period.
-					switch( q ){
-						case 1:
-						case 0.1:
-						case 0.01:
-						case 0.001:
-						case 0.0001:
-						case 0.00001:
-							q = q.toString().split('.');
-							o['decimals'] = q[0] === '1' ? 0 : q[1].length;
-							break;
-						case undefined:
-							o['decimals'] = 2;
-							break;
-						default:
-							return false;
-					}
-
-					return true;
-				}
-				,mark: function(q,o,w){
-
-					if ( !q ) {
-						o[w]['mark'] = '.';
-						return true;
-					}
-
-					switch( q ){
-						case '.':
-						case ',':
-							return true;
-						default:
-							return false;
-					}
-				}
-				,to: function(q,o,w){
-
-					// Checks whether a variable is a candidate to be a
-					// valid serialization target.
-					function ser(r){
-						return isInstance ( r ) ||
-							typeof r === 'string' ||
-							typeof r === 'function' ||
-							r === false ||
-							( isInstance ( r[0] ) &&
-							  typeof r[0][r[1]] === 'function' );
-					}
-
-					// Flatten the serialization array into a reliable
-					// set of elements, which can be tested and looped.
-					function filter ( value ) {
-
-						var items = [[],[]];
-
-						// If a single value is provided it can be pushed
-						// immediately.
-						if ( ser(value) ) {
-							items[0].push(value);
-						} else {
-
-							// Otherwise, determine whether this is an
-							// array of single elements or sets.
-							$.each(value, function(i, val) {
-
-								// Don't handle an overflow of elements.
-								if( i > 1 ){
-									return;
-								}
-
-								// Decide if this is a group or not
-								if( ser(val) ){
-									items[i].push(val);
-								} else {
-									items[i] = items[i].concat(val);
-								}
-							});
-						}
-
-						return items;
-					}
-
-					if ( !q ) {
-						o[w]['to'] = [[],[]];
-					} else {
-
-						var i, j;
-
-						// Flatten the serialization array
-						q = filter ( q );
-
-						// Reverse the API for RTL sliders.
-						if ( o['direction'] && q[1].length ) {
-							q.reverse();
-						}
-
-						// Test all elements in the flattened array.
-						for ( i = 0; i < o['handles']; i++ ) {
-							for ( j = 0; j < q[i].length; j++ ) {
-
-								// Return false on invalid input
-								if( !ser(q[i][j]) ){
-									return false;
-								}
-
-								// Remove 'false' elements, since those
-								// won't be handled anyway.
-								if( !q[i][j] ){
-									q[i].splice(j, 1);
-								}
-							}
-						}
-
-						// Write the new values back
-						o[w]['to'] = q;
-					}
-
-					return true;
-				}
-			}, tests = {
+			var tests = {
 				/*	Handles.
 				 *	Has default, can be 1 or 2.
 				 */
@@ -992,9 +881,37 @@
 					 'r': true
 					,'t': function(q,o,w){
 
-						return serialization.to( q['to'], o, w ) &&
-							   serialization.resolution( q['resolution'], o ) &&
-							   serialization.mark( q['mark'], o, w );
+						var status = true;
+
+						function ok(i, a){
+
+							if ( !$.isArray(a) ) {
+								status = false;
+								return false;
+							}
+
+							$.each(a, function(){
+								if ( ! this instanceof Link ) {
+									status = false;
+									return false;
+								}
+								if( this.decimals === undefined ) {
+									this.decimals = q['decimals'];
+								}
+								this.mark = this.mark || q['mark'];
+								this.validate();
+							});
+						}
+
+						o.ser = [ q['lower'] || [], q['upper'] || [] ];
+
+						$.each( o.ser, ok );
+
+						if ( o['direction'] ) {
+							o.ser.reverse();
+						}
+
+						return true;
 					}
 				}
 				/*	Slide.
@@ -1063,6 +980,137 @@
 			});
 		}
 
+	// Initialize a single slider.
+		function slider ( options ) {
+
+			var target = $(this), i, dragable, handles = [], handle,
+				base = $('<div/>').appendTo(target);
+
+			// Throw an error if the slider was already initialized.
+			if ( target.data('base') ) {
+				throw new Error('Slider was already initialized.');
+			}
+
+			// Apply classes and data to the target.
+			target.data('base', base).addClass([
+				clsList[6]
+			   ,clsList[16 + options['direction']]
+			   ,clsList[10 + options['orientation']] ].join(' '));
+
+			for (i = 0; i < options['handles']; i++ ) {
+
+				handle = $('<div><div/></div>').appendTo(base);
+
+				// Add all default and option-specific classes to the
+				// origins and handles.
+				handle.addClass( clsList[1] );
+
+				handle.children().addClass([
+					clsList[2]
+				   ,clsList[2] + clsList[ 7 + options['direction'] +
+					( options['direction'] ? -1 * i : i ) ]].join(' ') );
+
+				// Make sure every handle has access to all variables.
+				handle.data({
+					 'base': base
+					,'target': target
+					,'options': options
+					,'grab': handle.children()
+					,'pct': -1
+				}).attr('data-style', options['style']);
+
+				// Every handle has a storage point, which takes care
+				// of triggering the proper serialization callbacks.
+				handle.data('store', store(handle, options.ser[i]));
+
+				// Store handles on the base
+				handles.push(handle);
+			}
+
+			// Apply the required connection classes to the elements
+			// that need them. Some classes are made up for several
+			// segments listed in the class list, to allow easy
+			// renaming and provide a minor compression benefit.
+			switch ( options['connect'] ) {
+				case 1:	target.addClass( clsList[9] );
+						handles[0].addClass( clsList[12] );
+						break;
+				case 3: handles[1].addClass( clsList[12] );
+						/* falls through */
+				case 2: handles[0].addClass( clsList[9] );
+						/* falls through */
+				case 0: target.addClass(clsList[12]);
+						break;
+			}
+
+			// Merge base classes with default,
+			// and store relevant data on the base element.
+			base.addClass( clsList[0] ).data({
+				 'target': target
+				,'options': options
+				,'handles': handles
+			});
+
+			// Use the public value method to set the start values.
+			target.val( options['start'] );
+
+			// Attach the standard drag event to the handles.
+			if ( !options['behaviour']['fixed'] ) {
+				for ( i = 0; i < handles.length; i++ ) {
+
+					// These events are only bound to the visual handle
+					// element, not the 'real' origin element.
+					attach ( actions.start, handles[i].children(), start, {
+						 base: base
+						,target: target
+						,handles: [ handles[i] ]
+					});
+				}
+			}
+
+			// Attach the tap event to the slider base.
+			if ( options['behaviour']['tap'] ) {
+				attach ( actions.start, base, tap, {
+					 base: base
+					,target: target
+				});
+			}
+
+			// Extend tapping behaviour to target
+			if ( options['behaviour']['extend'] ) {
+
+				target.addClass( clsList[19] );
+
+				if ( options['behaviour']['tap'] ) {
+					attach ( actions.start, target, edge, {
+						 base: base
+						,target: target
+					});
+				}
+			}
+
+			// Make the range dragable.
+			if ( options['behaviour']['drag'] ){
+
+				dragable = base.find('.'+clsList[9]).addClass(clsList[18]);
+
+				// When the range is fixed, the entire range can
+				// be dragged by the handles. The handle in the first
+				// origin will propagate the start event upward,
+				// but it needs to be bound manually on the other.
+				if ( options['behaviour']['fixed'] ) {
+					dragable = dragable
+						.add( base.children().not(dragable).data('grab') );
+				}
+
+				attach ( actions.start, dragable, start, {
+					 base: base
+					,target: target
+					,handles: handles
+				});
+			}
+		}
+
 	// Parse options, add classes, attach events, create HTML.
 		function create ( options ) {
 
@@ -1098,135 +1146,7 @@
 			options['style'] = options['orientation'] ? 'top' : 'left';
 
 			return this.each(function(){
-
-				var target = $(this), i, dragable, handles = [], handle,
-					base = $('<div/>').appendTo(target);
-
-				// Throw an error if the slider was already initialized.
-				if ( target.data('base') ) {
-					throw new Error('Slider was already initialized.');
-				}
-
-				// Apply classes and data to the target.
-				target.data('base', base).addClass([
-					clsList[6]
-				   ,clsList[16 + options['direction']]
-				   ,clsList[10 + options['orientation']] ].join(' '));
-
-				for (i = 0; i < options['handles']; i++ ) {
-
-					handle = $('<div><div/></div>').appendTo(base);
-
-					// Add all default and option-specific classes to the
-					// origins and handles.
-					handle.addClass( clsList[1] );
-
-					handle.children().addClass([
-						clsList[2]
-					   ,clsList[2] + clsList[ 7 + options['direction'] +
-						( options['direction'] ? -1 * i : i ) ]].join(' ') );
-
-					// Make sure every handle has access to all variables.
-					handle.data({
-						 'base': base
-						,'target': target
-						,'options': options
-						,'grab': handle.children()
-						,'pct': -1
-					}).attr('data-style', options['style']);
-
-					// Every handle has a storage point, which takes care
-					// of triggering the proper serialization callbacks.
-					handle.data({
-						'store': store(handle, i, options['serialization'])
-					});
-
-					// Store handles on the base
-					handles.push(handle);
-				}
-
-				// Apply the required connection classes to the elements
-				// that need them. Some classes are made up for several
-				// segments listed in the class list, to allow easy
-				// renaming and provide a minor compression benefit.
-				switch ( options['connect'] ) {
-					case 1:	target.addClass( clsList[9] );
-							handles[0].addClass( clsList[12] );
-							break;
-					case 3: handles[1].addClass( clsList[12] );
-							/* falls through */
-					case 2: handles[0].addClass( clsList[9] );
-							/* falls through */
-					case 0: target.addClass(clsList[12]);
-							break;
-				}
-
-				// Merge base classes with default,
-				// and store relevant data on the base element.
-				base.addClass( clsList[0] ).data({
-					 'target': target
-					,'options': options
-					,'handles': handles
-				});
-
-				// Use the public value method to set the start values.
-				target.val( options['start'] );
-
-				// Attach the standard drag event to the handles.
-				if ( !options['behaviour']['fixed'] ) {
-					for ( i = 0; i < handles.length; i++ ) {
-
-						// These events are only bound to the visual handle
-						// element, not the 'real' origin element.
-						attach ( actions.start, handles[i].children(), start, {
-							 base: base
-							,target: target
-							,handles: [ handles[i] ]
-						});
-					}
-				}
-
-				// Attach the tap event to the slider base.
-				if ( options['behaviour']['tap'] ) {
-					attach ( actions.start, base, tap, {
-						 base: base
-						,target: target
-					});
-				}
-
-				// Extend tapping behaviour to target
-				if ( options['behaviour']['extend'] ) {
-
-					target.addClass( clsList[19] );
-
-					if ( options['behaviour']['tap'] ) {
-						attach ( actions.start, target, edge, {
-							 base: base
-							,target: target
-						});
-					}
-				}
-
-				// Make the range dragable.
-				if ( options['behaviour']['drag'] ){
-
-					dragable = base.find('.'+clsList[9]).addClass(clsList[18]);
-
-					// When the range is fixed, the entire range can
-					// be dragged by the handles. The handle in the first
-					// origin will propagate the start event upward,
-					// but it needs to be bound manually on the other.
-					if ( options['behaviour']['fixed'] ) {
-						dragable = dragable
-							.add( base.children().not(dragable).data('grab') );
-					}
-
-					attach ( actions.start, dragable, start, {
-						 base: base
-						,target: target
-						,handles: handles
-					});
-				}
+				slider.call(this, options);
 			});
 		}
 
