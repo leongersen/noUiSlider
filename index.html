@@ -310,8 +310,7 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,handles: 2
 				,direction: 'rtl'
 				,serialization: {
-					 to: false
-					,mark: '.'
+					 mark: '.'
 					,resolution: 0.0001
 				}
 				,connect: true
@@ -335,7 +334,8 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,start: [19.9, 20]
 				,handles: 2
 				,serialization: {
-					to: [ $("#low1"), $("#high1") ]
+					 lower: [ new Link($("#low1")) ]
+					,upper: [ new Link($("#high1")) ]
 				}
 			});
 
@@ -358,7 +358,8 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,handles: 2
 				,direction: 'rtl'
 				,serialization: {
-					to: [ $("#low2"), $("#high2") ]
+					 lower: [ new Link($("#low2")) ]
+					,upper: [ new Link($("#high2")) ]
 				}
 			});
 
@@ -403,7 +404,8 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,handles: 2
 				,orientation: "vertical"
 				,serialization: {
-					to: ['lower', [$('#cake'), 'html']]
+					 lower: [ new Link('lower') ]
+					,upper: [ new Link($('#cake'), 'html') ]
 				}
 				,direction: 'rtl'
 			});
@@ -426,7 +428,8 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,handles: 2
 				,orientation: "vertical"
 				,serialization: {
-					to: ['lower', 'upper']
+					 lower: [ new Link('lower') ]
+					,upper: [ new Link('upper') ]
 				}
 			});
 
@@ -450,7 +453,8 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,handles: 2
 				,block: onBlock
 				,serialization: {
-					to: [$('#half'), 'half']
+					 lower: [ new Link($('#half')) ]
+					,upper: [ new Link('half') ]
 				}
 			}).val([5,5]);
 
@@ -524,7 +528,7 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,handles: 1
 				,orientation: "horizontal"
 				,serialization: {
-					to: [$("#valueGoesHere2"), 'text']
+					lower: [ new Link($("#valueGoesHere2"), 'text') ]
 				}
 				,connect: "upper"
 				,direction: "rtl"
@@ -548,7 +552,7 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				,handles: 1
 				,orientation: "horizontal"
 				,serialization: {
-					 to: [$("#valueGoesHere3"), 'text']
+					 lower: [ new Link($("#valueGoesHere3"), 'text') ]
 					,mark: ','
 				}
 				,connect: "upper"
@@ -571,7 +575,8 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 				 range: [-0.01, 0.08]
 				,start: [-0.01, 0.08]
 				,serialization: {
-					 to: [$("#small1"), $("#small2")]
+					 lower: [ new Link($("#small1")) ]
+					,upper: [ new Link($("#small2")) ]
 					,mark: ","
 				}
 			});

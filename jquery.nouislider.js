@@ -80,12 +80,12 @@
 /* Type tests
  */
 
-// Test in an object is an instance of jQuery or Zepto.
+	// Test in an object is an instance of jQuery or Zepto.
 	function isInstance ( a ) {
 		return a instanceof $ || ( $['zepto'] && $['zepto']['isZ'](a) );
 	}
 
-// Checks whether a value is numerical.
+	// Checks whether a value is numerical.
 	function isNumeric ( a ) {
 		return !isNaN( parseFloat( a ) ) && isFinite( a );
 	}
@@ -94,7 +94,7 @@
 /* Serialization
  */
 
-// Exposed access point for serialization
+	// Exposed access point for serialization
 	function Link( target, method, decimals, mark ){
 
 		// Rescope this so it can be used in the 'change' closure.
@@ -104,7 +104,6 @@
 		this.mark = mark;
 
 		this.obj = false;
-		this.isReady = true;
 
 		switch ( typeof target ) {
 
@@ -113,9 +112,9 @@
 				this.target = document.createElement('input');
 				this.target.name = target;
 				this.target.type = 'hidden';
-				this.isReady = false;
-
 				this.method = 'val';
+
+				this.insert = true;
 
 				return;
 
@@ -190,19 +189,19 @@
 /* Percentage calculation
  */
 
-// (percentage) How many percent is this value of this range?
+	// (percentage) How many percent is this value of this range?
 	function fromPercentage ( range, value ) {
 		return (value * 100) / ( range[1] - range[0] );
 	}
 
-// (percentage) Where is this value on this range?
+	// (percentage) Where is this value on this range?
 	function toPercentage ( range, value ) {
 		return fromPercentage( range, range[0] < 0 ?
 			value + Math.abs(range[0]) :
 				value - range[0] );
 	}
 
-// (value) How much is this percentage on this range?
+	// (value) How much is this percentage on this range?
 	function isPercentage ( range, value ) {
 		return ((value * ( range[1] - range[0] )) / 100) + range[0];
 	}
@@ -211,7 +210,7 @@
 /* General helper functions
  */
 
-// Test an array of objects, and calls them if they are a function.
+	// Test an array of objects, and calls them if they are a function.
 	function call ( functions, scope ) {
 
 		// Allow the passing of an unwrapped function.
@@ -227,12 +226,12 @@
 		});
 	}
 
-// Round a value to the closest 'to'.
+	// Round a value to the closest 'to'.
 	function closest ( value, to ){
 		return Math.round(value / to) * to;
 	}
 
-// Determine the handle closest to an event.
+	// Determine the handle closest to an event.
 	function closestHandle ( handles, location, style ) {
 
 		if ( handles.length === 1 ) {
@@ -245,7 +244,7 @@
 		return handles[ location < total / 2 ? 0 : 1 ];
 	}
 
-// Round away small numbers in floating point implementation.
+	// Round away small numbers in floating point implementation.
 	function digits ( value, round ) {
 		return parseFloat(value.toFixed(round));
 	}
@@ -254,7 +253,7 @@
 /* Event abstraction
  */
 
-// Provide a clean event with standardized offset values.
+	// Provide a clean event with standardized offset values.
 	function fixEvent ( e ) {
 
 		// Prevent scrolling and panning on touch events, while
@@ -306,7 +305,7 @@
 		});
 	}
 
-// Handler for attaching events trough a proxy
+	// Handler for attaching events trough a proxy
 	function attach ( events, element, callback, pass ) {
 
 		var target = pass.target;
@@ -346,7 +345,7 @@
 /* Serialization and value storage
  */
 
-// Store a value on all serialization targets, or get the current value.
+	// Store a value on all serialization targets, or get the current value.
 	function serialize ( a ) {
 
 		/*jshint validthis: true */
@@ -380,7 +379,7 @@
 		});
 	}
 
-// Access point and abstraction for serialization.
+	// Access point and abstraction for serialization.
 	function store ( handle, elements ) {
 		return {
 			 element: handle
@@ -394,7 +393,7 @@
 /* Handle placement
  */
 
-// Fire callback on unsuccessful handle movement.
+	// Fire callback on unsuccessful handle movement.
 	function block ( base, stateless ) {
 
 		var target = base.data('target');
@@ -414,7 +413,7 @@
 		}
 	}
 
-// Change inline style and apply proper classes.
+	// Change inline style and apply proper classes.
 	function placeHandle ( handle, to ) {
 
 		var settings = handle.data('options');
@@ -441,7 +440,7 @@
 		handle.data('store').val( isPercentage( settings['range'], to ) );
 	}
 
-// Test suggested values and apply margin, step.
+	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to ) {
 
 		var base = handle.data('base'), settings = base.data('options'),
@@ -480,7 +479,7 @@
 		return true;
 	}
 
-// Handles movement by tapping
+	// Handles movement by tapping
 	function jump ( base, handle, to, callbacks ) {
 
 		// Flag the slider as it is now in a transitional state.
@@ -504,7 +503,7 @@
 /* Event handlers
  */
 
-// Handle movement on document for handle and range drag.
+	// Handle movement on document for handle and range drag.
 	function move ( event, Dt, Op ) {
 
 		// Map event movement to a slider percentage.
@@ -575,7 +574,7 @@
 		call( Op['slide'], Dt.target );
 	}
 
-// Unbind move events on document, call callbacks.
+	// Unbind move events on document, call callbacks.
 	function end ( event, Dt, Op ) {
 
 		// The handle is no longer active, so remove the class.
@@ -598,7 +597,7 @@
 		call( Op['set'], Dt.target );
 	}
 
-// Bind move events on document.
+	// Bind move events on document.
 	function start ( event, Dt, Op ) {
 
 		// Mark the handle as 'active' so it can be styled.
@@ -646,7 +645,7 @@
 		}
 	}
 
-// Move closest handle to tapped location.
+	// Move closest handle to tapped location.
 	function tap ( event, Dt, Op ) {
 
 		var base = Dt.base, handle, to, point, size;
@@ -671,7 +670,7 @@
 		jump( base, handle, to, [ Op['slide'], Op['set'] ]);
 	}
 
-// Move handle to edges when target gets tapped.
+	// Move handle to edges when target gets tapped.
 	function edge ( event, Dt, Op ) {
 
 		var handles = Dt.base.data('handles'), to, i;
@@ -689,21 +688,21 @@
 /* API
  */
 
-// Validate and standardize input.
+	// Validate and standardize input.
 	function test ( input, sliders ){
 
-/*	Every input option is tested and parsed. This'll prevent
-	endless validation in internal methods. These tests are
-	structured with an item for every option available. An
-	option can be marked as required by setting the 'r' flag.
-	The testing function is provided with three arguments:
-		- The provided value for the option;
-		- A reference to the options object;
-		- The name for the option;
+	/*	Every input option is tested and parsed. This'll prevent
+		endless validation in internal methods. These tests are
+		structured with an item for every option available. An
+		option can be marked as required by setting the 'r' flag.
+		The testing function is provided with three arguments:
+			- The provided value for the option;
+			- A reference to the options object;
+			- The name for the option;
 
-	The testing function returns false when an error is detected,
-	or true when everything is OK. It can also modify the option
-	object, to make sure all values can be correctly looped elsewhere. */
+		The testing function returns false when an error is detected,
+		or true when everything is OK. It can also modify the option
+		object, to make sure all values can be correctly looped elsewhere. */
 
 		function values ( a ) {
 
@@ -874,7 +873,7 @@
 
 					var status = true;
 
-					function ok( i, a ){
+					function linklist( i, a ){
 
 						if ( !$.isArray(a) ) {
 							status = false;
@@ -883,13 +882,18 @@
 
 						$.each(a, function(){
 
+							// Check if entry is a Link.
 							if ( ! this instanceof Link ) {
 								status = false;
 								return false;
 							}
+
+							// Set default decimals.
 							if( this.decimals === undefined ) {
 								this.decimals = q['decimals'];
 							}
+
+							// Assign other properties.
 							this.N = i;
 							this.obj = r;
 							this.mark = this.mark || q['mark'];
@@ -897,9 +901,9 @@
 						});
 					}
 
-					o.ser = [ q['lower'] || [], q['upper'] || [] ];
+					o.ser = [ q['lower'], q['upper']];
 
-					$.each( o.ser, ok );
+					$.each( o.ser, linklist );
 
 					if ( o['direction'] ) {
 						o.ser.reverse();
@@ -974,7 +978,7 @@
 		});
 	}
 
-// Initialize a single slider.
+	// Initialize a single slider.
 	function slider ( options ) {
 
 		var target = $(this), i, dragable, handles = [], handle,
@@ -1012,6 +1016,13 @@
 				,'grab': handle.children()
 				,'pct': -1
 			}).attr('data-style', options['style']);
+
+			$.each(options.ser[i],function(){
+				if( !isInstance( this.target ) ){
+					this.target = $(this.target).appendTo(handle);
+					this.isReady = true;
+				}
+			});
 
 			// Every handle has a storage point, which takes care
 			// of triggering the proper serialization callbacks.
@@ -1105,7 +1116,7 @@
 		}
 	}
 
-// Parse options, add classes, attach events, create HTML.
+	// Parse options, add classes, attach events, create HTML.
 	function create ( options ) {
 
 		/*jshint validthis: true */
@@ -1127,7 +1138,12 @@
 		}, options);
 
 		// Make sure the test for serialization runs.
-		options['serialization'] = options['serialization'] || {};
+		options['serialization'] = $.extend({
+			 'mark': '.'
+			,'decimals': 2
+			,'lower': []
+			,'upper': []
+		}, options['serialization']);
 
 		// Run all options through a testing mechanism to ensure correct
 		// input. The test function will throw errors, so there is
@@ -1144,7 +1160,7 @@
 		});
 	}
 
-// Unbind all attached events, remove classed and HTML.
+	// Unbind all attached events, remove classed and HTML.
 	function destroy ( target ) {
 
 		// Start the list of elements to be unbound with the target.
@@ -1169,42 +1185,39 @@
 			  .removeData('base options');
 	}
 
-// Merge options with current initialization, destroy slider and reinitialize.
+	// Merge options with current initialization, destroy slider, reinitialize.
 	function build ( options ) {
 
 		/*jshint validthis: true */
 
-		return this.each(function(){
+		// When uninitialised, jQuery will return '',
+		// Zepto returns undefined. Both are falsy.
+		var values = $(this).val() || false,
+			current = $(this).data('options'),
+		// Extend the current setup with the new options.
+			setup = $.extend( {}, current, options );
 
-			// When uninitialised, jQuery will return '',
-			// Zepto returns undefined. Both are falsy.
-			var values = $(this).val() || false,
-				current = $(this).data('options'),
-			// Extend the current setup with the new options.
-				setup = $.extend( {}, current, options );
+		// If there was a slider initialised, remove it first.
+		if ( values !== false ) {
+			destroy( $(this) );
+		}
 
-			// If there was a slider initialised, remove it first.
-			if ( values !== false ) {
-				destroy( $(this) );
-			}
+		// Make the destroy method publicly accessible.
+		if( !options ) {
+			return;
+		}
 
-			// Make the destroy method publicly accessible.
-			if( !options ) {
-				return;
-			}
+		// Create a new slider
+		$(this).noUiSlider( setup );
 
-			// Create a new slider
-			$(this).noUiSlider( setup );
-
-			// Set the slider values back. If the start options changed,
-			// it gets precedence.
-			if ( values !== false && setup.start === current.start ) {
-				$(this).val( values );
-			}
-		});
+		// Set the slider values back. If the start options changed,
+		// it gets precedence.
+		if ( values !== false && setup.start === current.start ) {
+			$(this).val( values );
+		}
 	}
 
-// Return value for the slider, relative to 'range'.
+	// Return value for the slider, relative to 'range'.
 	function getValue ( ) {
 
 		/*jshint validthis: true */
@@ -1231,7 +1244,7 @@
 		return answer;
 	}
 
-// Set value for the slider, relative to 'range'.
+	// Set value for the slider, relative to 'range'.
 	function setValue ( values, set ) {
 
 		/*jshint validthis: true */
@@ -1294,7 +1307,7 @@
 /* Exposed functions
  */
 
-// Value handler.
+	// Value handler.
 	function value ( ) {
 
 		// If this isn't noUiSlider, continue with jQuery's original method.
@@ -1321,20 +1334,31 @@
 		return getValue.apply( this );
 	}
 
-// Main entry point to all functions.
+	// Main entry point to all functions.
 	function noUiSlider ( options, rebuild ) {
-		return ( rebuild ? build : create ).call( this, options );
+
+		var sliders = this;
+
+		if ( rebuild ) {
+			return this.each(function(){
+				build.call(sliders, options);
+			});
+		}
+
+		return create.call( this, options );
 	}
 
 
 /* jQuery/Zepto extensions
  */
 
-// Expose serialization constructor.
+	// Expose serialization constructor.
 	$.noUiSlider = { 'Link': Link };
-// Expose noUiSlider.
+
+	// Expose noUiSlider.
 	$.fn.noUiSlider = noUiSlider;
-// Overwrite the native jQuery value function.
+
+	// Overwrite the native jQuery value function.
 	$.fn.val = value;
 
 }( window['jQuery'] || window['Zepto'] ));
