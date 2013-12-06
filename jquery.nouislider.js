@@ -7,11 +7,17 @@
 
 // ==ClosureCompiler==
 // @externs_url http://refreshless.com/externs/jquery-1.8.js
-// @externs $.zepto = {}
-// @externs $.zepto.isZ = function(arg1){}
 // @compilation_level ADVANCED_OPTIMIZATIONS
 // @warning_level VERBOSE
 // ==/ClosureCompiler==
+
+// todo
+// window.jQuery
+// window.Zepto
+// $.zepto
+// $.zepto.isZ
+// window.navigator.pointerEnabled
+// window.navigator.msPointerEnabled
 
 /*jshint laxcomma: true */
 /*jshint smarttabs: true */
@@ -31,20 +37,19 @@
 	}
 
 	var
-	// Cache the document and body selectors;
+	// Cache the document selector;
 	 doc = $(document)
-	,body = $('body')
 	// Namespace for binding and unbinding slider events;
 	,namespace = '.nui'
 	// Copy of the current value function;
 	,$VAL = $.fn.val
 	// Determine the events to bind. IE11 implements pointerEvents without
 	// a prefix, which breaks compatibility with the IE10 implementation.
-	,actions = window.navigator['pointerEnabled'] ? {
+	,actions = window.navigator.pointerEnabled ? {
 		 start: 'pointerdown'
 		,move: 'pointermove'
 		,end: 'pointerup'
-	} : window.navigator['msPointerEnabled'] ? {
+	} : window.navigator.msPointerEnabled ? {
 		 start: 'MSPointerDown'
 		,move: 'MSPointerMove'
 		,end: 'MSPointerUp'
@@ -134,7 +139,7 @@
 			this.method = method || 'val';
 
 			if ( !method ) {
-				this.target.on('change.nui', function(){
+				this.target.on('change' + namespace, function(){
 					var a = [null,null];
 					a[me.N] = $(this).val();
 					me.obj.val(a);
@@ -236,7 +241,9 @@
 	}
 
 	// Determine the handle closest to an event.
-	function closestHandle ( handles, location, style ) {
+	function closestHandle ( handles, location ) {
+
+		var style = handles[0].data('options').style;
 
 		if ( handles.length === 1 ) {
 			return handles[0];
@@ -303,8 +310,8 @@
 		}
 
 		return $.extend( event, {
-			 'pointX': x
-			,'pointY': y
+			 points: [x, y]
+			,size: [ 'width', 'height' ]
 			,cursor: mouse
 		});
 	}
@@ -474,7 +481,7 @@
 	}
 
 	// Handles movement by tapping
-	function jump ( base, handle, to, callbacks ) {
+	function jump ( base, handle, to, options ) {
 
 		// Flag the slider as it is now in a transitional state.
 		// Transition takes 300 ms, so re-enable the slider afterwards.
@@ -488,7 +495,7 @@
 
 		// Trigger the 'slide' and 'set' callbacks,
 		// pass the target so that it is 'this'.
-		call( callbacks, base.data('target') );
+		call( [options.slide, options.set], base.data('target') );
 
 		base.data('target').change();
 	}
@@ -502,9 +509,9 @@
 
 		// Map event movement to a slider percentage.
 		var handles = Dt.handles, limits,
-			proposal = event[ Dt.point ] - Dt.start[ Dt.point ];
+			proposal = event.points[ options.ort ] - Dt.start.points[ options.ort ];
 
-		proposal = ( proposal * 100 ) / Dt.size;
+		proposal = ( proposal * 100 ) / Dt.base[event.size[options.ort]]();
 
 		if ( handles.length === 1 ) {
 
@@ -578,7 +585,7 @@
 
 		// Remove cursor styles and text-selection events bound to the body.
 		if ( event.cursor ) {
-			body.css('cursor', '').off( namespace );
+			$('body').css('cursor', '').off( namespace );
 		}
 
 		// Unbind the move and end events, which are added on 'start'.
@@ -592,7 +599,7 @@
 	}
 
 	// Bind move events on document.
-	function start ( event, Dt, options ) {
+	function start ( event, Dt ) {
 
 		// Mark the handle as 'active' so it can be styled.
 		if( Dt.handles.length === 1 ) {
@@ -608,10 +615,10 @@
 			,base: Dt.base
 			,target: Dt.target
 			,handles: Dt.handles
-			,positions: [ Dt.handles[0].data('pct')
-				   ,Dt.handles[ Dt.handles.length - 1 ].data('pct') ]
-			,point: options.orientation ? 'pointY' : 'pointX'
-			,size: options.orientation ? Dt.base.height() : Dt.base.width()
+			,positions: [
+				Dt.handles[0].data('pct'),
+				Dt.handles[Dt.handles.length - 1].data('pct')
+			]
 		});
 
 		// Unbind all movement when the drag ends.
@@ -621,11 +628,11 @@
 		});
 
 		// Text selection isn't an issue on touch devices,
-		// so adding additional callbacks isn't required.
+		// so adding cursor styles can be skipped.
 		if ( event.cursor ) {
 
 			// Prevent the 'I' cursor and extend the range-drag cursor.
-			body.css('cursor', $(event.target).css('cursor'));
+			$('body').css('cursor', $(event.target).css('cursor'));
 
 			// Mark the target with a dragging state.
 			if ( Dt.handles.length > 1 ) {
@@ -633,7 +640,7 @@
 			}
 
 			// Prevent text selection when dragging the handles.
-			body.on('selectstart' + namespace, function( ){
+			$('body').on('selectstart' + namespace, function( ){
 				return false;
 			});
 		}
@@ -642,40 +649,30 @@
 	// Move closest handle to tapped location.
 	function tap ( event, Dt, options ) {
 
-		var handle, to, point, size;
+		var handle, point = event.points[ options.ort ],
+			to = ( point - Dt.base.offset()[ options.style ] ) * 100,
+			size = Dt.base[event.size[ options.ort ]]();
 
 		// The tap event shouldn't propagate up to trigger 'edge'.
 		event.stopPropagation();
 
-		// Determine the direction of the slider.
-		if ( options.orientation ) {
-			point = event['pointY'];
-			size = Dt.base.height();
-		} else {
-			point = event['pointX'];
-			size = Dt.base.width();
-		}
-
 		// Find the closest handle and calculate the tapped point.
-		handle = closestHandle( Dt.base.data('handles'), point, options.style );
-		to = (( point - Dt.base.offset()[ options.style ] ) * 100 ) / size;
+		handle = closestHandle( Dt.base.data('handles'), point );
 
 		// The set handle to the new position.
-		jump( Dt.base, handle, to, [options.slide, options.set]);
+		jump( Dt.base, handle, to / size , options );
 	}
 
 	// Move handle to edges when target gets tapped.
 	function edge ( event, Dt, options ) {
 
-		var handles = Dt.base.data('handles'), to, i;
+		var handles = Dt.base.data('handles'),
+			i = event.points[ options.ort ] < Dt.base.offset()[ options.style ],
+			to = i ? 0 : 100;
 
-		i = options.orientation ? event['pointY'] : event['pointX'];
-		i = i < Dt.base.offset()[ options.style ];
-
-		to = i ? 0 : 100;
 		i = i ? 0 : handles.length - 1;
 
-		jump ( Dt.base, handles[i], to, [options.slide, options.set]);
+		jump( Dt.base, handles[i], to, options );
 	}
 
 
@@ -776,10 +773,10 @@
 				 t: function( q ){
 					switch ( q ){
 						case 'horizontal':
-							parsed.orientation = 0;
+							parsed.ort = 0;
 							break;
 						case 'vertical':
-							parsed.orientation = 1;
+							parsed.ort = 1;
 							break;
 						default: return false;
 					}
@@ -1039,7 +1036,7 @@
 		$(this).data('base', base).addClass([
 			clsList[6]
 		   ,clsList[16 + options.direction]
-		   ,clsList[10 + options.orientation] ].join(' '));
+		   ,clsList[10 + options.ort] ].join(' '));
 
 		// Append handles.
 		for (i = 0; i < options.handles; i++ ) {
@@ -1112,7 +1109,7 @@
 		options = test( options, this );
 
 		// Pre-define the styles.
-		options.style = options.orientation ? 'top' : 'left';
+		options.style = options.ort ? 'top' : 'left';
 
 		return this.each(function(){
 			slider.call(this, options);
@@ -1316,4 +1313,4 @@
 	// Overwrite the native jQuery value function.
 	$.fn.val = value;
 
-}( window['jQuery'] || window['Zepto'] ));
+}( window.jQuery || window.Zepto ));
