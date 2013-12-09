@@ -7,17 +7,13 @@
 
 // ==ClosureCompiler==
 // @externs_url http://refreshless.com/externs/jquery-1.8.js
+// @js_externs window.jQuery; window.Zepto; $.zepto; $.zepto.isZ; $.noUiSlider;
+// @js_externs $.fn.noUiSlider; window.navigator.pointerEnabled;
+// @js_externs window.navigator.msPointerEnabled;
+// @js_externs function Link(a,b,c,d){};
 // @compilation_level ADVANCED_OPTIMIZATIONS
 // @warning_level VERBOSE
 // ==/ClosureCompiler==
-
-// todo
-// window.jQuery
-// window.Zepto
-// $.zepto
-// $.zepto.isZ
-// window.navigator.pointerEnabled
-// window.navigator.msPointerEnabled
 
 /*jshint laxcomma: true */
 /*jshint smarttabs: true */
@@ -101,7 +97,9 @@
 /* Serialization
  */
 
-	// Exposed access point for serialization
+	/**
+	 * @constructor
+	 */
 	function Link( target, method, decimals, mark ){
 
 		// Rescope this so it can be used in the 'change' closure.
@@ -213,6 +211,45 @@
 	// (value) How much is this percentage on this range?
 	function isPercentage ( range, value ) {
 		return ((value * ( range[1] - range[0] )) / 100) + range[0];
+	}
+
+	// (percentage)
+	function toStepping ( options, value ) {
+
+		var j = 0;
+
+		if ( value === options.range[1] ){
+			return 100;
+		}
+
+		while ( value >= options.steps[++j] ){}
+
+		var va = options.steps[j-1],
+			vb = options.steps[j],
+			pa = options.stepping[j-1],
+			pb = options.stepping[j];
+
+		return pa + ( toPercentage([va,vb], value)/(100/(pb-pa)) );
+	}
+
+	// (value)
+	function fromStepping ( options, value ) {
+
+		var j = 0;
+
+		// There is no range group that fits 100
+		if ( value === 100 ){
+			return options.range[1];
+		}
+
+		while ( value >= options.stepping[++j] ){}
+
+		var va = options.steps[j-1],
+			vb = options.steps[j],
+			pa = options.stepping[j-1],
+			pb = options.stepping[j];
+
+		return isPercentage([va, vb], (value - pa)*(100/(pb-pa)));
 	}
 
 
@@ -372,14 +409,23 @@
 		// Write the value to all serialization objects
 		// or store a new value on the handle
 		if ( a === true ) {
-			a = Number(this.element.data('value'));
-		} else {
-			this.element.data('value', this.element.format(a));
-		}
 
-		// Prevent a serialization call if the value wasn't initialized.
-		if ( a === undefined ) {
-			return;
+			a = Number(this.element.data('value'));
+
+			// Prevent a serialization call if the value wasn't initialized.
+			if ( isNaN(a) ) {
+				return;
+			}
+
+		} else {
+
+			if ( this.options.stepping ) {
+				a = fromStepping( this.options, a );
+			} else {
+				a = isPercentage( this.options.range, a );
+			}
+
+			this.element.data('value', this.element.format(a));
 		}
 
 		// If the provided element was a function,
@@ -438,7 +484,7 @@
 		}
 
 		// Write the value to the serialization object.
-		handle.data('store').val( isPercentage( options.range, to ) );
+		handle.data('store').val( to );
 	}
 
 	// Test suggested values and apply margin, step.
@@ -791,6 +837,13 @@
 					return isNumeric(q);
 				}
 			}
+			,'step': {
+				 t: function( q ){
+					q = parseFloat(q);
+					parsed.step = fromPercentage ( parsed.range, q );
+					return isNumeric(q);
+				}
+			}
 			,'direction': {
 				 r: true
 				,t: function( q ){
@@ -823,6 +876,27 @@
 					return true;
 				}
 			}
+			,'stepping': {
+				 t: function( q ){
+
+					if ( parsed.step ) {
+						return false;
+					}
+
+					parsed.stepping = [0];
+					parsed.steps = [ parsed.range[0] ];
+
+					$.each(q, function(a,b){
+						parsed.stepping.push( parseFloat(a) );
+						parsed.steps.push( parseFloat(b) );
+					});
+
+					parsed.steps.push( parsed.range[1] );
+					parsed.stepping.push( 100 );
+
+					return true;
+				}
+			}
 			,'serialization': {
 				 r: true
 				,t: function( q, sliders ){
@@ -841,7 +915,7 @@
 						$.each(a, function(){
 
 							// Check if entry is a Link.
-							if ( ! this instanceof Link ) {
+							if ( !(this instanceof Link) ) {
 								status = false;
 								return false;
 							}
@@ -887,13 +961,6 @@
 				 t: function( q ){
 					parsed.block = q;
 					return $.isFunction(q);
-				}
-			}
-			,'step': {
-				 t: function( q ){
-					q = parseFloat(q);
-					parsed.step = fromPercentage ( parsed.range, q );
-					return isNumeric(q);
 				}
 			}
 		};
@@ -999,6 +1066,9 @@
 		].join(' '));
 
 		$.each(options.ser[i], function(){
+
+			/*jshint validthis: true */
+
 			if ( this.el ){
 				this.target = this.target.add($(this.el).appendTo(handle));
 			}
@@ -1017,6 +1087,7 @@
 				 element: link.validate()
 				,elements: options.ser[i]
 				,target: target
+				,options: options
 				,val: serialize
 			}
 		}).attr('data-style', options.style);
@@ -1024,6 +1095,8 @@
 
 	// Initialize a single slider.
 	function slider ( options ) {
+
+		/*jshint validthis: true */
 
 		var base = $('<div/>').appendTo( $(this) ), i, handles = [];
 
@@ -1077,6 +1150,8 @@
 	// Parse options, add classes, attach events, create HTML.
 	function create ( options ) {
 
+		/*jshint validthis: true */
+
 		// Store the original set of options on all targets,
 		// so they can be re-used and re-tested later.
 		// Make sure to break the relation with the options,
@@ -1124,11 +1199,17 @@
 
 		// Get the fields bound to both handles.
 		$.each(target.data('base').data('handles'), function(){
+
+			/*jshint validthis: true */
+
 			elements = elements.concat( $(this).data('store').elements );
 		});
 
 		// Remove all events added by noUiSlider.
 		$.each(elements, function(){
+
+			/*jshint validthis: true */
+
 			this.target.off( namespace );
 		});
 
@@ -1141,6 +1222,8 @@
 
 	// Merge options with current initialization, destroy slider, reinitialize.
 	function build ( options ) {
+
+		/*jshint validthis: true */
 
 		// When uninitialised, jQuery will return '',
 		// Zepto returns undefined. Both are falsy.
@@ -1230,13 +1313,19 @@
 				return true;
 			}
 
-			// Handle comma as period.
+			// Handle comma as period. // todo?
 			if( $.type( to ) === 'string' ) {
 				to = to.replace(',', '.');
 			}
 
+			to = parseFloat(to);
+
 			// Calculate the new handle position
-			to = toPercentage( options.range, parseFloat( to ) );
+			if ( options.stepping ) {
+				to = toStepping( options, to );
+			} else {
+				to = toPercentage( options.range, to );
+			}
 
 			// Invert the value if this is an right-to-left slider.
 			if ( options.dir ) {
@@ -1262,6 +1351,8 @@
 	// Value handler.
 	function value ( ) {
 
+		/*jshint validthis: true */
+
 		// If this isn't noUiSlider, continue with jQuery's original method.
 		if ( !this.hasClass( clsList[6] ) ){
 			return $VAL.apply( this, arguments );
@@ -1272,7 +1363,7 @@
 
 		// The slider may be set to an integer instead of an array. Wrap it.
 		if( !$.isArray( args[0] ) ){
-			args[0] = [ args[0] ];
+			args[0] = args[0] === undefined ? [] : [ args[0] ];
 		}
 
 		// Handle setting for each slider in the data set.
@@ -1288,6 +1379,8 @@
 
 	// Main entry point to all functions.
 	function noUiSlider ( options, rebuild ) {
+
+		/*jshint validthis: true */
 
 		var sliders = this;
 

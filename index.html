@@ -69,21 +69,55 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 	<div class="example">
 
 		<div id="slider1"></div>
+		<div id="slider1a" style="margin-top:30px;"></div>
+		<div id="slider1b" style="margin-top:30px;"></div>
+
+		<span id="log1"></span>
+		<span id="log1a"></span>
+		<span id="log1b"></span>
 
 		<script>
 
-			$("#slider1").noUiSlider({
-				 range: [20, 50]
-				,start: [20, 50]
+			var settings1 = {
+				 range: [0, 10100] // 20, 50
+				,start: [30, 50]
 				,handles: 1
-				,set: onSet
-				,slide: onSlide
-			});
+				,serialization: {
+					 lower: [ new Link($("#log1"), 'html') ]
+				}
+				,stepping: {
+					 '20%': 420
+					,'40%': 1640
+					,'60%': 3660
+					,'80%': 6480
+				}
+			};
+
+			$("#slider1").noUiSlider(settings1);
+
+			settings1.serialization.lower = [ new Link($("#log1a"), 'html') ];
+			settings1.stepping = {
+				 '20%': 1000
+				,'40%': 2000
+				,'60%': 3000
+				,'80%': 4000
+			}
+
+			$("#slider1a").noUiSlider(settings1);
+
+			settings1.serialization.lower = [
+				new Link($("#log1b"), 'html'),
+				new Link( $("#slider1, #slider1a"), 'val')
+			];
+			settings1.stepping = undefined;
+
+			$("#slider1b").noUiSlider(settings1);
+
 
 		</script>
 
 	</div>
-
+<!--
 	<div class="example">
 
 		<div id="slider2"></div>
