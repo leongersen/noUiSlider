@@ -10,7 +10,6 @@
 // @js_externs window.jQuery; window.Zepto; $.zepto; $.zepto.isZ; $.noUiSlider;
 // @js_externs $.fn.noUiSlider; window.navigator.pointerEnabled;
 // @js_externs window.navigator.msPointerEnabled;
-// @js_externs function Link(a,b,c,d){};
 // @compilation_level ADVANCED_OPTIMIZATIONS
 // @warning_level VERBOSE
 // ==/ClosureCompiler==
@@ -100,13 +99,26 @@
 	/**
 	 * @constructor
 	 */
-	function Link( target, method, decimals, mark ){
+	function Link( target, method, options ){
 
-		// Rescope this so it can be used in the 'change' closure.
-		var me = this;
+		if ( !(this instanceof Link) ) {
+			throw new Error('Can\'t use Link as a function. Use \'new Link\'.');
+		}
 
-		this.decimals = decimals;
-		this.mark = mark;
+		// Returns null array.
+		function at(a,b,c){
+			return [c?a:b, c?b:a];
+		}
+
+		options = options || {};
+
+		this.decimals = options['decimals'];
+		this.mark = options['mark'];
+		this.thousand = options['thousand'];
+		this.prefix = options['prefix'];
+		this.postfix = options['postfix'];
+		this.encoder = options['encoder'];
+		this.decoder = options['decoder'];
 
 		this.obj = false;
 
@@ -136,13 +148,22 @@
 			this.target = target;
 			this.method = method || 'val';
 
-			if ( !method ) {
-				this.target.on('change' + namespace, function(){
-					var a = [null,null];
-					a[me.N] = $(this).val();
-					me.obj.val(a);
-				});
+			if ( method ) {
+
+				if ( typeof method === 'function' ) {
+					this.scope = target;
+					this.isFunction = true;
+				}
+
+				return;
 			}
+
+			this.target.on('change' + namespace,
+				$.proxy(function( e ){
+					this.obj.val(at(
+						null, $(e.target).val(), this.N
+					), false, this);
+				}, this));
 
 			return;
 		}
@@ -154,42 +175,77 @@
 		value = this.format( value );
 
 		if ( this.isFunction ) {
-			this.method.call( this.obj, value, slider );
+			this.method.call( this.scope, value, slider );
 		} else {
 			this.target[ this.method ]( value );
 		}
 	};
 	Link.prototype.format = function ( value ) {
-
-		// Round the value to the resolution that was set
-		// with the serialization options.
-		value = value.toFixed( this.decimals );
-
-		// Rounding away decimals might cause a value of -0
-		// when using very small ranges. Remove those cases.
-		if ( parseFloat(value) === 0 ) {
-			value = value.replace('-0', '0');
-		}
-
-		// Apply the proper decimal mark to the value.
-		return value.replace( '.', this.mark );
+		return this.present( this.encoder(value),
+			this.decimals,
+			this.mark,
+			this.thousand,
+			this.prefix,
+			this.postfix );
 	};
 	Link.prototype.validate = function ( ) {
 
+		function str(a,b){
+			return typeof a === 'string' ? a : b;
+		}
+		function func(a){
+			return ( typeof a === 'function' ) ? a : function( b ){
+				return b;
+			}
+		}
+
 		this.decimals = parseInt(this.decimals, 10);
 
-		if (!(this.decimals >= 0 && this.decimals <= 20)) {
+		// Support for up to 7 decimals. More can't be guaranteed.
+		if (!(this.decimals >= 0 && this.decimals <= 7)) {
 			this.decimals = 2;
 		}
 
-		if ( this.mark !== ',' ) {
-			this.mark = '.';
-		}
+		this.mark = str(this.mark, '.');
+		this.thousand = str(this.thousand, ' ');
+		this.prefix = str(this.prefix, '');
+		this.postfix = str(this.postfix, '');
+
+		this.encoder = func(this.encoder);
+		this.decoder = func(this.decoder);
 
 		return this;
 	};
 	Link.prototype.data = function ( ) {
 		return $.fn.data.apply(this.target, arguments);
+	};
+	Link.prototype.present = function ( number, decimals, mark, k, pre, post ) {
+
+		function reverse ( a ) {
+			return a.split('').reverse().join('');
+		}
+
+		// Round to proper decimal count
+		number = number.toFixed(decimals).toString();
+		number = number.split('.');
+
+		// Rounding away decimals might cause a value of -0
+		// when using very small ranges. Remove those cases.
+		if ( parseFloat(number) === 0 ) {
+			number[0] = '0';
+		}
+
+		// Group numbers in sets of three.
+		var base = reverse(number[0]).match(/.{1,3}/g);
+			base = reverse(base.join(reverse(k)));
+
+		if ( number.length > 1 ) {
+			mark = mark + number[1];
+		} else {
+			mark = '';
+		}
+
+		return pre + base + mark + post;
 	};
 
 
@@ -403,7 +459,7 @@
 
 		// Get the value for this handle
 		if ( a === undefined ) {
-			return this.element.data('value');
+			return this.element.format( this.element.data('value') );
 		}
 
 		// Write the value to all serialization objects
@@ -425,7 +481,7 @@
 				a = isPercentage( this.options.range, a );
 			}
 
-			this.element.data('value', this.element.format(a));
+			this.element.data('value', a);
 		}
 
 		// If the provided element was a function,
@@ -544,6 +600,48 @@
 		call( [options.slide, options.set], base.data('target') );
 
 		base.data('target').change();
+	}
+
+	// Check user input
+	function parseInput ( options, link, input ) {
+
+		// The set request might want to ignore this handle.
+		// Test for 'undefined' too, as a two-handle slider
+		// can still be set with an integer.
+		if( input === null || input === undefined ) {
+			return true;
+		}
+
+		// Remove formatting and set period for float parsing.
+
+		// todo use right decoder, not default!!!!!
+		input = parseFloat(input.toString()
+			.replace(link.prefix, '')
+			.replace(link.postfix, '')
+			.replace(new RegExp(link.thousand, 'g'), '')
+			.replace(link.mark, '.'));
+
+		// Run the user defined decoder. Returns input by default.
+		input = link.decoder( input );
+
+		// Ignore invalid input
+		if (isNaN( input )) {
+			return false;
+		}
+
+		// Calculate the new handle position
+		if ( options.stepping ) {
+			input = toStepping( options, input );
+		} else {
+			input = toPercentage( options.range, input );
+		}
+
+		// Invert the value if this is a right-to-left slider.
+		if ( options.dir ) {
+			input = 100 - input;
+		}
+
+		return input;
 	}
 
 
@@ -686,9 +784,7 @@
 			}
 
 			// Prevent text selection when dragging the handles.
-			$('body').on('selectstart' + namespace, function( ){
-				return false;
-			});
+			$('body').on('selectstart' + namespace, false);
 		}
 	}
 
@@ -931,6 +1027,7 @@
 							// Assign other properties.
 							this.N = i;
 							this.obj = sliders;
+							this.scope = this.scope || sliders;
 							this.validate();
 						});
 					});
@@ -1059,7 +1156,9 @@
 	function makeHandle ( base, target, options, i ) {
 
 		var handle = $('<div><div/></div>').appendTo(base), grab,
-			link = new Link( handle, false, options.decimals, options.mark );
+			link = new Link( handle, false, {
+					 'decimals': options.decimals
+					,'mark': options.mark });
 
 		grab = handle.children().addClass([ clsList[2],
 			clsList[2] + clsList[7 + options.dir + (options.dir ? -1 : 1) * i]
@@ -1177,10 +1276,8 @@
 		}, options['serialization']);
 
 		// Run all options through a testing mechanism to ensure correct
-		// input. The test function will throw errors, so there is
-		// no need to capture the result of this call. It should be noted
-		// that options might get modified to be handled properly. E.g.
-		// wrapping integers in arrays.
+		// input. It should be noted that options might get modified to
+		// be handled properly. E.g. wrapping integers in arrays.
 		options = test( options, this );
 
 		// Pre-define the styles.
@@ -1280,20 +1377,12 @@
 	}
 
 	// Set value for the slider, relative to 'range'.
-	function setValue ( values, set ) {
+	function setValue ( values, set, link ) {
 
 		/*jshint validthis: true */
 
-		var base = $(this).data('base'), to,
-			handles = Array.prototype.slice.call( base.data('handles'), 0 ),
-			options = base.data('options');
-
-		// If there are multiple handles to be set run the setting
-		// mechanism twice for the first handle, to make sure it
-		// can be bounced of the second one properly.
-		if ( handles.length > 1 ) {
-			handles[2] = handles[0];
-		}
+		var options = $(this).data('base').data('options'), i, to,
+			handles = $(this).data('base').data('handles');
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
@@ -1301,42 +1390,20 @@
 			values.reverse();
 		}
 
-		$.each( handles, function( i, handle ) {
+		// If there are multiple handles to be set run the setting
+		// mechanism twice for the first handle, to make sure it
+		// can be bounced of the second one properly.
+		for ( i = 0; i < ( handles.length > 1 ? 3 : 1 ); i++ ) {
 
-			// Calculate a new position for the handle.
-			to = values[ i%2 ];
+			to = link || handles[i%2].data('store').element;
+			to = parseInput(options, to, values[i%2]);
 
-			// The set request might want to ignore this handle.
-			// Test for 'undefined' too, as a two-handle slider
-			// can still be set with an integer.
-			if( to === null || to === undefined ) {
-				return true;
+			if ( to === false || setHandle( handles[i%2], to ) !== true ){
+
+				// Reset the input if it doesn't match the slider.
+				handles[i%2].data('store').val( true );
 			}
-
-			// Handle comma as period. // todo?
-			if( $.type( to ) === 'string' ) {
-				to = to.replace(',', '.');
-			}
-
-			to = parseFloat(to);
-
-			// Calculate the new handle position
-			if ( options.stepping ) {
-				to = toStepping( options, to );
-			} else {
-				to = toPercentage( options.range, to );
-			}
-
-			// Invert the value if this is an right-to-left slider.
-			if ( options.dir ) {
-				to = 100 - to;
-			}
-
-			// If the value of the input doesn't match the slider, reset it.
-			if ( setHandle( handle, to ) !== true ){
-				handle.data('store').val( true );
-			}
-		});
+		}
 
 		// Optionally trigger the 'set' event.
 		if( set === true ) {
