@@ -112,6 +112,9 @@
 
 		options = options || {};
 
+		// Write all options to this object.
+		// Don't use key => value mapping to allow the Closure compiler
+		// to rename internal properties.
 		this.decimals = options['decimals'];
 		this.mark = options['mark'];
 		this.thousand = options['thousand'];
@@ -137,6 +140,8 @@
 
 		case 'function':
 
+			// Set an empty $ object so the destroy function won't have
+			// to handle .isFunction objects differently.
 			this.target = $([]);
 			this.method = target;
 			this.isFunction = true;
@@ -239,12 +244,14 @@
 		var base = reverse(number[0]).match(/.{1,3}/g);
 			base = reverse(base.join(reverse(k)));
 
+		// Ignore the decimal separator if decimals are set to 0.
 		if ( number.length > 1 ) {
 			mark = mark + number[1];
 		} else {
 			mark = '';
 		}
 
+		// Return the finalized number.
 		return pre + base + mark + post;
 	};
 
@@ -272,6 +279,10 @@
 	// (percentage)
 	function toStepping ( options, value ) {
 
+		if ( !options.stepping ) {
+			return toPercentage( options.range, value );
+		}
+
 		var j = 0;
 
 		if ( value === options.range[1] ){
@@ -290,6 +301,10 @@
 
 	// (value)
 	function fromStepping ( options, value ) {
+
+		if ( !options.stepping ) {
+			return isPercentage( options.range, value );
+		}
 
 		var j = 0;
 
@@ -334,9 +349,7 @@
 	}
 
 	// Determine the handle closest to an event.
-	function closestHandle ( handles, location ) {
-
-		var style = handles[0].data('options').style;
+	function closestHandle ( handles, location, style ) {
 
 		if ( handles.length === 1 ) {
 			return handles[0];
@@ -475,12 +488,7 @@
 
 		} else {
 
-			if ( this.options.stepping ) {
-				a = fromStepping( this.options, a );
-			} else {
-				a = isPercentage( this.options.range, a );
-			}
-
+			a = fromStepping( this.options, a );
 			this.element.data('value', a);
 		}
 
@@ -630,11 +638,7 @@
 		}
 
 		// Calculate the new handle position
-		if ( options.stepping ) {
-			input = toStepping( options, input );
-		} else {
-			input = toPercentage( options.range, input );
-		}
+		input = toStepping( options, input );
 
 		// Invert the value if this is a right-to-left slider.
 		if ( options.dir ) {
@@ -799,7 +803,7 @@
 		event.stopPropagation();
 
 		// Find the closest handle and calculate the tapped point.
-		handle = closestHandle( Dt.base.data('handles'), point );
+		handle = closestHandle( Dt.base.data('handles'), point, options.style );
 
 		// The set handle to the new position.
 		jump( Dt.base, handle, to / size , options );
