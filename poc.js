@@ -2,9 +2,9 @@
 
 	'use strict';
 
-//		
-	
-	
+//	todo explain the new closure based memory implementation.
+
+
 	var
 	// Cache the document selector;
 	 doc = $(document)
@@ -314,11 +314,11 @@
 	};
 
 	// todo
-	Link.prototype.data = function ( ) {
-		return $.fn.data.apply(this.target, arguments);
-	};
+//	Link.prototype.data = function ( ) {
+//		return $.fn.data.apply(this.target, arguments);
+//	};
 
-	// 
+	//
 	Link.prototype.present = function ( number, decimals, mark, k, pre, post ) {
 
 		function reverse ( a ) {
@@ -405,11 +405,11 @@
 		} else {
 */
 			a = fromStepping( this.options, a );
-			this.element.data('value', a);
-/*			
+		//	this.element.data('value', a);
+/*
 		}
 */
-		
+
 		// If the provided element was a function,
 		// call it with the slider as scope. Otherwise,
 		// simply call the function on the object.
@@ -493,11 +493,11 @@
 				 r: true
 				,t: function( q ){
 
-					if ( q === 'lower' ) {
+					if ( q === 'lower' && parsed.handles === 1 ) {
 						parsed.connect = 1;
-					} else if ( q === 'upper' ) {
+					} else if ( q === 'upper' && parsed.handles === 1 ) {
 						parsed.connect = 2;
-					} else if ( q === true ) {
+					} else if ( q === true && parsed.handles === 2 ) {
 						parsed.connect = 3;
 					} else if ( q === false ) {
 						parsed.connect = 0;
@@ -895,17 +895,22 @@ function closure ( target, options ){
 			upper = Memory.locations[1] - options.margin;
 
 		// Don't delimit range dragging.
-		if ( delimit ) {
+		if ( delimit && Memory.handles.length > 1 ) {
 			to = n ? Math.max( to, lower ) : Math.min( to, upper );
+		}
+
+		// Handle the step option.
+		if ( options.step ){
+			to = closest( to, options.step );
 		}
 
 		// Limit to 0/100 for .val input, trim anything beyond 7 digits.
 		to = limit(digits(to, 7));
 
-		// Return falsy if handle can't move. False for 0 or 100 limit, 
+		// Return falsy if handle can't move. False for 0 or 100 limit,
 		// '0' for limiting by another handle.
 		if ( to === Memory.locations[n] ) {
-			return ( to === lower || to === upper ) ? 0 : false;
+			return ( Memory.handles.length > 1 && (to === lower || to === upper) ) ? 0 : false;
 		}
 
 		// Set the handle to the new position.
@@ -913,10 +918,10 @@ function closure ( target, options ){
 
 		// Update memory locations.
 		Memory.locations[n] = to;
-		
+
 		// Remove blocked state, as the handle could move.
 		Memory.target.removeClass(clsList[14]);
-		
+
 		// Write values to serialization Links.
 		Memory.serialization[n].val( options.dir ? 100 - to : to );
 
@@ -958,10 +963,12 @@ function closure ( target, options ){
 			if ( d > 100 ) {
 				c -= ( d - 100 );
 			}
+
+			// Limit values to 0 and 100.
+			return [limit(c), limit(d)];
 		}
 
-		// Limit values to 0 and 100.
-		return [limit(c), limit(d)];
+		return [c,d];
 	}
 
 	// Handler for attaching events trough a proxy

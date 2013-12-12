@@ -201,22 +201,24 @@ if(window.Zepto){(function(d){function l(a,b){var c=a[f],c=c&&g[c];if(void 0===b
 
 		<div id="slider5"></div>
 
+		<span id="he"></span>
+		
 		<script>
 
 			$("#slider5").noUiSlider({
-				 range: [0, 10]
+				 range: [10, 103]
 				,start: [0, 5]
-				,handles: 2
-				,step: 2
-				,margin: 3
-				,behaviour: 'extend-drag'
+				,handles: 1
+				,step: 10
+			//	,margin: 3
+			//	,behaviour: 'extend-drag'
 				,serialization: {
-					 to: false
+					 lower: [ new Link( $('#he'), 'html' ) ]
 					,mark: ','
 					,resolution: 0.0001
 				}
-				,orientation: "vertical"
-				,connect: true
+			//	,orientation: "vertical"
+				,connect: 'lower'
 			//	,set: onSet
 			//	,slide: onSlide
 			});
