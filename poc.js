@@ -2,6 +2,9 @@
 
 	'use strict';
 
+//		
+	
+	
 	var
 	// Cache the document selector;
 	 doc = $(document)
@@ -315,6 +318,7 @@
 		return $.fn.data.apply(this.target, arguments);
 	};
 
+	// 
 	Link.prototype.present = function ( number, decimals, mark, k, pre, post ) {
 
 		function reverse ( a ) {
@@ -382,7 +386,7 @@
 		// Re-scope target for availability within .each;
 		var target = this.target;
 
-		// Get the value for this handle
+/*		// Get the value for this handle
 		if ( a === undefined ) {
 			return this.element.format( this.element.data('value') );
 		}
@@ -399,11 +403,13 @@
 			}
 
 		} else {
-
+*/
 			a = fromStepping( this.options, a );
 			this.element.data('value', a);
+/*			
 		}
-
+*/
+		
 		// If the provided element was a function,
 		// call it with the slider as scope. Otherwise,
 		// simply call the function on the object.
@@ -884,25 +890,34 @@ function closure ( target, options ){
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to, delimit ) {
 
-		var n = handle[0] !== Memory.handles[0][0] ? 1 : 0;
+		var n = handle[0] !== Memory.handles[0][0] ? 1 : 0,
+			lower = Memory.locations[0] + options.margin,
+			upper = Memory.locations[1] - options.margin;
 
+		// Don't delimit range dragging.
 		if ( delimit ) {
-			if ( n ) {
-				to = Math.max( to, Memory.locations[0] + options.margin );
-			} else {
-				to = Math.min( to, Memory.locations[1] - options.margin );
-			}
-
-			to = limit(digits( to, 7 ));
+			to = n ? Math.max( to, lower ) : Math.min( to, upper );
 		}
 
+		// Limit to 0/100 for .val input, trim anything beyond 7 digits.
+		to = limit(digits(to, 7));
+
+		// Return falsy if handle can't move. False for 0 or 100 limit, 
+		// '0' for limiting by another handle.
 		if ( to === Memory.locations[n] ) {
-			return ( to === 0 || to === 100 ) ? false : 0;
+			return ( to === lower || to === upper ) ? 0 : false;
 		}
 
+		// Set the handle to the new position.
 		placeHandle ( handle, to );
 
+		// Update memory locations.
 		Memory.locations[n] = to;
+		
+		// Remove blocked state, as the handle could move.
+		Memory.target.removeClass(clsList[14]);
+		
+		// Write values to serialization Links.
 		Memory.serialization[n].val( options.dir ? 100 - to : to );
 
 		return true;
@@ -1015,7 +1030,6 @@ function closure ( target, options ){
 		}
 
 		if ( !state ) {
-			console.log(options.margin, state);
 			block( options.margin && state === 0 );
 			return;
 		}
@@ -1202,7 +1216,7 @@ function closure ( target, options ){
 			if ( to === false || setHandle( Memory.handles[i%2], to ) !== true ){
 
 				// Reset the input if it doesn't match the slider.
-				Memory.serialization[i%2].val( true );
+				Memory.serialization[i%2].val( Memory.locations[i%2] );
 			}
 		}
 
