@@ -715,8 +715,10 @@
 			return a.split('').reverse().join('');
 		}
 
+		var isNegative = number < 0;
+
 		// Round to proper decimal count
-		number = number.toFixed(decimals).toString();
+		number = Math.abs(number).toFixed(decimals).toString();
 		number = number.split('.');
 
 		// Rounding away decimals might cause a value of -0
@@ -737,7 +739,7 @@
 		}
 
 		// Return the finalized number.
-		return pre + base + mark + post;
+		return pre + ( isNegative ? '-' : '' ) + base + mark + post;
 	};
 
 	// Converts a formatted value back to a real number.

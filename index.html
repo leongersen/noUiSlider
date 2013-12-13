@@ -30,7 +30,7 @@
 		.noUi-vertical {
 			height: 150px;
 		}
-		
+
 		#log {
 			background: #eee;
 			position: fixed;
@@ -39,6 +39,7 @@
 			right: 0;
 			bottom: 0;
 			height: 80px;
+			z-index: 15;
 			border-top: 1px solid #333;
 		}
 
@@ -88,7 +89,7 @@
 	<div class="slider2" id="slider2b"></div>
 
 	<span id="slider2span"></span>
-	
+
 	<script pre>
 
 		$("#slider2a, #slider2b").noUiSlider({
@@ -97,13 +98,37 @@
 			,behaviour: 'drag'
 			,connect: true
 			,serialization: {
-				lower: [ new Link( $('#slider2span') ) ]
+				lower: [ new Link( $('#slider2span'), false, {
+							 mark: ','
+							,decimals: 1
+							,thousand: '.'
+							,encoder: function( decoded ){
+								return decoded * 10000;
+							}
+							,decoder: function( encoded ){
+								return encoded / 10000;
+							}
+						}) ]
 			}
 		});
 
 	</script>
 
 	</hr>
+
+	<div class="slider3" id="slider3"></div>
+
+	<script pre>
+
+		$("#slider3").noUiSlider({
+			 range: [ -10, 0 ]
+			,start: [ 0, 0 ]
+			,handles: 1
+			,behaviour: 'extend-tap'
+			,connect: 'lower'
+		});
+
+	</script>
 
 	<div id="log"><div>
 
