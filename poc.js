@@ -2,9 +2,6 @@
 
 	'use strict';
 
-//	todo explain the new closure based memory implementation.
-
-
 	var
 	// Cache the document selector;
 	 doc = $(document)
@@ -36,8 +33,8 @@
 	/*  4 */ ,'noUi-active'
 	/*  5 */ ,'noUi-state-tap'
 	/*  6 */ ,'noUi-target'
-	/*  7 */ ,'-lower'
-	/*  8 */ ,'-upper'
+	/*  7 */ ,''
+	/*  8 */ ,''
 	/*  9 */ ,'noUi-connect'
 	/* 10 */ ,'noUi-horizontal'
 	/* 11 */ ,'noUi-vertical'
@@ -52,15 +49,8 @@
 	/* 20 */ ,'noUi-state-drag'
 	];
 
-	// Test in an object is an instance of jQuery or Zepto.
-	function isInstance ( a ) {
-		return a instanceof $ || ( $.zepto && $.zepto.isZ(a) );
-	}
 
-	// Checks whether a value is numerical.
-	function isNumeric ( a ) {
-		return !isNaN( parseFloat( a ) ) && isFinite( a );
-	}
+// General helpers
 
 	// Limits a value to 0 - 100
 	function limit(a){
@@ -88,28 +78,49 @@
 		return Math.round(value / to) * to;
 	}
 
-	// Determine the handle closest to an event.
-	function closestHandle ( handles, location, style ) {
 
-		if ( handles.length === 1 ) {
-			return handles[0];
-		}
+// Type validation
 
-		var total = handles[0].offset()[style] +
-					handles[1].offset()[style];
-
-		return handles[ location < total / 2 ? 0 : 1 ];
+	// Test in an object is an instance of jQuery or Zepto.
+	function isInstance ( a ) {
+		return a instanceof $ || ( $.zepto && $.zepto.isZ(a) );
 	}
 
-	// Round away small numbers in floating point implementation.
-	function digits ( value, round ) {
-		return parseFloat(value.toFixed(round));
+	// Checks whether a value is numerical.
+	function isNumeric ( a ) {
+		return !isNaN( parseFloat( a ) ) && isFinite( a );
 	}
 
 	// Wraps a variable as an array, if it isn't one yet.
 	function asArray ( a ){
 		return $.isArray(a) ? a : [a];
 	}
+
+
+// Class handling
+
+	// Sets a class and removes it after [duration] ms.
+	function addClassFor ( element, className, duration ) {
+		element.addClass(className);
+		setTimeout(function(){
+			element.removeClass(className);
+		}, duration);
+	}
+
+	// Tests if element has a class, adds it if not. Returns original state.
+	function getsClass ( element, className ) {
+
+		var has = element.hasClass(className);
+
+		if ( !has ) {
+			element.addClass( className );
+		}
+
+		return has;
+	}
+
+
+// Value calculation
 
 	// (percentage) How many percent is this value of this range?
 	function fromPercentage ( range, value ) {
@@ -175,248 +186,63 @@
 		return isPercentage([va, vb], (value - pa)*(100/(pb-pa)));
 	}
 
-	/**
-	 * @constructor
-	 */
-	function Link( target, method, options ){
 
-		// Make sure Link isn't called as a function, in which case
-		// the 'this' scope would be the window.
-		if ( !(this instanceof Link) ) {
-			throw new Error('Can\'t use Link as a function. Use \'new Link\'.');
+// Event handling
+
+	// Provide a clean event with standardized offset values.
+	function fixEvent ( e ) {
+
+		// Prevent scrolling and panning on touch events, while
+		// attempting to slide. The tap event also depends on this.
+		e.preventDefault();
+
+		// Filter the event to register the type, which can be
+		// touch, mouse or pointer. Offset changes need to be
+		// made on an event specific basis.
+		var  touch = e.type.indexOf('touch') === 0
+			,mouse = e.type.indexOf('mouse') === 0
+			,pointer = e.type.indexOf('pointer') === 0
+			,x,y, event = e;
+
+		// IE10 implemented pointer events with a prefix;
+		if ( e.type.indexOf('MSPointer') === 0 ) {
+			pointer = true;
 		}
 
-		// Returns null array.
-		function at(a,b,c){
-			return [c?a:b, c?b:a];
+		// Get the originalEvent, if the event has been wrapped
+		// by jQuery. Zepto doesn't wrap the event.
+		if ( e.originalEvent ) {
+			e = e.originalEvent;
 		}
 
-		// Options are optional. Hehe.
-		options = options || {};
+		if ( touch ) {
+			// noUiSlider supports one movement at a time,
+			// so we can select the first 'changedTouch'.
+			x = e.changedTouches[0].pageX;
+			y = e.changedTouches[0].pageY;
+		}
 
-		// Write all options to this object.
-		// Don't use key => value mapping to allow the Closure compiler
-		// to rename internal properties.
-		this.decimals = options['decimals'];
-		this.mark = options['mark'];
-		this.thousand = options['thousand'];
-		this.prefix = options['prefix'];
-		this.postfix = options['postfix'];
-		this.encoder = options['encoder'];
-		this.decoder = options['decoder'];
+		if ( mouse || pointer ) {
 
-		switch ( typeof target ) {
-
-		// If target is a string, a new hidden input will be created.
-		case 'string':
-
-			this.target = $([]);
-			this.method = 'val';
-
-			this.el = document.createElement('input');
-			this.el.name = target;
-			this.el.type = 'hidden';
-
-			return;
-
-		case 'function':
-
-			// Set an empty $ object so the destroy function won't have
-			// to handle .isFunction objects differently.
-			this.target = $([]);
-			this.method = target;
-			this.isFunction = true;
-
-			return;
-
-		case isInstance(target) && 'object':
-
-			this.target = target;
-			this.method = method || 'val';
-
-			if ( method ) {
-
-				if ( typeof method === 'function' ) {
-					this.scope = target;
-					this.isFunction = true;
-				}
-
-				return;
+			// Polyfill the pageXOffset and pageYOffset
+			// variables for IE7 and IE8;
+			if( !pointer && window.pageXOffset === undefined ){
+				window.pageXOffset = document.documentElement.scrollLeft;
+				window.pageYOffset = document.documentElement.scrollTop;
 			}
 
-			this.target.on('change' + namespace,
-				$.proxy(function( e ){
-					this.obj.val(at(
-						null, $(e.target).val(), this.N
-					), false, this);
-				}, this));
-
-			return;
+			x = e.clientX + window.pageXOffset;
+			y = e.clientY + window.pageYOffset;
 		}
 
-		throw new RangeError('Invalid Link');
+		event.points = [x, y];
+		event.cursor = mouse;
+
+		return event;
 	}
 
-	Link.prototype.write = function ( value, slider ) {
 
-		// Format values for display
-		value = this.format( value );
-
-		// Branch between serialization to a function or an object.
-		if ( this.isFunction ) {
-			this.method.call( this.scope, value, slider );
-		} else {
-			this.target[ this.method ]( value );
-		}
-	};
-
-	// Formats a number.
-	Link.prototype.format = function ( value ) {
-
-		// Forward the function call
-		return this.present( this.encoder(value),
-			this.decimals,
-			this.mark,
-			this.thousand,
-			this.prefix,
-			this.postfix );
-	};
-
-	// Checks if all settings on this object are valid,
-	// or overwrites with defaults.
-	Link.prototype.validate = function ( ) {
-
-		function str(a,b){
-			return typeof a === 'string' ? a : b;
-		}
-		function func(a){
-			return ( typeof a === 'function' ) ? a : function( b ){
-				return b;
-			};
-		}
-
-		this.decimals = parseInt(this.decimals, 10);
-
-		// Support for up to 7 decimals. More can't be guaranteed.
-		if (!(this.decimals >= 0 && this.decimals <= 7)) {
-			this.decimals = 2;
-		}
-
-		this.mark = str(this.mark, '.');
-		this.thousand = str(this.thousand, ' ');
-		this.prefix = str(this.prefix, '');
-		this.postfix = str(this.postfix, '');
-
-		this.encoder = func(this.encoder);
-		this.decoder = func(this.decoder);
-
-		return this;
-	};
-
-	// todo
-//	Link.prototype.data = function ( ) {
-//		return $.fn.data.apply(this.target, arguments);
-//	};
-
-	//
-	Link.prototype.present = function ( number, decimals, mark, k, pre, post ) {
-
-		function reverse ( a ) {
-			return a.split('').reverse().join('');
-		}
-
-		// Round to proper decimal count
-		number = number.toFixed(decimals).toString();
-		number = number.split('.');
-
-		// Rounding away decimals might cause a value of -0
-		// when using very small ranges. Remove those cases.
-		if ( parseFloat(number) === 0 ) {
-			number[0] = '0';
-		}
-
-		// Group numbers in sets of three.
-		var base = reverse(number[0]).match(/.{1,3}/g);
-			base = reverse(base.join(reverse(k)));
-
-		// Ignore the decimal separator if decimals are set to 0.
-		if ( number.length > 1 ) {
-			mark = mark + number[1];
-		} else {
-			mark = '';
-		}
-
-		// Return the finalized number.
-		return pre + base + mark + post;
-	};
-
-	// Converts a formatted value back to a real number.
-	Link.prototype.value = function ( format ) {
-
-		// The set request might want to ignore this handle.
-		// Test for 'undefined' too, as a two-handle slider
-		// can still be set with an integer.
-		if( format === null || format === undefined ) {
-			return true;
-		}
-
-		// Remove formatting and set period for float parsing.
-		format = parseFloat(format.toString()
-			.replace(this.prefix, '')
-			.replace(this.postfix, '')
-			.replace(new RegExp(this.thousand, 'g'), '')
-			.replace(this.mark, '.'));
-
-		// Run the user defined decoder. Returns input by default.
-		format = this.decoder( format );
-
-		// Ignore invalid input
-		if (isNaN( format )) {
-			return false;
-		}
-
-		return format;
-	};
-
-	// Store a value on all serialization targets, or get the current value.
-	function serialize ( a ) {
-
-		/*jshint validthis: true */
-
-		// Re-scope target for availability within .each;
-		var target = this.target;
-
-/*		// Get the value for this handle
-		if ( a === undefined ) {
-			return this.element.format( this.element.data('value') );
-		}
-
-		// Write the value to all serialization objects
-		// or store a new value on the handle
-		if ( a === true ) {
-
-			a = Number(this.element.data('value'));
-
-			// Prevent a serialization call if the value wasn't initialized.
-			if ( isNaN(a) ) {
-				return;
-			}
-
-		} else {
-*/
-			a = fromStepping( this.options, a );
-		//	this.element.data('value', a);
-/*
-		}
-*/
-
-		// If the provided element was a function,
-		// call it with the slider as scope. Otherwise,
-		// simply call the function on the object.
-		$.each( this.elements, function() {
-			this.write( a, target );
-		});
-	}
+// Input validation
 
 	// Test all developer settings and parse to assumption-safe values.
 	function test ( options, sliders ){
@@ -611,6 +437,14 @@
 							if ( !(this instanceof Link) ) {
 								status = false;
 								return false;
+							} else {
+
+							//	if ( this.el ) {
+								// Sever the reference to the initialization.
+								// Otherwise, all sliders would be writing
+								// to all input elements.
+							//		this.el = $(this.el).clone();
+							//	}
 							}
 
 							// Set default values.
@@ -711,55 +545,281 @@
 		return parsed;
 	}
 
-	// Change inline style and apply proper classes.
-	function placeHandle ( handle, to ) {
 
-		to = digits(to, 7);
+// Serialization target
 
-		// Set handle to new location
-		handle.css( handle.attr('data-style'), to + '%' );
+/** @constructor */
+	function Link( target, method, options ){
 
-		// Force proper handle stacking
-		if ( handle.is(':first-child') ) {
-			handle.toggleClass(clsList[13], to > 50 );
+		// Make sure Link isn't called as a function, in which case
+		// the 'this' scope would be the window.
+		if ( !(this instanceof Link) ) {
+			throw new Error('Can\'t use Link as a function. Use \'new Link\'.');
 		}
 
-		return handle;
+		// Returns null array.
+		function at(a,b,c){
+			return [c?a:b, c?b:a];
+		}
+
+		// Options are optional. Hehe.
+		options = options || {};
+
+		// Write all options to this object.
+		// Don't use key => value mapping to allow the Closure compiler
+		// to rename internal properties.
+		this.decimals = options['decimals'];
+		this.mark = options['mark'];
+		this.thousand = options['thousand'];
+		this.prefix = options['prefix'];
+		this.postfix = options['postfix'];
+		this.encoder = options['encoder'];
+		this.decoder = options['decoder'];
+
+		switch ( typeof target ) {
+
+		// Internal coupling for other Links.
+		case 'boolean':
+
+			this.subs = method;
+			return;
+
+		// If target is a string, a new hidden input will be created.
+		case 'string':
+
+			this.target = $([]);
+			this.method = 'val';
+
+			this.el = document.createElement('input');
+			this.el.name = target;
+			this.el.type = 'hidden';
+
+			return;
+
+		case 'function':
+
+			// Set an empty $ object so the destroy function won't have
+			// to handle .isFunction objects differently.
+			this.target = $([]);
+			this.method = target;
+			this.isFunction = true;
+
+			return;
+
+		case isInstance(target) && 'object':
+
+			this.target = target;
+
+			// Store the selected method, if one is provided.
+			if ( method ) {
+
+				this.method = method;
+
+				if ( typeof method === 'function' ) {
+					this.scope = target;
+					this.isFunction = true;
+				}
+
+				return;
+
+			// Default to .val if this is an input element.
+			} else if ( target.is('input, select, textarea') ) {
+				this.method = 'val';
+
+				// Set the slider to a new value on change.
+				this.target.on('change' + namespace,
+					$.proxy(function( e ){
+						this.obj.val(at(
+							null, $(e.target).val(), this.N
+						), false, this);
+					}, this));
+
+			// Otherwise, use .html, which is an arbitrary choice.
+			} else {
+				this.method = 'html';
+			}
+
+			return;
+		}
+
+		throw new RangeError('Invalid Link');
 	}
+
+	// Checks all settings on this object for validity or sets defaults.
+	Link.prototype.validate = function ( ) {
+
+		function str(a,b){
+			return typeof a === 'string' ? a : b;
+		}
+		function func(a){
+			return ( typeof a === 'function' ) ? a : function( b ){
+				return b;
+			};
+		}
+
+		this.decimals = parseInt(this.decimals, 10);
+
+		// Support for up to 7 decimals. More can't be guaranteed.
+		if (!(this.decimals >= 0 && this.decimals <= 7)) {
+			this.decimals = 2;
+		}
+
+		this.mark = str(this.mark, '.');
+		this.thousand = str(this.thousand, ' ');
+		this.prefix = str(this.prefix, '');
+		this.postfix = str(this.postfix, '');
+
+		this.encoder = func(this.encoder);
+		this.decoder = func(this.decoder);
+
+		return this;
+	};
+
+	// Provides external items with the slider value.
+	Link.prototype.write = function ( value, slider ) {
+
+		// Format values for display
+		value = this.format( value );
+
+		// Branch between serialization to a function or an object.
+		if ( this.isFunction ) {
+			this.method.call( this.scope, value, slider );
+		} else {
+			this.target[ this.method ]( value );
+		}
+	};
+
+	// Stores the slider value in memory. Omit value to get.
+	Link.prototype.save = function ( value ) {
+		if ( value === undefined ) {
+			return this.format(this.saved);
+		}
+		this.saved = value;
+	};
+
+	// Forwarder/abstractor for calls to 'present'.
+	Link.prototype.format = function ( value ) {
+
+		return this.present( this.encoder(value),
+			this.decimals,
+			this.mark,
+			this.thousand,
+			this.prefix,
+			this.postfix );
+	};
+
+	// Parses slider value to user defined display.
+	Link.prototype.present = function ( number, decimals, mark, k, pre, post ) {
+
+		function reverse ( a ) {
+			return a.split('').reverse().join('');
+		}
+
+		// Round to proper decimal count
+		number = number.toFixed(decimals).toString();
+		number = number.split('.');
+
+		// Rounding away decimals might cause a value of -0
+		// when using very small ranges. Remove those cases.
+		if ( parseFloat(number) === 0 ) {
+			number[0] = '0';
+		}
+
+		// Group numbers in sets of three.
+		var base = reverse(number[0]).match(/.{1,3}/g);
+			base = reverse(base.join(reverse(k)));
+
+		// Ignore the decimal separator if decimals are set to 0.
+		if ( number.length > 1 ) {
+			mark = mark + number[1];
+		} else {
+			mark = '';
+		}
+
+		// Return the finalized number.
+		return pre + base + mark + post;
+	};
+
+	// Converts a formatted value back to a real number.
+	Link.prototype.value = function ( format ) {
+
+		// The set request might want to ignore this handle.
+		// Test for 'undefined' too, as a two-handle slider
+		// can still be set with an integer.
+		if( format === null || format === undefined ) {
+			return true;
+		}
+
+		// Remove formatting and set period for float parsing.
+		format = parseFloat(format.toString()
+			.replace(this.prefix, '')
+			.replace(this.postfix, '')
+			.replace(new RegExp(this.thousand, 'g'), '')
+			.replace(this.mark, '.'));
+
+		// Run the user defined decoder. Returns input by default.
+		format = this.decoder( format );
+
+		// Ignore invalid input
+		if (isNaN( format )) {
+			return false;
+		}
+
+		return format;
+	};
+
+	// Append a hidden input element.
+	Link.prototype.append = function ( element ) {
+		return new Link($(this.el).clone().appendTo(element)).take( this );
+	};
+
+	// Write values to a list of Link elements.
+	Link.prototype.propagate = function ( options, value ) {
+
+		// Convert the value to the correct relative representation.
+		value = fromStepping( options, value );
+
+		// Store the value.
+		this.save( value );
+
+		if ( !this.subs ){
+			return;
+		}
+
+		$.each( this.subs, function() {
+			this.write( value );
+		});
+	};
+
+	// Copy properties from another Link.
+	Link.prototype.take = function( a ) {
+		this.decimals = a.decimals;
+		this.mark = a.mark;
+		this.thousand = a.thousand;
+		this.prefix = a.prefix;
+		this.postfix = a.postfix;
+		this.encoder = a.encoder;
+		this.decoder = a.decoder;
+
+		return this;
+	};
+
+
+// DOM additions
 
 	// Append a handle to the base.
 	function addHandle ( options, index ) {
 
-		var handle = $('<div><div/></div>'),
-			link = new Link( handle, false, {
-				 'decimals': options.decimals
-				,'mark': options.mark
-			});
+		var handle = $('<div><div/></div>').addClass( clsList[1] ),
+			classes = [ '-lower', '-upper' ];
 
-		handle.children().addClass([ clsList[2],
-			clsList[2] + clsList[7 + options.dir + (options.dir ? -1 : 1) * index]
-		].join(' '));
+		if ( options.dir ) {
+			classes.reverse();
+		}
 
-		$.each( options.ser[index], function(){
+		handle.children().addClass(clsList[2] +" "+ clsList[2]+classes[index]);
 
-			/*jshint validthis: true */
-
-			if ( this.el ){
-				this.target = this.target.add($(this.el).appendTo(handle));
-			}
-		});
-
-		// Make sure every handle has access to all variables.
-		// Every handle has a storage point, which takes care
-		// of triggering the proper serialization callbacks.
-		return [
-			handle.addClass( clsList[1] ).attr('data-style', options.style), {
-				 element: link.validate()
-				,elements: options.ser[ index ]
-				,options: options
-				,val: serialize
-			}
-		];
+		return handle;
 	}
 
 	// Initialize a single slider.
@@ -767,14 +827,8 @@
 
 		/*jshint validthis: true */
 
-		var base = $('<div/>').appendTo( $(this) ), i, serialization = [],
-			handles = [], grabs = [], handle;
-
-	// todo
-	//	// Throw an error if the slider was already initialized.
-	//	if ( $(this).attr('data-nouislider') ) {
-	//		throw new Error('Slider was already initialized.');
-	//	}
+		var base = $('<div/>').appendTo( $(this) ).addClass( clsList[0] ),
+			i, links = [], handles = [], grabs = [], subs = [];
 
 		// Apply classes and data to the target.
 		$(this).addClass([
@@ -785,13 +839,28 @@
 		// Append handles.
 		for (i = 0; i < options.handles; i++ ) {
 
-			handle = addHandle( options, i );
+			// Keep a list of all added handles.
+			handles.push( addHandle( options, i ).appendTo(base) );
 
-			handles.push( handle[0].appendTo(base) );
+			// Create a new list of submissive elements,
+			// instead of modifying the options.ser list. This allows passing
+			// the replace the invalid .el Links, while the others are still
+			// passed by reference.
+			subs = [];
 
-			handle[1].target = $(this);
+			// Append any hidden input elements.
+			$.each( options.ser[i], function(j){
+				if ( this.el ){
+					subs[j] = this.append( handles[i] );
+				} else {
+					subs[j] = this;
+				}
+			});
 
-			serialization.push( handle[1] );
+			links.push( new Link( true, subs, {
+				 'decimals': options.decimals
+				,'mark': options.mark
+			}).validate() );
 
 			grabs.push( handles[i].children( '.' + clsList[2] ) );
 		}
@@ -812,69 +881,15 @@
 					break;
 		}
 
-		// Merge base classes with default,
-		// and store relevant data on the base element.
-		base.addClass( clsList[0] );
-
 		return {
 			 base: base
 			,handles: handles
 			,grabs: grabs
-			,serialization: serialization
+			,serialization: links
 		};
 	}
 
-	// Provide a clean event with standardized offset values.
-	function fixEvent ( e ) {
 
-		// Prevent scrolling and panning on touch events, while
-		// attempting to slide. The tap event also depends on this.
-		e.preventDefault();
-
-		// Filter the event to register the type, which can be
-		// touch, mouse or pointer. Offset changes need to be
-		// made on an event specific basis.
-		var  touch = e.type.indexOf('touch') === 0
-			,mouse = e.type.indexOf('mouse') === 0
-			,pointer = e.type.indexOf('pointer') === 0
-			,x,y, event = e;
-
-		// IE10 implemented pointer events with a prefix;
-		if ( e.type.indexOf('MSPointer') === 0 ) {
-			pointer = true;
-		}
-
-		// Get the originalEvent, if the event has been wrapped
-		// by jQuery. Zepto doesn't wrap the event.
-		if ( e.originalEvent ) {
-			e = e.originalEvent;
-		}
-
-		if ( touch ) {
-			// noUiSlider supports one movement at a time,
-			// so we can select the first 'changedTouch'.
-			x = e.changedTouches[0].pageX;
-			y = e.changedTouches[0].pageY;
-		}
-		if ( mouse || pointer ) {
-
-			// Polyfill the pageXOffset and pageYOffset
-			// variables for IE7 and IE8;
-			if( !pointer && window.pageXOffset === undefined ){
-				window.pageXOffset = document.documentElement.scrollLeft;
-				window.pageYOffset = document.documentElement.scrollTop;
-			}
-
-			x = e.clientX + window.pageXOffset;
-			y = e.clientY + window.pageYOffset;
-		}
-
-		return $.extend( event, {
-			 points: [x, y]
-			,size: [ 'width', 'height' ]
-			,cursor: mouse
-		});
-	}
 
 function closure ( target, options ){
 
@@ -886,6 +901,29 @@ function closure ( target, options ){
 			return this.base[['width', 'height'][options.ort]]();
 		}
 	};
+
+
+	// todo
+	//	// Throw an error if the slider was already initialized.
+	//	if ( $(this).attr('data-nouislider') ) {
+	//		throw new Error('Slider was already initialized.');
+	//	}
+
+
+	// Handles movement by tapping.
+	function jump ( handle, to ) {
+
+		// Flag the slider as it is now in a transitional state.
+		// Transition takes 300 ms, so re-enable the slider afterwards.
+		addClassFor( Memory.target, clsList[5], 300 );
+
+		// Move the handle to the new position.
+		setHandle( handle, to );
+
+		// Trigger the 'slide' and 'set' callbacks,
+		// pass the target as scope.
+		call( [options.slide, options.set], Memory.target.change() );
+	}
 
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to, delimit ) {
@@ -900,12 +938,13 @@ function closure ( target, options ){
 		}
 
 		// Handle the step option.
-		if ( options.step ){
+		if ( to < 100 && options.step ){
 			to = closest( to, options.step );
 		}
 
-		// Limit to 0/100 for .val input, trim anything beyond 7 digits.
-		to = limit(digits(to, 7));
+		// Limit to 0/100 for .val input, trim anything beyond 7 digits, as
+		// JavaScript has some issues in its floating point implementation.
+		to = limit(parseFloat(to.toFixed(7)));
 
 		// Return falsy if handle can't move. False for 0 or 100 limit,
 		// '0' for limiting by another handle.
@@ -914,7 +953,12 @@ function closure ( target, options ){
 		}
 
 		// Set the handle to the new position.
-		placeHandle ( handle, to );
+		handle.css( options.style, to + '%' );
+
+		// Force proper handle stacking
+		if ( handle.is(':first-child') ) {
+			handle.toggleClass(clsList[13], to > 50 );
+		}
 
 		// Update memory locations.
 		Memory.locations[n] = to;
@@ -923,29 +967,9 @@ function closure ( target, options ){
 		Memory.target.removeClass(clsList[14]);
 
 		// Write values to serialization Links.
-		Memory.serialization[n].val( options.dir ? 100 - to : to );
+		Memory.serialization[n].propagate( options, options.dir ? 100 - to : to );
 
 		return true;
-	}
-
-	// Fire callback on unsuccessful handle movement.
-	function block ( effect ) {
-
-		if ( Memory.target.hasClass( clsList[14] ) ){
-			return;
-		}
-
-		// The visual effects should only be applied when
-		// the margin option is set, and when the margin
-		// is the cause for the blocking.
-		if ( effect ) {
-			Memory.target.addClass(clsList[15]);
-			setTimeout(function(){
-				Memory.target.removeClass(clsList[15]);
-			}, 450);
-		}
-
-		call( options.block, Memory.target.addClass(clsList[14]) );
 	}
 
 	// Delimit proposed values for handle positions.
@@ -971,6 +995,9 @@ function closure ( target, options ){
 		return [c,d];
 	}
 
+
+// Events
+
 	// Handler for attaching events trough a proxy
 	function attach ( events, element, callback, data ) {
 
@@ -994,55 +1021,49 @@ function closure ( target, options ){
 			e = fixEvent(e);
 			e.calcPoint = e.points[ options.ort ];
 
-			// Call the event handler with three arguments:
-			// - The event;
-			// - An object with data for the event;
-			// - The slider options;
-			// Having the slider options as a function parameter prevents
-			// getting it in every function, which muddies things up.
+			// Call the event handler with the event [ and additional data ].
 			callback ( e, data );
 		});
-	}
-
-	// Handles movement by tapping
-	function jump ( handle, to ) {
-
-		// Flag the slider as it is now in a transitional state.
-		// Transition takes 300 ms, so re-enable the slider afterwards.
-		Memory.base.addClass(clsList[5]);
-		setTimeout(function(){
-			Memory.base.removeClass(clsList[5]);
-		}, 300);
-
-		// Move the handle to the new position.
-		setHandle( handle, to );
-
-		// Trigger the 'slide' and 'set' callbacks,
-		// pass the target as scope.
-		call( [options.slide, options.set], Memory.target.change() );
 	}
 
 	// Handle movement on document for handle and range drag.
 	function move ( event, data ) {
 
-		var handles = data.handles || Memory.handles,
+		var handles = data.handles || Memory.handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / Memory.baseSize(),
-			delimit = handles.length > 1,
-			positions = getPositions( proposal, data.positions, delimit ),
-			h = handles[0][0] !== Memory.handles[0][0] ? 1 : 0,
-			state = setHandle ( handles[0], positions[h], !delimit );
+			h = handles[0][0] !== Memory.handles[0][0] ? 1 : 0;
+
+		// Calculate relative positions for the handles.
+		positions = getPositions( proposal, data.positions, handles.length > 1);
+
+		state = setHandle ( handles[0], positions[h], handles.length === 1 );
 
 		if ( handles.length > 1 ) {
-			state = setHandle ( handles[1], positions[h?0:1], !delimit ) || state;
+			state = setHandle ( handles[1], positions[h?0:1], false ) || state;
 		}
 
+		// If no handles where set
 		if ( !state ) {
-			block( options.margin && state === 0 );
-			return;
-		}
 
-		// Trigger the 'slide' event, if the handle was moved.
-		call( options.slide, Memory.target );
+			if ( !getsClass( Memory.target, clsList[14] ) ) {
+				return;
+			}
+
+			// The visual effects should only be applied when
+			// the margin option is set, and when the margin
+			// is the cause for the blocking.
+			if ( options.margin && state === 0 ) {
+				addClassFor( Memory.target, clsList[15], 450 );
+			}
+
+			// Fire callback on unsuccessful handle movement.
+			call( options.block, Memory.target );
+
+		} else {
+
+			// Trigger the 'slide' event if the handle moved.
+			call( options.slide, Memory.target );
+		}
 	}
 
 	// Unbind move events on document, call callbacks.
@@ -1112,19 +1133,24 @@ function closure ( target, options ){
 	// Move closest handle to tapped location.
 	function tap ( event ) {
 
-		var handle, to = event.calcPoint;
+		var location = event.calcPoint, total = 0;
 
 		// The tap event shouldn't propagate up to trigger 'edge'.
 		event.stopPropagation();
 
+		// Add up the handle offsets.
+		$.each( Memory.handles, function(){
+			total += this.offset()[ options.style ];
+		});
+
+		// Find the handle closest to the tapped position.
+		total = ( location < total/2 || Memory.handles.length === 1 ) ? 0 : 1;
+
+		location -= Memory.base.offset()[ options.style ];
+
 		// Find the closest handle and calculate the tapped point.
-		handle = closestHandle( Memory.handles, to, options.style );
-
-		to -= Memory.base.offset()[ options.style ];
-		to *= 100;
-
 		// The set handle to the new position.
-		jump( handle, to / Memory.baseSize() );
+		jump( Memory.handles[total], ( location * 100 ) / Memory.baseSize() );
 	}
 
 	// Move handle to edges when target gets tapped.
@@ -1133,7 +1159,7 @@ function closure ( target, options ){
 		var i = event.calcPoint < Memory.base.offset()[ options.style ],
 			to = i ? 0 : 100;
 
-		i = i ? 0 : Dt.handles.length - 1;
+		i = i ? 0 : Memory.handles.length - 1;
 
 		jump( Memory.handles[i], to );
 	}
@@ -1188,12 +1214,16 @@ function closure ( target, options ){
 		}
 	}
 
+
 	// Initialise HTML and set classes.
 	$.extend(Memory, addSlider.call(target, options));
 
 	// Attach user events.
 	events( options.events );
 
+// Methods
+
+	// Set the slider value.
 	target.set = function ( values, callback, link ){
 
 		var i, to;
@@ -1209,7 +1239,7 @@ function closure ( target, options ){
 		// can be bounced of the second one properly.
 		for ( i = 0; i < ( Memory.handles.length > 1 ? 3 : 1 ); i++ ) {
 
-			to = link || Memory.serialization[i%2].element;
+			to = link || Memory.serialization[i%2];
 			to = to.value( values[i%2] );
 
 			// Calculate the new handle position
@@ -1223,7 +1253,7 @@ function closure ( target, options ){
 			if ( to === false || setHandle( Memory.handles[i%2], to ) !== true ){
 
 				// Reset the input if it doesn't match the slider.
-				Memory.serialization[i%2].val( Memory.locations[i%2] );
+				Memory.serialization[i%2].propagate( options, Memory.locations[i%2] );
 			}
 		}
 
@@ -1235,12 +1265,36 @@ function closure ( target, options ){
 		return this;
 	};
 
+	// Get the slider value.
 	target.get = function ( ){
 
+		var i, retour = [];
 
+		for ( i = 0; i < options.handles; i++ ){
+			retour[i] = Memory.serialization[i].save();
+		}
 
-		return 'get';
+		if ( retour.length === 1 ){
+			return retour[0];
+		} else if ( options.dir ) {
+			return retour.reverse();
+		}
+
+		return retour;
 	};
+
+	// Destroy the slider and unbind all events.
+	target.destroy = function ( ){
+
+		// todo. DO.
+
+		$.each(Memory.serialization, function(){
+
+			console.log(this);
+
+		});
+
+	}
 
 	// Use the public value method to set the start values.
 	$(target).val( options.start );
@@ -1255,7 +1309,7 @@ function closure ( target, options ){
 		options = test( options, this );
 
 		// Loop all items, and provide a new closed-scope environment.
-		this.each(function(){
+		return this.each(function(){
 			closure(this, options);
 		});
 	};
@@ -1268,12 +1322,15 @@ function closure ( target, options ){
 		// Test if there are arguments, and if not, call the 'get' method.
 		if ( !arguments.length ) {
 
+		// todo remove debug
+			console.log(this);
+
 			// Determine whether to use the native val method.
 			if ( this.hasClass( clsList[6] ) ) {
-				return this[0][0].get();
+				return this[0].get();
 			}
 
-			$val.apply( this, arguments);
+			return $val.apply( this );
 		}
 
 		// Loop all individual items, and handle setting appropriately.
@@ -1287,4 +1344,4 @@ function closure ( target, options ){
 		});
 	};
 
-}( window.jQuery ));
+}( window.jQuery || window.Zepto ));
