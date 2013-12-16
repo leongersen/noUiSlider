@@ -420,12 +420,13 @@
 				 r: true
 				,t: function( q, sliders ){
 
-					var status = true;
+					var status = true, z = q['format'] || {};
 
 					parsed.ser = [ q['lower'], q['upper'] ];
 
 					$.each( parsed.ser, function( i, a ){
 
+						// Check if the provided option is an array.
 						if ( !$.isArray(a) ) {
 							status = false;
 							return false;
@@ -439,28 +440,21 @@
 								return false;
 							}
 
-							// Set default values.
-							if( this.decimals === undefined ) {
-								this.decimals = q['decimals'];
-							}
-							if( this.mark === undefined ) {
-								this.mark = q['mark'];
-							}
-
 							// Assign other properties.
 							this.N = i;
 							this.obj = sliders;
 							this.scope = this.scope || sliders;
-							this.validate();
+
+							// Run internal validator.
+							this.validate( z );
 						});
 					});
+
+					parsed.format = z;
 
 					if ( parsed.dir ) {
 						parsed.ser.reverse();
 					}
-
-					parsed.decimals = q['decimals'];
-					parsed.mark = q['mark'];
 
 					return status;
 				}
@@ -497,10 +491,9 @@
 
 		// Make sure the test for serialization runs.
 		options['serialization'] = $.extend({
-			 'mark': '.'
-			,'decimals': 2
-			,'lower': []
+			 'lower': []
 			,'upper': []
+			,'format': {}
 		}, options['serialization']);
 
 		// Run all options through a testing mechanism to ensure correct
@@ -638,15 +631,25 @@
 	}
 
 	// Checks all settings on this object for validity or sets defaults.
-	Link.prototype.validate = function ( ) {
+	Link.prototype.validate = function ( inherit ) {
 
-		function str(a,b){
-			return typeof a === 'string' ? a : b;
+		inherit = inherit || {};
+
+		// Default function for encoder/decoder.
+		function ret(a){
+			return a;
 		}
-		function func(a){
-			return ( typeof a === 'function' ) ? a : function( b ){
-				return b;
-			};
+
+		// Returns self, otherwise one level up, otherwise default.
+		function str(a,b,c){
+			return typeof a === 'string' ? a : typeof b === 'string' ? b : c;
+		}
+		function func(a,b){
+			return typeof a === 'function' ? a : typeof b === 'function' ? b : ret;
+		}
+
+		if ( this.decimals === undefined ) {
+			this.decimals = inherit.decimals;
 		}
 
 		this.decimals = parseInt(this.decimals, 10);
@@ -656,13 +659,13 @@
 			this.decimals = 2;
 		}
 
-		this.mark = str(this.mark, '.');
-		this.thousand = str(this.thousand, ' ');
-		this.prefix = str(this.prefix, '');
-		this.postfix = str(this.postfix, '');
+		this.mark = str(this.mark, inherit.mark, '.');
+		this.thousand = str(this.thousand, inherit.thousand, ' ');
+		this.prefix = str(this.prefix, inherit.prefix, '');
+		this.postfix = str(this.postfix, inherit.postfix, '');
 
-		this.encoder = func(this.encoder);
-		this.decoder = func(this.decoder);
+		this.encoder = func(this.encoder, inherit.encoder);
+		this.decoder = func(this.decoder, inherit.decoder);
 
 		return this;
 	};
@@ -851,10 +854,7 @@
 				}
 			});
 
-			links.push( new Link( true, subs, {
-				 'decimals': options.decimals
-				,'mark': options.mark
-			}).validate() );
+			links.push( new Link( true, subs, options.format ).validate() );
 
 			grabs.push( handles[i].children( '.' + clsList[2] ) );
 		}
