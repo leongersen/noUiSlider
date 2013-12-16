@@ -437,14 +437,6 @@
 							if ( !(this instanceof Link) ) {
 								status = false;
 								return false;
-							} else {
-
-							//	if ( this.el ) {
-								// Sever the reference to the initialization.
-								// Otherwise, all sliders would be writing
-								// to all input elements.
-							//		this.el = $(this.el).clone();
-							//	}
 							}
 
 							// Set default values.
@@ -892,8 +884,46 @@
 	}
 
 
+// Access points
 
-function closure ( target, options ){
+	// Run the standard initializer
+	function initialize ( originalOptions ) {
+
+		// Test the options once, not for every slider.
+		var options = test( originalOptions, this );
+
+		// Loop all items, and provide a new closed-scope environment.
+		return this.each(function(){
+			closure(this, options, originalOptions);
+		});
+	}
+
+	// Destroy the slider, then re-enter initialization.
+	function rebuild ( options ) {
+
+		return this.each(function(){
+
+			// Get the current values from the slider,
+			// including the initialization options.
+			var values = $(this).val(),
+				originalOptions = this.destroy(),
+
+				// Extend the previous options with the newly provided ones.
+				newOptions = $.extend( {}, originalOptions, options );
+
+			// Run the standard initializer.
+			$(this).noUiSlider( newOptions );
+
+			// If the start option hasn't changed,
+			// reset the previous values.
+			if ( originalOptions.start === newOptions.start ) {
+				$(this).val(values);
+			}
+		});
+	}
+
+
+function closure ( target, options, originalOptions ){
 
 	var Memory = {
 		 target: $(target)
@@ -905,12 +935,15 @@ function closure ( target, options ){
 	};
 
 
-	// todo
-	//	// Throw an error if the slider was already initialized.
-	//	if ( $(this).attr('data-nouislider') ) {
-	//		throw new Error('Slider was already initialized.');
-	//	}
+// Sanity Check
 
+	// Throw an error if the slider was already initialized.
+	if ( !$(target).is(':empty') ) {
+		throw new Error('Slider was already initialized.');
+	}
+
+
+// Handle placement
 
 	// Handles movement by tapping.
 	function jump ( handle, to ) {
@@ -1288,14 +1321,24 @@ function closure ( target, options ){
 	// Destroy the slider and unbind all events.
 	target.destroy = function ( ){
 
-		// todo. DO.
-
+		// Loop all linked serialization objects and unbind all
+		// events in the noUiSlider namespace.
 		$.each(Memory.serialization, function(){
-
-			console.log(this);
-
+			$.each(this.subs, function(){
+				this.target.off(namespace);
+			});
 		});
 
+		// Unbind events on the slider, remove all classes and child elements.
+		$(this).off(namespace)
+			.removeClass(clsList.join(' '))
+			.empty();
+
+		// Dump storage in the closure. Garbage collector should catch this.
+		Memory = null;
+
+		// Return the original options from the closure.
+		return originalOptions;
 	}
 
 	// Use the public value method to set the start values.
@@ -1305,15 +1348,8 @@ function closure ( target, options ){
 	// Expose serialization constructor.
 	$.noUiSlider = { 'Link': Link };
 
-	$.fn.noUiSlider = function ( options ){
-
-		// Test the options once, not for every slider.
-		options = test( options, this );
-
-		// Loop all items, and provide a new closed-scope environment.
-		return this.each(function(){
-			closure(this, options);
-		});
+	$.fn.noUiSlider = function ( options, re ){
+		return ( re ? rebuild : initialize ).call(this, options);
 	};
 
 	$.fn.val = function ( ){

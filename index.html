@@ -114,10 +114,12 @@
 
 	</script>
 
-	</hr>
+	<hr>
 
 	<div class="slider3" id="slider3"></div>
 
+	<span id="slider3span"></span>
+	
 	<script pre>
 
 		$("#slider3").noUiSlider({
@@ -126,10 +128,49 @@
 			,handles: 1
 			,behaviour: 'extend-tap'
 			,connect: 'lower'
+			,serialization: {
+				 lower: [ new Link(function( value ){
+					$("#slider3span").html( value );
+				 }) ]
+			}
 		});
 
 	</script>
 
+	<hr>
+
+	<div class="slider4" id="slider4"></div>
+	
+	<label>Will change slider: <input id="slider4inputlower"></label>
+	<br>	
+	<label>Will NOT change slider: <input id="slider4inputupper"></label>
+	
+	<script pre>
+
+		$("#slider4").noUiSlider({
+			 range: [ 0.001, 0.003 ]
+			,start: [ 0, 0.002 ]
+			,handles: 2
+			,connect: true
+			,behaviour: 'drag'
+			,serialization: {
+				 lower: [ new Link( $("#slider4inputlower") ) ]
+				,upper: [ new Link( $("#slider4inputupper"), 'val' ) ]
+				,decimals: 5
+			}
+		});
+
+		$("#slider4").noUiSlider({
+			 range: [ 0.002, 0.003 ]
+			,start: [ 0.0021, 0.0025 ]
+		}, true);
+
+	</script>
+	
+	<hr>
+	
+	
+	
 	<div id="log"><div>
 
 </body>
