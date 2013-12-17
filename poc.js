@@ -530,7 +530,7 @@
 		// Make sure Link isn't called as a function, in which case
 		// the 'this' scope would be the window.
 		if ( !(this instanceof Link) ) {
-			throw new Error('Can\'t use Link as a function. Use \'new Link\'.');
+			throw new Error('Can\'t use Link as a function. Use the \'new\' keyword.');
 		}
 
 		// Returns null array.
@@ -538,32 +538,27 @@
 			return [c?a:b, c?b:a];
 		}
 
-		// Options are optional. Hehe.
-		options = options || {};
+		// Write all options to this object. Don't use key => value mapping
+		// to allow Closure compiler to rename internal properties.
+		if ( options ) {
+			this.decimals = options['decimals'];
+			this.mark = options['mark'];
+			this.thousand = options['thousand'];
+			this.prefix = options['prefix'];
+			this.postfix = options['postfix'];
+			this.encoder = options['encoder'];
+			this.decoder = options['decoder'];
+		}
 
-		// Write all options to this object.
-		// Don't use key => value mapping to allow the Closure compiler
-		// to rename internal properties.
-		this.decimals = options['decimals'];
-		this.mark = options['mark'];
-		this.thousand = options['thousand'];
-		this.prefix = options['prefix'];
-		this.postfix = options['postfix'];
-		this.encoder = options['encoder'];
-		this.decoder = options['decoder'];
+		// Set an empty $ object so the destroy function won't have
+		// to handle .isFunction objects differently.
+		this.target = $([]);
 
 		switch ( typeof target ) {
-
-		// Internal coupling for other Links.
-		case 'boolean':
-
-			this.subs = method;
-			return;
 
 		// If target is a string, a new hidden input will be created.
 		case 'string':
 
-			this.target = $([]);
 			this.method = 'val';
 
 			this.el = document.createElement('input');
@@ -574,9 +569,6 @@
 
 		case 'function':
 
-			// Set an empty $ object so the destroy function won't have
-			// to handle .isFunction objects differently.
-			this.target = $([]);
 			this.method = target;
 			this.isFunction = true;
 
@@ -671,11 +663,11 @@
 		// Convert the value to the slider stepping/range.
 		value = fromStepping( options, value );
 
-		// Store the numerical value.
-		this.saved = value;
-
 		// Format values for display.
 		value = this.format( value );
+
+		// Store the numerical value.
+		this.saved = value;
 
 		// Branch between serialization to a function or an object.
 		if ( this.isFunction ) {
