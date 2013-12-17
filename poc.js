@@ -57,22 +57,6 @@
 		return Math.max(Math.min(a, 100), 0);
 	}
 
-	// Test an array of objects, and calls them if they are a function.
-	function call ( functions, scope ) {
-
-		// Allow the passing of an unwrapped function.
-		// Leaves other code a more comprehensible.
-		if( !$.isArray( functions ) ){
-			functions = [ functions ];
-		}
-
-		$.each( functions, function(){
-			if (typeof this === 'function') {
-				this.call(scope);
-			}
-		});
-	}
-
 	// Round a value to the closest 'to'.
 	function closest ( value, to ){
 		return Math.round(value / to) * to;
@@ -188,6 +172,10 @@
 
 
 // Event handling
+
+	// No operation.
+	function noop(){
+	}
 
 	// Provide a clean event with standardized offset values.
 	function fixEvent ( e ) {
@@ -487,6 +475,9 @@
 			,'direction': 'ltr'
 			,'behaviour': 'tap'
 			,'orientation': 'horizontal'
+			,'slide': noop
+			,'set': noop
+			,'block': noop
 		}, options);
 
 		// Make sure the test for serialization runs.
@@ -655,6 +646,10 @@
 		this.decimals = parseInt(this.decimals, 10);
 
 		// Support for up to 7 decimals. More can't be guaranteed.
+		if ( this.decimals > 7 ) {
+			this.decimals = 7;
+		}
+
 		if (!(this.decimals >= 0 && this.decimals <= 7)) {
 			this.decimals = 2;
 		}
@@ -671,9 +666,15 @@
 	};
 
 	// Provides external items with the slider value.
-	Link.prototype.write = function ( value, slider ) {
+	Link.prototype.write = function ( options, value, slider ) {
 
-		// Format values for display
+		// Convert the value to the slider stepping/range.
+		value = fromStepping( options, value );
+
+		// Store the numerical value.
+		this.saved = value;
+
+		// Format values for display.
 		value = this.format( value );
 
 		// Branch between serialization to a function or an object.
@@ -684,36 +685,19 @@
 		}
 	};
 
-	// Stores the slider value in memory. Omit value to get.
-	Link.prototype.save = function ( value ) {
-		if ( value === undefined ) {
-			return this.format(this.saved);
-		}
-		this.saved = value;
-	};
-
-	// Forwarder/abstractor for calls to 'present'.
-	Link.prototype.format = function ( value ) {
-
-		return this.present( this.encoder(value),
-			this.decimals,
-			this.mark,
-			this.thousand,
-			this.prefix,
-			this.postfix );
-	};
-
 	// Parses slider value to user defined display.
-	Link.prototype.present = function ( number, decimals, mark, k, pre, post ) {
+	Link.prototype.format = function ( number ) {
 
 		function reverse ( a ) {
 			return a.split('').reverse().join('');
 		}
 
+		number = this.encoder( number );
+
 		var isNegative = number < 0;
 
 		// Round to proper decimal count
-		number = Math.abs(number).toFixed(decimals).toString();
+		number = Math.abs(number).toFixed(this.decimals).toString();
 		number = number.split('.');
 
 		// Rounding away decimals might cause a value of -0
@@ -724,17 +708,13 @@
 
 		// Group numbers in sets of three.
 		var base = reverse(number[0]).match(/.{1,3}/g);
-			base = reverse(base.join(reverse(k)));
+			base = reverse(base.join(reverse(this.thousand)));
 
 		// Ignore the decimal separator if decimals are set to 0.
-		if ( number.length > 1 ) {
-			mark = mark + number[1];
-		} else {
-			mark = '';
-		}
+		var mark = ( number.length > 1 ) ? ( this.mark + number[1] ) : '';
 
 		// Return the finalized number.
-		return pre + ( isNegative ? '-' : '' ) + base + mark + post;
+		return this.prefix + ( isNegative ? '-' : '' ) + base + mark + this.postfix;
 	};
 
 	// Converts a formatted value back to a real number.
@@ -768,24 +748,6 @@
 	// Append a hidden input element.
 	Link.prototype.append = function ( element ) {
 		return new Link($(this.el).clone().appendTo(element)).take( this );
-	};
-
-	// Write values to a list of Link elements.
-	Link.prototype.propagate = function ( options, value ) {
-
-		// Convert the value to the correct relative representation.
-		value = fromStepping( options, value );
-
-		// Store the value.
-		this.save( value );
-
-		if ( !this.subs ){
-			return;
-		}
-
-		$.each( this.subs, function() {
-			this.write( value );
-		});
 	};
 
 	// Copy properties from another Link.
@@ -825,7 +787,7 @@
 		/*jshint validthis: true */
 
 		var base = $('<div/>').appendTo( $(this) ).addClass( clsList[0] ),
-			i, links = [], handles = [], grabs = [], subs = [];
+			i, links = [], handles = [], grabs = [];
 
 		// Apply classes and data to the target.
 		$(this).addClass([
@@ -843,18 +805,12 @@
 			// instead of modifying the options.ser list. This allows passing
 			// the replace the invalid .el Links, while the others are still
 			// passed by reference.
-			subs = [];
+			links[i] = [ new Link( noop, false, options.format ).validate() ];
 
 			// Append any hidden input elements.
-			$.each( options.ser[i], function(j){
-				if ( this.el ){
-					subs[j] = this.append( handles[i] );
-				} else {
-					subs[j] = this;
-				}
+			$.each( options.ser[i], function(){
+				links[i].push(this.el ? this.append(handles[i]) : this);
 			});
-
-			links.push( new Link( true, subs, options.format ).validate() );
 
 			grabs.push( handles[i].children( '.' + clsList[2] ) );
 		}
@@ -925,22 +881,15 @@
 
 function closure ( target, options, originalOptions ){
 
+// Internal variables
+
 	var Memory = {
 		 target: $(target)
-		,options: options
 		,locations: [-1, -1]
 		,baseSize: function(){
 			return this.base[['width', 'height'][options.ort]]();
 		}
 	};
-
-
-// Sanity Check
-
-	// Throw an error if the slider was already initialized.
-	if ( !$(target).is(':empty') ) {
-		throw new Error('Slider was already initialized.');
-	}
 
 
 // Handle placement
@@ -957,7 +906,9 @@ function closure ( target, options, originalOptions ){
 
 		// Trigger the 'slide' and 'set' callbacks,
 		// pass the target as scope.
-		call( [options.slide, options.set], Memory.target.change() );
+		options.slide.call( Memory.target )
+		options.set.call( Memory.target );
+		Memory.target.change()
 	}
 
 	// Test suggested values and apply margin, step.
@@ -1001,8 +952,16 @@ function closure ( target, options, originalOptions ){
 		// Remove blocked state, as the handle could move.
 		Memory.target.removeClass(clsList[14]);
 
+		// Invert the value if this is a right-to-left slider.
+		if ( options.dir ) {
+			to = 100 - to;
+		}
+
 		// Write values to serialization Links.
-		Memory.serialization[n].propagate( options, options.dir ? 100 - to : to );
+		// Convert the value to the correct relative representation.
+		$(Memory.serialization[n]).each(function(){
+			this.write( options, to );
+		});
 
 		return true;
 	}
@@ -1092,12 +1051,12 @@ function closure ( target, options, originalOptions ){
 			}
 
 			// Fire callback on unsuccessful handle movement.
-			call( options.block, Memory.target );
+			options.block.call( Memory.target );
 
 		} else {
 
 			// Trigger the 'slide' event if the handle moved.
-			call( options.slide, Memory.target );
+			options.slide.call( Memory.target );
 		}
 	}
 
@@ -1121,7 +1080,7 @@ function closure ( target, options, originalOptions ){
 		Memory.target.removeClass( clsList[14] +' '+ clsList[20]).change();
 
 		// Trigger the 'end' callback.
-		call( options.set, Memory.target );
+		options.set.call( Memory.target );
 	}
 
 	// Bind move events on document.
@@ -1250,11 +1209,19 @@ function closure ( target, options, originalOptions ){
 	}
 
 
+// Initialize slider
+
+	// Throw an error if the slider was already initialized.
+	if ( !$(target).is(':empty') ) {
+		throw new Error('Slider was already initialized.');
+	}
+
 	// Initialise HTML and set classes.
-	$.extend(Memory, addSlider.call(target, options));
+	$.extend( Memory, addSlider.call(target, options) );
 
 	// Attach user events.
 	events( options.events );
+
 
 // Methods
 
@@ -1274,7 +1241,7 @@ function closure ( target, options, originalOptions ){
 		// can be bounced of the second one properly.
 		for ( i = 0; i < ( Memory.handles.length > 1 ? 3 : 1 ); i++ ) {
 
-			to = link || Memory.serialization[i%2];
+			to = link || Memory.serialization[i%2][0];
 			to = to.value( values[i%2] );
 
 			// Calculate the new handle position
@@ -1285,16 +1252,19 @@ function closure ( target, options, originalOptions ){
 				to = 100 - to;
 			}
 
-			if ( to === false || setHandle( Memory.handles[i%2], to ) !== true ){
-
-				// Reset the input if it doesn't match the slider.
-				Memory.serialization[i%2].propagate( options, Memory.locations[i%2] );
+			if ( setHandle( Memory.handles[i%2], to ) === true ) {
+				continue;
 			}
+
+			// Reset the input if it doesn't match the slider.
+			$(Memory.serialization[i%2]).each(function(){
+				this.write( options, Memory.locations[i%2] );
+			});
 		}
 
 		// Optionally trigger the 'set' event.
 		if( callback === true ) {
-			call( options.set, $(this) );
+			options.set.call( $(this) );
 		}
 
 		return this;
@@ -1306,7 +1276,7 @@ function closure ( target, options, originalOptions ){
 		var i, retour = [];
 
 		for ( i = 0; i < options.handles; i++ ){
-			retour[i] = Memory.serialization[i].save();
+			retour[i] = Memory.serialization[i][0].saved;
 		}
 
 		if ( retour.length === 1 ){
@@ -1324,7 +1294,7 @@ function closure ( target, options, originalOptions ){
 		// Loop all linked serialization objects and unbind all
 		// events in the noUiSlider namespace.
 		$.each(Memory.serialization, function(){
-			$.each(this.subs, function(){
+			$.each(this, function(){
 				this.target.off(namespace);
 			});
 		});

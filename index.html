@@ -144,6 +144,8 @@
 	<label>Will change slider: <input id="slider4inputlower"></label>
 	<br>	
 	<label>Will NOT change slider: <input id="slider4inputupper"></label>
+	<br>
+	<label>Value get on slide by .val(): <span id="slider4span"></span></label>
 	
 	<script pre>
 
@@ -154,11 +156,14 @@
 			,connect: true
 			,behaviour: 'drag'
 			,serialization: {
-				 lower: [ new Link( $("#slider4inputlower") ) ]
+				 lower: [ new Link( $("#slider4inputlower"), false, { decimals: 6 }) ]
 				,upper: [ new Link( $("#slider4inputupper"), 'val' ) ]
 				,format: {
 					decimals: 5
 				}
+			}
+			,slide: function(){
+				$('#slider4span').html(JSON.stringify($(this).val()));
 			}
 		});
 
