@@ -616,12 +616,16 @@
 
 				this.method = 'val';
 
+				console.log ( this.target );
+
 				// Set the slider to a new value on change.
 				this.target.on('change' + namespace,
 					$.proxy(function( e ){
 						this.obj.val(at(
 							null, $(e.target).val(), this.N
 						), false, this);
+
+						console.log( 'change' );
 					}, this));
 
 				return;
@@ -633,7 +637,7 @@
 			return;
 		}
 
-		throw new RangeError('Invalid Link');
+		this.error('');
 	}
 
 	// Checks all settings on this object for validity or sets defaults.
@@ -677,6 +681,10 @@
 		this.encoder = func(this.encoder, inherit.encoder);
 		this.decoder = func(this.decoder, inherit.decoder);
 
+		if ( (this.mark || this.thousand) && (this.mark === this.thousand) ) {
+			this.error('mark can\'t equal thousand.');
+		}
+
 		return this;
 	};
 
@@ -709,7 +717,7 @@
 
 		number = this.encoder( number );
 
-		var isNegative = number < 0;
+		var negative = number < 0 ? '-' : '', base = '', mark = '';
 
 		// Round to proper decimal count
 		number = Math.abs(number).toFixed(this.decimals).toString();
@@ -722,18 +730,26 @@
 		}
 
 		// Group numbers in sets of three.
-		var base = reverse(number[0]).match(/.{1,3}/g);
+		if ( this.thousand ) {
+			base = reverse(number[0]).match(/.{1,3}/g);
 			base = reverse(base.join(reverse(this.thousand)));
+		}
 
 		// Ignore the decimal separator if decimals are set to 0.
-		var mark = ( number.length > 1 ) ? ( this.mark + number[1] ) : '';
+		if ( this.mark && number.length > 1 ) {
+			mark = this.mark + number[1];
+		}
 
 		// Return the finalized number.
-		return this.prefix + ( isNegative ? '-' : '' ) + base + mark + this.postfix;
+		return this.prefix + negative + base + mark + this.postfix;
 	};
 
 	// Converts a formatted value back to a real number.
 	Link.prototype.value = function ( format ) {
+
+		function esc(s){
+			return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+		}
 
 		// The set request might want to ignore this handle.
 		// Test for 'undefined' too, as a two-handle slider
@@ -743,14 +759,18 @@
 		}
 
 		// Remove formatting and set period for float parsing.
-		format = parseFloat(format.toString()
-			.replace(this.prefix, '')
-			.replace(this.postfix, '')
-			.replace(new RegExp(this.thousand, 'g'), '')
-			.replace(this.mark, '.'));
+		format = format.toString()
+		// If prefix is set and the number is actually prefixed.
+			.replace(new RegExp('^' + esc(this.prefix)), '')
+		// If postfix is set and the number is postfixed.
+			.replace(new RegExp(esc(this.postfix) + '$'), '')
+		// Remove the separator every three digits.
+			.replace(new RegExp(esc(this.thousand), 'g'), '')
+		// Set the decimal separator back to period.
+			.replace(this.mark, '.');
 
 		// Run the user defined decoder. Returns input by default.
-		format = this.decoder( format );
+		format = this.decoder( parseFloat(format) );
 
 		// Ignore invalid input
 		if (isNaN( format )) {
@@ -777,6 +797,11 @@
 
 		return this;
 	};
+
+	// Throw an error on invalid Link configuration.
+	Link.prototype.error = function (a){
+		throw new RangeError('Invalid Link' + a);
+	}
 
 
 // DOM additions
@@ -1258,6 +1283,8 @@ function closure ( target, options, originalOptions ){
 			values.reverse();
 		}
 
+		console.log(values);
+
 		// If there are multiple handles to be set run the setting
 		// mechanism twice for the first handle, to make sure it
 		// can be bounced of the second one properly.
@@ -1353,7 +1380,7 @@ function closure ( target, options, originalOptions ){
 		if ( !arguments.length ) {
 
 		// todo remove debug
-			console.log(this);
+//			console.log(this);
 
 			// Determine whether to use the native val method.
 			if ( this.hasClass( clsList[6] ) ) {

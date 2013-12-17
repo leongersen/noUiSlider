@@ -52,7 +52,7 @@
 		var Link = $.noUiSlider.Link;
 		$(function(){
 			$('script[pre]').after(function(){
-				return '<pre>' + this.innerHTML + '</pre>';
+				return $('<pre/>').text( this.innerHTML );
 			});
 			$('form').change(function(){
 				$("#log").html( $(this).serialize() );
@@ -63,7 +63,7 @@
 </head>
 
 <body>
-
+<!--
 	<form>
 		<div class="slider1" id="slider1a"></div>
 		<div class="slider1" id="slider1b"></div>
@@ -136,7 +136,7 @@
 		});
 
 	</script>
-
+-->
 	<hr>
 
 	<style>
@@ -163,13 +163,24 @@
 			,behaviour: 'drag'
 			,serialization: {
 
-				 lower: [ new Link( '-tooltip-<div class="noUi-tooltip">', false, {
+				 lower: [	new Link( '-tooltip-<div class="noUi-tooltip">', false, {
+								decimals: 6
+							}),
+							new Link( $("#slider4inputlower"), false, {
+								 mark: ' '
+								,thousand: '$'
+								,prefix: '$'
+								,postfix: ',-'
+								,encoder: function( a ){
+									return a * 1E7;
+								}
+								,decoder: function( a ){
+									return a / 1E7; 
+								}
+							}) ]
 
-						  }),
-						  new Link( $("#slider4inputlower"), false, { decimals: 6 }) ]
-
-				,upper: [ new Link( $("#slider4inputupper"), 'val' ),
-						  new Link( '-tooltip-', function( value ){ $(this).text(value) }) ]
+				,upper: [	new Link( $("#slider4inputupper"), 'val' ),
+							new Link( '-tooltip-', function( value ){ $(this).text(value) }) ]
 
 				,format: {
 					decimals: 5
@@ -180,10 +191,12 @@
 			}
 		});
 
-		$("#slider4").noUiSlider({
-			 range: [ -0.002, 0.003 ]
-			,start: [ 0.0021, 0.0025 ]
-		}, true);
+		// event binding on rebuild FAILS
+		
+	//	$("#slider4").noUiSlider({
+	//		 range: [ -0.002, 0.003 ]
+	//		,start: [ 0.0021, 0.0025 ]
+	//	}, true);
 
 	</script>
 
