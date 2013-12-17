@@ -1115,7 +1115,7 @@
 
 				for (i = 0; i < options['handles']; i++ ) {
 
-					handle = $('<div><div/></div>').appendTo(base);
+					handle = $('<div><a href="javascript:;"/></div>').appendTo(base);
 
 					// Add all default and option-specific classes to the
 					// origins and handles.
