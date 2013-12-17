@@ -553,19 +553,47 @@
 		// Set an empty $ object so the destroy function won't have
 		// to handle .isFunction objects differently.
 		this.target = $([]);
+		this.method = method;
+
+		// Tooltips can be called as scope in a method too.
+		if ( typeof method === 'function' ) {
+			this.scope = target;
+			this.isFunction = true;
+		}
 
 		switch ( typeof target ) {
 
 		// If target is a string, a new hidden input will be created.
 		case 'string':
 
-			this.method = 'val';
+			if ( !target.indexOf('-tooltip-') ) {
 
-			this.el = document.createElement('input');
-			this.el.name = target;
-			this.el.type = 'hidden';
+				// Set default tooltip html.
+				target = target.replace('-tooltip-', '') || '<div/>';
 
-			return;
+				// By default, use the 'html' method.
+				if ( !method) {
+					this.method = 'html';
+				}
+
+				// Use jQuery to create the element
+				this.el = $(target)[0];
+
+				return;
+			}
+
+			// If the string doesn't begin with '-', which is reserved,
+			// add a new hidden input.
+			if ( target.indexOf('-') ) {
+
+				this.method = 'val';
+
+				this.el = document.createElement('input');
+				this.el.name = target;
+				this.el.type = 'hidden';
+
+				return;
+			}
 
 		case 'function':
 
@@ -580,18 +608,12 @@
 
 			// Store the selected method, if one is provided.
 			if ( method ) {
-
-				this.method = method;
-
-				if ( typeof method === 'function' ) {
-					this.scope = target;
-					this.isFunction = true;
-				}
-
 				return;
+			}
 
 			// Default to .val if this is an input element.
-			} else if ( target.is('input, select, textarea') ) {
+			if ( target.is('input, select, textarea') ) {
+
 				this.method = 'val';
 
 				// Set the slider to a new value on change.
@@ -602,10 +624,11 @@
 						), false, this);
 					}, this));
 
-			// Otherwise, use .html, which is an arbitrary choice.
-			} else {
-				this.method = 'html';
+				return;
 			}
+
+			// Otherwise, use .html, which is an arbitrary choice.
+			this.method = 'html';
 
 			return;
 		}
@@ -779,7 +802,7 @@
 		/*jshint validthis: true */
 
 		var base = $('<div/>').appendTo( $(this) ).addClass( clsList[0] ),
-			i, links = [], handles = [], grabs = [];
+			i, links = [], handles = [];//, grabs = [];
 
 		// Apply classes and data to the target.
 		$(this).addClass([
@@ -801,10 +824,12 @@
 
 			// Append any hidden input elements.
 			$.each( options.ser[i], function(){
-				links[i].push(this.el ? this.append(handles[i]) : this);
+				links[i].push( this.el ?
+								this.append( handles[i].children() ) :
+								this );
 			});
 
-			grabs.push( handles[i].children( '.' + clsList[2] ) );
+		//	grabs.push( handles[i].children( '.' + clsList[2] ) );
 		}
 
 		// Apply the required connection classes to the elements
@@ -826,7 +851,7 @@
 		return {
 			 base: base
 			,handles: handles
-			,grabs: grabs
+		//	,grabs: grabs
 			,serialization: links
 		};
 	}
@@ -927,7 +952,10 @@ function closure ( target, options, originalOptions ){
 		// Return falsy if handle can't move. False for 0 or 100 limit,
 		// '0' for limiting by another handle.
 		if ( to === Memory.locations[n] ) {
-			return ( Memory.handles.length > 1 && (to === lower || to === upper) ) ? 0 : false;
+			if ( Memory.handles.length === 1 ) {
+				return false;
+			}
+			return ( to === lower || to === upper ) ? 0 : false;
 		}
 
 		// Set the handle to the new position.
@@ -1056,8 +1084,10 @@ function closure ( target, options, originalOptions ){
 	function end ( event ) {
 
 		// The handle is no longer active, so remove the class.
+
+		// todo select handle!!
 		if ( Memory.handles.length === 1 ) {
-			Memory.grabs[0].removeClass(clsList[4]);
+			Memory.handles[0].children().removeClass(clsList[4]);
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -1080,7 +1110,7 @@ function closure ( target, options, originalOptions ){
 
 		// Mark the handle as 'active' so it can be styled.
 		if( Memory.handles.length === 1 ) {
-			Memory.grabs[0].addClass(clsList[4]);
+			Memory.handles[0].children().addClass(clsList[4]);
 		}
 
 		// A drag should never propagate up to the 'tap' event.
