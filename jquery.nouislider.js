@@ -1050,7 +1050,7 @@
 					// what option caused the trouble. Since throwing an error
 					// will prevent further script execution, log the error
 					// first. Test for console, as it might not be available.
-					if( console && console.log && console.group ){
+					if( window.console && console.log && console.group ){
 						console.group( 'Invalid noUiSlider initialisation:' );
 						console.log( 'Option:\t', name );
 						console.log( 'Value:\t', value );
