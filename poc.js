@@ -173,10 +173,6 @@
 
 // Event handling
 
-	// No operation.
-	function noop(){
-	}
-
 	// Provide a clean event with standardized offset values.
 	function fixEvent ( e ) {
 
@@ -447,24 +443,6 @@
 					return status;
 				}
 			}
-			,'slide': {
-				 t: function( q ){
-					parsed.slide = q;
-					return $.isFunction(q);
-				}
-			}
-			,'set': {
-				 t: function( q ){
-					parsed.set = q;
-					return $.isFunction(q);
-				}
-			}
-			,'block': {
-				 t: function( q ){
-					parsed.block = q;
-					return $.isFunction(q);
-				}
-			}
 		};
 
 		// Set defaults where applicable;
@@ -475,9 +453,6 @@
 			,'direction': 'ltr'
 			,'behaviour': 'tap'
 			,'orientation': 'horizontal'
-			,'slide': noop
-			,'set': noop
-			,'block': noop
 		}, options);
 
 		// Make sure the test for serialization runs.
@@ -845,7 +820,7 @@
 			// instead of modifying the options.ser list. This allows passing
 			// the replace the invalid .el Links, while the others are still
 			// passed by reference.
-			links[i] = [ new Link( noop, false, options.format ).validate() ];
+			links[i] = [ new Link( function(){}, false, options.format ).validate() ];
 
 			// Append any hidden input elements.
 			$.each( options.ser[i], function(){
@@ -946,11 +921,10 @@ function closure ( target, options, originalOptions ){
 		// Move the handle to the new position.
 		setHandle( handle, to );
 
-		// Trigger the 'slide' and 'set' callbacks,
-		// pass the target as scope.
-		options.slide.call( Memory.target )
-		options.set.call( Memory.target );
-		Memory.target.change()
+		Memory.target
+			.trigger('slide')
+			.trigger('set')
+			.trigger('change');
 	}
 
 	// Test suggested values and apply margin, step.
@@ -1096,12 +1070,12 @@ function closure ( target, options, originalOptions ){
 			}
 
 			// Fire callback on unsuccessful handle movement.
-			options.block.call( Memory.target );
+			Memory.target.trigger('block');
 
 		} else {
 
-			// Trigger the 'slide' event if the handle moved.
-			options.slide.call( Memory.target );
+			// Fire the 'slide' event if the handle moved.
+			Memory.target.trigger('slide');
 		}
 	}
 
@@ -1123,11 +1097,11 @@ function closure ( target, options, originalOptions ){
 		// Unbind the move and end events, which are added on 'start'.
 		doc.off( namespace );
 
-		// Trigger the change event.
-		Memory.target.removeClass( clsList[14] +' '+ clsList[20]).change();
-
-		// Trigger the 'end' callback.
-		options.set.call( Memory.target );
+		// Fire the change and set events.
+		Memory.target
+			.removeClass( clsList[14] +' '+ clsList[20])
+			.trigger('set')
+			.trigger('change');
 	}
 
 	// Bind move events on document.
@@ -1176,7 +1150,7 @@ function closure ( target, options, originalOptions ){
 
 		var location = event.calcPoint, total = 0;
 
-		// The tap event shouldn't propagate up to trigger 'edge'.
+		// The tap event shouldn't propagate up and cause 'edge' to run.
 		event.stopPropagation();
 
 		// Add up the handle offsets.
@@ -1283,8 +1257,6 @@ function closure ( target, options, originalOptions ){
 			values.reverse();
 		}
 
-		console.log(values);
-
 		// If there are multiple handles to be set run the setting
 		// mechanism twice for the first handle, to make sure it
 		// can be bounced of the second one properly.
@@ -1311,9 +1283,9 @@ function closure ( target, options, originalOptions ){
 			});
 		}
 
-		// Optionally trigger the 'set' event.
+		// Optionally fire the 'set' event.
 		if( callback === true ) {
-			options.set.call( $(this) );
+			$(this).trigger('set');
 		}
 
 		return this;

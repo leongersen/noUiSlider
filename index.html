@@ -175,7 +175,7 @@
 									return a * 1E7;
 								}
 								,decoder: function( a ){
-									return a / 1E7; 
+									return a / 1E7;
 								}
 							}) ]
 
@@ -186,13 +186,15 @@
 					decimals: 5
 				}
 			}
-			,slide: function(){
-				$('#slider4span').html(JSON.stringify($(this).val()));
-			}
+		}).on('slide', function(){
+			
+		//	console.log($(this));
+		
+			$('#slider4span').html( JSON.stringify( $(this).val() ) );
 		});
 
 		// event binding on rebuild FAILS
-		
+
 	//	$("#slider4").noUiSlider({
 	//		 range: [ -0.002, 0.003 ]
 	//		,start: [ 0.0021, 0.0025 ]
