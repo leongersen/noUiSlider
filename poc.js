@@ -53,6 +53,8 @@
 /*  4 */ ,'postfix'
 /*  5 */ ,'encoder'
 /*  6 */ ,'decoder'
+/*  7 */ ,'negative'
+/*  8 */ ,'negativeBefore'
 	]
 	,FormatDefaults = [
 /*  0 */  2
@@ -62,6 +64,8 @@
 /*  4 */ ,''
 /*  5 */ ,function(a){ return a; }
 /*  6 */ ,function(a){ return a; }
+/*  7 */ ,'-'
+/*  8 */ ,''
 	];
 
 // General helpers
@@ -85,6 +89,12 @@
 		return y;
 	}
 
+	// Throw an error if formatting options are incompatible.
+	function throwEqualError(F,a,b){
+		if ( (F[a] || F[b]) && (F[a] === F[b]) ) {
+			throw new RangeError('Link: '+Formatting[a]+' can\'t match '+Formatting[b]+'.');
+		}
+	}
 
 // Type validation
 
@@ -647,14 +657,14 @@
 			F[0] = FormatDefaults[0];
 		}
 
-		if ( (F[1] || F[2]) && (F[1] === F[2]) ) {
-			throw new RangeError('Link: mark can\'t equal thousand.');
-		}
+		// Throw errors for combinations that can't be detected.
+		throwEqualError(F,1,2);
+		throwEqualError(F,3,7);
+		throwEqualError(F,3,8);
 
 		this.formatting = F;
 
 		console.log( this.formatting );
-		console.log( '-------------' );
 		return this;
 	};
 
@@ -687,7 +697,12 @@
 
 		number = this.formatting[5]( number );
 
-		var negative = number < 0 ? '-' : '', base = '', mark = '';
+		var negative = '', preNegative = '', base = '', mark = '';
+
+		if ( number < 0 ) {
+			negative = this.formatting[7];
+			preNegative = this.formatting[8];
+		}
 
 		// Round to proper decimal count
 		number = Math.abs(number).toFixed( this.formatting[0] ).toString();
@@ -710,12 +725,19 @@
 			mark = this.formatting[1] + number[1];
 		}
 
-		// Return the finalized number.
-		return this.formatting[3] + negative + base + mark + this.formatting[4];
+		// Return the finalized formatted number.
+		return preNegative +
+			this.formatting[3] +
+			negative +
+			base +
+			mark +
+			this.formatting[4];
 	};
 
 	// Converts a formatted value back to a real number.
 	Link.prototype.valueOf = function ( input ) {
+
+		var isNegative;
 
 		function esc(s){
 			return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -729,18 +751,43 @@
 		}
 
 		// Remove formatting and set period for float parsing.
-		input = input.toString()
+		input = input.toString();
+
+		// Replace the preNegative indicator.
+		isNegative = input.replace(new RegExp('^' + esc( this.formatting[8] )), '');
+
+		// Check if the value changed by removing the negativeBefore symbol.
+		if( input !== isNegative ) {
+			input = isNegative;
+			isNegative = '-';
+		} else {
+			isNegative = '';
+		}
+
 		// If prefix is set and the number is actually prefixed.
-			.replace(new RegExp('^' + esc( this.formatting[3] )), '')
+		input = input.replace(new RegExp('^' + esc( this.formatting[3] )), '');
+
+		// Only replace if a negative sign is set.
+		if ( this.formatting[7] ) {
+
+			// Reset isNegative to prevent double '-' insertion.
+			isNegative = '';
+
+			// Reset the negative sign to '-'
+			input = input.replace(new RegExp('^' + esc( this.formatting[7] )), '-');
+		}
+
 		// If postfix is set and the number is postfixed.
-			.replace(new RegExp(esc( this.formatting[4] ) + '$'), '')
+		input = input.replace(new RegExp(esc( this.formatting[4] ) + '$'), '')
 		// Remove the separator every three digits.
 			.replace(new RegExp(esc( this.formatting[2] ), 'g'), '')
 		// Set the decimal separator back to period.
 			.replace(this.formatting[1], '.');
 
+		console.log( isNegative, input );
+
 		// Run the user defined decoder. Returns input by default.
-		input = this.formatting[6]( parseFloat(input) );
+		input = this.formatting[6]( parseFloat( isNegative + input ) );
 
 		// Ignore invalid input
 		if (isNaN( input )) {

@@ -190,7 +190,10 @@
 			,serialization: {
 
 				 lower: [	new Link( '-tooltip-<div class="tooltip"/>', placeTooltip, {
-								decimals: 6
+								 decimals: 6
+								,prefix: '#'
+								,negativeBefore: '!'
+								,negative: ''
 							}),
 							new Link( $("#slider4inputlower"), false, {
 								 mark: '.'
@@ -198,6 +201,8 @@
 								,prefix: '$'
 								,postfix: ',-'
 								,decimals: 3
+								,negativeBefore: '-'
+								,negative: ''
 								,encoder: function( a ){
 									return a * 1E7;
 								}
