@@ -63,7 +63,7 @@
 </head>
 
 <body>
-
+<!--
 	<form>
 		<div class="slider1" id="slider1a"></div>
 		<div class="slider1" id="slider1b"></div>
@@ -137,7 +137,7 @@
 		});
 
 	</script>
-
+-->
 	<hr>
 
 	<style>
@@ -193,10 +193,11 @@
 								decimals: 6
 							}),
 							new Link( $("#slider4inputlower"), false, {
-								 mark: ' '
-								,thousand: '$'
+								 mark: '.'
+								,thousand: ','
 								,prefix: '$'
 								,postfix: ',-'
+								,decimals: 3
 								,encoder: function( a ){
 									return a * 1E7;
 								}

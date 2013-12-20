@@ -25,41 +25,64 @@
 		,end: 'mouseup touchend'
 	}
 	// Re-usable list of classes;
-	,clsList = [
-	/*  0 */  'noUi-base'
-	/*  1 */ ,'noUi-origin'
-	/*  2 */ ,'noUi-handle'
-	/*  3 */ ,''
-	/*  4 */ ,'noUi-active'
-	/*  5 */ ,'noUi-state-tap'
-	/*  6 */ ,'noUi-target'
-	/*  7 */ ,''
-	/*  8 */ ,''
-	/*  9 */ ,'noUi-connect'
-	/* 10 */ ,'noUi-horizontal'
-	/* 11 */ ,'noUi-vertical'
-	/* 12 */ ,'noUi-background'
-	/* 13 */ ,'noUi-stacking'
-	/* 14 */ ,'noUi-block'
-	/* 15 */ ,'noUi-state-blocked'
-	/* 16 */ ,'noUi-ltr'
-	/* 17 */ ,'noUi-rtl'
-	/* 18 */ ,'noUi-dragable'
-	/* 19 */ ,'noUi-extended'
-	/* 20 */ ,'noUi-state-drag'
+	,Classes = [
+/*  0 */  'noUi-target'
+/*  1 */ ,'noUi-base'
+/*  2 */ ,'noUi-origin'
+/*  3 */ ,'noUi-handle'
+/*  4 */ ,'noUi-horizontal'
+/*  5 */ ,'noUi-vertical'
+/*  6 */ ,'noUi-background'
+/*  7 */ ,'noUi-connect'
+/*  8 */ ,'noUi-ltr'
+/*  9 */ ,'noUi-rtl'
+/* 10 */ ,'noUi-dragable'
+/* 11 */ ,'noUi-block'
+/* 12 */ ,'noUi-state-drag'
+/* 13 */ ,'noUi-state-blocked'
+/* 14 */ ,'noUi-state-tap'
+/* 15 */ ,'noUi-active'
+/* 16 */ ,'noUi-extended'
+/* 17 */ ,'noUi-stacking'
+	]
+	,Formatting = [
+/*  0 */  'decimals'
+/*  1 */ ,'mark'
+/*  2 */ ,'thousand'
+/*  3 */ ,'prefix'
+/*  4 */ ,'postfix'
+/*  5 */ ,'encoder'
+/*  6 */ ,'decoder'
+	]
+	,FormatDefaults = [
+/*  0 */  2
+/*  1 */ ,'.'
+/*  2 */ ,','
+/*  3 */ ,''
+/*  4 */ ,''
+/*  5 */ ,function(a){ return a; }
+/*  6 */ ,function(a){ return a; }
 	];
-
 
 // General helpers
 
 	// Limits a value to 0 - 100
-	function limit(a){
+	function limit ( a ) {
 		return Math.max(Math.min(a, 100), 0);
 	}
 
 	// Round a value to the closest 'to'.
 	function closest ( value, to ){
 		return Math.round(value / to) * to;
+	}
+
+	// Dynamically anonymize formatting options.
+	function anonymize ( z ) {
+		var y = [];
+		$(Formatting).each(function(i,val){
+			y[i] = z[val];
+		});
+		return y;
 	}
 
 
@@ -76,7 +99,7 @@
 	}
 
 	// Wraps a variable as an array, if it isn't one yet.
-	function asArray ( a ){
+	function asArray ( a ) {
 		return $.isArray(a) ? a : [a];
 	}
 
@@ -404,7 +427,7 @@
 				 r: true
 				,t: function( q, sliders ){
 
-					var status = true, z = q['format'] || {};
+					var status = true, y = anonymize( q['format'] || {} );
 
 					parsed.ser = [ q['lower'], q['upper'] ];
 
@@ -430,11 +453,11 @@
 							this.scope = this.scope || sliders;
 
 							// Run internal validator.
-							this.validate( z );
+							this.validate( y );
 						});
 					});
 
-					parsed.format = z;
+					parsed.formatting = y;
 
 					if ( parsed.dir ) {
 						parsed.ser.reverse();
@@ -513,17 +536,8 @@
 			return [c?a:b, c?b:a];
 		}
 
-		// Write all options to this object. Don't use key => value mapping
-		// to allow Closure compiler to rename internal properties.
-		if ( options ) {
-			this.decimals = options['decimals'];
-			this.mark = options['mark'];
-			this.thousand = options['thousand'];
-			this.prefix = options['prefix'];
-			this.postfix = options['postfix'];
-			this.encoder = options['encoder'];
-			this.decoder = options['decoder'];
-		}
+		// Write all options to this object.
+		this.formatting = anonymize( options || {} );
 
 		// Set an empty $ object so the destroy function won't have
 		// to handle .isFunction objects differently.
@@ -613,48 +627,34 @@
 	// Checks all settings on this object for validity or sets defaults.
 	Link.prototype.validate = function ( inherit ) {
 
-		inherit = inherit || {};
+		var F = this.formatting;
 
-		// Default function for encoder/decoder.
-		function ret(a){
-			return a;
-		}
+		inherit = inherit || [];
 
-		// Returns self, otherwise one level up, otherwise default.
-		function str(a,b,c){
-			return typeof a === 'string' ? a : typeof b === 'string' ? b : c;
-		}
-		function func(a,b){
-			return typeof a === 'function' ? a : typeof b === 'function' ? b : ret;
-		}
+		$.each(F, function(i, val){
 
-		if ( this.decimals === undefined ) {
-			this.decimals = inherit.decimals;
-		}
+			var type = typeof FormatDefaults[i];
 
-		this.decimals = parseInt(this.decimals, 10);
+			F[i] =	typeof val === type ?
+					val : typeof inherit[i] === type ?
+						inherit[i] : FormatDefaults[i];
+		});
 
 		// Support for up to 7 decimals. More can't be guaranteed.
-		if ( this.decimals > 7 ) {
-			this.decimals = 7;
+		if ( F[0] > 7 ) {
+			F[0] = 7;
+		} else if (!(F[0] >= 0 && F[0] <= 7)) {
+			F[0] = FormatDefaults[0];
 		}
 
-		if (!(this.decimals >= 0 && this.decimals <= 7)) {
-			this.decimals = 2;
-		}
-
-		this.mark = str(this.mark, inherit.mark, '.');
-		this.thousand = str(this.thousand, inherit.thousand, ' ');
-		this.prefix = str(this.prefix, inherit.prefix, '');
-		this.postfix = str(this.postfix, inherit.postfix, '');
-
-		this.encoder = func(this.encoder, inherit.encoder);
-		this.decoder = func(this.decoder, inherit.decoder);
-
-		if ( (this.mark || this.thousand) && (this.mark === this.thousand) ) {
+		if ( (F[1] || F[2]) && (F[1] === F[2]) ) {
 			throw new RangeError('Link: mark can\'t equal thousand.');
 		}
 
+		this.formatting = F;
+
+		console.log( this.formatting );
+		console.log( '-------------' );
 		return this;
 	};
 
@@ -685,12 +685,12 @@
 			return a.split('').reverse().join('');
 		}
 
-		number = this.encoder( number );
+		number = this.formatting[5]( number );
 
 		var negative = number < 0 ? '-' : '', base = '', mark = '';
 
 		// Round to proper decimal count
-		number = Math.abs(number).toFixed(this.decimals).toString();
+		number = Math.abs(number).toFixed( this.formatting[0] ).toString();
 		number = number.split('.');
 
 		// Rounding away decimals might cause a value of -0
@@ -700,22 +700,22 @@
 		}
 
 		// Group numbers in sets of three.
-		if ( this.thousand ) {
+		if ( this.formatting[2] ) {
 			base = reverse(number[0]).match(/.{1,3}/g);
-			base = reverse(base.join(reverse(this.thousand)));
+			base = reverse(base.join(reverse( this.formatting[2] )));
 		}
 
 		// Ignore the decimal separator if decimals are set to 0.
-		if ( this.mark && number.length > 1 ) {
-			mark = this.mark + number[1];
+		if ( this.formatting[1] && number.length > 1 ) {
+			mark = this.formatting[1] + number[1];
 		}
 
 		// Return the finalized number.
-		return this.prefix + negative + base + mark + this.postfix;
+		return this.formatting[3] + negative + base + mark + this.formatting[4];
 	};
 
 	// Converts a formatted value back to a real number.
-	Link.prototype.value = function ( format ) {
+	Link.prototype.valueOf = function ( input ) {
 
 		function esc(s){
 			return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -724,46 +724,37 @@
 		// The set request might want to ignore this handle.
 		// Test for 'undefined' too, as a two-handle slider
 		// can still be set with an integer.
-		if( format === null || format === undefined ) {
+		if( input === null || input === undefined ) {
 			return false;
 		}
 
 		// Remove formatting and set period for float parsing.
-		format = format.toString()
+		input = input.toString()
 		// If prefix is set and the number is actually prefixed.
-			.replace(new RegExp('^' + esc(this.prefix)), '')
+			.replace(new RegExp('^' + esc( this.formatting[3] )), '')
 		// If postfix is set and the number is postfixed.
-			.replace(new RegExp(esc(this.postfix) + '$'), '')
+			.replace(new RegExp(esc( this.formatting[4] ) + '$'), '')
 		// Remove the separator every three digits.
-			.replace(new RegExp(esc(this.thousand), 'g'), '')
+			.replace(new RegExp(esc( this.formatting[2] ), 'g'), '')
 		// Set the decimal separator back to period.
-			.replace(this.mark, '.');
+			.replace(this.formatting[1], '.');
 
 		// Run the user defined decoder. Returns input by default.
-		format = this.decoder( parseFloat(format) );
+		input = this.formatting[6]( parseFloat(input) );
 
 		// Ignore invalid input
-		if (isNaN( format )) {
+		if (isNaN( input )) {
 			return false;
 		}
 
-		return format;
+		return input;
 	};
 
 	// Append a hidden input element.
 	Link.prototype.append = function ( element ) {
-
-		return new Link( $(this.el).clone().appendTo(element), this.method, {
-			 decimals: this.decimals
-			,mark: this.mark
-			,thousand: this.thousand
-			,prefix: this.prefix
-			,postfix: this.postfix
-			,encoder: this.encoder
-			,decoder: this.decoder
-		});
+		return new Link( $(this.el).clone().appendTo(element)
+			,this.method ).validate( this.formatting );
 	};
-
 
 
 // DOM additions
@@ -771,14 +762,14 @@
 	// Append a handle to the base.
 	function addHandle ( options, index ) {
 
-		var handle = $('<div><div/></div>').addClass( clsList[1] ),
-			classes = [ '-lower', '-upper' ];
+		var handle = $('<div><div/></div>').addClass( Classes[2] ),
+			additions = [ '-lower', '-upper' ];
 
 		if ( options.dir ) {
-			classes.reverse();
+			additions.reverse();
 		}
 
-		handle.children().addClass(clsList[2] +" "+ clsList[2]+classes[index]);
+		handle.children().addClass(Classes[3] +" "+ Classes[3]+additions[index]);
 
 		return handle;
 	}
@@ -788,14 +779,14 @@
 
 		/*jshint validthis: true */
 
-		var base = $('<div/>').appendTo( $(this) ).addClass( clsList[0] ),
+		var base = $('<div/>').appendTo( $(this) ).addClass( Classes[1] ),
 			i, links = [], handles = [];
 
 		// Apply classes and data to the target.
 		$(this).addClass([
-			clsList[6]
-		   ,clsList[16 + options.direction]
-		   ,clsList[10 + options.ort] ].join(' '));
+			Classes[0]
+		   ,Classes[8 + options.direction]
+		   ,Classes[4 + options.ort] ].join(' '));
 
 		// Append handles.
 		for (i = 0; i < options.handles; i++ ) {
@@ -803,10 +794,11 @@
 			// Keep a list of all added handles.
 			handles.push( addHandle( options, i ).appendTo(base) );
 
+			// todo move this
 			// Copy the links into a new array, instead of modifying
 			// the 'options.ser' list. This allows replacement of the invalid
 			// '.el' Links, while the others are still passed by reference.
-			links[i] = [ new Link( function(){}, false, options.format ).validate() ];
+			links[i] = [ new Link( function(){}, false ).validate( options.formatting ) ];
 
 			// Append any hidden input elements.
 			$.each( options.ser[i], function(){
@@ -821,14 +813,14 @@
 		// segments listed in the class list, to allow easy
 		// renaming and provide a minor compression benefit.
 		switch ( options.connect ) {
-			case 1:	$(this).addClass( clsList[9] );
-					handles[0].addClass( clsList[12] );
+			case 1:	$(this).addClass( Classes[7] );
+					handles[0].addClass( Classes[6] );
 					break;
-			case 3: handles[1].addClass( clsList[12] );
+			case 3: handles[1].addClass( Classes[6] );
 					/* falls through */
-			case 2: handles[0].addClass( clsList[9] );
+			case 2: handles[0].addClass( Classes[7] );
 					/* falls through */
-			case 0: $(this).addClass(clsList[12]);
+			case 0: $(this).addClass(Classes[6]);
 					break;
 		}
 
@@ -892,14 +884,14 @@ function closure ( target, options, originalOptions ){
 
 		// Force proper handle stacking
 		if ( handle.is(':first-child') ) {
-			handle.toggleClass(clsList[13], to > 50 );
+			handle.toggleClass(Classes[17], to > 50 );
 		}
 
 		// Update memory locations.
 		Memory.locations[n] = to;
 
 		// Remove blocked state, as the handle could move.
-		Memory.target.removeClass(clsList[14]);
+		Memory.target.removeClass(Classes[11]);
 
 		// Invert the value if this is a right-to-left slider.
 		if ( options.dir ) {
@@ -943,7 +935,7 @@ function closure ( target, options, originalOptions ){
 
 		// Flag the slider as it is now in a transitional state.
 		// Transition takes 300 ms, so re-enable the slider afterwards.
-		addClassFor( Memory.target, clsList[5], 300 );
+		addClassFor( Memory.target, Classes[14], 300 );
 
 		// Move the handle to the new position.
 		setHandle( handle, to );
@@ -973,7 +965,7 @@ function closure ( target, options, originalOptions ){
 			// Test if there is anything that should prevent an event
 			// from being handled, such as a disabled state or an active
 			// 'tap' transition.
-			if( Memory.target.hasClass( clsList[5] ) || disabled ) {
+			if( Memory.target.hasClass( Classes[14] ) || disabled ) {
 				return false;
 			}
 
@@ -1004,7 +996,7 @@ function closure ( target, options, originalOptions ){
 		// If no handles where set
 		if ( !state ) {
 
-			if ( !getsClass( Memory.target, clsList[14] ) ) {
+			if ( !getsClass( Memory.target, Classes[11] ) ) {
 				return;
 			}
 
@@ -1012,7 +1004,7 @@ function closure ( target, options, originalOptions ){
 			// the margin option is set, and when the margin
 			// is the cause for the blocking.
 			if ( options.margin && state === 0 ) {
-				addClassFor( Memory.target, clsList[15], 450 );
+				addClassFor( Memory.target, Classes[13], 450 );
 			}
 
 			// Fire callback on unsuccessful handle movement.
@@ -1030,7 +1022,7 @@ function closure ( target, options, originalOptions ){
 
 		// The handle is no longer active, so remove the class.
 
-		$('.' + clsList[4]).removeClass(clsList[4]);
+		$('.' + Classes[15]).removeClass(Classes[15]);
 
 		// Remove cursor styles and text-selection events bound to the body.
 		if ( event.cursor ) {
@@ -1042,7 +1034,7 @@ function closure ( target, options, originalOptions ){
 
 		// Fire the change and set events.
 		Memory.target
-			.removeClass( clsList[14] +' '+ clsList[20])
+			.removeClass( Classes[11] +' '+ Classes[12] )
 			.trigger('set')
 			.trigger('change');
 	}
@@ -1052,7 +1044,7 @@ function closure ( target, options, originalOptions ){
 
 		// Mark the handle as 'active' so it can be styled.
 		if( data.handles.length === 1 ) {
-			data.handles[0].children().addClass(clsList[4]);
+			data.handles[0].children().addClass(Classes[15]);
 		}
 
 		// A drag should never propagate up to the 'tap' event.
@@ -1080,7 +1072,7 @@ function closure ( target, options, originalOptions ){
 
 			// Mark the target with a dragging state.
 			if ( Memory.handles.length > 1 ) {
-				Memory.target.addClass(clsList[20]);
+				Memory.target.addClass(Classes[12]);
 			}
 
 			// Prevent text selection when dragging the handles.
@@ -1148,7 +1140,7 @@ function closure ( target, options, originalOptions ){
 		// Extend tapping behaviour to target
 		if ( behaviour.extend ) {
 
-			Memory.target.addClass( clsList[19] );
+			Memory.target.addClass( Classes[16] );
 
 			if ( behaviour.tap ) {
 				attach ( actions.start, Memory.target, edge, Memory );
@@ -1158,7 +1150,7 @@ function closure ( target, options, originalOptions ){
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			var dragable = Memory.base.find('.'+clsList[9]).addClass(clsList[18]);
+			var dragable = Memory.base.find('.'+Classes[7]).addClass(Classes[10]);
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first
@@ -1206,7 +1198,7 @@ function closure ( target, options, originalOptions ){
 		for ( i = 0; i < ( Memory.handles.length > 1 ? 3 : 1 ); i++ ) {
 
 			to = link || Memory.serialization[i%2][0];
-			to = to.value( values[i%2] );
+			to = to.valueOf( values[i%2] );
 
 			if ( to === false ) {
 				continue;
@@ -1275,7 +1267,7 @@ function closure ( target, options, originalOptions ){
 
 		// Unbind events on the slider, remove all classes and child elements.
 		$(this).off(namespace)
-			.removeClass(clsList.join(' '))
+			.removeClass(Classes.join(' '))
 			.empty();
 
 		// Dump storage in the closure. Garbage collector should catch this.
@@ -1345,7 +1337,7 @@ function closure ( target, options, originalOptions ){
 		if ( !arguments.length ) {
 
 			// Determine whether to use the native val method.
-			if ( this.hasClass( clsList[6] ) ) {
+			if ( this.hasClass( Classes[0] ) ) {
 				return this[0].get();
 			}
 
@@ -1355,7 +1347,7 @@ function closure ( target, options, originalOptions ){
 		// Loop all individual items, and handle setting appropriately.
 		return this.each(function(){
 
-			if ( $(this).hasClass( clsList[6] ) ) {
+			if ( $(this).hasClass( Classes[0] ) ) {
 				this.set.call( $(this), asArray(args[0]), args[1], args[2] );
 			} else {
 				$val.apply( $(this), args);
