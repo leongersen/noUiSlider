@@ -63,7 +63,7 @@
 </head>
 
 <body>
-<!--
+
 	<form>
 		<div class="slider1" id="slider1a"></div>
 		<div class="slider1" id="slider1b"></div>
@@ -129,20 +129,42 @@
 			,behaviour: 'extend-tap'
 			,connect: 'lower'
 			,serialization: {
-				 lower: [ new Link(function( value ){
-					$("#slider3span").html( value );
-				 }) ]
+				 lower: [	new Link(function( value ){
+								$("#slider3span").html( value );
+							})
+						]
 			}
 		});
 
 	</script>
--->
+
 	<hr>
 
 	<style>
+
 		.slider4 {
-			margin-bottom: 80px;
+			margin: 80px;
 		}
+
+
+		.tooltip {
+			display: none;
+			position: absolute;
+			border: 1px solid #D9D9D9;
+			font: 400 12px/12px Arial;
+			border-radius: 3px;
+			top: 40px;
+			padding: 5px;
+			left: 17px;
+		}
+		.tooltip.top {
+			top: auto;
+			bottom: 40px;
+		}
+		.noUi-active .tooltip {
+			display: block;
+		}
+
 	</style>
 
 	<div class="slider4" id="slider4"></div>
@@ -155,6 +177,10 @@
 
 	<script pre>
 
+		function placeTooltip(value){
+			$(this).text(value).css('marginLeft', '-' + ($(this).outerWidth()/2) + 'px');
+		}
+
 		$("#slider4").noUiSlider({
 			 range: [ 0.001, 0.003 ]
 			,start: [ 0, 0.002 ]
@@ -163,7 +189,7 @@
 			,behaviour: 'drag'
 			,serialization: {
 
-				 lower: [	new Link( '-tooltip-<div class="noUi-tooltip">', false, {
+				 lower: [	new Link( '-tooltip-<div class="tooltip"/>', placeTooltip, {
 								decimals: 6
 							}),
 							new Link( $("#slider4inputlower"), false, {
@@ -180,25 +206,22 @@
 							}) ]
 
 				,upper: [	new Link( $("#slider4inputupper"), 'val' ),
-							new Link( '-tooltip-', function( value ){ $(this).text(value) }) ]
+							new Link( '-tooltip-<div class="tooltip top"/>', placeTooltip ) ]
 
 				,format: {
 					decimals: 5
 				}
 			}
 		}).on('slide', function(){
-			
-		//	console.log($(this));
-		
-			$('#slider4span').html( JSON.stringify( $(this).val() ) );
+			$('#slider4span').html(
+				JSON.stringify( $(this).val() )
+			);
 		});
 
-		// event binding on rebuild FAILS
-
-	//	$("#slider4").noUiSlider({
-	//		 range: [ -0.002, 0.003 ]
-	//		,start: [ 0.0021, 0.0025 ]
-	//	}, true);
+		$("#slider4").noUiSlider({
+			 range: [ -0.002, 0.003 ]
+			,start: [ 0.0011, 0.0025 ]
+		}, true);
 
 	</script>
 

@@ -479,7 +479,7 @@
 			// what option caused the trouble. Since throwing an error
 			// will prevent further script execution, log the error
 			// first. Test for console, as it might not be available.
-			if( console && console.log && console.group ){
+			if( window.console && console.log && console.group ){
 				console.group( 'Invalid noUiSlider initialisation:' );
 				console.log( 'Option:\t', name );
 				console.log( 'Value:\t', options[name] );
@@ -530,7 +530,7 @@
 		this.target = $([]);
 		this.method = method;
 
-		// Tooltips can be called as scope in a method too.
+		// Set the function calling scope.
 		if ( typeof method === 'function' ) {
 			this.scope = target;
 			this.isFunction = true;
@@ -547,7 +547,7 @@
 				target = target.replace('-tooltip-', '') || '<div/>';
 
 				// By default, use the 'html' method.
-				if ( !method) {
+				if ( !method ) {
 					this.method = 'html';
 				}
 
@@ -591,16 +591,11 @@
 
 				this.method = 'val';
 
-				console.log ( this.target );
-
 				// Set the slider to a new value on change.
-				this.target.on('change' + namespace,
-					$.proxy(function( e ){
+				this.target.on('change', $.proxy(function( e ){
 						this.obj.val(at(
 							null, $(e.target).val(), this.N
 						), false, this);
-
-						console.log( 'change' );
 					}, this));
 
 				return;
@@ -612,7 +607,7 @@
 			return;
 		}
 
-		this.error('');
+		throw new RangeError('Invalid Link');
 	}
 
 	// Checks all settings on this object for validity or sets defaults.
@@ -657,14 +652,14 @@
 		this.decoder = func(this.decoder, inherit.decoder);
 
 		if ( (this.mark || this.thousand) && (this.mark === this.thousand) ) {
-			this.error('mark can\'t equal thousand.');
+			throw new RangeError('Link: mark can\'t equal thousand.');
 		}
 
 		return this;
 	};
 
 	// Provides external items with the slider value.
-	Link.prototype.write = function ( options, value, slider ) {
+	Link.prototype.write = function ( options, value, handle, slider ) {
 
 		// Convert the value to the slider stepping/range.
 		value = fromStepping( options, value );
@@ -677,7 +672,7 @@
 
 		// Branch between serialization to a function or an object.
 		if ( this.isFunction ) {
-			this.method.call( this.scope, value, slider );
+			this.method.call( this.scope, value, handle, slider );
 		} else {
 			this.target[ this.method ]( value );
 		}
@@ -730,7 +725,7 @@
 		// Test for 'undefined' too, as a two-handle slider
 		// can still be set with an integer.
 		if( format === null || format === undefined ) {
-			return true;
+			return false;
 		}
 
 		// Remove formatting and set period for float parsing.
@@ -757,26 +752,18 @@
 
 	// Append a hidden input element.
 	Link.prototype.append = function ( element ) {
-		return new Link($(this.el).clone().appendTo(element)).take( this );
+
+		return new Link( $(this.el).clone().appendTo(element), this.method, {
+			 decimals: this.decimals
+			,mark: this.mark
+			,thousand: this.thousand
+			,prefix: this.prefix
+			,postfix: this.postfix
+			,encoder: this.encoder
+			,decoder: this.decoder
+		});
 	};
 
-	// Copy properties from another Link.
-	Link.prototype.take = function( a ) {
-		this.decimals = a.decimals;
-		this.mark = a.mark;
-		this.thousand = a.thousand;
-		this.prefix = a.prefix;
-		this.postfix = a.postfix;
-		this.encoder = a.encoder;
-		this.decoder = a.decoder;
-
-		return this;
-	};
-
-	// Throw an error on invalid Link configuration.
-	Link.prototype.error = function (a){
-		throw new RangeError('Invalid Link' + a);
-	}
 
 
 // DOM additions
@@ -802,7 +789,7 @@
 		/*jshint validthis: true */
 
 		var base = $('<div/>').appendTo( $(this) ).addClass( clsList[0] ),
-			i, links = [], handles = [];//, grabs = [];
+			i, links = [], handles = [];
 
 		// Apply classes and data to the target.
 		$(this).addClass([
@@ -816,10 +803,9 @@
 			// Keep a list of all added handles.
 			handles.push( addHandle( options, i ).appendTo(base) );
 
-			// Create a new list of submissive elements,
-			// instead of modifying the options.ser list. This allows passing
-			// the replace the invalid .el Links, while the others are still
-			// passed by reference.
+			// Copy the links into a new array, instead of modifying
+			// the 'options.ser' list. This allows replacement of the invalid
+			// '.el' Links, while the others are still passed by reference.
 			links[i] = [ new Link( function(){}, false, options.format ).validate() ];
 
 			// Append any hidden input elements.
@@ -828,8 +814,6 @@
 								this.append( handles[i].children() ) :
 								this );
 			});
-
-		//	grabs.push( handles[i].children( '.' + clsList[2] ) );
 		}
 
 		// Apply the required connection classes to the elements
@@ -851,50 +835,12 @@
 		return {
 			 base: base
 			,handles: handles
-		//	,grabs: grabs
 			,serialization: links
 		};
 	}
 
 
-// Access points
-
-	// Run the standard initializer
-	function initialize ( originalOptions ) {
-
-		// Test the options once, not for every slider.
-		var options = test( originalOptions, this );
-
-		// Loop all items, and provide a new closed-scope environment.
-		return this.each(function(){
-			closure(this, options, originalOptions);
-		});
-	}
-
-	// Destroy the slider, then re-enter initialization.
-	function rebuild ( options ) {
-
-		return this.each(function(){
-
-			// Get the current values from the slider,
-			// including the initialization options.
-			var values = $(this).val(),
-				originalOptions = this.destroy(),
-
-				// Extend the previous options with the newly provided ones.
-				newOptions = $.extend( {}, originalOptions, options );
-
-			// Run the standard initializer.
-			$(this).noUiSlider( newOptions );
-
-			// If the start option hasn't changed,
-			// reset the previous values.
-			if ( originalOptions.start === newOptions.start ) {
-				$(this).val(values);
-			}
-		});
-	}
-
+// Slider scope
 
 function closure ( target, options, originalOptions ){
 
@@ -910,22 +856,6 @@ function closure ( target, options, originalOptions ){
 
 
 // Handle placement
-
-	// Handles movement by tapping.
-	function jump ( handle, to ) {
-
-		// Flag the slider as it is now in a transitional state.
-		// Transition takes 300 ms, so re-enable the slider afterwards.
-		addClassFor( Memory.target, clsList[5], 300 );
-
-		// Move the handle to the new position.
-		setHandle( handle, to );
-
-		Memory.target
-			.trigger('slide')
-			.trigger('set')
-			.trigger('change');
-	}
 
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to, delimit ) {
@@ -979,7 +909,7 @@ function closure ( target, options, originalOptions ){
 		// Write values to serialization Links.
 		// Convert the value to the correct relative representation.
 		$(Memory.serialization[n]).each(function(){
-			this.write( options, to );
+			this.write( options, to, handle.children(), Memory.target );
 		});
 
 		return true;
@@ -1006,6 +936,22 @@ function closure ( target, options, originalOptions ){
 		}
 
 		return [c,d];
+	}
+
+	// Handles movement by tapping.
+	function jump ( handle, to ) {
+
+		// Flag the slider as it is now in a transitional state.
+		// Transition takes 300 ms, so re-enable the slider afterwards.
+		addClassFor( Memory.target, clsList[5], 300 );
+
+		// Move the handle to the new position.
+		setHandle( handle, to );
+
+		Memory.target
+			.trigger('slide')
+			.trigger('set')
+			.trigger('change');
 	}
 
 
@@ -1084,10 +1030,7 @@ function closure ( target, options, originalOptions ){
 
 		// The handle is no longer active, so remove the class.
 
-		// todo select handle!!
-		if ( Memory.handles.length === 1 ) {
-			Memory.handles[0].children().removeClass(clsList[4]);
-		}
+		$('.' + clsList[4]).removeClass(clsList[4]);
 
 		// Remove cursor styles and text-selection events bound to the body.
 		if ( event.cursor ) {
@@ -1108,8 +1051,8 @@ function closure ( target, options, originalOptions ){
 	function start ( event, data ) {
 
 		// Mark the handle as 'active' so it can be styled.
-		if( Memory.handles.length === 1 ) {
-			Memory.handles[0].children().addClass(clsList[4]);
+		if( data.handles.length === 1 ) {
+			data.handles[0].children().addClass(clsList[4]);
 		}
 
 		// A drag should never propagate up to the 'tap' event.
@@ -1265,6 +1208,10 @@ function closure ( target, options, originalOptions ){
 			to = link || Memory.serialization[i%2][0];
 			to = to.value( values[i%2] );
 
+			if ( to === false ) {
+				continue;
+			}
+
 			// Calculate the new handle position
 			to = toStepping( options, to );
 
@@ -1279,7 +1226,10 @@ function closure ( target, options, originalOptions ){
 
 			// Reset the input if it doesn't match the slider.
 			$(Memory.serialization[i%2]).each(function(){
-				this.write( options, Memory.locations[i%2] );
+				this.write( options
+					,Memory.locations[i%2]
+					,Memory.handles[i%2].children()
+					,Memory.target );
 			});
 		}
 
@@ -1302,7 +1252,9 @@ function closure ( target, options, originalOptions ){
 
 		if ( retour.length === 1 ){
 			return retour[0];
-		} else if ( options.dir ) {
+		}
+
+		if ( options.dir ) {
 			return retour.reverse();
 		}
 
@@ -1316,7 +1268,8 @@ function closure ( target, options, originalOptions ){
 		// events in the noUiSlider namespace.
 		$.each(Memory.serialization, function(){
 			$.each(this, function(){
-				this.target.off(namespace);
+				// Won't remove 'change' when bound implicitly.
+				this.target.off( namespace );
 			});
 		});
 
@@ -1330,11 +1283,51 @@ function closure ( target, options, originalOptions ){
 
 		// Return the original options from the closure.
 		return originalOptions;
-	}
+	};
 
 	// Use the public value method to set the start values.
 	$(target).val( options.start );
 }
+
+
+// Access points
+
+	// Run the standard initializer
+	function initialize ( originalOptions ) {
+
+		// Test the options once, not for every slider.
+		var options = test( originalOptions, this );
+
+		// Loop all items, and provide a new closed-scope environment.
+		return this.each(function(){
+			closure(this, options, originalOptions);
+		});
+	}
+
+	// Destroy the slider, then re-enter initialization.
+	function rebuild ( options ) {
+
+		return this.each(function(){
+
+			// Get the current values from the slider,
+			// including the initialization options.
+			var values = $(this).val(),
+				originalOptions = this.destroy(),
+
+				// Extend the previous options with the newly provided ones.
+				newOptions = $.extend( {}, originalOptions, options );
+
+			// Run the standard initializer.
+			$(this).noUiSlider( newOptions );
+
+			// If the start option hasn't changed,
+			// reset the previous values.
+			if ( originalOptions.start === newOptions.start ) {
+				$(this).val(values);
+			}
+		});
+	}
+
 
 	// Expose serialization constructor.
 	$.noUiSlider = { 'Link': Link };
@@ -1350,9 +1343,6 @@ function closure ( target, options, originalOptions ){
 
 		// Test if there are arguments, and if not, call the 'get' method.
 		if ( !arguments.length ) {
-
-		// todo remove debug
-//			console.log(this);
 
 			// Determine whether to use the native val method.
 			if ( this.hasClass( clsList[6] ) ) {
