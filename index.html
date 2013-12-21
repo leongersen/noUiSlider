@@ -137,7 +137,7 @@
 		});
 
 	</script>
--->
+
 	<hr>
 
 	<style>
@@ -178,7 +178,7 @@
 	<script pre>
 
 		function placeTooltip(value){
-			$(this).text(value).css('marginLeft', '-' + ($(this).outerWidth()/2) + 'px');
+			$(this).text(value).css('marginLeft', '-' + ($(this).width()/2) + 'px');
 		}
 
 		$("#slider4").noUiSlider({
@@ -232,8 +232,45 @@
 	</script>
 
 	<hr>
+-->
+
+	<div class="slider5" id="slider5"></div>
+	<span id="slider5span1a"></span>
+	<span id="slider5span1b"></span>
+	<br>
+	<span id="slider5span2a"></span>
+	<span id="slider5span2b"></span>
+
+	<script pre>
+
+		function writeLeft ( value, handle, slider ) {
+			$(this).text(handle.parent()[0].style.left);
+		}
+
+		$("#slider5").noUiSlider({
+			 range: [ 0, 10000 ]
+			,start: [ 500, 4000 ]
+			,step: true
+			,stepping: {
+				  '0%': [ 'x', 100 ]
+				,'10%': [ 500, 500 ]
+				,'50%': [ 4000, 1000 ]
+			}
+			,serialization: {
+				 lower: [
+					 new Link ( $('#slider5span1a') )
+					,new Link ( $('#slider5span1b'), writeLeft )
+				 ]
+				,upper: [
+					 new Link ( $('#slider5span2a') )
+					,new Link ( $('#slider5span2b'), writeLeft )
+				 ]
+			}
+		});
 
 
+
+	</script>
 
 	<div id="log"><div>
 

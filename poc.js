@@ -96,6 +96,12 @@
 		}
 	}
 
+	// Determine the size of a sub-range in relation to a full range.
+	function subRangeRatio ( pa, pb ) {
+		return (100 / (pb - pa));
+	}
+
+
 // Type validation
 
 	// Test in an object is an instance of jQuery or Zepto.
@@ -176,7 +182,7 @@
 			pa = options.stepping[j-1],
 			pb = options.stepping[j];
 
-		return pa + ( toPercentage([va,vb], value)/(100/(pb-pa)) );
+		return pa + (toPercentage([va, vb], value) / subRangeRatio (pa, pb));
 	}
 
 	// (value)
@@ -200,7 +206,36 @@
 			pa = options.stepping[j-1],
 			pb = options.stepping[j];
 
-		return isPercentage([va, vb], (value - pa)*(100/(pb-pa)));
+		return isPercentage([va, vb], (value - pa) * subRangeRatio (pa, pb));
+	}
+
+	// (percentage) Get the step that applies at a certain value.
+	function getStep ( options, value ){
+
+		var step;
+
+		var j = 0;
+
+		if ( options.stepping ) {
+
+			while ( value >= options.stepping[++j] ){}
+
+			if ( options.step ) {
+				return options.stepping[j-1];
+			}
+
+			step = options.snaps[j-1];
+
+		} else {
+
+			step = options.step;
+		}
+
+		if ( step ) {
+			return closest( value, step );
+		}
+
+		return value;
 	}
 
 
@@ -373,13 +408,6 @@
 					return isNumeric(q);
 				}
 			}
-			,'step': {
-				 t: function( q ){
-					q = parseFloat(q);
-					parsed.step = fromPercentage ( parsed.range, q );
-					return isNumeric(q);
-				}
-			}
 			,'direction': {
 				 r: true
 				,t: function( q ){
@@ -415,22 +443,90 @@
 			,'stepping': {
 				 t: function( q ){
 
-					if ( parsed.step ) {
-						return false;
-					}
+					var correct = true, i = 0;
 
-					parsed.stepping = [0];
+					// todo rename
+					parsed.stepping = [ 0 ];
 					parsed.steps = [ parsed.range[0] ];
+					parsed.snaps = [ false ];
 
-					$.each(q, function(a,b){
-						parsed.stepping.push( parseFloat(a) );
-						parsed.steps.push( parseFloat(b) );
+					$.each(q, function( percentage, b ){ // todo rename
+
+						percentage = parseFloat( percentage );
+
+						// Check for correct input.
+						if( !isNumeric( percentage ) || !$.isArray( b ) ) {
+							correct = false;
+							return false;
+						}
+
+						var value = parseFloat(b[0]),
+
+							// This. Is. Wrong. todo
+							step = parseFloat(b[1]);
+
+						// For 0%, only stepping can be set.
+						if ( !i && !percentage ){
+							parsed.snaps[i++] = step;
+							return true;
+						}
+
+						// Ignore any values for 100%.
+						if ( percentage === 100 ) {
+							return false;
+						}
+
+						parsed.stepping[i] = percentage;
+						parsed.steps[i] = value;
+
+						// NaN will evaluate to false too, but to keep
+						// logging clear, set step explicitly.
+						parsed.snaps[i] = isNaN(step) ? false : step;
+
+						i++;
 					});
 
-					parsed.steps.push( parsed.range[1] );
-					parsed.stepping.push( 100 );
+					// The final value matches range end.
+					// There is no sense in stepping at 100%.
+					parsed.stepping[i] = 100;
+					parsed.steps[i] = parsed.range[1];
+					parsed.snaps[i] = false;
 
-					return true;
+					$.each(parsed.snaps, function(i,n){
+
+						// Ignore 'false' stepping.
+						if ( !n ) {
+							return true;
+						}
+
+						// Factor to range ratio
+						parsed.snaps[i] = fromPercentage([
+							 parsed.steps[i]
+							,parsed.steps[i+1]
+						], n) / subRangeRatio (
+							parsed.stepping[i],
+							parsed.stepping[i+1] );
+					});
+
+					// todo remove debug
+					console.log(parsed.steps);
+					console.log(parsed.stepping);
+					console.log(parsed.snaps);
+
+					return correct;
+				}
+			}
+			,'step': {
+				 t: function( q ){
+
+					if ( parsed.stepping ) {
+						parsed.step = true;
+						return q === true;
+					}
+
+					q = parseFloat(q);
+					parsed.step = fromPercentage ( parsed.range, q );
+					return isNumeric(q);
 				}
 			}
 			,'serialization': {
@@ -684,7 +780,7 @@
 		if ( this.isFunction ) {
 			this.method.call( this.scope, value, handle, slider );
 		} else {
-			this.target[ this.method ]( value );
+			this.target[ this.method ]( value, handle, slider );
 		}
 	};
 
@@ -783,8 +879,6 @@
 			.replace(new RegExp(esc( this.formatting[2] ), 'g'), '')
 		// Set the decimal separator back to period.
 			.replace(this.formatting[1], '.');
-
-		console.log( isNegative, input );
 
 		// Run the user defined decoder. Returns input by default.
 		input = this.formatting[6]( parseFloat( isNegative + input ) );
@@ -909,8 +1003,8 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Handle the step option.
-		if ( to < 100 && options.step ){
-			to = closest( to, options.step );
+		if ( to < 100 ){
+			to = getStep(options, to);
 		}
 
 		// Limit to 0/100 for .val input, trim anything beyond 7 digits, as
