@@ -218,13 +218,18 @@
 
 		if ( options.stepping ) {
 
-			while ( value >= options.stepping[++j] ){}
+			while ( value >= options.stepping[++j] ){} // why >= ?
 
 			if ( options.step ) {
 				return options.stepping[j-1];
 			}
 
+			// todo. This doesn't work properly. E.g. 10% -> 500
 			step = options.snaps[j-1];
+			
+			console.log('------------');
+			console.log(step, j, options.snaps, value );
+			console.log('------------');
 
 		} else {
 
@@ -461,8 +466,6 @@
 						}
 
 						var value = parseFloat(b[0]),
-
-							// This. Is. Wrong. todo
 							step = parseFloat(b[1]);
 
 						// For 0%, only stepping can be set.

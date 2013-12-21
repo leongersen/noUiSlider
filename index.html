@@ -234,23 +234,29 @@
 	<hr>
 -->
 
-	<div class="slider5" id="slider5"></div>
-	<span id="slider5span1a"></span>
-	<span id="slider5span1b"></span>
+	<div class="slider5" id="slider5a"></div>
+	<span id="slider5aspan1a"></span>
+	<span id="slider5aspan1b"></span>
 	<br>
-	<span id="slider5span2a"></span>
-	<span id="slider5span2b"></span>
+	<span id="slider5aspan2a"></span>
+	<span id="slider5aspan2b"></span>
 
+	<div class="slider5" id="slider5b"></div>
+	<span id="slider5bspan1a"></span>
+	<span id="slider5bspan1b"></span>
+	<br>
+	<span id="slider5bspan2a"></span>
+	<span id="slider5bspan2b"></span>
+	
 	<script pre>
 
 		function writeLeft ( value, handle, slider ) {
 			$(this).text(handle.parent()[0].style.left);
 		}
 
-		$("#slider5").noUiSlider({
+		$("#slider5a").noUiSlider({
 			 range: [ 0, 10000 ]
-			,start: [ 500, 4000 ]
-			,step: true
+			,start: [ 500, 4000 ] // this selects the wrong stepping subrange! ( try 499 )
 			,stepping: {
 				  '0%': [ 'x', 100 ]
 				,'10%': [ 500, 500 ]
@@ -258,17 +264,39 @@
 			}
 			,serialization: {
 				 lower: [
-					 new Link ( $('#slider5span1a') )
-					,new Link ( $('#slider5span1b'), writeLeft )
+					 new Link ( $('#slider5aspan1a') )
+					,new Link ( $('#slider5aspan1b'), writeLeft )
 				 ]
 				,upper: [
-					 new Link ( $('#slider5span2a') )
-					,new Link ( $('#slider5span2b'), writeLeft )
+					 new Link ( $('#slider5aspan2a') )
+					,new Link ( $('#slider5aspan2b'), writeLeft )
 				 ]
 			}
 		});
 
+	</script>
+	
+	<script>
 
+		$("#slider5b").noUiSlider({
+			 range: [ 0, 10000 ]
+			,start: [ 500, 4000 ]
+			,stepping: {
+				  '0%': [    0, 100 ]
+				,'10%': [ 1000, 500 ]
+				,'50%': [ 5000, 1000 ]
+			}
+			,serialization: {
+				 lower: [
+					 new Link ( $('#slider5bspan1a') )
+					,new Link ( $('#slider5bspan1b'), writeLeft )
+				 ]
+				,upper: [
+					 new Link ( $('#slider5bspan2a') )
+					,new Link ( $('#slider5bspan2b'), writeLeft )
+				 ]
+			}
+		});
 
 	</script>
 
