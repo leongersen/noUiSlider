@@ -92,7 +92,8 @@
 	// Throw an error if formatting options are incompatible.
 	function throwEqualError(F,a,b){
 		if ( (F[a] || F[b]) && (F[a] === F[b]) ) {
-			throw new RangeError('Link: '+Formatting[a]+' can\'t match '+Formatting[b]+'.');
+			throw new RangeError('Link: '+Formatting[a]+'\
+									can\'t match '+Formatting[b]+'.');
 		}
 	}
 
@@ -165,22 +166,17 @@
 	// (percentage)
 	function toStepping ( options, value ) {
 
-		if ( !options.stepping ) {
-			return toPercentage( options.range, value );
-		}
-
-		var j = 0;
-
 		if ( value === options.range[1] ){
 			return 100;
 		}
 
-		while ( value >= options.steps[++j] ){}
+		var j = 0;
+		while ( value >= options.stepValues[++j] ){}
 
-		var va = options.steps[j-1],
-			vb = options.steps[j],
-			pa = options.stepping[j-1],
-			pb = options.stepping[j];
+		var va = options.stepValues[j-1],
+			vb = options.stepValues[j],
+			pa = options.stepPercentages[j-1],
+			pb = options.stepPercentages[j];
 
 		return pa + (toPercentage([va, vb], value) / subRangeRatio (pa, pb));
 	}
@@ -188,23 +184,18 @@
 	// (value)
 	function fromStepping ( options, value ) {
 
-		if ( !options.stepping ) {
-			return isPercentage( options.range, value );
-		}
-
-		var j = 0;
-
 		// There is no range group that fits 100
 		if ( value === 100 ){
 			return options.range[1];
 		}
 
-		while ( value >= options.stepping[++j] ){}
+		var j = 0;
+		while ( value >= options.stepPercentages[++j] ){}
 
-		var va = options.steps[j-1],
-			vb = options.steps[j],
-			pa = options.stepping[j-1],
-			pb = options.stepping[j];
+		var va = options.stepValues[j-1],
+			vb = options.stepValues[j],
+			pa = options.stepPercentages[j-1],
+			pb = options.stepPercentages[j];
 
 		return isPercentage([va, vb], (value - pa) * subRangeRatio (pa, pb));
 	}
@@ -212,35 +203,28 @@
 	// (percentage) Get the step that applies at a certain value.
 	function getStep ( options, value ){
 
-		var step;
+		var j = 0, a, b;
+		while ( value >= options.stepPercentages[++j] ){}
 
-		var j = 0;
+		if ( options.stepAll ) {
 
-		if ( options.stepping ) {
+			a = options.stepPercentages[j-1];
+			b = options.stepPercentages[j];
 
-			while ( value >= options.stepping[++j] ){} // why >= ?
-
-			if ( options.step ) {
-				return options.stepping[j-1];
+			if ((value - a) > ((b-a)/2)){
+				return b;
 			}
-
-			// todo. This doesn't work properly. E.g. 10% -> 500
-			step = options.snaps[j-1];
-			
-			console.log('------------');
-			console.log(step, j, options.snaps, value );
-			console.log('------------');
-
-		} else {
-
-			step = options.step;
+			return a;
 		}
 
-		if ( step ) {
-			return closest( value, step );
+		if ( !options.stepSteps[j-1] ){
+			return value;
 		}
 
-		return value;
+		return options.stepPercentages[j-1] + closest(
+			value - options.stepPercentages[j-1],
+			options.stepSteps[j-1]
+		);
 	}
 
 
@@ -339,7 +323,7 @@
 			return a;
 		}
 
-		var parsed = {}, tests = {
+		var parsed = { stepSteps: [], stepPercentages: [0, 100] }, tests = {
 			 'handles': {
 				 r: true
 				,t: function( q ){
@@ -352,6 +336,7 @@
 				,t: function( q ){
 
 					parsed.range = values(q);
+					parsed.stepValues = parsed.range;
 
 					// The values can't be identical.
 					return parsed.range && parsed.range[0] !== parsed.range[1];
@@ -450,52 +435,51 @@
 
 					var correct = true, i = 0;
 
-					// todo rename
-					parsed.stepping = [ 0 ];
-					parsed.steps = [ parsed.range[0] ];
-					parsed.snaps = [ false ];
+					parsed.stepPercentages = [ 0 ];
+					parsed.stepValues = [ parsed.range[0] ];
+					parsed.stepSteps = [ false ];
 
-					$.each(q, function( percentage, b ){ // todo rename
+					$.each(q, function( pct, val ){
 
-						percentage = parseFloat( percentage );
+						pct = parseFloat( pct );
 
 						// Check for correct input.
-						if( !isNumeric( percentage ) || !$.isArray( b ) ) {
+						if( !isNumeric( pct ) || !$.isArray( val ) ) {
 							correct = false;
 							return false;
 						}
 
-						var value = parseFloat(b[0]),
-							step = parseFloat(b[1]);
+						var value = parseFloat(val[0]),
+							step = parseFloat(val[1]);
 
 						// For 0%, only stepping can be set.
-						if ( !i && !percentage ){
-							parsed.snaps[i++] = step;
+						if ( !i && !pct ){
+							parsed.stepSteps[i++] = step;
 							return true;
 						}
 
 						// Ignore any values for 100%.
-						if ( percentage === 100 ) {
+						if ( pct === 100 ) {
 							return false;
 						}
 
-						parsed.stepping[i] = percentage;
-						parsed.steps[i] = value;
+						parsed.stepPercentages[i] = pct;
+						parsed.stepValues[i] = value;
 
 						// NaN will evaluate to false too, but to keep
 						// logging clear, set step explicitly.
-						parsed.snaps[i] = isNaN(step) ? false : step;
+						parsed.stepSteps[i] = isNaN(step) ? false : step;
 
 						i++;
 					});
 
 					// The final value matches range end.
 					// There is no sense in stepping at 100%.
-					parsed.stepping[i] = 100;
-					parsed.steps[i] = parsed.range[1];
-					parsed.snaps[i] = false;
+					parsed.stepPercentages[i] = 100;
+					parsed.stepValues[i] = parsed.range[1];
+					parsed.stepSteps[i] = false;
 
-					$.each(parsed.snaps, function(i,n){
+					$.each(parsed.stepSteps, function(i,n){
 
 						// Ignore 'false' stepping.
 						if ( !n ) {
@@ -503,18 +487,13 @@
 						}
 
 						// Factor to range ratio
-						parsed.snaps[i] = fromPercentage([
-							 parsed.steps[i]
-							,parsed.steps[i+1]
+						parsed.stepSteps[i] = fromPercentage([
+							 parsed.stepValues[i]
+							,parsed.stepValues[i+1]
 						], n) / subRangeRatio (
-							parsed.stepping[i],
-							parsed.stepping[i+1] );
+							parsed.stepPercentages[i],
+							parsed.stepPercentages[i+1] );
 					});
-
-					// todo remove debug
-					console.log(parsed.steps);
-					console.log(parsed.stepping);
-					console.log(parsed.snaps);
 
 					return correct;
 				}
@@ -522,14 +501,21 @@
 			,'step': {
 				 t: function( q ){
 
-					if ( parsed.stepping ) {
-						parsed.step = true;
-						return q === true;
+					if ( q === true ) {
+						parsed.stepAll = true;
+						return true;
 					}
 
-					q = parseFloat(q);
-					parsed.step = fromPercentage ( parsed.range, q );
-					return isNumeric(q);
+					if ( !isNumeric(q) ){
+						return false;
+					}
+
+					parsed.stepSteps = [
+						fromPercentage ( parsed.range, q ),
+						false
+					];
+
+					return true;
 				}
 			}
 			,'serialization': {
@@ -625,6 +611,12 @@
 		// Pre-define the styles.
 		parsed.style = parsed.ort ? 'top' : 'left';
 
+		// todo remove debug
+		console.log(parsed.stepValues);
+		console.log(parsed.stepPercentages);
+		console.log(parsed.stepSteps);
+		console.log('-------------');
+
 		return parsed;
 	}
 
@@ -637,7 +629,8 @@
 		// Make sure Link isn't called as a function, in which case
 		// the 'this' scope would be the window.
 		if ( !(this instanceof Link) ) {
-			throw new Error('Can\'t use Link as a function. Use the \'new\' keyword.');
+			throw new Error('Can\'t use Link as a function. \
+								Use the \'new\' keyword.');
 		}
 
 		// Returns null array.
@@ -744,7 +737,7 @@
 
 			var type = typeof FormatDefaults[i];
 
-			F[i] =	typeof val === type ?
+			F[i] = typeof val === type ?
 					val : typeof inherit[i] === type ?
 						inherit[i] : FormatDefaults[i];
 		});
@@ -763,7 +756,7 @@
 
 		this.formatting = F;
 
-		console.log( this.formatting );
+//		console.log( this.formatting );
 		return this;
 	};
 
@@ -836,11 +829,11 @@
 	// Converts a formatted value back to a real number.
 	Link.prototype.valueOf = function ( input ) {
 
-		var isNegative;
-
 		function esc(s){
 			return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 		}
+
+		var isNeg;
 
 		// The set request might want to ignore this handle.
 		// Test for 'undefined' too, as a two-handle slider
@@ -853,38 +846,38 @@
 		input = input.toString();
 
 		// Replace the preNegative indicator.
-		isNegative = input.replace(new RegExp('^' + esc( this.formatting[8] )), '');
+		isNeg = input.replace(new RegExp('^' + esc( this.formatting[8] )), '');
 
 		// Check if the value changed by removing the negativeBefore symbol.
-		if( input !== isNegative ) {
-			input = isNegative;
-			isNegative = '-';
+		if( input !== isNeg ) {
+			input = isNeg;
+			isNeg = '-';
 		} else {
-			isNegative = '';
+			isNeg = '';
 		}
 
 		// If prefix is set and the number is actually prefixed.
-		input = input.replace(new RegExp('^' + esc( this.formatting[3] )), '');
+		input = input.replace(new RegExp('^'+esc(this.formatting[3])), '');
 
 		// Only replace if a negative sign is set.
 		if ( this.formatting[7] ) {
 
-			// Reset isNegative to prevent double '-' insertion.
-			isNegative = '';
+			// Reset isNeg to prevent double '-' insertion.
+			isNeg = '';
 
 			// Reset the negative sign to '-'
-			input = input.replace(new RegExp('^' + esc( this.formatting[7] )), '-');
+			input = input.replace(new RegExp('^'+esc(this.formatting[7])), '-');
 		}
 
 		// If postfix is set and the number is postfixed.
 		input = input.replace(new RegExp(esc( this.formatting[4] ) + '$'), '')
 		// Remove the separator every three digits.
-			.replace(new RegExp(esc( this.formatting[2] ), 'g'), '')
+			.replace(new RegExp(esc(this.formatting[2]), 'g'), '')
 		// Set the decimal separator back to period.
 			.replace(this.formatting[1], '.');
 
 		// Run the user defined decoder. Returns input by default.
-		input = this.formatting[6]( parseFloat( isNegative + input ) );
+		input = this.formatting[6]( parseFloat( isNeg + input ) );
 
 		// Ignore invalid input
 		if (isNaN( input )) {
@@ -913,7 +906,7 @@
 			additions.reverse();
 		}
 
-		handle.children().addClass(Classes[3] +" "+ Classes[3]+additions[index]);
+		handle.children().addClass(Classes[3]+" "+Classes[3]+additions[index]);
 
 		return handle;
 	}
@@ -938,7 +931,6 @@
 			// Keep a list of all added handles.
 			handles.push( addHandle( options, i ).appendTo(base) );
 
-			// todo move this
 			// Copy the links into a new array, instead of modifying
 			// the 'options.ser' list. This allows replacement of the invalid
 			// '.el' Links, while the others are still passed by reference.

@@ -63,7 +63,7 @@
 </head>
 
 <body>
-<!--
+
 	<form>
 		<div class="slider1" id="slider1a"></div>
 		<div class="slider1" id="slider1b"></div>
@@ -178,7 +178,8 @@
 	<script pre>
 
 		function placeTooltip(value){
-			$(this).text(value).css('marginLeft', '-' + ($(this).width()/2) + 'px');
+			$(this).text(value).css('marginLeft', '-' + 
+				($(this).width()/2) + 'px');
 		}
 
 		$("#slider4").noUiSlider({
@@ -189,12 +190,13 @@
 			,behaviour: 'drag'
 			,serialization: {
 
-				 lower: [	new Link( '-tooltip-<div class="tooltip"/>', placeTooltip, {
-								 decimals: 6
-								,prefix: '#'
-								,negativeBefore: '!'
-								,negative: ''
-							}),
+				 lower: [	new Link( '-tooltip-<div class="tooltip"/>', 
+								placeTooltip, {
+									 decimals: 6
+									,prefix: '#'
+									,negativeBefore: '!'
+									,negative: ''
+								}),
 							new Link( $("#slider4inputlower"), false, {
 								 mark: '.'
 								,thousand: ','
@@ -212,7 +214,8 @@
 							}) ]
 
 				,upper: [	new Link( $("#slider4inputupper"), 'val' ),
-							new Link( '-tooltip-<div class="tooltip top"/>', placeTooltip ) ]
+							new Link( '-tooltip-<div class="tooltip top"/>', 
+								placeTooltip ) ]
 
 				,format: {
 					decimals: 5
@@ -232,7 +235,7 @@
 	</script>
 
 	<hr>
--->
+
 
 	<div class="slider5" id="slider5a"></div>
 	<span id="slider5aspan1a"></span>
@@ -247,16 +250,20 @@
 	<br>
 	<span id="slider5bspan2a"></span>
 	<span id="slider5bspan2b"></span>
-	
-	<script pre>
+
+	<script>
 
 		function writeLeft ( value, handle, slider ) {
 			$(this).text(handle.parent()[0].style.left);
 		}
 
+	</script>
+
+	<script pre>
+
 		$("#slider5a").noUiSlider({
 			 range: [ 0, 10000 ]
-			,start: [ 500, 4000 ] // this selects the wrong stepping subrange! ( try 499 )
+			,start: [ 500, 4000 ]
 			,stepping: {
 				  '0%': [ 'x', 100 ]
 				,'10%': [ 500, 500 ]
@@ -275,16 +282,17 @@
 		});
 
 	</script>
-	
+
 	<script>
 
 		$("#slider5b").noUiSlider({
 			 range: [ 0, 10000 ]
 			,start: [ 500, 4000 ]
+			,step: true
 			,stepping: {
 				  '0%': [    0, 100 ]
 				,'10%': [ 1000, 500 ]
-				,'50%': [ 5000, 1000 ]
+				,'50%': [ 5000 ]
 			}
 			,serialization: {
 				 lower: [
@@ -295,6 +303,26 @@
 					 new Link ( $('#slider5bspan2a') )
 					,new Link ( $('#slider5bspan2b'), writeLeft )
 				 ]
+			}
+		});
+
+	</script>
+
+	<hr>
+
+	<div class="slider6" id="slider6"></div>
+	<span id="slider6span"></span>
+
+	<script pre>
+
+		$("#slider6").noUiSlider({
+			 range: [0, 100]
+			,start: [20, 80]
+			,step: 10
+			,handles: 1
+			,connect: 'lower'
+			,serialization: {
+				 lower: [ new Link($("#slider6span")) ]
 			}
 		});
 
