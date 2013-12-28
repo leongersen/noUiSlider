@@ -906,8 +906,6 @@
 			additions.reverse();
 		}
 
-		console.log(options.dir, index);
-
 		handle.children().addClass(
 			Classes[3] + " " + Classes[3]+additions[index]
 		);

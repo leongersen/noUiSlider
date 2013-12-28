@@ -16,136 +16,21 @@
 		body {
 			width: 400px;
 			max-width: 100%;
-			margin: 0 auto;
-			padding-bottom: 100px;
-		}
-		pre {
-			tab-size: 4;
-			margin-left: -64px;
+			margin: 100px auto;
 		}
 
 		.noUi-target {
-			margin: 40px;
+			margin: 80px;
 		}
 		.noUi-vertical {
 			height: 150px;
 		}
 
-		#log {
-			background: #eee;
-			position: fixed;
-			left:0;
-			word-wrap: break-word;
-			right: 0;
-			bottom: 0;
-			height: 80px;
-			z-index: 15;
-			border-top: 1px solid #333;
+		section {
+			border-bottom: 2px solid #888;
+			margin-bottom: 80px;
+			padding-bottom: 40px;
 		}
-
-	</style>
-
-	<link href="jquery.nouislider.css" rel="stylesheet">
-	<script src="jquery.nouislider.js"></script>
-
-	<script>
-		var Link = $.noUiSlider.Link;
-		$(function(){
-			$('script[pre]').after(function(){
-				return $('<pre/>').text( this.innerHTML );
-			});
-			$('form').change(function(){
-				$("#log").html( $(this).serialize() );
-			});
-		});
-	</script>
-
-</head>
-
-<body>
-
-	<form>
-		<div class="slider1" id="slider1a"></div>
-		<div class="slider1" id="slider1b"></div>
-		<div class="slider1" id="slider1c"></div>
-	</form>
-
-	<script pre>
-
-		$(".slider1").noUiSlider({
-			 range: [ 0, 100 ]
-			,start: [ 20, 80 ]
-			,serialization: {
-				 lower: [ new Link('lower1') ]
-				,upper: [ new Link('lower2') ]
-			}
-		});
-
-	</script>
-
-	<hr>
-
-	<div class="slider2" id="slider2a"></div>
-	<div class="slider2" id="slider2b"></div>
-
-	<span id="slider2span"></span>
-
-	<script pre>
-
-		$("#slider2a, #slider2b").noUiSlider({
-			 range: [ -20, 20 ]
-			,start: [ 0, 10 ]
-			,behaviour: 'drag'
-			,connect: true
-			,serialization: {
-				lower: [ new Link( $('#slider2span'), false, {
-							 mark: ','
-							,decimals: 1
-							,thousand: '.'
-							,encoder: function( decoded ){
-								return decoded * 10000;
-							}
-							,decoder: function( encoded ){
-								return encoded / 10000;
-							}
-						}) ]
-			}
-		});
-
-	</script>
-
-	<hr>
-
-	<div class="slider3" id="slider3"></div>
-
-	<span id="slider3span"></span>
-
-	<script pre>
-
-		$("#slider3").noUiSlider({
-			 range: [ -10, 0 ]
-			,start: [ 0, 0 ]
-			,handles: 1
-			,behaviour: 'extend-tap'
-			,connect: 'lower'
-			,serialization: {
-				 lower: [	new Link(function( value ){
-								$("#slider3span").html( value );
-							})
-						]
-			}
-		});
-
-	</script>
-
-	<hr>
-
-	<style>
-
-		.slider4 {
-			margin: 80px;
-		}
-
 
 		.tooltip {
 			display: none;
@@ -167,75 +52,238 @@
 
 	</style>
 
-	<div class="slider4" id="slider4"></div>
+	<link href="jquery.nouislider.css" rel="stylesheet">
+	<script src="jquery.nouislider.js"></script>
 
-	<label>Will change slider: <input id="slider4inputlower"></label>
-	<br>
-	<label>Will NOT change slider: <input id="slider4inputupper"></label>
-	<br>
-	<label>Value get on slide by .val(): <span id="slider4span"></span></label>
+	<script>
+	var Link = $.noUiSlider.Link;
+	</script>
 
-	<script pre>
+	<link href="http://code.jquery.com/qunit/qunit-1.12.0.css" rel="stylesheet">
+	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
 
-		function placeTooltip(value){
-			$(this).text(value).css('marginLeft', '-' + 
-				($(this).width()/2) + 'px');
+	<style>
+/*
+		#qunit-fixture {
+			position: static;
+			width: auto;
+			height: auto;
+		}
+*/
+	</style>
+
+</head>
+
+<!-- TODO
+
+	- Port other functional tests to unit tests
+	- Add asyncTest, stop() hack
+	- Add tests for events
+	- Add tests for event emitting
+
+-->
+
+<body>
+
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+
+	<script>
+		var Q = $("#qunit-fixture");
+
+		function Run(string,func){
+			func();
 		}
 
-		$("#slider4").noUiSlider({
+	</script>
+
+<script>
+	test( "Generation of named inputs", function(){
+
+		Q.html('\
+			<form>\
+				<div class="slider" id="slidera"></div>\
+				<div class="slider" id="sliderb"></div>\
+				<div class="slider" id="sliderc"></div>\
+			</form>\
+		');
+
+		Q.find(".slider").noUiSlider({
+			 range: [ 0, 100 ]
+			,start: [ 20, 80 ]
+			,serialization: {
+				 lower: [ new Link('lower') ]
+				,upper: [ new Link('upper') ]
+			}
+		});
+
+		$("#slidera").val([50, 61]);
+		$("#sliderb").val([51, 62]);
+		$("#sliderc").val([52, 63]);
+
+		var inputs = Q.find('input');
+
+		equal( inputs.length, 6, "Generated all inputs" );
+
+		equal( $(inputs[0]).val(), '50.00' );
+		equal( $(inputs[1]).val(), '61.00' );
+		equal( $(inputs[2]).val(), '51.00' );
+		equal( $(inputs[3]).val(), '62.00' );
+		equal( $(inputs[4]).val(), '52.00' );
+		equal( $(inputs[5]).val(), '63.00' );
+
+	});
+</script>
+
+<script>
+	test( "Shared link element", function(){
+
+		Q.html('\
+			<div class="slider" id="slidera"></div>\
+			<div class="slider" id="sliderb"></div>\
+			<span id="slider-span"></span>\
+		');
+
+		var span = $('#slider-span');
+
+		var LinkEl =
+			new Link( span, false, {
+				 mark: ','
+				,decimals: 1
+				,thousand: '.'
+				,encoder: function( decoded ){
+					return decoded * 10000;
+				}
+				,decoder: function( encoded ){
+					return encoded / 10000;
+				}
+			});
+
+		$("#slidera, #sliderb").noUiSlider({
+			 range: [ -20, 20 ]
+			,start: [ 0, 10 ]
+			,behaviour: 'drag'
+			,connect: true
+			,serialization: {
+				lower: [ LinkEl ]
+			}
+		});
+
+		$("#sliderb").val( 1 );
+
+		deepEqual( $("#slidera").val(), ['0.00', '10.00'] );
+		equal( span.html(), '10.000,0' );
+
+	});
+</script>
+
+<script>
+	test( "Serialization and formatting options", function(){
+
+		Q.html('\
+			<div class="slider" id="slider"></div>\
+			<input id="inputChange">\
+			<input id="inputVal">\
+			<span id="sliderspan"></span>\
+		');
+
+		function placeTooltip(value){
+			$(this).text(value);
+		}
+
+		var tooltipLink =
+			new Link( '-tooltip-<div class="tooltip"/>', function( value, handle, slider ){
+
+				ok( $("#slider").is( slider ) );
+				ok( handle.hasClass('noUi-handle') );
+
+			}, {
+				 decimals: 6
+				,prefix: '#'
+				,negativeBefore: '!'
+				,negative: ''
+			});
+
+		var changeLink =
+			new Link( $("#inputChange"), false, {
+				 mark: '.'
+				,thousand: ','
+				,prefix: '$'
+				,postfix: ' p.p.'
+				,decimals: 3
+				,negativeBefore: '-'
+				,negative: ''
+				,encoder: function( a ){
+					return a * 1E7;
+				}
+				,decoder: function( a ){
+					return a / 1E7;
+				}
+			});
+
+		var valLink =
+			new Link( $("#inputVal"), 'val' );
+
+		$("#slider").noUiSlider({
 			 range: [ 0.001, 0.003 ]
 			,start: [ 0, 0.002 ]
 			,handles: 2
 			,connect: true
 			,behaviour: 'drag'
 			,serialization: {
-
-				 lower: [	new Link( '-tooltip-<div class="tooltip"/>', 
-								placeTooltip, {
-									 decimals: 6
-									,prefix: '#'
-									,negativeBefore: '!'
-									,negative: ''
-								}),
-							new Link( $("#slider4inputlower"), false, {
-								 mark: '.'
-								,thousand: ','
-								,prefix: '$'
-								,postfix: ',-'
-								,decimals: 3
-								,negativeBefore: '-'
-								,negative: ''
-								,encoder: function( a ){
-									return a * 1E7;
-								}
-								,decoder: function( a ){
-									return a / 1E7;
-								}
-							}) ]
-
-				,upper: [	new Link( $("#slider4inputupper"), 'val' ),
-							new Link( '-tooltip-<div class="tooltip top"/>', 
-								placeTooltip ) ]
-
+				 lower: [ tooltipLink, changeLink ]
+				,upper: [ valLink ]
 				,format: {
 					decimals: 5
 				}
 			}
-		}).on('slide', function(){
-			$('#slider4span').html(
-				JSON.stringify( $(this).val() )
-			);
 		});
 
-		$("#slider4").noUiSlider({
-			 range: [ -0.002, 0.003 ]
-			,start: [ 0.0011, 0.0025 ]
-		}, true);
+		$("#inputChange").val( "15000" ).trigger('change');
+
+		equal( $("#inputChange").val(), "$15,000.000 p.p.", "Testing interpretation of improper data" );
+
+		$("#inputVal").val( 3 );
+
+		equal( $("#inputVal").val(), "3" );
+
+		$("#inputVal").trigger("change");
+
+		equal ( $("#inputVal").val(), "3", "Input doesn't respond to change events." );
+
+		deepEqual( $("#slider").val(), ["0.00150", "0.00200"] );
+
+	});
+</script>
+
+
+<section>
+
+	<div class="slider3" id="slider3"></div>
+
+	<span id="slider3span"></span>
+
+	<script>
+
+		$("#slider3").noUiSlider({
+			 range: [ -10, 0 ]
+			,start: [ 0, 0 ]
+			,handles: 1
+			,behaviour: 'extend-tap'
+			,connect: 'lower'
+			,serialization: {
+				 lower: [	new Link(function( value ){
+								$("#slider3span").html( value );
+							})
+						]
+			}
+		});
 
 	</script>
 
-	<hr>
+</section>
 
+<section>
 
 	<div class="slider5" id="slider5a"></div>
 	<span id="slider5aspan1a"></span>
@@ -259,7 +307,7 @@
 
 	</script>
 
-	<script pre>
+	<script>
 
 		$("#slider5a").noUiSlider({
 			 range: [ 0, 10000 ]
@@ -308,12 +356,14 @@
 
 	</script>
 
-	<hr>
+</section>
+
+<section>
 
 	<div class="slider6" id="slider6"></div>
 	<span id="slider6span"></span>
 
-	<script pre>
+	<script>
 
 		$("#slider6").noUiSlider({
 			 range: [0, 100]
@@ -328,7 +378,9 @@
 
 	</script>
 
-	<hr>
+</section>
+
+<section>
 
 	<div class="slider7a" id="slider7a"></div>
 	<span id="slider7aspan"></span>
@@ -337,7 +389,7 @@
 	<span id="slider7bspan1"></span>
 	<span id="slider7bspan2"></span>
 
-	<script pre>
+	<script>
 
 		$("#slider7a").noUiSlider({
 			 range: [0, 200]
@@ -352,7 +404,7 @@
 		});
 
 	</script>
-	
+
 	<script>
 
 		$("#slider7b").noUiSlider({
@@ -370,12 +422,14 @@
 
 	</script>
 
-	<hr>
+</section>
+
+<section>
 
 	<div class="slider8" id="slider8"></div>
 	<span id="slider8span"></span>
 
-	<script pre>
+	<script>
 
 		$("#slider8").noUiSlider({
 			 range: [100, 150]
@@ -391,11 +445,8 @@
 		});
 
 	</script>
-	
-	
-	
-	
-	
-	<div id="log"><div>
+
+
+</section>
 
 </body>
