@@ -407,8 +407,8 @@
 						case 'ltr': parsed.dir = 0;
 							return true;
 						case 'rtl': parsed.dir = 1;
-							// Invert connection for RTL sliders;
-							parsed.connection = [0,2,1,3][parsed.connect];
+							// Invert connection for RTL sliders.
+							parsed.connect = [0,2,1,3][parsed.connect];
 							return true;
 						default:
 							return false;
@@ -554,7 +554,7 @@
 
 					parsed.formatting = y;
 
-					if ( parsed.dir ) {
+					if ( parsed.dir && options.handles > 1 ) {
 						parsed.ser.reverse();
 					}
 
@@ -1328,7 +1328,7 @@ function closure ( target, options, originalOptions ){
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
-		if ( options.dir ) {
+		if ( options.dir && options.handles > 1 ) {
 			values.reverse();
 		}
 
@@ -1386,7 +1386,7 @@ function closure ( target, options, originalOptions ){
 			return retour[0];
 		}
 
-		if ( options.dir ) {
+		if ( options.dir && options.handles > 1 ) {
 			return retour.reverse();
 		}
 
