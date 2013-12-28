@@ -323,7 +323,8 @@
 			return a;
 		}
 
-		var parsed = { stepSteps: [], stepPercentages: [0, 100] }, tests = {
+		var parsed = { stepSteps: [], stepPercentages: [0, 100] },
+			tests = {
 			 'handles': {
 				 r: true
 				,t: function( q ){
@@ -404,22 +405,21 @@
 
 					switch ( q ) {
 						case 'ltr': parsed.dir = 0;
-							break;
+							return true;
 						case 'rtl': parsed.dir = 1;
 							// Invert connection for RTL sliders;
 							parsed.connection = [0,2,1,3][parsed.connect];
-							break;
+							return true;
 						default:
 							return false;
 					}
-
-					return true;
 				}
 			}
 			,'behaviour': {
 				 r: true
 				,t: function( q ){
 
+					// Check if the string contains any keywords.
 					parsed.events = {
 						 tap: q.indexOf('tap') >= 0
 						,extend: q.indexOf('extend') >= 0
@@ -612,10 +612,10 @@
 		parsed.style = parsed.ort ? 'top' : 'left';
 
 		// todo remove debug
-		console.log(parsed.stepValues);
-		console.log(parsed.stepPercentages);
-		console.log(parsed.stepSteps);
-		console.log('-------------');
+//		console.log(parsed.stepValues);
+//		console.log(parsed.stepPercentages);
+//		console.log(parsed.stepSteps);
+//		console.log('-------------');
 
 		return parsed;
 	}
@@ -906,7 +906,11 @@
 			additions.reverse();
 		}
 
-		handle.children().addClass(Classes[3]+" "+Classes[3]+additions[index]);
+		console.log(options.dir, index);
+
+		handle.children().addClass(
+			Classes[3] + " " + Classes[3]+additions[index]
+		);
 
 		return handle;
 	}
@@ -922,7 +926,7 @@
 		// Apply classes and data to the target.
 		$(this).addClass([
 			Classes[0]
-		   ,Classes[8 + options.direction]
+		   ,Classes[8 + options.dir]
 		   ,Classes[4 + options.ort] ].join(' '));
 
 		// Append handles.
@@ -1253,10 +1257,10 @@ function closure ( target, options, originalOptions ){
 	// Attach events to several slider parts.
 	function events ( behaviour ) {
 
+		var i, drag;
+
 		// Attach the standard drag event to the handles.
 		if ( !behaviour.fixed ) {
-
-			var i;
 
 			for ( i = 0; i < Memory.handles.length; i++ ) {
 
@@ -1286,17 +1290,17 @@ function closure ( target, options, originalOptions ){
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			var dragable = Memory.base.find('.'+Classes[7]).addClass(Classes[10]);
+			drag = Memory.base.find( '.' + Classes[7] ).addClass( Classes[10] );
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first
 			// origin will propagate the start event upward,
 			// but it needs to be bound manually on the other.
 			if ( behaviour.fixed ) {
-				dragable = dragable.add( Memory.base.children().not(dragable).data('grab') ); // todo
+				drag = drag.add(Memory.base.children().not( drag ).children());
 			}
 
-			attach ( actions.start, dragable, start, Memory );
+			attach ( actions.start, drag, start, Memory );
 		}
 	}
 

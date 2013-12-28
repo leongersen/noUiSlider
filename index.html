@@ -328,6 +328,74 @@
 
 	</script>
 
+	<hr>
+
+	<div class="slider7a" id="slider7a"></div>
+	<span id="slider7aspan"></span>
+
+	<div class="slider7b" id="slider7b"></div>
+	<span id="slider7bspan1"></span>
+	<span id="slider7bspan2"></span>
+
+	<script pre>
+
+		$("#slider7a").noUiSlider({
+			 range: [0, 200]
+			,start: [20, 80]
+			,step: 15
+			,handles: 1
+			,connect: 'upper'
+			,direction: 'rtl'
+			,serialization: {
+				 lower: [ new Link($("#slider7aspan")) ]
+			}
+		});
+
+	</script>
+	
+	<script>
+
+		$("#slider7b").noUiSlider({
+			 range: [0, 200]
+			,start: [20, 80]
+			,step: 15
+			,handles: 2
+			,connect: true
+			,direction: 'rtl'
+			,serialization: {
+				 lower: [ new Link($("#slider7bspan1")) ]
+				,upper: [ new Link($("#slider7bspan2")) ]
+			}
+		});
+
+	</script>
+
+	<hr>
+
+	<div class="slider8" id="slider8"></div>
+	<span id="slider8span"></span>
+
+	<script pre>
+
+		$("#slider8").noUiSlider({
+			 range: [100, 150]
+			,start: [110, 140]
+			,step: 10
+			,behaviour: 'drag-fixed'
+			,orientation: 'vertical'
+			,handles: 2
+			,connect: true
+			,serialization: {
+				 lower: [ new Link($("#slider8span")) ]
+			}
+		});
+
+	</script>
+	
+	
+	
+	
+	
 	<div id="log"><div>
 
 </body>
