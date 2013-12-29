@@ -2,6 +2,8 @@
 
 	'use strict';
 
+	/*jslint browser: true, devel: true, continue: true, plusplus: true, sub: true, white: true */
+
 	var
 	// Cache the document selector;
 	 doc = $(document)
@@ -105,6 +107,10 @@
 
 // Type validation
 
+	function typeMatch ( a, b ) {
+		return typeof a === typeof b;
+	}
+
 	// Test in an object is an instance of jQuery or Zepto.
 	function isInstance ( a ) {
 		return a instanceof $ || ( $.zepto && $.zepto.isZ(a) );
@@ -113,11 +119,6 @@
 	// Checks whether a value is numerical.
 	function isNumeric ( a ) {
 		return typeof a === 'number' && !isNaN( a ) && isFinite( a );
-	}
-
-	// Checks if a value is defined.
-	function isDefined ( a ) {
-		return a !== undefined;
 	}
 
 	// Wraps a variable as an array, if it isn't one yet.
@@ -171,17 +172,17 @@
 	// (percentage)
 	function toStepping ( options, value ) {
 
-		if ( value === options.stepValues.slice(-1)[0] ){
+		if ( value === options.xVal.slice(-1)[0] ){
 			return 100;
 		}
 
 		var j = 0;
-		while ( value >= options.stepValues[++j] ){}
+		while ( value >= options.xVal[++j] ){}
 
-		var va = options.stepValues[j-1],
-			vb = options.stepValues[j],
-			pa = options.stepPercentages[j-1],
-			pb = options.stepPercentages[j];
+		var va = options.xVal[j-1],
+			vb = options.xVal[j],
+			pa = options.xPct[j-1],
+			pb = options.xPct[j];
 
 		return pa + (toPercentage([va, vb], value) / subRangeRatio (pa, pb));
 	}
@@ -191,16 +192,16 @@
 
 		// There is no range group that fits 100
 		if ( value === 100 ){
-			return options.stepValues.slice(-1)[0];
+			return options.xVal.slice(-1)[0];
 		}
 
 		var j = 0;
-		while ( value >= options.stepPercentages[++j] ){}
+		while ( value >= options.xPct[++j] ){}
 
-		var va = options.stepValues[j-1],
-			vb = options.stepValues[j],
-			pa = options.stepPercentages[j-1],
-			pb = options.stepPercentages[j];
+		var va = options.xVal[j-1],
+			vb = options.xVal[j],
+			pa = options.xPct[j-1],
+			pb = options.xPct[j];
 
 		return isPercentage([va, vb], (value - pa) * subRangeRatio (pa, pb));
 	}
@@ -209,12 +210,12 @@
 	function getStep ( options, value ){
 
 		var j = 0, a, b;
-		while ( value >= options.stepPercentages[++j] ){}
+		while ( value >= options.xPct[++j] ){}
 
 		if ( options.snap ) {
 
-			a = options.stepPercentages[j-1];
-			b = options.stepPercentages[j];
+			a = options.xPct[j-1];
+			b = options.xPct[j];
 
 			if ((value - a) > ((b-a)/2)){
 				return b;
@@ -223,13 +224,13 @@
 			return a;
 		}
 
-		if ( !options.stepSteps[j-1] ){
+		if ( !options.xSteps[j-1] ){
 			return value;
 		}
 
-		return options.stepPercentages[j-1] + closest(
-			value - options.stepPercentages[j-1],
-			options.stepSteps[j-1]
+		return options.xPct[j-1] + closest(
+			value - options.xPct[j-1],
+			options.xSteps[j-1]
 		);
 	}
 
@@ -323,9 +324,9 @@
 
 					var index, value, step, prcnt;
 
-					parsed.stepPercentages = [];
-					parsed.stepValues = [];
-					parsed.stepSteps = [];
+					parsed.xPct = [];
+					parsed.xVal = [];
+					parsed.xSteps = [];
 
 					for ( index in q ) {
 
@@ -336,8 +337,8 @@
 						}
 
 						// Extract values.
-						value = q[index]['value'],
-						step = q[index]['step'],
+						value = q[index]['value'];
+						step = q[index]['step'];
 						prcnt = index === 'min' ? 0 :
 								index === 'max' ? 100 :
 								parseFloat( index );
@@ -348,15 +349,15 @@
 						}
 
 						// Store values.
-						parsed.stepPercentages.push( prcnt );
-						parsed.stepValues.push( value );
+						parsed.xPct.push( prcnt );
+						parsed.xVal.push( value );
 
 						// NaN will evaluate to false too, but to keep
 						// logging clear, set step explicitly.
-						parsed.stepSteps.push( isNaN(step) ? false : step );
+						parsed.xSteps.push( isNaN(step) ? false : step );
 					}
 
-					$.each(parsed.stepSteps, function(i,n){
+					$.each(parsed.xSteps, function(i,n){
 
 						// Ignore 'false' stepping.
 						if ( !n ) {
@@ -364,15 +365,15 @@
 						}
 
 						// Check if step fits. Not required, but this might serve some goal.
-						// !((parsed.stepValues[i+1] - parsed.stepValues[i]) % n);
+						// !((parsed.xVal[i+1] - parsed.xVal[i]) % n);
 
 						// Factor to range ratio
-						parsed.stepSteps[i] = fromPercentage([
-							 parsed.stepValues[i]
-							,parsed.stepValues[i+1]
+						parsed.xSteps[i] = fromPercentage([
+							 parsed.xVal[i]
+							,parsed.xVal[i+1]
 						], n) / subRangeRatio (
-							parsed.stepPercentages[i],
-							parsed.stepPercentages[i+1] );
+							parsed.xPct[i],
+							parsed.xPct[i+1] );
 					});
 
 					return true;
@@ -438,7 +439,6 @@
 			,'margin': {
 				 r: true
 				,t: function( q ){
-					q = parseFloat(q);
 				//	parsed.margin = fromPercentage(parsed.range, q);
 					parsed.margin = q;
 					return isNumeric(q);
@@ -573,9 +573,9 @@
 		parsed.style = parsed.ort ? 'top' : 'left';
 
 		// todo remove debug
-		console.log(parsed.stepValues);
-		console.log(parsed.stepPercentages);
-		console.log(parsed.stepSteps);
+		console.log(parsed.xVal);
+		console.log(parsed.xPct);
+		console.log(parsed.xSteps);
 		console.log('-------------');
 
 		return parsed;
@@ -696,11 +696,13 @@
 
 		$.each(F, function(i, val){
 
-			var type = typeof FormatDefaults[i];
-
-			F[i] = typeof val === type ?
-					val : typeof inherit[i] === type ?
-						inherit[i] : FormatDefaults[i];
+			if ( typeMatch(val,  FormatDefaults[i]) ) {
+				F[i] = val;
+			} else if ( typeMatch(inherit[i], FormatDefaults[i]) ) {
+				F[i] = inherit[i]
+			} else {
+				F[i] = FormatDefaults[i];
+			}
 		});
 
 		// Support for up to 7 decimals. More can't be guaranteed.
