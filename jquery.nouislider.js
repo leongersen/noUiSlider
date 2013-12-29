@@ -112,7 +112,12 @@
 
 	// Checks whether a value is numerical.
 	function isNumeric ( a ) {
-		return !isNaN( parseFloat( a ) ) && isFinite( a );
+		return typeof a === 'number' && !isNaN( a ) && isFinite( a );
+	}
+
+	// Checks if a value is defined.
+	function isDefined ( a ) {
+		return a !== undefined;
 	}
 
 	// Wraps a variable as an array, if it isn't one yet.
@@ -166,7 +171,7 @@
 	// (percentage)
 	function toStepping ( options, value ) {
 
-		if ( value === options.range[1] ){
+		if ( value === options.stepValues.slice(-1)[0] ){
 			return 100;
 		}
 
@@ -186,7 +191,7 @@
 
 		// There is no range group that fits 100
 		if ( value === 100 ){
-			return options.range[1];
+			return options.stepValues.slice(-1)[0];
 		}
 
 		var j = 0;
@@ -206,7 +211,7 @@
 		var j = 0, a, b;
 		while ( value >= options.stepPercentages[++j] ){}
 
-		if ( options.stepAll ) {
+		if ( options.snap ) {
 
 			a = options.stepPercentages[j-1];
 			b = options.stepPercentages[j];
@@ -214,6 +219,7 @@
 			if ((value - a) > ((b-a)/2)){
 				return b;
 			}
+
 			return a;
 		}
 
@@ -301,61 +307,99 @@
 		or true when everything is OK. It can also modify the option
 		object, to make sure all values can be correctly looped elsewhere. */
 
-		function values ( a ) {
+		var parsed = {}, tests;
 
-			if ( a.length !== 2 ){
-				return false;
-			}
-
-			// Convert the array to floats
-			a = [ parseFloat(a[0]), parseFloat(a[1]) ];
-
-			// Test if all values are numerical
-			if( !isNumeric(a[0]) || !isNumeric(a[1]) ){
-				return false;
-			}
-
-			// The lowest value must really be the lowest value.
-			if( a[1] < a[0] ){
-				return false;
-			}
-
-			return a;
-		}
-
-		var parsed = { stepSteps: [], stepPercentages: [0, 100] },
-			tests = {
+		tests = {
 			 'handles': {
 				 r: true
 				,t: function( q ){
-					parsed.handles = q = parseInt(q, 10);
-					return ( q === 1 || q === 2 );
+					parsed.handles = q;
+					return q === 1 || q === 2;
 				}
-			}
+			 }
 			,'range': {
 				 r: true
 				,t: function( q ){
 
-					parsed.range = values(q);
-					parsed.stepValues = parsed.range;
+					var index, value, step, prcnt;
 
-					// The values can't be identical.
-					return parsed.range && parsed.range[0] !== parsed.range[1];
+					parsed.stepPercentages = [];
+					parsed.stepValues = [];
+					parsed.stepSteps = [];
+
+					for ( index in q ) {
+
+						// Make sure we're not messing with the object
+						// prototype.
+						if ( !q.hasOwnProperty( index ) ) {
+							continue;
+						}
+
+						// Extract values.
+						value = q[index]['value'],
+						step = q[index]['step'],
+						prcnt = index === 'min' ? 0 :
+								index === 'max' ? 100 :
+								parseFloat( index );
+
+						// Check for correct input.
+						if ( !isNumeric(prcnt) || !isNumeric(value) ) {
+							return false;
+						}
+
+						// Store values.
+						parsed.stepPercentages.push( prcnt );
+						parsed.stepValues.push( value );
+
+						// NaN will evaluate to false too, but to keep
+						// logging clear, set step explicitly.
+						parsed.stepSteps.push( isNaN(step) ? false : step );
+					}
+
+					$.each(parsed.stepSteps, function(i,n){
+
+						// Ignore 'false' stepping.
+						if ( !n ) {
+							return true;
+						}
+
+						// Check if step fits. Not required, but this might serve some goal.
+						// !((parsed.stepValues[i+1] - parsed.stepValues[i]) % n);
+
+						// Factor to range ratio
+						parsed.stepSteps[i] = fromPercentage([
+							 parsed.stepValues[i]
+							,parsed.stepValues[i+1]
+						], n) / subRangeRatio (
+							parsed.stepPercentages[i],
+							parsed.stepPercentages[i+1] );
+					});
+
+					return true;
 				}
-			 }
+			}
 			,'start': {
 				 r: true
 				,t: function( q ){
-					if ( parsed.handles === 1 ){
-						if( $.isArray(q) ){
-							q = q[0];
-						}
-						q = parseFloat(q);
-						parsed.start = [q];
-						return isNumeric(q);
+
+					// Validate input. Values aren't tested, the Link will do
+					// that, and provide a valid location.
+					if ( !$.isArray( q ) || q.length !== parsed.handles ) {
+						return false;
 					}
-					parsed.start = values(q);
-					return !!parsed.start;
+
+					// When the slider is initialized, the .val method will
+					// be called with the start options.
+					parsed.start = q;
+
+					return true;
+				}
+			}
+			,'snap': {
+				 r: false
+				,t: function( q ){
+					parsed.snap = q;
+					return typeof q === 'boolean';
 				}
 			}
 			,'connect': {
@@ -395,7 +439,8 @@
 				 r: true
 				,t: function( q ){
 					q = parseFloat(q);
-					parsed.margin = fromPercentage(parsed.range, q);
+				//	parsed.margin = fromPercentage(parsed.range, q);
+					parsed.margin = q;
 					return isNumeric(q);
 				}
 			}
@@ -426,94 +471,6 @@
 						,drag: q.indexOf('drag') >= 0
 						,fixed: q.indexOf('fixed') >= 0
 					};
-
-					return true;
-				}
-			}
-			,'stepping': {
-				 t: function( q ){
-
-					var correct = true, i = 0;
-
-					parsed.stepPercentages = [ 0 ];
-					parsed.stepValues = [ parsed.range[0] ];
-					parsed.stepSteps = [ false ];
-
-					$.each(q, function( pct, val ){
-
-						pct = parseFloat( pct );
-
-						// Check for correct input.
-						if( !isNumeric( pct ) || !$.isArray( val ) ) {
-							correct = false;
-							return false;
-						}
-
-						var value = parseFloat(val[0]),
-							step = parseFloat(val[1]);
-
-						// For 0%, only stepping can be set.
-						if ( !i && !pct ){
-							parsed.stepSteps[i++] = step;
-							return true;
-						}
-
-						// Ignore any values for 100%.
-						if ( pct === 100 ) {
-							return false;
-						}
-
-						parsed.stepPercentages[i] = pct;
-						parsed.stepValues[i] = value;
-
-						// NaN will evaluate to false too, but to keep
-						// logging clear, set step explicitly.
-						parsed.stepSteps[i] = isNaN(step) ? false : step;
-
-						i++;
-					});
-
-					// The final value matches range end.
-					// There is no sense in stepping at 100%.
-					parsed.stepPercentages[i] = 100;
-					parsed.stepValues[i] = parsed.range[1];
-					parsed.stepSteps[i] = false;
-
-					$.each(parsed.stepSteps, function(i,n){
-
-						// Ignore 'false' stepping.
-						if ( !n ) {
-							return true;
-						}
-
-						// Factor to range ratio
-						parsed.stepSteps[i] = fromPercentage([
-							 parsed.stepValues[i]
-							,parsed.stepValues[i+1]
-						], n) / subRangeRatio (
-							parsed.stepPercentages[i],
-							parsed.stepPercentages[i+1] );
-					});
-
-					return correct;
-				}
-			}
-			,'step': {
-				 t: function( q ){
-
-					if ( q === true ) {
-						parsed.stepAll = true;
-						return true;
-					}
-
-					if ( !isNumeric(q) ){
-						return false;
-					}
-
-					parsed.stepSteps = [
-						fromPercentage ( parsed.range, q ),
-						false
-					];
 
 					return true;
 				}
@@ -585,11 +542,15 @@
 		// be handled properly. E.g. wrapping integers in arrays.
 		$.each( tests, function( name, test ){
 
-			if ( options[name] === undefined ) {
-				if ( !test.r ) {
+			var value = options[name];
+
+			if ( value === undefined ) {
+				if ( test.r ) {
+					value = '-missing-';
+				} else {
 					return true;
 				}
-			} else if ( test.t( options[name], sliders ) ) {
+			} else if ( test.t( value, sliders ) ) {
 				return true;
 			}
 
@@ -597,10 +558,10 @@
 			// what option caused the trouble. Since throwing an error
 			// will prevent further script execution, log the error
 			// first. Test for console, as it might not be available.
-			if( window.console && console.log && console.group ){
+			if ( window.console && console.log && console.group ){
 				console.group( 'Invalid noUiSlider initialisation:' );
 				console.log( 'Option:\t', name );
-				console.log( 'Value:\t', options[name] );
+				console.log( 'Value:\t', value );
 				console.log( 'Slider(s):\t', sliders );
 				console.groupEnd();
 			}
@@ -612,10 +573,10 @@
 		parsed.style = parsed.ort ? 'top' : 'left';
 
 		// todo remove debug
-//		console.log(parsed.stepValues);
-//		console.log(parsed.stepPercentages);
-//		console.log(parsed.stepSteps);
-//		console.log('-------------');
+		console.log(parsed.stepValues);
+		console.log(parsed.stepPercentages);
+		console.log(parsed.stepSteps);
+		console.log('-------------');
 
 		return parsed;
 	}

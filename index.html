@@ -90,14 +90,10 @@
 
 	<script>
 		var Q = $("#qunit-fixture");
-
-		function Run(string,func){
-			func();
-		}
-
 	</script>
 
 <script>
+
 	test( "Generation of named inputs", function(){
 
 		Q.html('\
@@ -109,7 +105,10 @@
 		');
 
 		Q.find(".slider").noUiSlider({
-			 range: [ 0, 100 ]
+			  range: {
+				'min': { value: 0 },
+				'max': { value: 100 }
+			}
 			,start: [ 20, 80 ]
 			,serialization: {
 				 lower: [ new Link('lower') ]
@@ -133,9 +132,7 @@
 		equal( $(inputs[5]).val(), '63.00' );
 
 	});
-</script>
 
-<script>
 	test( "Shared link element", function(){
 
 		Q.html('\
@@ -160,7 +157,10 @@
 			});
 
 		$("#slidera, #sliderb").noUiSlider({
-			 range: [ -20, 20 ]
+			 range: {
+				'min': { value: -20 },
+				'max': { value: 20 }
+			}
 			,start: [ 0, 10 ]
 			,behaviour: 'drag'
 			,connect: true
@@ -175,9 +175,7 @@
 		equal( span.html(), '10.000,0' );
 
 	});
-</script>
 
-<script>
 	test( "Serialization and formatting options", function(){
 
 		Q.html('\
@@ -225,9 +223,15 @@
 			new Link( $("#inputVal"), 'val' );
 
 		$("#slider").noUiSlider({
-			 range: [ 0.001, 0.003 ]
+			 range: {
+				'min': {
+					value: 0.001
+				},
+				'max': {
+					value: 0.003
+				}
+			}
 			,start: [ 0, 0.002 ]
-			,handles: 2
 			,connect: true
 			,behaviour: 'drag'
 			,serialization: {
@@ -254,9 +258,63 @@
 		deepEqual( $("#slider").val(), ["0.00150", "0.00200"] );
 
 	});
+
 </script>
 
+<section>
 
+	<div class="Fslider" id="Fslider"></div>
+	<span id="Fsliderspan1a"></span>
+	<span id="Fsliderspan1b"></span>
+	<br>
+	<span id="Fsliderspan2a"></span>
+	<span id="Fsliderspan2b"></span>
+
+	<script>
+
+		function writeLeft ( value, handle, slider ) {
+			$(this).text(handle.parent()[0].style.left);
+		}
+
+	</script>
+
+	<script>
+
+		$("#Fslider").noUiSlider({
+			 range: {
+				 'min': {
+					value: 0,
+					step: 100
+				 }
+				,'10%': {
+					value: 500,
+					step: 500
+				}
+				,'50%': {
+					value: 4000,
+					step: 1000
+				}
+				,'max': {
+					value: 10000
+				}
+			}
+			,start: [ 500, 4000 ]
+			,serialization: {
+				 lower: [
+					 new Link ( $('#Fsliderspan1a') )
+					,new Link ( $('#Fsliderspan1b'), writeLeft )
+				 ]
+				,upper: [
+					 new Link ( $('#Fsliderspan2a') )
+					,new Link ( $('#Fsliderspan2b'), writeLeft )
+				 ]
+			}
+		});
+
+	</script>
+
+
+<!--
 <section>
 
 	<div class="slider3" id="slider3"></div>
@@ -282,54 +340,6 @@
 	</script>
 
 </section>
-
-<section>
-
-	<div class="slider5" id="slider5a"></div>
-	<span id="slider5aspan1a"></span>
-	<span id="slider5aspan1b"></span>
-	<br>
-	<span id="slider5aspan2a"></span>
-	<span id="slider5aspan2b"></span>
-
-	<div class="slider5" id="slider5b"></div>
-	<span id="slider5bspan1a"></span>
-	<span id="slider5bspan1b"></span>
-	<br>
-	<span id="slider5bspan2a"></span>
-	<span id="slider5bspan2b"></span>
-
-	<script>
-
-		function writeLeft ( value, handle, slider ) {
-			$(this).text(handle.parent()[0].style.left);
-		}
-
-	</script>
-
-	<script>
-
-		$("#slider5a").noUiSlider({
-			 range: [ 0, 10000 ]
-			,start: [ 500, 4000 ]
-			,stepping: {
-				  '0%': [ 'x', 100 ]
-				,'10%': [ 500, 500 ]
-				,'50%': [ 4000, 1000 ]
-			}
-			,serialization: {
-				 lower: [
-					 new Link ( $('#slider5aspan1a') )
-					,new Link ( $('#slider5aspan1b'), writeLeft )
-				 ]
-				,upper: [
-					 new Link ( $('#slider5aspan2a') )
-					,new Link ( $('#slider5aspan2b'), writeLeft )
-				 ]
-			}
-		});
-
-	</script>
 
 	<script>
 
