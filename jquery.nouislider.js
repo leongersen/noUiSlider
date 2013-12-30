@@ -172,7 +172,7 @@
 	// (percentage)
 	function toStepping ( options, value ) {
 
-		if ( value === options.xVal.slice(-1)[0] ){
+		if ( value >= options.xVal.slice(-1)[0] ){
 			return 100;
 		}
 
@@ -191,7 +191,7 @@
 	function fromStepping ( options, value ) {
 
 		// There is no range group that fits 100
-		if ( value === 100 ){
+		if ( value >= 100 ){
 			return options.xVal.slice(-1)[0];
 		}
 
@@ -573,10 +573,10 @@
 		parsed.style = parsed.ort ? 'top' : 'left';
 
 		// todo remove debug
-		console.log(parsed.xVal);
+/*		console.log(parsed.xVal);
 		console.log(parsed.xPct);
 		console.log(parsed.xSteps);
-		console.log('-------------');
+		console.log('-------------');	*/
 
 		return parsed;
 	}
@@ -585,7 +585,7 @@
 // Serialization target
 
 /** @constructor */
-	function Link( target, method, options ){
+	function Link( target, method, options, sync ){
 
 		// Make sure Link isn't called as a function, in which case
 		// the 'this' scope would be the window.
@@ -601,6 +601,9 @@
 
 		// Write all options to this object.
 		this.formatting = anonymize( options || {} );
+
+		// Store the sync option.
+		this.sync = sync;
 
 		// Set an empty $ object so the destroy function won't have
 		// to handle .isFunction objects differently.
@@ -724,7 +727,17 @@
 	};
 
 	// Provides external items with the slider value.
-	Link.prototype.write = function ( options, value, handle, slider ) {
+	Link.prototype.write = function ( options, value, handle, slider, sync ) {
+
+		// Don't synchronize this Link.
+		if ( this.sync && sync ) {
+			return;
+		}
+
+		// Todo
+		if ( isNaN(value) ) {
+			throw new Error("Error.");
+		}
 
 		// Convert the value to the slider stepping/range.
 		value = fromStepping( options, value );
@@ -1283,7 +1296,7 @@ function closure ( target, options, originalOptions ){
 // Methods
 
 	// Set the slider value.
-	target.set = function ( values, callback, link ){
+	target.vSet = function ( values, callback, link, sync ){
 
 		var i, to;
 
@@ -1322,7 +1335,8 @@ function closure ( target, options, originalOptions ){
 				this.write( options
 					,Memory.locations[i%2]
 					,Memory.handles[i%2].children()
-					,Memory.target );
+					,Memory.target
+					,sync );
 			});
 		}
 
@@ -1335,7 +1349,7 @@ function closure ( target, options, originalOptions ){
 	};
 
 	// Get the slider value.
-	target.get = function ( ){
+	target.vGet = function ( ){
 
 		var i, retour = [];
 
@@ -1435,11 +1449,11 @@ function closure ( target, options, originalOptions ){
 		var args = Array.prototype.slice.call( arguments, 0 );
 
 		// Test if there are arguments, and if not, call the 'get' method.
-		if ( !arguments.length ) {
+		if ( !args.length ) {
 
 			// Determine whether to use the native val method.
 			if ( this.hasClass( Classes[0] ) ) {
-				return this[0].get();
+				return this[0].vGet();
 			}
 
 			return $val.apply( this );
@@ -1449,9 +1463,9 @@ function closure ( target, options, originalOptions ){
 		return this.each(function(){
 
 			if ( $(this).hasClass( Classes[0] ) ) {
-				this.set.call( $(this), asArray(args[0]), args[1], args[2] );
+				this.vSet( asArray(args[0]), args[1], args[2], args[3] );
 			} else {
-				$val.apply( $(this), args);
+				$val.apply( $(this), args );
 			}
 		});
 	};

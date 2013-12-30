@@ -6,7 +6,7 @@
 
 	<script> // Check URL, load jQuery or Zepto
 		var script=document.createElement("script");0>window.location.href.indexOf("zepto")?
-		script.src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js":
+		script.src="http://code.jquery.com/jquery-1.10.2.js":
 		script.src="http://cdnjs.cloudflare.com/ajax/libs/zepto/1.0/zepto.js";
 		document.write(script.outerHTML);
 	</script>
@@ -91,7 +91,7 @@
 	<script>
 		var Q = $("#qunit-fixture");
 	</script>
-
+<!--
 <script>
 
 	test( "Generation of named inputs", function(){
@@ -276,10 +276,6 @@
 			$(this).text(handle.parent()[0].style.left);
 		}
 
-	</script>
-
-	<script>
-
 		$("#Fslider").noUiSlider({
 			 range: {
 				 'min': {
@@ -298,7 +294,7 @@
 					value: 10000
 				}
 			}
-			,margin: 500
+		//	,margin: 500
 			,connect: true
 			,behaviour: 'drag-tap'
 			,start: [ 500, 4000 ]
@@ -315,6 +311,78 @@
 		});
 
 	</script>
+
+</section>
+-->
+<section>
+
+	<div class="Fslider" id="Fslider2a"></div>
+	<span id="Fslider2aspan"></span>
+
+	<div class="Fslider" id="Fslider2b"></div>
+	<span id="Fslider2bspan"></span>
+
+	<button>Lock</button>
+
+	<script>
+
+		var Lock = false, values = [60, 60];
+
+		$("button").click(function(){
+			Lock = !Lock;
+		});
+
+		function Sync ( value, handle, slider ) {
+			if ( !Lock ) return;
+
+			var nr = $("#Fslider2a").is( $(this) ) ? 0 : 1;
+
+			value -= ( values[Math.abs(nr-1)] - values[nr] );
+
+			$(this).val( value, false, false, true );
+		}
+
+		function Sync2 ( event ) {
+			values[0] = Number($("#Fslider2a").val());
+			values[1] = Number($("#Fslider2b").val());
+		}
+
+		$("#Fslider2a").noUiSlider({
+			range: {
+				'min': { value:  50 },
+				'max': { value: 100 }
+			},
+			handles: 1,
+			start: [ 60 ],
+			serialization: {
+				lower: [
+					new Link( $("#Fslider2b"), Sync, false, true ),
+					new Link( $("#Fslider2aspan") )
+				]
+			},
+		});
+
+		$("#Fslider2b").noUiSlider({
+			range: {
+				'min': { value:  50 },
+				'max': { value: 100 }
+			},
+			handles: 1,
+			start: [ 80 ],
+			serialization: {
+				lower: [
+					new Link( $("#Fslider2a"), Sync, false, true ),
+					new Link( $("#Fslider2bspan") )
+				]
+			}
+		});
+
+		$(".Fslider").on('set', Sync2);
+
+	</script>
+
+</section>
+
 
 
 <!--
