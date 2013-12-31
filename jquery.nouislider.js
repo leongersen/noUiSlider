@@ -1,8 +1,8 @@
+/*jslint browser: true, devel: true, continue: true, plusplus: true, sub: true, white: true */
+
 (function( $ ){
 
 	'use strict';
-
-	/*jslint browser: true, devel: true, continue: true, plusplus: true, sub: true, white: true */
 
 	var
 	// Cache the document selector;
@@ -94,8 +94,9 @@
 	// Throw an error if formatting options are incompatible.
 	function throwEqualError(F,a,b){
 		if ( (F[a] || F[b]) && (F[a] === F[b]) ) {
-			throw new RangeError('Link: '+Formatting[a]+'\
-									can\'t match '+Formatting[b]+'.');
+			throw new RangeError(
+				'Link: '+Formatting[a]+' can\'t match '+Formatting[b]+'.'
+			);
 		}
 	}
 
@@ -289,299 +290,6 @@
 		return event;
 	}
 
-
-// Input validation
-
-	// Test all developer settings and parse to assumption-safe values.
-	function test ( options, sliders ){
-
-	/*	Every input option is tested and parsed. This'll prevent
-		endless validation in internal methods. These tests are
-		structured with an item for every option available. An
-		option can be marked as required by setting the 'r' flag.
-		The testing function is provided with three arguments:
-			- The provided value for the option;
-			- A reference to the options object;
-			- The name for the option;
-
-		The testing function returns false when an error is detected,
-		or true when everything is OK. It can also modify the option
-		object, to make sure all values can be correctly looped elsewhere. */
-
-		var parsed = {}, tests;
-
-		tests = {
-			 'handles': {
-				 r: true
-				,t: function( q ){
-					parsed.handles = q;
-					return q === 1 || q === 2;
-				}
-			 }
-			,'range': {
-				 r: true
-				,t: function( q ){
-
-					var index, value, step, prcnt;
-
-					parsed.xPct = [];
-					parsed.xVal = [];
-					parsed.xSteps = [];
-
-					for ( index in q ) {
-
-						// Make sure we're not messing with the object
-						// prototype.
-						if ( !q.hasOwnProperty( index ) ) {
-							continue;
-						}
-
-						// Extract values.
-						value = q[index]['value'];
-						step = q[index]['step'];
-						prcnt = index === 'min' ? 0 :
-								index === 'max' ? 100 :
-								parseFloat( index );
-
-						// Check for correct input.
-						if ( !isNumeric(prcnt) || !isNumeric(value) ) {
-							return false;
-						}
-
-						// Store values.
-						parsed.xPct.push( prcnt );
-						parsed.xVal.push( value );
-
-						// NaN will evaluate to false too, but to keep
-						// logging clear, set step explicitly.
-						parsed.xSteps.push( isNaN(step) ? false : step );
-					}
-
-					$.each(parsed.xSteps, function(i,n){
-
-						// Ignore 'false' stepping.
-						if ( !n ) {
-							return true;
-						}
-
-						// Check if step fits. Not required, but this might serve some goal.
-						// !((parsed.xVal[i+1] - parsed.xVal[i]) % n);
-
-						// Factor to range ratio
-						parsed.xSteps[i] = fromPercentage([
-							 parsed.xVal[i]
-							,parsed.xVal[i+1]
-						], n) / subRangeRatio (
-							parsed.xPct[i],
-							parsed.xPct[i+1] );
-					});
-
-					return true;
-				}
-			}
-			,'start': {
-				 r: true
-				,t: function( q ){
-
-					// Validate input. Values aren't tested, the Link will do
-					// that, and provide a valid location.
-					if ( !$.isArray( q ) || q.length !== parsed.handles ) {
-						return false;
-					}
-
-					// When the slider is initialized, the .val method will
-					// be called with the start options.
-					parsed.start = q;
-
-					return true;
-				}
-			}
-			,'snap': {
-				 r: false
-				,t: function( q ){
-					parsed.snap = q;
-					return typeof q === 'boolean';
-				}
-			}
-			,'connect': {
-				 r: true
-				,t: function( q ){
-
-					if ( q === 'lower' && parsed.handles === 1 ) {
-						parsed.connect = 1;
-					} else if ( q === 'upper' && parsed.handles === 1 ) {
-						parsed.connect = 2;
-					} else if ( q === true && parsed.handles === 2 ) {
-						parsed.connect = 3;
-					} else if ( q === false ) {
-						parsed.connect = 0;
-					} else {
-						return false;
-					}
-
-					return true;
-				}
-			}
-			,'orientation': {
-				 t: function( q ){
-					switch ( q ){
-						case 'horizontal':
-							parsed.ort = 0;
-							break;
-						case 'vertical':
-							parsed.ort = 1;
-							break;
-						default: return false;
-					}
-					return true;
-				}
-			}
-			,'margin': {
-				 r: true
-				,t: function( q ){
-				//	parsed.margin = fromPercentage(parsed.range, q);
-					parsed.margin = q;
-					return isNumeric(q);
-				}
-			}
-			,'direction': {
-				 r: true
-				,t: function( q ){
-
-					switch ( q ) {
-						case 'ltr': parsed.dir = 0;
-							return true;
-						case 'rtl': parsed.dir = 1;
-							// Invert connection for RTL sliders.
-							parsed.connect = [0,2,1,3][parsed.connect];
-							return true;
-						default:
-							return false;
-					}
-				}
-			}
-			,'behaviour': {
-				 r: true
-				,t: function( q ){
-
-					// Check if the string contains any keywords.
-					parsed.events = {
-						 tap: q.indexOf('tap') >= 0
-						,extend: q.indexOf('extend') >= 0
-						,drag: q.indexOf('drag') >= 0
-						,fixed: q.indexOf('fixed') >= 0
-					};
-
-					return true;
-				}
-			}
-			,'serialization': {
-				 r: true
-				,t: function( q, sliders ){
-
-					var status = true, y = anonymize( q['format'] || {} );
-
-					parsed.ser = [ q['lower'], q['upper'] ];
-
-					$.each( parsed.ser, function( i, a ){
-
-						// Check if the provided option is an array.
-						if ( !$.isArray(a) ) {
-							status = false;
-							return false;
-						}
-
-						$.each(a, function(){
-
-							// Check if entry is a Link.
-							if ( !(this instanceof Link) ) {
-								status = false;
-								return false;
-							}
-
-							// Assign other properties.
-							this.N = i;
-							this.obj = sliders;
-							this.scope = this.scope || sliders;
-
-							// Run internal validator.
-							this.validate( y );
-						});
-					});
-
-					parsed.formatting = y;
-
-					if ( parsed.dir && options.handles > 1 ) {
-						parsed.ser.reverse();
-					}
-
-					return status;
-				}
-			}
-		};
-
-		// Set defaults where applicable;
-		options = $.extend({
-			 'handles': 2
-			,'margin': 0
-			,'connect': false
-			,'direction': 'ltr'
-			,'behaviour': 'tap'
-			,'orientation': 'horizontal'
-		}, options);
-
-		// Make sure the test for serialization runs.
-		options['serialization'] = $.extend({
-			 'lower': []
-			,'upper': []
-			,'format': {}
-		}, options['serialization']);
-
-		// Run all options through a testing mechanism to ensure correct
-		// input. It should be noted that options might get modified to
-		// be handled properly. E.g. wrapping integers in arrays.
-		$.each( tests, function( name, test ){
-
-			var value = options[name];
-
-			if ( value === undefined ) {
-				if ( test.r ) {
-					value = '-missing-';
-				} else {
-					return true;
-				}
-			} else if ( test.t( value, sliders ) ) {
-				return true;
-			}
-
-			// For debugging purposes it might be very useful to know
-			// what option caused the trouble. Since throwing an error
-			// will prevent further script execution, log the error
-			// first. Test for console, as it might not be available.
-			if ( window.console && console.log && console.group ){
-				console.group( 'Invalid noUiSlider initialisation:' );
-				console.log( 'Option:\t', name );
-				console.log( 'Value:\t', value );
-				console.log( 'Slider(s):\t', sliders );
-				console.groupEnd();
-			}
-
-			throw new RangeError('noUiSlider');
-		});
-
-		// Pre-define the styles.
-		parsed.style = parsed.ort ? 'top' : 'left';
-
-		// todo remove debug
-/*		console.log(parsed.xVal);
-		console.log(parsed.xPct);
-		console.log(parsed.xSteps);
-		console.log('-------------');	*/
-
-		return parsed;
-	}
-
-
 // Serialization target
 
 /** @constructor */
@@ -590,8 +298,9 @@
 		// Make sure Link isn't called as a function, in which case
 		// the 'this' scope would be the window.
 		if ( !(this instanceof Link) ) {
-			throw new Error('Can\'t use Link as a function. \
-								Use the \'new\' keyword.');
+			throw new Error(
+				'Can\'t use Link as a function. Use the \'new\' keyword.'
+			);
 		}
 
 		// Returns null array.
@@ -621,7 +330,7 @@
 		// If target is a string, a new hidden input will be created.
 		case 'string':
 
-			if ( !target.indexOf('-tooltip-') ) {
+			if ( target.indexOf('-tooltip-') === 0 ) {
 
 				// Set default tooltip html.
 				target = target.replace('-tooltip-', '') || '<div/>';
@@ -639,7 +348,7 @@
 
 			// If the string doesn't begin with '-', which is reserved,
 			// add a new hidden input.
-			if ( target.indexOf('-') ) {
+			if ( target.indexOf('-') !== 0 ) {
 
 				this.method = 'val';
 
@@ -702,7 +411,7 @@
 			if ( typeMatch(val,  FormatDefaults[i]) ) {
 				F[i] = val;
 			} else if ( typeMatch(inherit[i], FormatDefaults[i]) ) {
-				F[i] = inherit[i]
+				F[i] = inherit[i];
 			} else {
 				F[i] = FormatDefaults[i];
 			}
@@ -732,11 +441,6 @@
 		// Don't synchronize this Link.
 		if ( this.sync && sync ) {
 			return;
-		}
-
-		// Todo
-		if ( isNaN(value) ) {
-			throw new Error("Error.");
 		}
 
 		// Convert the value to the slider stepping/range.
@@ -806,7 +510,7 @@
 	Link.prototype.valueOf = function ( input ) {
 
 		function esc(s){
-			return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+			return s.replace(/[\-\/\\\^$*+?.()|\[\]{}]/g, '\\$&');
 		}
 
 		var isNeg;
@@ -868,6 +572,341 @@
 		return new Link( $(this.el).clone().appendTo(element)
 			,this.method ).validate( this.formatting );
 	};
+
+
+// Input validation
+
+	// Test all developer settings and parse to assumption-safe values.
+	function test ( options, sliders ){
+
+	/*	Every input option is tested and parsed. This'll prevent
+		endless validation in internal methods. These tests are
+		structured with an item for every option available. An
+		option can be marked as required by setting the 'r' flag.
+		The testing function is provided with three arguments:
+			- The provided value for the option;
+			- A reference to the options object;
+			- The name for the option;
+
+		The testing function returns false when an error is detected,
+		or true when everything is OK. It can also modify the option
+		object, to make sure all values can be correctly looped elsewhere. */
+
+		var parsed = {
+			 xPct: []
+			,xVal: []
+			,xSteps: [ false ]
+		}, tests;
+
+		tests = {
+			 'handles': {
+				 r: true
+				,t: function( q ){
+
+					// Check if handles is set to 1 or 2.
+					// Only numerical input is accepted.
+					parsed.handles = q;
+					return q === 1 || q === 2;
+				}
+			 }
+			,'step': {
+				 r: false
+				,t: function( q ){
+
+					if ( !isNumeric( q ) ) {
+						return false;
+					}
+
+					// The step option can still be used to set stepping
+					// for linear sliders. Overwritten if set in 'range'.
+					parsed.xSteps[0] = q;
+					return true;
+				}
+			}
+			,'range': {
+				 r: true
+				,t: function( q ){
+
+					var index, value, step, prcnt;
+
+					for ( index in q ) {
+
+						// Make sure we're not messing with the object
+						// prototype.
+						if ( q.hasOwnProperty( index ) ) {
+
+							// Reject any invalid input.
+							if ( !$.isArray(q[index]) ){
+								return false;
+							}
+
+							// Rename values.
+							value = q[index][0];
+							step = q[index][1];
+
+							// Covert min/max syntax to 0 and 100.
+							prcnt = index === 'min' ? 0 :
+									index === 'max' ? 100 :
+									parseFloat( index );
+
+							// Check for correct input.
+							if ( !isNumeric(prcnt) || !isNumeric(value) ) {
+								return false;
+							}
+
+							// Store values.
+							parsed.xPct.push( prcnt );
+							parsed.xVal.push( value );
+
+							// NaN will evaluate to false too, but to keep
+							// logging clear, set step explicitly. Make sure
+							// not to override the 'step' setting with false.
+							if ( !prcnt ) {
+								if ( !isNaN(step) ) {
+									parsed.xSteps[0] = step;
+								}
+							} else {
+								parsed.xSteps.push( isNaN(step) ? false : step );
+							}
+						}
+					}
+
+					$.each(parsed.xSteps, function(i,n){
+
+						// Ignore 'false' stepping.
+						if ( !n ) {
+							return true;
+						}
+
+						// Check if step fits. Not required, but this might serve some goal.
+						// !((parsed.xVal[i+1] - parsed.xVal[i]) % n);
+
+						// Factor to range ratio
+						parsed.xSteps[i] = fromPercentage([
+							 parsed.xVal[i]
+							,parsed.xVal[i+1]
+						], n) / subRangeRatio (
+							parsed.xPct[i],
+							parsed.xPct[i+1] );
+					});
+
+					return true;
+				}
+			}
+			,'start': {
+				 r: true
+				,t: function( q ){
+
+					// Validate input. Values aren't tested, the Link will do
+					// that, and provide a valid location.
+					if ( !$.isArray( q ) || q.length !== parsed.handles ) {
+						return false;
+					}
+
+					// When the slider is initialized, the .val method will
+					// be called with the start options.
+					parsed.start = q;
+
+					return true;
+				}
+			}
+			,'snap': {
+				 r: false
+				,t: function( q ){
+
+					// Enforce 100% stepping within subranges.
+					parsed.snap = q;
+					return typeof q === 'boolean';
+				}
+			}
+			,'connect': {
+				 r: true
+				,t: function( q ){
+
+					if ( q === 'lower' && parsed.handles === 1 ) {
+						parsed.connect = 1;
+					} else if ( q === 'upper' && parsed.handles === 1 ) {
+						parsed.connect = 2;
+					} else if ( q === true && parsed.handles === 2 ) {
+						parsed.connect = 3;
+					} else if ( q === false ) {
+						parsed.connect = 0;
+					} else {
+						return false;
+					}
+
+					return true;
+				}
+			}
+			,'orientation': {
+				 r: false
+				,t: function( q ){
+
+					// Set orientation to an a numerical value for easy
+					// array selection.
+					switch ( q ){
+					  case 'horizontal':
+						parsed.ort = 0;
+						return true;
+					  case 'vertical':
+						parsed.ort = 1;
+						return true;
+					  default:
+						return false;
+					}
+				}
+			}
+			,'margin': {
+				 r: true
+				,t: function( q ){
+				//	parsed.margin = fromPercentage(parsed.range, q);
+					parsed.margin = q;
+					return isNumeric(q);
+				}
+			}
+			,'direction': {
+				 r: true
+				,t: function( q ){
+
+					// Set direction as a numerical value for easy parsing.
+					// Invert connection for RTL sliders, so that the proper
+					// handles get the connect/background classes.
+					switch ( q ) {
+					  case 'ltr':
+						parsed.dir = 0;
+						return true;
+					  case 'rtl':
+						parsed.dir = 1;
+						parsed.connect = [0,2,1,3][parsed.connect];
+						return true;
+					  default:
+						return false;
+					}
+				}
+			}
+			,'behaviour': {
+				 r: true
+				,t: function( q ){
+
+					// Make sure the input is a string.
+					if ( typeof q !== 'string' ) {
+						return false;
+					}
+
+					// Check if the string contains any keywords.
+					// None are required.
+					parsed.events = {
+						 tap: q.indexOf('tap') >= 0
+						,extend: q.indexOf('extend') >= 0
+						,drag: q.indexOf('drag') >= 0
+						,fixed: q.indexOf('fixed') >= 0
+					};
+
+					return true;
+				}
+			}
+			,'serialization': {
+				 r: true
+				,t: function( q, sliders ){
+
+					var status = true, format = anonymize( q['format'] || {} );
+
+					parsed.ser = [ q['lower'], q['upper'] ];
+
+					$.each( parsed.ser, function( i, a ){
+
+						// Check if the provided option is an array.
+						if ( !$.isArray(a) ) {
+							status = false;
+							return false;
+						}
+
+						$.each(a, function(){
+
+							// Check if entry is a Link.
+							if ( !(this instanceof Link) ) {
+								status = false;
+								return false;
+							}
+
+							// Assign other properties.
+							this.N = i;
+							this.obj = sliders;
+							this.scope = this.scope || sliders;
+
+							// Run internal validator.
+							this.validate( format );
+						});
+					});
+
+					parsed.formatting = format;
+
+					// If the slider has two handles and is RTL,
+					// reverse the serialization input. For one handle,
+					// lower is still lower.
+					if ( parsed.dir && options.handles > 1 ) {
+						parsed.ser.reverse();
+					}
+
+					return status;
+				}
+			}
+		};
+
+		// Set defaults where applicable;
+		options = $.extend({
+			 'handles': 2
+			,'margin': 0
+			,'connect': false
+			,'direction': 'ltr'
+			,'behaviour': 'tap'
+			,'orientation': 'horizontal'
+		}, options);
+
+		// Make sure the test for serialization runs.
+		options['serialization'] = $.extend({
+			 'lower': []
+			,'upper': []
+			,'format': {}
+		}, options['serialization']);
+
+		// Run all options through a testing mechanism to ensure correct
+		// input. It should be noted that options might get modified to
+		// be handled properly. E.g. wrapping integers in arrays.
+		$.each( tests, function( name, test ){
+
+			var value = options[name];
+
+			if ( value === undefined ) {
+				if ( test.r ) {
+					value = '-missing-';
+				} else {
+					return true;
+				}
+			} else if ( test.t( value, sliders ) ) {
+				return true;
+			}
+
+			// For debugging purposes it might be very useful to know
+			// what option caused the trouble. Since throwing an error
+			// will prevent further script execution, log the error
+			// first. Test for console, as it might not be available.
+			if ( window.console && console.log && console.group ){
+				console.group( 'Invalid noUiSlider initialisation:' );
+				console.log( 'Option:\t', name );
+				console.log( 'Value:\t', value );
+				console.log( 'Slider(s):\t', sliders );
+				console.groupEnd();
+			}
+
+			throw new RangeError('noUiSlider');
+		});
+
+		// Pre-define the styles.
+		parsed.style = parsed.ort ? 'top' : 'left';
+
+		return parsed;
+	}
 
 
 // DOM additions
@@ -1470,4 +1509,4 @@ function closure ( target, options, originalOptions ){
 		});
 	};
 
-}( window.jQuery || window.Zepto ));
+}(window.jQuery || window.Zepto));

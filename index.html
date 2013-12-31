@@ -91,7 +91,7 @@
 	<script>
 		var Q = $("#qunit-fixture");
 	</script>
-<!--
+
 <script>
 
 	test( "Generation of named inputs", function(){
@@ -106,8 +106,8 @@
 
 		Q.find(".slider").noUiSlider({
 			  range: {
-				'min': { value: 0 },
-				'max': { value: 100 }
+				'min': [   0 ],
+				'max': [ 100 ]
 			}
 			,start: [ 20, 80 ]
 			,serialization: {
@@ -158,8 +158,8 @@
 
 		$("#slidera, #sliderb").noUiSlider({
 			 range: {
-				'min': { value: -20 },
-				'max': { value: 20 }
+				'min': [ -20 ],
+				'max': [  20 ]
 			}
 			,start: [ 0, 10 ]
 			,behaviour: 'drag'
@@ -224,12 +224,8 @@
 
 		$("#slider").noUiSlider({
 			 range: {
-				'min': {
-					value: 0.001
-				},
-				'max': {
-					value: 0.003
-				}
+				'min': [ 0.001 ],
+				'max': [ 0.003 ]
 			}
 			,start: [ 0, 0.002 ]
 			,connect: true
@@ -263,63 +259,16 @@
 
 <section>
 
-	<div class="Fslider" id="Fslider"></div>
-	<span id="Fsliderspan1a"></span>
-	<span id="Fsliderspan1b"></span>
-	<br>
-	<span id="Fsliderspan2a"></span>
-	<span id="Fsliderspan2b"></span>
 
-	<script>
-
-		function writeLeft ( value, handle, slider ) {
-			$(this).text(handle.parent()[0].style.left);
-		}
-
-		$("#Fslider").noUiSlider({
-			 range: {
-				 'min': {
-					value: 0,
-					step: 100
-				 }
-				,'10%': {
-					value: 500,
-					step: 500
-				}
-				,'50%': {
-					value: 4000,
-					step: 1000
-				}
-				,'max': {
-					value: 10000
-				}
-			}
-		//	,margin: 500
-			,connect: true
-			,behaviour: 'drag-tap'
-			,start: [ 500, 4000 ]
-			,serialization: {
-				 lower: [
-					 new Link ( $('#Fsliderspan1a') )
-					,new Link ( $('#Fsliderspan1b'), writeLeft )
-				 ]
-				,upper: [
-					 new Link ( $('#Fsliderspan2a') )
-					,new Link ( $('#Fsliderspan2b'), writeLeft )
-				 ]
-			}
-		});
-
-	</script>
 
 </section>
--->
+
 <section>
 
-	<div class="Fslider" id="Fslider2a"></div>
+	<div class="Fslider2" id="Fslider2a"></div>
 	<span id="Fslider2aspan"></span>
 
-	<div class="Fslider" id="Fslider2b"></div>
+	<div class="Fslider2" id="Fslider2b"></div>
 	<span id="Fslider2bspan"></span>
 
 	<button>Lock</button>
@@ -342,15 +291,15 @@
 			$(this).val( value, false, false, true );
 		}
 
-		function Sync2 ( event ) {
+		function Store ( ) {
 			values[0] = Number($("#Fslider2a").val());
 			values[1] = Number($("#Fslider2b").val());
 		}
 
 		$("#Fslider2a").noUiSlider({
 			range: {
-				'min': { value:  50 },
-				'max': { value: 100 }
+				'min': [  50 ],
+				'max': [ 100 ]
 			},
 			handles: 1,
 			start: [ 60 ],
@@ -364,8 +313,8 @@
 
 		$("#Fslider2b").noUiSlider({
 			range: {
-				'min': { value:  50 },
-				'max': { value: 100 }
+				'min': [  50 ],
+				'max': [ 100 ]
 			},
 			handles: 1,
 			start: [ 80 ],
@@ -377,7 +326,7 @@
 			}
 		});
 
-		$(".Fslider").on('set', Sync2);
+		$(".Fslider2").on('set', Store);
 
 	</script>
 
