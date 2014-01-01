@@ -599,17 +599,7 @@
 		}, tests;
 
 		tests = {
-			 'handles': {
-				 r: true
-				,t: function( q ){
-
-					// Check if handles is set to 1 or 2.
-					// Only numerical input is accepted.
-					parsed.handles = q;
-					return q === 1 || q === 2;
-				}
-			 }
-			,'step': {
+			 'step': {
 				 r: false
 				,t: function( q ){
 
@@ -699,9 +689,12 @@
 
 					// Validate input. Values aren't tested, the Link will do
 					// that, and provide a valid location.
-					if ( !$.isArray( q ) || q.length !== parsed.handles ) {
+					if ( !$.isArray( q ) || !q.length || q.length > 2 ) {
 						return false;
 					}
+
+					// Store the number of handles.
+					parsed.handles = q.length;
 
 					// When the slider is initialized, the .val method will
 					// be called with the start options.
