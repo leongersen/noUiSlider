@@ -56,32 +56,13 @@
 	<script src="jquery.nouislider.js"></script>
 
 	<script>
-	var Link = $.noUiSlider.Link;
+		var Link = $.noUiSlider.Link;
 	</script>
 
 	<link href="http://code.jquery.com/qunit/qunit-1.12.0.css" rel="stylesheet">
 	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
 
-	<style>
-/*
-		#qunit-fixture {
-			position: static;
-			width: auto;
-			height: auto;
-		}
-*/
-	</style>
-
 </head>
-
-<!-- TODO
-
-	- Port other functional tests to unit tests
-	- Add asyncTest, stop() hack
-	- Add tests for events
-	- Add tests for event emitting
-
--->
 
 <body>
 
@@ -93,7 +74,7 @@
 	</script>
 
 <script>
-/*
+
 	test( "Generation of named inputs", function(){
 
 		Q.html('\
@@ -254,229 +235,7 @@
 		deepEqual( $("#slider").val(), ["0.00150", "0.00200"] );
 
 	});
-*/
+
 </script>
-
-<section>
-
-
-
-</section>
-
-<section>
-
-	<div class="Fslider2" id="Fslider2a"></div>
-	<span id="Fslider2aspan"></span>
-
-	<div class="Fslider2" id="Fslider2b"></div>
-	<span id="Fslider2bspan"></span>
-
-	<button>Lock</button>
-
-	<script>
-
-		var Lock = false, values = [60, 60];
-
-		$("button").click(function(){
-			Lock = !Lock;
-		});
-
-		function Sync ( value, handle, slider ) {
-			if ( !Lock ) return;
-
-			var nr = $("#Fslider2a").is( $(this) ) ? 0 : 1;
-
-			value -= ( values[Math.abs(nr-1)] - values[nr] );
-
-			$(this).val( value, false, false, true );
-		}
-
-		function Store ( ) {
-			values[0] = Number($("#Fslider2a").val());
-			values[1] = Number($("#Fslider2b").val());
-		}
-
-		$("#Fslider2a").noUiSlider({
-			range: {
-				'min': [  50 ],
-				'max': [ 100 ]
-			},
-			handles: 1,
-			start: [ 60 ],
-			serialization: {
-				lower: [
-					new Link( $("#Fslider2b"), Sync, false, true ),
-					new Link( $("#Fslider2aspan") )
-				]
-			},
-		});
-
-		$("#Fslider2b").noUiSlider({
-			range: {
-				'min': [  50 ],
-				'max': [ 100 ]
-			},
-			handles: 1,
-			start: [ 80 ],
-			serialization: {
-				lower: [
-					new Link( $("#Fslider2a"), Sync, false, true ),
-					new Link( $("#Fslider2bspan") )
-				]
-			}
-		});
-
-		$(".Fslider2").on('set', Store);
-
-	</script>
-
-</section>
-
-
-
-<!--
-<section>
-
-	<div class="slider3" id="slider3"></div>
-
-	<span id="slider3span"></span>
-
-	<script>
-
-		$("#slider3").noUiSlider({
-			 range: [ -10, 0 ]
-			,start: [ 0, 0 ]
-			,handles: 1
-			,behaviour: 'extend-tap'
-			,connect: 'lower'
-			,serialization: {
-				 lower: [	new Link(function( value ){
-								$("#slider3span").html( value );
-							})
-						]
-			}
-		});
-
-	</script>
-
-</section>
-
-	<script>
-
-		$("#slider5b").noUiSlider({
-			 range: [ 0, 10000 ]
-			,start: [ 500, 4000 ]
-			,step: true
-			,stepping: {
-				  '0%': [    0, 100 ]
-				,'10%': [ 1000, 500 ]
-				,'50%': [ 5000 ]
-			}
-			,serialization: {
-				 lower: [
-					 new Link ( $('#slider5bspan1a') )
-					,new Link ( $('#slider5bspan1b'), writeLeft )
-				 ]
-				,upper: [
-					 new Link ( $('#slider5bspan2a') )
-					,new Link ( $('#slider5bspan2b'), writeLeft )
-				 ]
-			}
-		});
-
-	</script>
-
-</section>
-
-<section>
-
-	<div class="slider6" id="slider6"></div>
-	<span id="slider6span"></span>
-
-	<script>
-
-		$("#slider6").noUiSlider({
-			 range: [0, 100]
-			,start: [20, 80]
-			,step: 10
-			,handles: 1
-			,connect: 'lower'
-			,serialization: {
-				 lower: [ new Link($("#slider6span")) ]
-			}
-		});
-
-	</script>
-
-</section>
-
-<section>
-
-	<div class="slider7a" id="slider7a"></div>
-	<span id="slider7aspan"></span>
-
-	<div class="slider7b" id="slider7b"></div>
-	<span id="slider7bspan1"></span>
-	<span id="slider7bspan2"></span>
-
-	<script>
-
-		$("#slider7a").noUiSlider({
-			 range: [0, 200]
-			,start: [20, 80]
-			,step: 15
-			,handles: 1
-			,connect: 'upper'
-			,direction: 'rtl'
-			,serialization: {
-				 lower: [ new Link($("#slider7aspan")) ]
-			}
-		});
-
-	</script>
-
-	<script>
-
-		$("#slider7b").noUiSlider({
-			 range: [0, 200]
-			,start: [20, 80]
-			,step: 15
-			,handles: 2
-			,connect: true
-			,direction: 'rtl'
-			,serialization: {
-				 lower: [ new Link($("#slider7bspan1")) ]
-				,upper: [ new Link($("#slider7bspan2")) ]
-			}
-		});
-
-	</script>
-
-</section>
-
-<section>
-
-	<div class="slider8" id="slider8"></div>
-	<span id="slider8span"></span>
-
-	<script>
-
-		$("#slider8").noUiSlider({
-			 range: [100, 150]
-			,start: [110, 140]
-			,step: 10
-			,behaviour: 'drag-fixed'
-			,orientation: 'vertical'
-			,handles: 2
-			,connect: true
-			,serialization: {
-				 lower: [ new Link($("#slider8span")) ]
-			}
-		});
-
-	</script>
-
-
-</section>
 
 </body>

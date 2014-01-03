@@ -384,7 +384,7 @@
 				this.target.on('change', $.proxy(function( e ){
 						this.obj.val(at(
 							null, $(e.target).val(), this.N
-						), false, this);
+						), { 'link': this });
 					}, this));
 
 				return;
@@ -1493,24 +1493,32 @@ function closure ( target, options, originalOptions ){
 	$.fn.val = function ( ){
 
 		// Convert the function arguments to an array.
-		var args = Array.prototype.slice.call( arguments, 0 );
+		var args = Array.prototype.slice.call( arguments, 0 ),
+			set, link, unsub;
 
 		// Test if there are arguments, and if not, call the 'get' method.
 		if ( !args.length ) {
 
 			// Determine whether to use the native val method.
-			if ( this.hasClass( Classes[0] ) ) {
+			if ( this.hasClass(Classes[0]) ) {
 				return this[0].vGet();
 			}
 
 			return $val.apply( this );
 		}
 
+		// Extract modifiers for value method.
+		if ( typeof args[1] === 'object' ) {
+			set = args[1]['set'];
+			link = args[1]['link'];
+			unsub = args[1]['recursive'];
+		}
+
 		// Loop all individual items, and handle setting appropriately.
 		return this.each(function(){
 
-			if ( $(this).hasClass( Classes[0] ) ) {
-				this.vSet( asArray(args[0]), args[1], args[2], args[3] );
+			if ( $(this).hasClass(Classes[0]) ) {
+				this.vSet( asArray(args[0]), set, link, unsub );
 			} else {
 				$val.apply( $(this), args );
 			}
