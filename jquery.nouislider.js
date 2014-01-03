@@ -596,6 +596,7 @@
 			 xPct: []
 			,xVal: []
 			,xSteps: [ false ]
+			,margin: 0
 		}, tests;
 
 		tests = {
@@ -750,10 +751,16 @@
 				}
 			}
 			,'margin': {
-				 r: true
-				,t: function( q ){
-				//	parsed.margin = fromPercentage(parsed.range, q);
-					parsed.margin = q;
+				 t: function( q ){
+
+					// Margin is only supported on linear sliders.
+					if ( parsed.xPct.length > 2 ) {
+						return false;
+					}
+
+					// Parse value to range and store. As xVal is checked
+					// to be no bigger than 2, use it as range.
+					parsed.margin = fromPercentage(parsed.xVal, q);
 					return isNumeric(q);
 				}
 			}
@@ -846,11 +853,9 @@
 			}
 		};
 
-		// Set defaults where applicable;
+		// Set defaults where applicable.
 		options = $.extend({
-			 'handles': 2
-			,'margin': 0
-			,'connect': false
+			 'connect': false
 			,'direction': 'ltr'
 			,'behaviour': 'tap'
 			,'orientation': 'horizontal'
@@ -927,7 +932,7 @@
 		/*jshint validthis: true */
 
 		var base = $('<div/>').appendTo( $(this) ).addClass( Classes[1] ),
-			i, links = [], handles = [];
+			i, index, links = [], handles = [], current;
 
 		// Apply classes and data to the target.
 		$(this).addClass([
@@ -947,11 +952,21 @@
 			links[i] = [ new Link( function(){}, false ).validate( options.formatting ) ];
 
 			// Append any hidden input elements.
+			for ( index in options.ser[i] ) {
+				if ( options.ser[i].hasOwnProperty( index ) ) {
+					current = options.ser[i][index];
+					links[i].push( current.el ?
+						current.append( handles[i].children() ) : current );
+				}
+			}
+		/*
 			$.each( options.ser[i], function(){
 				links[i].push( this.el ?
 								this.append( handles[i].children() ) :
 								this );
-			});
+			});	*/
+
+			console.log(links);
 		}
 
 		// Apply the required connection classes to the elements
