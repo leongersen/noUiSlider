@@ -61,7 +61,7 @@
 	,FormatDefaults = [
 /*  0 */  2
 /*  1 */ ,'.'
-/*  2 */ ,','
+/*  2 */ ,''
 /*  3 */ ,''
 /*  4 */ ,''
 /*  5 */ ,function(a){ return a; }
@@ -431,7 +431,6 @@
 
 		this.formatting = F;
 
-//		console.log( this.formatting );
 		return this;
 	};
 
@@ -490,6 +489,8 @@
 		if ( this.formatting[2] ) {
 			base = reverse(number[0]).match(/.{1,3}/g);
 			base = reverse(base.join(reverse( this.formatting[2] )));
+		} else {
+			base = number[0];
 		}
 
 		// Ignore the decimal separator if decimals are set to 0.
@@ -959,14 +960,6 @@
 						current.append( handles[i].children() ) : current );
 				}
 			}
-		/*
-			$.each( options.ser[i], function(){
-				links[i].push( this.el ?
-								this.append( handles[i].children() ) :
-								this );
-			});	*/
-
-			console.log(links);
 		}
 
 		// Apply the required connection classes to the elements
