@@ -663,49 +663,46 @@
 				 r: true
 				,t: function( q ){
 
-					var index, value, step, prcnt;
+					// Loop all entries
+					$.each( q, function ( index, value ) {
 
-					for ( index in q ) {
+						var prcnt;
 
-						// Make sure we're not messing with the object
-						// prototype.
-						if ( q.hasOwnProperty( index ) ) {
-
-							// Reject any invalid input.
-							if ( !$.isArray(q[index]) ){
-								return false;
-							}
-
-							// Rename values.
-							value = q[index][0];
-							step = q[index][1];
-
-							// Covert min/max syntax to 0 and 100.
-							prcnt = index === 'min' ? 0 :
-									index === 'max' ? 100 :
-									parseFloat( index );
-
-							// Check for correct input.
-							if ( !isNumeric(prcnt) || !isNumeric(value) ) {
-								return false;
-							}
-
-							// Store values.
-							parsed.xPct.push( prcnt );
-							parsed.xVal.push( value );
-
-							// NaN will evaluate to false too, but to keep
-							// logging clear, set step explicitly. Make sure
-							// not to override the 'step' setting with false.
-							if ( !prcnt ) {
-								if ( !isNaN(step) ) {
-									parsed.xSteps[0] = step;
-								}
-							} else {
-								parsed.xSteps.push( isNaN(step) ? false : step );
-							}
+						// Wrap numerical input in an array.
+						if ( typeof value === "number" ) {
+							value = [value];
 						}
-					}
+
+						// Reject any invalid input.
+						if ( !$.isArray( value ) ){
+							return false;
+						}
+
+						// Covert min/max syntax to 0 and 100.
+						prcnt = index === 'min' ? 0 :
+								index === 'max' ? 100 :
+								parseFloat( index );
+
+						// Check for correct input.
+						if ( !isNumeric( prcnt ) || !isNumeric( value[0] ) ) {
+							return false;
+						}
+
+						// Store values.
+						parsed.xPct.push( prcnt );
+						parsed.xVal.push( value[0] );
+
+						// NaN will evaluate to false too, but to keep
+						// logging clear, set step explicitly. Make sure
+						// not to override the 'step' setting with false.
+						if ( !prcnt ) {
+							if ( !isNaN( value[1] ) ) {
+								parsed.xSteps[0] = value[1];
+							}
+						} else {
+							parsed.xSteps.push( isNaN(value[1]) ? false : value[1] );
+						}
+					});
 
 					$.each(parsed.xSteps, function(i,n){
 
@@ -733,8 +730,12 @@
 				 r: true
 				,t: function( q ){
 
+					if ( typeof q === "number" ) {
+						q = [q];
+					}
+
 					// Validate input. Values aren't tested, the Link will do
-					// that, and provide a valid location.
+					// that and provide a valid location.
 					if ( !$.isArray( q ) || !q.length || q.length > 2 ) {
 						return false;
 					}
@@ -1552,6 +1553,10 @@ function closure ( target, options, originalOptions ){
 			set = args[1]['set'];
 			link = args[1]['link'];
 			unsub = args[1]['recursive'];
+		
+		// Support the 'true' option.
+		} else if ( args[1] === true ) {
+			set = true;
 		}
 
 		// Loop all individual items, and handle setting appropriately.
