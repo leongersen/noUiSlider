@@ -68,7 +68,11 @@
 /*  6 */ ,function(a){ return a; }
 /*  7 */ ,'-'
 /*  8 */ ,''
-	];
+	],
+	// Safeguard existence of browser debugger (or polyfill).
+	dev = ( window.console && console.log && console.group ) ? console : {
+		log: noop, group: noop, groundEnd: noop
+	};
 
 // General helpers
 
@@ -78,12 +82,12 @@
 	}
 
 	// Round a value to the closest 'to'.
-	function closest ( value, to ){
+	function closest ( value, to ) {
 		return Math.round(value / to) * to;
 	}
 
 	// Throw an error if formatting options are incompatible.
-	function throwEqualError(F,a,b){
+	function throwEqualError( F, a, b ) {
 		if ( (F[a] || F[b]) && (F[a] === F[b]) ) {
 			throw new RangeError('Link: '+a+' can\'t match '+b+'.');
 		}
@@ -98,7 +102,7 @@
 // Type validation
 
 	function typeMatch ( a, b ) {
-		return typeof a === typeof b;
+		return (typeof a) === (typeof b);
 	}
 
 	// Test in an object is an instance of jQuery or Zepto.
@@ -335,7 +339,7 @@
 	}
 
 	// Shorthand for internal value get
-	Format.prototype.v = function(a){
+	Format.prototype.v = function ( a ) {
 		return this.settings[a];
 	};
 
@@ -384,7 +388,7 @@
 			base +
 			mark +
 			this.v('postfix');
-	}
+	};
 
 	Format.prototype.from = function ( input ) {
 
@@ -445,7 +449,7 @@
 		}
 
 		return input;
-	}
+	};
 
 
 // Serialization target
@@ -457,12 +461,12 @@
 		// the 'this' scope would be the window.
 		if ( !(this instanceof Link) ) {
 			throw new Error(
-				'Can\'t use Link as a function. Use the \'new\' keyword.'
+				'noUiSlider: Don\'t use Link as a function. Use the \'new\' keyword.'
 			);
 		}
 
 		if ( !entry ) {
-			entry = {}; // todo error?
+			throw new RangeError('noUiSlider: Invalid Link.');
 		}
 
 		// Get values from the input.
@@ -482,7 +486,8 @@
 		// Store the sync option.
 		this.sync = sync;
 
-		var isTooltip = ( typeof target === 'string' && target.indexOf('-tooltip-') === 0 ),
+		var that = this, // .bind isn't available, need this link in .change().
+			isTooltip = ( typeof target === 'string' && target.indexOf('-tooltip-') === 0 ),
 			isHidden = ( typeof target === 'string' && target.indexOf('-') !== 0 ),
 			isMethod = ( typeof target === 'function' ),
 			is$ = ( isInstance(target) ),
@@ -494,7 +499,7 @@
 		if ( isTooltip ) {
 
 			// By default, use the 'html' method.
-			this.method = method ? method : 'html';
+			this.method = method || 'html';
 
 			// Use jQuery to create the element
 			this.el = $( target.replace('-tooltip-', '') || '<div/>' )[0];
@@ -546,21 +551,17 @@
 				this.target = target;
 
 				// Set the slider to a new value on change.
-				// TODO this is a mess
-				this.target.on('change',
+				this.target.on('change', function( e ){
 
-					$.proxy(function( e ){
+					// Returns null array.
+					function at(a,b,c){
+						return [c?a:b, c?b:a];
+					}
 
-						// Returns null array.
-						function at(a,b,c){
-							return [c?a:b, c?b:a];
-						}
+					var output = at(null, $(e.target).val(), that.N);
 
-						this.obj.val(at(
-							null, $(e.target).val(), this.N
-						), { 'link': this });
-
-					}, this));
+					that.obj.val(output, { 'link': that });
+				});
 
 				return;
 			}
@@ -576,8 +577,7 @@
 			}
 		}
 
-		console.log( 'Provided information: ', entry );
-		throw new RangeError('Invalid Link.');
+		throw new RangeError('noUiSlider: Invalid Link.');
 	}
 
 	// Alias the Link prototype.
@@ -663,7 +663,14 @@
 				 r: true
 				,t: function( q ){
 
-					// Loop all entries
+					var status = true;
+
+					// Filter incorrect input.
+					if ( typeof q !== 'object' || $.isArray(q) ) {
+						return false;
+					}
+
+					// Loop all entries.
 					$.each( q, function ( index, value ) {
 
 						var prcnt;
@@ -675,6 +682,7 @@
 
 						// Reject any invalid input.
 						if ( !$.isArray( value ) ){
+							status = false;
 							return false;
 						}
 
@@ -685,6 +693,7 @@
 
 						// Check for correct input.
 						if ( !isNumeric( prcnt ) || !isNumeric( value[0] ) ) {
+							status = false;
 							return false;
 						}
 
@@ -723,7 +732,7 @@
 							parsed.xPct[i+1] );
 					});
 
-					return true;
+					return status;
 				}
 			}
 			,'start': {
@@ -882,7 +891,10 @@
 							this.scope = this.scope || sliders;
 
 							// Run internal validator.
-							this.formatting = new Format( $.extend({}, q['format'], this.formatting ) );
+							this.formatting = new Format($.extend({}
+								,q['format']
+								,this.formatting
+							));
 						});
 					});
 
@@ -932,15 +944,12 @@
 
 			// For debugging purposes it might be very useful to know
 			// what option caused the trouble. Since throwing an error
-			// will prevent further script execution, log the error
-			// first. Test for console, as it might not be available.
-			if ( window.console && console.log && console.group ){
-				console.group( 'Invalid noUiSlider initialisation:' );
-				console.log( 'Option:\t', name );
-				console.log( 'Value:\t', value );
-				console.log( 'Slider(s):\t', sliders );
-				console.groupEnd();
-			}
+			// will prevent further script execution, log the error first.
+			dev.group( 'Invalid noUiSlider initialisation:' );
+			dev.log( 'Option:\t', name );
+			dev.log( 'Value:\t', value );
+			dev.log( 'Slider(s):\t', sliders );
+			dev.groupEnd();
 
 			throw new RangeError('noUiSlider');
 		});
@@ -1414,17 +1423,20 @@ function closure ( target, options, originalOptions ){
 				to = 100 - to;
 			}
 
-			if ( setHandle( Memory.handles[i%2], to ) === true ) {
+			// Force delimitation.
+			if ( setHandle( Memory.handles[i%2], to, true ) === true ) {
 				continue;
 			}
 
 			// Reset the input if it doesn't match the slider.
 			$(Memory.serialization[i%2]).each(function(){
-				this.write( options
-					,Memory.locations[i%2]
-					,Memory.handles[i%2].children()
-					,Memory.target
-					,sync );
+				this.write(
+					options,
+					Memory.locations[i%2],
+					Memory.handles[i%2].children(),
+					Memory.target,
+					sync
+				);
 			});
 		}
 
@@ -1527,11 +1539,11 @@ function closure ( target, options, originalOptions ){
 	// Expose serialization constructor.
 	$.noUiSlider = { 'Link': Link };
 
-	$.fn.noUiSlider = function ( options, re ){
+	$.fn.noUiSlider = function ( options, re ) {
 		return ( re ? rebuild : initialize ).call(this, options);
 	};
 
-	$.fn.val = function ( ){
+	$.fn.val = function ( ) {
 
 		// Convert the function arguments to an array.
 		var args = Array.prototype.slice.call( arguments, 0 ),
@@ -1553,7 +1565,7 @@ function closure ( target, options, originalOptions ){
 			set = args[1]['set'];
 			link = args[1]['link'];
 			unsub = args[1]['recursive'];
-		
+
 		// Support the 'true' option.
 		} else if ( args[1] === true ) {
 			set = true;
