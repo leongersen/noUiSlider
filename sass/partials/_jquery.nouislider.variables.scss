@@ -1,0 +1,29 @@
+/* =============================================================================
+Sizes
+========================================================================== */
+$sliderPadding: 1em !default;
+$sliderSize: 1em !default;
+$sliderColour: #E8E7E6 !default;
+$sliderFullColour: $sliderColour + 40 !default;
+
+/* =============================================================================
+Colours
+========================================================================== */
+
+$sliderBlockedColour: #4FDACF !default;
+$sliderDisabledColour: #B8B8B8 !default;
+$handleStripesColour: $sliderColour !default;
+
+$sliderBorderRadius: 0.3em !default;
+
+/* =============================================================================
+Borders
+========================================================================== */
+$sliderBorderStyle: solid;
+$sliderBorderColour: #D3D3D3 !default;
+$sliderBorderWidth: 1px;
+
+/* =============================================================================
+Transitions
+========================================================================== */
+$transitionTime: 0.5s !default;

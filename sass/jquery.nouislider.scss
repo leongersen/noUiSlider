@@ -1,1 +1,192 @@
 @import "partials/jquery.nouislider.variables.scss";
+@import "compass/css3";
+@import "compass/css3/user-interface";
+
+/* =============================================================================
+Placeholders
+========================================================================== */
+// For rounded elements (only change once)
+%rounded {
+	@include border-radius($sliderBorderRadius);
+}
+
+%bordered {
+	border: 1px $sliderBorderStyle $sliderBorderColour;
+}
+/* Functional styling;
+ * These styles are required for noUiSlider to function.
+ * You don't need to change these rules to apply your design.
+ */
+
+.noUi-target,
+.noUi-target * {
+	-webkit-touch-callout: none;
+	@include user-select(none);
+	-ms-touch-action: none;
+	@include box-sizing(border-box);
+}
+
+.noUi-base {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+.noUi-origin {
+	position: absolute;
+	right: 0;
+	top: 0;
+	left: 0;
+	bottom: 0;
+}
+
+.noUi-handle {
+	position: relative;
+	z-index: 1;
+}
+
+.noUi-stacking .noUi-handle {
+	/* This class is applied to the lower origin when
+	   its values is > 50%. */
+	z-index: 10;
+}
+
+.noUi-stacking + .noUi-origin {
+	/* Fix stacking order in IE7, which incorrectly
+	   creates a new context for the origins. */
+	*z-index: -1;
+}
+
+.noUi-state-tap .noUi-origin {
+	@include transition(left $transitionTime, top $transitionTime);
+}
+
+.noUi-state-drag * {
+	cursor: inherit !important;
+}
+
+/* Slider size and handle placement;
+ */
+.noUi-horizontal {
+	height: ($sliderSize * 1.2);
+	.noUi-handle {
+		width: $sliderSize * 2;
+		height: ($sliderSize * 2) + ($sliderSize / 5);
+		left: -($sliderSize * 1.3);
+		top: -($sliderSize / 3);
+	}
+	&.noUi-extended {
+		padding: 0 $sliderPadding;
+		.noUi-origin {
+			right: -$sliderSize;
+		}
+	}
+}
+
+/* Styling;
+ */
+.noUi-background {
+	background: #FAFAFA;
+	@include box-shadow(inset 0 1px 1px #f0f0f0);
+}
+
+.noUi-connect {
+	background: #3FB8AF;
+	@include box-shadow(inset 0 0 0.2em rgba(51, 51, 51, 0.45));
+	@include transition(background $transitionTime);
+}
+
+.noUi-origin {
+	@extend %rounded;
+}
+
+.noUi-target {
+	@extend %rounded;
+	@extend %bordered;
+	@include box-shadow(inset 0 1px 1px #F0F0F0, 0 0.2em 0.4em -0.4em #BBB);
+	&.noUi-connect {
+		@include box-shadow(inset 0 0 0.2em rgba(51, 51, 51, 0.45), 0 0.2em 0.4em -0.4em #BBB);
+	}
+}
+
+/* Handles and cursors;
+ */
+.noUi-dragable {
+	cursor: w-resize;
+}
+
+.noUi-handle {
+	@extend %bordered;
+	@extend %rounded;
+	background: $sliderFullColour;
+	cursor: default;
+	@include box-shadow(inset 0 0 1px #FFF, inset 0 1px 0.5em #EBEBEB, 0 0.2em 0.3em -0.2em #BBB);
+}
+
+.noUi-active {
+	@include box-shadow(inset 0 0 1px #FFF, inset 0 1px 0.5em #DDD, 0 0,2em 0.4em -0.2em #BBB);
+}
+
+/* Handle stripes;
+ */
+.noUi-handle {
+	&:before, &:after {
+		content: "";
+		display: block;
+		position: absolute;
+		height: $sliderSize;
+		width: 1px;
+		background: $sliderColour;
+		left: $sliderSize;
+		top: -($sliderSize / 3);
+	}
+	&:after {
+		left: ($sliderSize * 1.1);
+	}
+}
+
+.noui-vertical {
+	width: ($sliderSize * 1.2);
+	.noUi-handle {
+		width: ($sliderSize * 1.7);
+		height: $sliderSize * 2;
+		left: -($sliderSize / 3);
+		top: -($sliderSize * 1.2);
+		&:before, &:after {
+			width: $sliderSize;
+			height: 1px;
+			left: -($sliderSize / 3);
+			top: $sliderSize;
+		}
+		&:after {
+			top: ($sliderSize * 1.1);
+		}
+	}
+	&.noUi-extended {
+		padding: $sliderPadding 0;
+		.noUi-origin {
+			bottom: -$sliderSize;
+		}
+	}
+	.noUi-dragable {
+		cursor: n-resize;
+	}
+}
+
+/* Disabled state;
+ */
+[disabled] {
+	&.noUi-connect, .noUi-connect {
+		background: $sliderDisabledColour;
+	}
+	.noUi-handle {
+		cursor: not-allowed;
+	}
+}
+
+/* Blocked state;
+ */
+.noUi-state-blocked.noUi-connect,
+.noUi-state-blocked .noUi-connect {
+	background: $sliderBlockedColour;
+}
