@@ -12,8 +12,8 @@
 		"slide"  
 	],
 	"main": [
-		"jquery.nouislider.js",
-		"jquery.nouislider.css"  
+		"js/jquery.nouislider.js",
+		"css/jquery.nouislider.css"
 	],
 	"dependencies": {
 		"jquery": ">= 1.7.0"

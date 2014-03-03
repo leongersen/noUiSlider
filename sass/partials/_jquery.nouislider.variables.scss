@@ -1,0 +1,29 @@
+/* =============================================================================
+Sizes
+========================================================================== */
+$sliderPadding: 1em !default;
+$sliderSize: 1em !default;
+
+/* =============================================================================
+Colours
+========================================================================== */
+$sliderColour: #E8E7E6 !default;
+$sliderFullColour: $sliderColour + 40 !default;
+$sliderBlockedColour: darken(adjust_hue(saturate($sliderColour, 83), 154), 29) !default;
+$sliderDisabledColour: darken($sliderColour, 19) !default;
+$handleStripesColour: $sliderColour !default;
+$sliderBorderRadius: 0.3em !default;
+$sliderShadowColour: desaturate(lighten($sliderColour, 3), 4);
+$sliderShadowColourSecondary: darken($sliderShadowColour, 21);
+
+/* =============================================================================
+Borders
+========================================================================== */
+$sliderBorderStyle: solid !default;
+$sliderBorderColour: adjust_hue(saturate(darken($sliderColour, 8), 0), 35) !default;
+$sliderBorderWidth: 1px !default;
+
+/* =============================================================================
+Transitions
+========================================================================== */
+$transitionTime: 0.5s !default;
