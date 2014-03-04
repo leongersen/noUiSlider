@@ -455,7 +455,7 @@
 // Serialization target
 
 /** @constructor */
-	function Link( entry, sync ){
+	function Link( entry, update ){
 
 		// Make sure Link isn't called as a function, in which case
 		// the 'this' scope would be the window.
@@ -483,8 +483,8 @@
 			return;
 		}
 
-		// Store the sync option.
-		this.sync = sync;
+		// Store the update option.
+		this.update = !update;
 
 		var that = this, // .bind isn't available, need this link in .change().
 			isTooltip = ( typeof target === 'string' && target.indexOf('-tooltip-') === 0 ),
@@ -584,10 +584,10 @@
 	Link.fn = Link.prototype;
 
 	// Provides external items with the slider value.
-	Link.fn.write = function ( options, value, handle, slider, sync ) {
+	Link.fn.write = function ( options, value, handle, slider, update ) {
 
 		// Don't synchronize this Link.
-		if ( this.sync && sync ) {
+		if ( this.update && update === false ) {
 			return;
 		}
 
@@ -1393,7 +1393,7 @@ function closure ( target, options, originalOptions ){
 // Methods
 
 	// Set the slider value.
-	target.vSet = function ( values, callback, link, sync ){
+	target.vSet = function ( values, callback, link, update ){
 
 		var i, to;
 
@@ -1435,7 +1435,7 @@ function closure ( target, options, originalOptions ){
 					Memory.locations[i%2],
 					Memory.handles[i%2].children(),
 					Memory.target,
-					sync
+					update
 				);
 			});
 		}
@@ -1547,7 +1547,7 @@ function closure ( target, options, originalOptions ){
 
 		// Convert the function arguments to an array.
 		var args = Array.prototype.slice.call( arguments, 0 ),
-			set, link, unsub;
+			set, link, update;
 
 		// Test if there are arguments, and if not, call the 'get' method.
 		if ( !args.length ) {
@@ -1564,7 +1564,7 @@ function closure ( target, options, originalOptions ){
 		if ( typeof args[1] === 'object' ) {
 			set = args[1]['set'];
 			link = args[1]['link'];
-			unsub = args[1]['recursive'];
+			update = args[1]['update'];
 
 		// Support the 'true' option.
 		} else if ( args[1] === true ) {
@@ -1575,7 +1575,7 @@ function closure ( target, options, originalOptions ){
 		return this.each(function(){
 
 			if ( $(this).hasClass(Classes[0]) ) {
-				this.vSet( asArray(args[0]), set, link, unsub );
+				this.vSet( asArray(args[0]), set, link, update );
 			} else {
 				$val.apply( $(this), args );
 			}
