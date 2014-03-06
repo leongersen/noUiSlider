@@ -256,8 +256,7 @@
 			return element.on( events, function( e ){
 
 				// jQuery and Zepto handle unset attributes differently.
-				var disabled = target.attr('disabled');
-					disabled = !( disabled === undefined || disabled === null );
+				var disabled = !!target.attr('disabled');
 
 				// Test if there is anything that should prevent an event
 				// from being handled, such as a disabled state or an active
