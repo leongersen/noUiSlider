@@ -4,6 +4,9 @@
 
 	'use strict';
 
+	// No operation.
+	function noop(){}
+
 	var
 	// Cache the document selector;
 	 doc = $(document)
@@ -621,6 +624,250 @@
 
 // Input validation
 
+	function testStep ( parsed, entry ) {
+
+		if ( !isNumeric( entry ) ) {
+			return false;
+		}
+
+		// The step option can still be used to set stepping
+		// for linear sliders. Overwritten if set in 'range'.
+		parsed.xSteps[0] = entry;
+		return true;
+	}
+
+	function testRange ( parsed, entry ) {
+
+		var status = true;
+
+		// Filter incorrect input.
+		if ( typeof entry !== 'object' || $.isArray(entry) ) {
+			return false;
+		}
+
+		// Loop all entries.
+		$.each( entry, function ( index, value ) {
+
+			var prcnt;
+
+			// Wrap numerical input in an array.
+			if ( typeof value === "number" ) {
+				value = [value];
+			}
+
+			// Reject any invalid input.
+			if ( !$.isArray( value ) ){
+				status = false;
+				return false;
+			}
+
+			// Covert min/max syntax to 0 and 100.
+			prcnt = index === 'min' ? 0 :
+					index === 'max' ? 100 :
+					parseFloat( index );
+
+			// Check for correct input.
+			if ( !isNumeric( prcnt ) || !isNumeric( value[0] ) ) {
+				status = false;
+				return false;
+			}
+
+			// Store values.
+			parsed.xPct.push( prcnt );
+			parsed.xVal.push( value[0] );
+
+			// NaN will evaluate to false too, but to keep
+			// logging clear, set step explicitly. Make sure
+			// not to override the 'step' setting with false.
+			if ( !prcnt ) {
+				if ( !isNaN( value[1] ) ) {
+					parsed.xSteps[0] = value[1];
+				}
+			} else {
+				parsed.xSteps.push( isNaN(value[1]) ? false : value[1] );
+			}
+		});
+
+		$.each(parsed.xSteps, function(i,n){
+
+			// Ignore 'false' stepping.
+			if ( !n ) {
+				return true;
+			}
+
+			// Check if step fits. Not required, but this might serve some goal.
+			// !((parsed.xVal[i+1] - parsed.xVal[i]) % n);
+
+			// Factor to range ratio
+			parsed.xSteps[i] = fromPercentage([
+				 parsed.xVal[i]
+				,parsed.xVal[i+1]
+			], n) / subRangeRatio (
+				parsed.xPct[i],
+				parsed.xPct[i+1] );
+		});
+
+		return status;
+	}
+
+	function testStart ( parsed, entry ) {
+
+		if ( typeof entry === "number" ) {
+			entry = [entry];
+		}
+
+		// Validate input. Values aren't tested, the Link will do
+		// that and provide a valid location.
+		if ( !$.isArray( entry ) || !entry.length || entry.length > 2 ) {
+			return false;
+		}
+
+		// Store the number of handles.
+		parsed.handles = entry.length;
+
+		// When the slider is initialized, the .val method will
+		// be called with the start options.
+		parsed.start = entry;
+
+		return true;
+	}
+
+	function testSnap ( parsed, entry ) {
+
+		// Enforce 100% stepping within subranges.
+		parsed.snap = entry;
+		return typeof entry === 'boolean';
+	}
+
+	function testConnect ( parsed, entry ) {
+
+		if ( entry === 'lower' && parsed.handles === 1 ) {
+			parsed.connect = 1;
+		} else if ( entry === 'upper' && parsed.handles === 1 ) {
+			parsed.connect = 2;
+		} else if ( entry === true && parsed.handles === 2 ) {
+			parsed.connect = 3;
+		} else if ( entry === false ) {
+			parsed.connect = 0;
+		} else {
+			return false;
+		}
+
+		return true;
+	}
+
+	function testOrientation ( parsed, entry ) {
+
+		// Set orientation to an a numerical value for easy
+		// array selection.
+		switch ( entry ){
+		  case 'horizontal':
+			parsed.ort = 0;
+			return true;
+		  case 'vertical':
+			parsed.ort = 1;
+			return true;
+		  default:
+			return false;
+		}
+	}
+
+	function testMargin ( parsed, entry ) {
+
+		// Margin is only supported on linear sliders.
+		if ( parsed.xPct.length > 2 ) {
+			return false;
+		}
+
+		// Parse value to range and store. As xVal is checked
+		// to be no bigger than 2, use it as range.
+		parsed.margin = fromPercentage(parsed.xVal, entry);
+		return isNumeric(entry);
+	}
+
+	function testDirection ( parsed, entry ) {
+
+		// Set direction as a numerical value for easy parsing.
+		// Invert connection for RTL sliders, so that the proper
+		// handles get the connect/background classes.
+		switch ( entry ) {
+		  case 'ltr':
+			parsed.dir = 0;
+			return true;
+		  case 'rtl':
+			parsed.dir = 1;
+			parsed.connect = [0,2,1,3][parsed.connect];
+			return true;
+		  default:
+			return false;
+		}
+	}
+
+	function testBehaviour ( parsed, entry ) {
+
+		// Make sure the input is a string.
+		if ( typeof entry !== 'string' ) {
+			return false;
+		}
+
+		// Check if the string contains any keywords.
+		// None are required.
+		parsed.events = {
+			 tap: entry.indexOf('tap') >= 0
+			,extend: entry.indexOf('extend') >= 0
+			,drag: entry.indexOf('drag') >= 0
+			,fixed: entry.indexOf('fixed') >= 0
+		};
+
+		return true;
+	}
+
+	function testSerialization ( parsed, entry, sliders ) {
+
+		var status = true;
+
+		parsed.ser = [ entry['lower'], entry['upper'] ];
+		parsed.formatting = new Format( entry['format'] );
+
+		$.each( parsed.ser, function( i, a ){
+
+			// Check if the provided option is an array.
+			if ( !$.isArray(a) ) {
+				status = false;
+				return false;
+			}
+
+			$.each(a, function(){
+
+				// Check if entry is a Link.
+				if ( !(this instanceof Link) ) {
+					status = false;
+					return false;
+				}
+
+				// Assign other properties.
+				this.N = i;
+				this.obj = sliders;
+				this.scope = this.scope || sliders;
+
+				// Run internal validator.
+				this.formatting = new Format($.extend({}
+					,entry['format']
+					,this.formatting
+				));
+			});
+		});
+
+		// If the slider has two handles and is RTL,
+		// reverse the serialization input. For one handle,
+		// lower is still lower.
+		if ( parsed.dir && parsed.handles > 1 ) {
+			parsed.ser.reverse();
+		}
+
+		return status;
+	}
+
 	// Test all developer settings and parse to assumption-safe values.
 	function test ( options, sliders ){
 
@@ -647,266 +894,42 @@
 		tests = {
 			 'step': {
 				 r: false
-				,t: function( q ){
-
-					if ( !isNumeric( q ) ) {
-						return false;
-					}
-
-					// The step option can still be used to set stepping
-					// for linear sliders. Overwritten if set in 'range'.
-					parsed.xSteps[0] = q;
-					return true;
-				}
+				,t: testStep
 			}
 			,'range': {
 				 r: true
-				,t: function( q ){
-
-					var status = true;
-
-					// Filter incorrect input.
-					if ( typeof q !== 'object' || $.isArray(q) ) {
-						return false;
-					}
-
-					// Loop all entries.
-					$.each( q, function ( index, value ) {
-
-						var prcnt;
-
-						// Wrap numerical input in an array.
-						if ( typeof value === "number" ) {
-							value = [value];
-						}
-
-						// Reject any invalid input.
-						if ( !$.isArray( value ) ){
-							status = false;
-							return false;
-						}
-
-						// Covert min/max syntax to 0 and 100.
-						prcnt = index === 'min' ? 0 :
-								index === 'max' ? 100 :
-								parseFloat( index );
-
-						// Check for correct input.
-						if ( !isNumeric( prcnt ) || !isNumeric( value[0] ) ) {
-							status = false;
-							return false;
-						}
-
-						// Store values.
-						parsed.xPct.push( prcnt );
-						parsed.xVal.push( value[0] );
-
-						// NaN will evaluate to false too, but to keep
-						// logging clear, set step explicitly. Make sure
-						// not to override the 'step' setting with false.
-						if ( !prcnt ) {
-							if ( !isNaN( value[1] ) ) {
-								parsed.xSteps[0] = value[1];
-							}
-						} else {
-							parsed.xSteps.push( isNaN(value[1]) ? false : value[1] );
-						}
-					});
-
-					$.each(parsed.xSteps, function(i,n){
-
-						// Ignore 'false' stepping.
-						if ( !n ) {
-							return true;
-						}
-
-						// Check if step fits. Not required, but this might serve some goal.
-						// !((parsed.xVal[i+1] - parsed.xVal[i]) % n);
-
-						// Factor to range ratio
-						parsed.xSteps[i] = fromPercentage([
-							 parsed.xVal[i]
-							,parsed.xVal[i+1]
-						], n) / subRangeRatio (
-							parsed.xPct[i],
-							parsed.xPct[i+1] );
-					});
-
-					return status;
-				}
+				,t: testRange
 			}
 			,'start': {
 				 r: true
-				,t: function( q ){
-
-					if ( typeof q === "number" ) {
-						q = [q];
-					}
-
-					// Validate input. Values aren't tested, the Link will do
-					// that and provide a valid location.
-					if ( !$.isArray( q ) || !q.length || q.length > 2 ) {
-						return false;
-					}
-
-					// Store the number of handles.
-					parsed.handles = q.length;
-
-					// When the slider is initialized, the .val method will
-					// be called with the start options.
-					parsed.start = q;
-
-					return true;
-				}
+				,t: testStart
 			}
 			,'snap': {
 				 r: false
-				,t: function( q ){
-
-					// Enforce 100% stepping within subranges.
-					parsed.snap = q;
-					return typeof q === 'boolean';
-				}
+				,t: testSnap
 			}
 			,'connect': {
 				 r: true
-				,t: function( q ){
-
-					if ( q === 'lower' && parsed.handles === 1 ) {
-						parsed.connect = 1;
-					} else if ( q === 'upper' && parsed.handles === 1 ) {
-						parsed.connect = 2;
-					} else if ( q === true && parsed.handles === 2 ) {
-						parsed.connect = 3;
-					} else if ( q === false ) {
-						parsed.connect = 0;
-					} else {
-						return false;
-					}
-
-					return true;
-				}
+				,t: testConnect
 			}
 			,'orientation': {
 				 r: false
-				,t: function( q ){
-
-					// Set orientation to an a numerical value for easy
-					// array selection.
-					switch ( q ){
-					  case 'horizontal':
-						parsed.ort = 0;
-						return true;
-					  case 'vertical':
-						parsed.ort = 1;
-						return true;
-					  default:
-						return false;
-					}
-				}
+				,t: testOrientation
 			}
 			,'margin': {
-				 t: function( q ){
-
-					// Margin is only supported on linear sliders.
-					if ( parsed.xPct.length > 2 ) {
-						return false;
-					}
-
-					// Parse value to range and store. As xVal is checked
-					// to be no bigger than 2, use it as range.
-					parsed.margin = fromPercentage(parsed.xVal, q);
-					return isNumeric(q);
-				}
+				 t: testMargin
 			}
 			,'direction': {
 				 r: true
-				,t: function( q ){
-
-					// Set direction as a numerical value for easy parsing.
-					// Invert connection for RTL sliders, so that the proper
-					// handles get the connect/background classes.
-					switch ( q ) {
-					  case 'ltr':
-						parsed.dir = 0;
-						return true;
-					  case 'rtl':
-						parsed.dir = 1;
-						parsed.connect = [0,2,1,3][parsed.connect];
-						return true;
-					  default:
-						return false;
-					}
-				}
+				,t: testDirection
 			}
 			,'behaviour': {
 				 r: true
-				,t: function( q ){
-
-					// Make sure the input is a string.
-					if ( typeof q !== 'string' ) {
-						return false;
-					}
-
-					// Check if the string contains any keywords.
-					// None are required.
-					parsed.events = {
-						 tap: q.indexOf('tap') >= 0
-						,extend: q.indexOf('extend') >= 0
-						,drag: q.indexOf('drag') >= 0
-						,fixed: q.indexOf('fixed') >= 0
-					};
-
-					return true;
-				}
+				,t: testBehaviour
 			}
 			,'serialization': {
 				 r: true
-				,t: function( q, sliders ){
-
-					var status = true;
-
-					parsed.ser = [ q['lower'], q['upper'] ];
-					parsed.formatting = new Format( q['format'] );
-
-					$.each( parsed.ser, function( i, a ){
-
-						// Check if the provided option is an array.
-						if ( !$.isArray(a) ) {
-							status = false;
-							return false;
-						}
-
-						$.each(a, function(){
-
-							// Check if entry is a Link.
-							if ( !(this instanceof Link) ) {
-								status = false;
-								return false;
-							}
-
-							// Assign other properties.
-							this.N = i;
-							this.obj = sliders;
-							this.scope = this.scope || sliders;
-
-							// Run internal validator.
-							this.formatting = new Format($.extend({}
-								,q['format']
-								,this.formatting
-							));
-						});
-					});
-
-					// If the slider has two handles and is RTL,
-					// reverse the serialization input. For one handle,
-					// lower is still lower.
-					if ( parsed.dir && options.handles > 1 ) {
-						parsed.ser.reverse();
-					}
-
-					return status;
-				}
+				,t: testSerialization
 			}
 		};
 
@@ -938,7 +961,7 @@
 				} else {
 					return true;
 				}
-			} else if ( test.t( value, sliders ) ) {
+			} else if ( test.t( parsed, value, sliders ) ) {
 				return true;
 			}
 
@@ -980,66 +1003,78 @@
 		return handle;
 	}
 
-	// Initialize a single slider.
-	function addSlider ( options ) {
+	// Create a copy of an element-creating Link.
+	function addElement ( list, handle, link ) {
 
-		/*jshint validthis: true */
-
-		var base = $('<div/>').appendTo( $(this) ).addClass( Classes[1] ),
-			i, index, links = [], handles = [];
-
-		// Apply classes and data to the target.
-		$(this).addClass([
-			Classes[0]
-		   ,Classes[8 + options.dir]
-		   ,Classes[4 + options.ort] ].join(' '));
-
-		// Append handles.
-		for (i = 0; i < options.handles; i++ ) {
-
-			// Keep a list of all added handles.
-			handles.push( addHandle( options, i ).appendTo(base) );
-
-			links[i] = [ new Link({ 'format': options.formatting }) ];
-
-			// Copy the links into a new array, instead of modifying
-			// the 'options.ser' list. This allows replacement of the invalid
-			// '.el' Links, while the others are still passed by reference.
-			$.each(options.ser[i], function( index, value ){
-
-				if ( value.el ){
-					value = new Link({
-						'target': $(value.el).clone().appendTo( handles[i].children() ),
-						'method': value.method,
-						'format': value.formatting
-					});
-				}
-
-				links[i].push( value );
+		if ( link.el ) {
+			link = new Link({
+				'target': $(link.el).clone().appendTo( handle ),
+				'method': link.method,
+				'format': link.formatting
 			});
 		}
+
+		list.push(link);
+	}
+
+	// Add the proper connection classes.
+	function addConnection ( connect, target, handles ) {
 
 		// Apply the required connection classes to the elements
 		// that need them. Some classes are made up for several
 		// segments listed in the class list, to allow easy
 		// renaming and provide a minor compression benefit.
-		switch ( options.connect ) {
-			case 1:	$(this).addClass( Classes[7] );
+		switch ( connect ) {
+			case 1:	target.addClass( Classes[7] );
 					handles[0].addClass( Classes[6] );
 					break;
 			case 3: handles[1].addClass( Classes[6] );
 					/* falls through */
 			case 2: handles[0].addClass( Classes[7] );
 					/* falls through */
-			case 0: $(this).addClass(Classes[6]);
+			case 0: target.addClass(Classes[6]);
 					break;
+		}
+	}
+
+	// Add handles and loop Link elements.
+	function addHandles ( options, base ) {
+
+		var index, links = [], handles = [];
+
+		// Append handles.
+		for ( index = 0; index < options.handles; index++ ) {
+
+			// Keep a list of all added handles.
+			handles.push( addHandle( options, index ).appendTo(base) );
+
+			links[index] = [ new Link({ 'format': options.formatting }) ];
+
+			// Copy the links into a new array, instead of modifying
+			// the 'options.ser' list. This allows replacement of the invalid
+			// '.el' Links, while the others are still passed by reference.
+			$.each(options.ser[index], function(){
+				addElement(links[index], handles[index].children(), this);
+			});
 		}
 
 		return {
-			 base: base
-			,handles: handles
-			,serialization: links
+			handles: handles,
+			serialization: links
 		};
+	}
+
+	// Initialize a single slider.
+	function addSlider ( target, options ) {
+
+		// Apply classes and data to the target.
+		target.addClass([
+			Classes[0],
+			Classes[8 + options.dir],
+			Classes[4 + options.ort]
+		].join(' '));
+
+		return $('<div/>').appendTo(target).addClass( Classes[1] );
 	}
 
 
@@ -1056,7 +1091,6 @@ function closure ( target, options, originalOptions ){
 			return this.base[['width', 'height'][options.ort]]();
 		}
 	};
-
 
 // Handle placement
 
@@ -1379,16 +1413,21 @@ function closure ( target, options, originalOptions ){
 // Initialize slider
 
 	// Throw an error if the slider was already initialized.
-	if ( !$(target).is(':empty') ) {
+	if ( !Memory.target.is(':empty') ) {
 		throw new Error('Slider was already initialized.');
 	}
 
-	// Initialise HTML and set classes.
-	$.extend( Memory, addSlider.call(target, options) );
+	// Create the base element, initialise HTML and set classes.
+	Memory.base = addSlider( Memory.target, options );
+
+	// Add handles and links.
+	$.extend(Memory, addHandles( options, Memory.base ));
+
+	// Set the connect classes.
+	addConnection ( options.connect, Memory.target, Memory.handles );
 
 	// Attach user events.
 	events( options.events );
-
 
 // Methods
 
@@ -1493,7 +1532,7 @@ function closure ( target, options, originalOptions ){
 	};
 
 	// Use the public value method to set the start values.
-	$(target).val( options.start );
+	Memory.target.val( options.start );
 }
 
 
