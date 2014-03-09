@@ -1,4 +1,17 @@
-/*jslint browser: true, devel: true, continue: true, plusplus: true, sub: true, white: true */
+/*! $.noUiSlider - WTFPL - refreshless.com/nouislider/ */
+
+/*jslint browser: true */
+/*jslint devel: true */
+/*jslint continue: true */
+/*jslint plusplus: true */
+/*jslint sub: true */
+/*jslint white: true */
+
+// ==ClosureCompiler==
+// @externs_url http://refreshless.com/externs/jquery-1.8.js
+// @compilation_level ADVANCED_OPTIMIZATIONS
+// @warning_level VERBOSE
+// ==/ClosureCompiler==
 
 (function( $ ){
 
@@ -174,8 +187,10 @@
 			return 100;
 		}
 
-		var j = 0, va, vb, pa, pb;
-		while ( value >= options.xVal[++j] ){}
+		var j = 1, va, vb, pa, pb;
+		while ( value >= options.xVal[j] ){
+			j++;
+		}
 
 		va = options.xVal[j-1];
 		vb = options.xVal[j];
@@ -193,8 +208,10 @@
 			return options.xVal.slice(-1)[0];
 		}
 
-		var j = 0, va, vb, pa, pb;
-		while ( value >= options.xPct[++j] ){}
+		var j = 1, va, vb, pa, pb;
+		while ( value >= options.xPct[j] ){
+			j++;
+		}
 
 		va = options.xVal[j-1];
 		vb = options.xVal[j];
@@ -207,8 +224,10 @@
 	// (percentage) Get the step that applies at a certain value.
 	function getStep ( options, value ){
 
-		var j = 0, a, b;
-		while ( value >= options.xPct[++j] ){}
+		var j = 1, a, b;
+		while ( value >= options.xPct[j] ){
+			j++;
+		}
 
 		if ( options.snap ) {
 
@@ -299,7 +318,7 @@
 		}
 
 		if ( typeof options !== 'object' ){
-			throwError("(Format) 'format' option must be an object.")
+			throwError("(Format) 'format' option must be an object.");
 		}
 
 		var settings = {};
@@ -650,7 +669,7 @@
 
 			// Reject any invalid input.
 			if ( !$.isArray( value ) ){
-				throwError("'range' contains invalid value.", value);
+				throwError("'range' contains invalid value.");
 			}
 
 			// Covert min/max syntax to 0 and 100.
@@ -660,7 +679,7 @@
 
 			// Check for correct input.
 			if ( !isNumeric( prcnt ) || !isNumeric( value[0] ) ) {
-				throwError("'range' value isn't numeric.", index, value);
+				throwError("'range' value isn't numeric.");
 			}
 
 			// Store values.
@@ -1067,13 +1086,13 @@ function closure ( target, options, originalOptions ){
 	function fireEvents ( events ) {
 
 		// Use the external api to get the values.
-		var values = Memory.target.val();
+		// Wrap the values in an array, as .trigger takes
+		// only one additional argument.
+		var index, values = [ Memory.target.val() ];
 
-		$.each(events, function(i,a){
-			// Wrap the values in an array, as .trigger takes
-			// only one additional argument.
-			Memory.target.trigger(a, [ values ]);
-		});
+		for ( index = 0; index < events.length; index++ ){
+			Memory.target.trigger(events[index], values);
+		}
 	}
 
 
