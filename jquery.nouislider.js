@@ -816,16 +816,23 @@
 
 		// Make sure the input is a string.
 		if ( typeof entry !== 'string' ) {
-			throwError("'behaviour' must be a string contain options.");
+			throwError("'behaviour' must be a string containing options.");
 		}
 
 		// Check if the string contains any keywords.
 		// None are required.
+		var tap = entry.indexOf('tap') >= 0,
+			extend = entry.indexOf('extend') >= 0,
+			drag = entry.indexOf('drag') >= 0,
+			fixed = entry.indexOf('fixed') >= 0,
+			snap = entry.indexOf('snap') >= 0;
+
 		parsed.events = {
-			 tap: entry.indexOf('tap') >= 0
-			,extend: entry.indexOf('extend') >= 0
-			,drag: entry.indexOf('drag') >= 0
-			,fixed: entry.indexOf('fixed') >= 0
+			tap: tap || snap,
+			extend: extend,
+			drag: drag,
+			fixed: fixed,
+			snap: snap
 		};
 	}
 
@@ -1180,11 +1187,13 @@ function closure ( target, options, originalOptions ){
 	}
 
 	// Handles movement by tapping.
-	function jump ( handle, to ) {
+	function jump ( handle, to, instant ) {
 
-		// Flag the slider as it is now in a transitional state.
-		// Transition takes 300 ms, so re-enable the slider afterwards.
-		addClassFor( Memory.target, Classes[14], 300 );
+		if ( !instant ) {
+			// Flag the slider as it is now in a transitional state.
+			// Transition takes 300 ms, so re-enable the slider afterwards.
+			addClassFor( Memory.target, Classes[14], 300 );
+		}
 
 		// Move the handle to the new position.
 		setHandle( handle, to );
@@ -1329,7 +1338,7 @@ function closure ( target, options, originalOptions ){
 	// Move closest handle to tapped location.
 	function tap ( event ) {
 
-		var location = event.calcPoint, total = 0;
+		var location = event.calcPoint, total = 0, to;
 
 		// The tap event shouldn't propagate up and cause 'edge' to run.
 		event.stopPropagation();
@@ -1344,9 +1353,16 @@ function closure ( target, options, originalOptions ){
 
 		location -= Memory.base.offset()[ options.style ];
 
+		// Calculate the new position.
+		to = ( location * 100 ) / Memory.baseSize();
+
 		// Find the closest handle and calculate the tapped point.
 		// The set handle to the new position.
-		jump( Memory.handles[total], ( location * 100 ) / Memory.baseSize() );
+		jump( Memory.handles[total], to, options.events.snap );
+
+		if ( options.events.snap ) {
+			start(event, { handles: [Memory.handles[total]] });
+		}
 	}
 
 	// Move handle to edges when target gets tapped.
@@ -1357,7 +1373,7 @@ function closure ( target, options, originalOptions ){
 
 		i = i ? 0 : Memory.handles.length - 1;
 
-		jump( Memory.handles[i], to );
+		jump( Memory.handles[i], to, false );
 	}
 
 	// Attach events to several slider parts.
@@ -1434,7 +1450,7 @@ function closure ( target, options, originalOptions ){
 // Methods
 
 	// Set the slider value.
-	target.vSet = function ( values, callback, link, update ){
+	target.vSet = function ( values, callback, link, update, animate ){
 
 		var i, to;
 
@@ -1442,6 +1458,11 @@ function closure ( target, options, originalOptions ){
 		// internal mechanisms are the same.
 		if ( options.dir && options.handles > 1 ) {
 			values.reverse();
+		}
+
+		// Animation is optional.
+		if ( animate ) {
+			addClassFor( Memory.target, Classes[14], 300 );
 		}
 
 		// If there are multiple handles to be set run the setting
@@ -1588,7 +1609,7 @@ function closure ( target, options, originalOptions ){
 
 		// Convert the function arguments to an array.
 		var args = Array.prototype.slice.call( arguments, 0 ),
-			set, link, update;
+			set, link, update, animate;
 
 		// Test if there are arguments, and if not, call the 'get' method.
 		if ( !args.length ) {
@@ -1606,6 +1627,7 @@ function closure ( target, options, originalOptions ){
 			set = args[1]['set'];
 			link = args[1]['link'];
 			update = args[1]['update'];
+			animate = args[1]['animate'];
 
 		// Support the 'true' option.
 		} else if ( args[1] === true ) {
@@ -1616,7 +1638,7 @@ function closure ( target, options, originalOptions ){
 		return this.each(function(){
 
 			if ( $(this).hasClass(Classes[0]) ) {
-				this.vSet( asArray(args[0]), set, link, update );
+				this.vSet( asArray(args[0]), set, link, update, animate );
 			} else {
 				$val.apply( $(this), args );
 			}
