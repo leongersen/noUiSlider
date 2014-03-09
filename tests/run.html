@@ -11,16 +11,21 @@
 		document.write(script.outerHTML);
 	</script>
 
+	<link href="http://code.jquery.com/qunit/qunit-1.12.0.css" rel="stylesheet">
+	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
+
 	<style>
 
 		body {
-			width: 400px;
-			max-width: 100%;
-			margin: 100px auto;
+			padding: 20px;
 		}
+		#qunit {
+			width: 400px;
+			margin: 0 auto;
+		}	
 
 		.noUi-target {
-			margin: 80px;
+			width: 242px;
 		}
 		.noUi-vertical {
 			height: 150px;
@@ -59,9 +64,6 @@
 		var Link = $.noUiSlider.Link;
 	</script>
 
-	<link href="http://code.jquery.com/qunit/qunit-1.12.0.css" rel="stylesheet">
-	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
-
 </head>
 
 <body>
@@ -78,5 +80,7 @@
 	<script src="format.js"></script>
 	<script src="select.js"></script>
 	<script src="set.js"></script>
+	<script src="errors.js"></script>
+	<script src="events.js"></script>
 
 </body>

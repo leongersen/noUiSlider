@@ -4,9 +4,6 @@
 
 	'use strict';
 
-	// No operation.
-	function noop(){}
-
 	var
 	// Cache the document selector;
 	 doc = $(document)
@@ -71,11 +68,22 @@
 /*  6 */ ,function(a){ return a; }
 /*  7 */ ,'-'
 /*  8 */ ,''
-	],
-	// Safeguard existence of browser debugger (or polyfill).
-	dev = ( window.console && console.log && console.group ) ? console : {
-		log: noop, group: noop, groundEnd: noop
-	};
+	];
+
+
+// Error handling
+
+	function throwError( message ){
+		throw new RangeError('noUiSlider: ' + message);
+	}
+
+	// Throw an error if formatting options are incompatible.
+	function throwEqualError( F, a, b ) {
+		if ( (F[a] || F[b]) && (F[a] === F[b]) ) {
+			throwError("(Link) '"+a+"' can't match '"+b+"'.'");
+		}
+	}
+
 
 // General helpers
 
@@ -87,13 +95,6 @@
 	// Round a value to the closest 'to'.
 	function closest ( value, to ) {
 		return Math.round(value / to) * to;
-	}
-
-	// Throw an error if formatting options are incompatible.
-	function throwEqualError( F, a, b ) {
-		if ( (F[a] || F[b]) && (F[a] === F[b]) ) {
-			throw new RangeError('Link: '+a+' can\'t match '+b+'.');
-		}
 	}
 
 	// Determine the size of a sub-range in relation to a full range.
@@ -173,13 +174,13 @@
 			return 100;
 		}
 
-		var j = 0;
+		var j = 0, va, vb, pa, pb;
 		while ( value >= options.xVal[++j] ){}
 
-		var va = options.xVal[j-1],
-			vb = options.xVal[j],
-			pa = options.xPct[j-1],
-			pb = options.xPct[j];
+		va = options.xVal[j-1];
+		vb = options.xVal[j];
+		pa = options.xPct[j-1];
+		pb = options.xPct[j];
 
 		return pa + (toPercentage([va, vb], value) / subRangeRatio (pa, pb));
 	}
@@ -192,13 +193,13 @@
 			return options.xVal.slice(-1)[0];
 		}
 
-		var j = 0;
+		var j = 0, va, vb, pa, pb;
 		while ( value >= options.xPct[++j] ){}
 
-		var va = options.xVal[j-1],
-			vb = options.xVal[j],
-			pa = options.xPct[j-1],
-			pb = options.xPct[j];
+		va = options.xVal[j-1];
+		vb = options.xVal[j];
+		pa = options.xPct[j-1];
+		pb = options.xPct[j];
 
 		return isPercentage([va, vb], (value - pa) * subRangeRatio (pa, pb));
 	}
@@ -298,7 +299,7 @@
 		}
 
 		if ( typeof options !== 'object' ){
-			$.error('fail');
+			throwError("(Format) 'format' option must be an object.")
 		}
 
 		var settings = {};
@@ -317,7 +318,7 @@
 				// More can't be guaranteed due to floating point issues.
 				if ( val === 'decimals' ){
 					if ( options[val] < 0 || options[val] > 7 ){
-						$.error('fail');
+						throwError("(Format) 'format.decimals' option must be between 0 and 7.");
 					}
 				}
 
@@ -325,10 +326,7 @@
 
 			// If the value isn't valid, emit an error.
 			} else {
-
-				// todo error;
-				$.error('fail');
-
+				throwError("(Format) 'format."+val+"' must be a " + typeof FormatDefaults[i] + ".");
 			}
 		});
 
@@ -463,40 +461,38 @@
 		// Make sure Link isn't called as a function, in which case
 		// the 'this' scope would be the window.
 		if ( !(this instanceof Link) ) {
-			throw new Error(
-				'noUiSlider: Don\'t use Link as a function. Use the \'new\' keyword.'
-			);
+			throw new Error( "Link: " +
+				"Don't use Link as a function. " +
+				"Use the 'new' keyword.");
 		}
 
 		if ( !entry ) {
-			throw new RangeError('noUiSlider: Invalid Link.');
+			throw new RangeError("Link: missing parameters.");
 		}
-
-		// Get values from the input.
-		var target = entry['target'] || function(){},
-			method = entry['method'];
 
 		// Write all formatting to this object.
 		// No validation needed, as we'll merge these with the parent
 		// format options first.
 		this.formatting = entry['format'] || {};
 
-		// Allow creation of faux link for .val() method.
-		if( !target && !method ){
-			return;
-		}
-
 		// Store the update option.
 		this.update = !update;
 
-		var that = this, // .bind isn't available, need this link in .change().
-			isTooltip = ( typeof target === 'string' && target.indexOf('-tooltip-') === 0 ),
-			isHidden = ( typeof target === 'string' && target.indexOf('-') !== 0 ),
-			isMethod = ( typeof target === 'function' ),
-			is$ = ( isInstance(target) ),
-			isInput = ( is$ && target.is('input, select, textarea') ),
-			methodIsFunction = ( is$ && typeof method === 'function' ),
-			methodIsName = ( is$ && typeof method === 'string' && $.prototype[method] );
+		// In IE < 9, .bind() isn't available, need this link in .change().
+	var that = this,
+
+		// Get values from the input.
+		target = entry['target'] || function(){},
+		method = entry['method'],
+
+		// Find the type of this link.
+		isTooltip = ( typeof target === 'string' && target.indexOf('-tooltip-') === 0 ),
+		isHidden = ( typeof target === 'string' && target.indexOf('-') !== 0 ),
+		isMethod = ( typeof target === 'function' ),
+		is$ = ( isInstance(target) ),
+		isInput = ( is$ && target.is('input, select, textarea') ),
+		methodIsFunction = ( is$ && typeof method === 'function' ),
+		methodIsName = ( is$ && typeof method === 'string' && $.prototype[method] );
 
 		// If target is a string, a new hidden input will be created.
 		if ( isTooltip ) {
@@ -580,7 +576,7 @@
 			}
 		}
 
-		throw new RangeError('noUiSlider: Invalid Link.');
+		throw new RangeError("Link: Invalid Link.");
 	}
 
 	// Alias the Link prototype.
@@ -627,22 +623,19 @@
 	function testStep ( parsed, entry ) {
 
 		if ( !isNumeric( entry ) ) {
-			return false;
+			throwError("'step' is not numeric.");
 		}
 
 		// The step option can still be used to set stepping
 		// for linear sliders. Overwritten if set in 'range'.
 		parsed.xSteps[0] = entry;
-		return true;
 	}
 
 	function testRange ( parsed, entry ) {
 
-		var status = true;
-
 		// Filter incorrect input.
 		if ( typeof entry !== 'object' || $.isArray(entry) ) {
-			return false;
+			throwError("'range' is not an object.");
 		}
 
 		// Loop all entries.
@@ -657,8 +650,7 @@
 
 			// Reject any invalid input.
 			if ( !$.isArray( value ) ){
-				status = false;
-				return false;
+				throwError("'range' contains invalid value.", value);
 			}
 
 			// Covert min/max syntax to 0 and 100.
@@ -668,8 +660,7 @@
 
 			// Check for correct input.
 			if ( !isNumeric( prcnt ) || !isNumeric( value[0] ) ) {
-				status = false;
-				return false;
+				throwError("'range' value isn't numeric.", index, value);
 			}
 
 			// Store values.
@@ -706,8 +697,6 @@
 				parsed.xPct[i],
 				parsed.xPct[i+1] );
 		});
-
-		return status;
 	}
 
 	function testStart ( parsed, entry ) {
@@ -716,10 +705,10 @@
 			entry = [entry];
 		}
 
-		// Validate input. Values aren't tested, the Link will do
+		// Validate input. Values aren't tested, the internal Link will do
 		// that and provide a valid location.
 		if ( !$.isArray( entry ) || !entry.length || entry.length > 2 ) {
-			return false;
+			throwError("'start' option is incorrect.");
 		}
 
 		// Store the number of handles.
@@ -728,15 +717,16 @@
 		// When the slider is initialized, the .val method will
 		// be called with the start options.
 		parsed.start = entry;
-
-		return true;
 	}
 
 	function testSnap ( parsed, entry ) {
 
 		// Enforce 100% stepping within subranges.
 		parsed.snap = entry;
-		return typeof entry === 'boolean';
+
+		if ( typeof entry !== 'boolean' ){
+			throwError("'snap' option must be a boolean.");
+		}
 	}
 
 	function testConnect ( parsed, entry ) {
@@ -750,10 +740,8 @@
 		} else if ( entry === false ) {
 			parsed.connect = 0;
 		} else {
-			return false;
+			throwError("'connect' option was doesn't match handle count.");
 		}
-
-		return true;
 	}
 
 	function testOrientation ( parsed, entry ) {
@@ -763,26 +751,28 @@
 		switch ( entry ){
 		  case 'horizontal':
 			parsed.ort = 0;
-			return true;
+			break;
 		  case 'vertical':
 			parsed.ort = 1;
-			return true;
+			break;
 		  default:
-			return false;
+			throwError("'orientation' option is invalid.");
 		}
 	}
 
 	function testMargin ( parsed, entry ) {
 
-		// Margin is only supported on linear sliders.
 		if ( parsed.xPct.length > 2 ) {
-			return false;
+			throwError("'margin' option is only supported on linear sliders.");
 		}
 
 		// Parse value to range and store. As xVal is checked
 		// to be no bigger than 2, use it as range.
 		parsed.margin = fromPercentage(parsed.xVal, entry);
-		return isNumeric(entry);
+
+		if ( !isNumeric(entry) ){
+			throwError("'margin' option must be numeric.");
+		}
 	}
 
 	function testDirection ( parsed, entry ) {
@@ -793,13 +783,13 @@
 		switch ( entry ) {
 		  case 'ltr':
 			parsed.dir = 0;
-			return true;
+			break;
 		  case 'rtl':
 			parsed.dir = 1;
 			parsed.connect = [0,2,1,3][parsed.connect];
-			return true;
+			break;
 		  default:
-			return false;
+			throwError("'direction' option was not recognized.");
 		}
 	}
 
@@ -807,7 +797,7 @@
 
 		// Make sure the input is a string.
 		if ( typeof entry !== 'string' ) {
-			return false;
+			throwError("'behaviour' must be a string contain options.");
 		}
 
 		// Check if the string contains any keywords.
@@ -818,13 +808,9 @@
 			,drag: entry.indexOf('drag') >= 0
 			,fixed: entry.indexOf('fixed') >= 0
 		};
-
-		return true;
 	}
 
 	function testSerialization ( parsed, entry, sliders ) {
-
-		var status = true;
 
 		parsed.ser = [ entry['lower'], entry['upper'] ];
 		parsed.formatting = new Format( entry['format'] );
@@ -833,16 +819,14 @@
 
 			// Check if the provided option is an array.
 			if ( !$.isArray(a) ) {
-				status = false;
-				return false;
+				throwError("'serialization."+(!i?'lower':'upper')+"' must be an array.");
 			}
 
 			$.each(a, function(){
 
 				// Check if entry is a Link.
 				if ( !(this instanceof Link) ) {
-					status = false;
-					return false;
+					throwError("'serialization."+(!i?'lower':'upper')+"' can only contain Link instances.");
 				}
 
 				// Assign other properties.
@@ -864,8 +848,6 @@
 		if ( parsed.dir && parsed.handles > 1 ) {
 			parsed.ser.reverse();
 		}
-
-		return status;
 	}
 
 	// Test all developer settings and parse to assumption-safe values.
@@ -892,45 +874,16 @@
 		}, tests;
 
 		tests = {
-			 'step': {
-				 r: false
-				,t: testStep
-			}
-			,'range': {
-				 r: true
-				,t: testRange
-			}
-			,'start': {
-				 r: true
-				,t: testStart
-			}
-			,'snap': {
-				 r: false
-				,t: testSnap
-			}
-			,'connect': {
-				 r: true
-				,t: testConnect
-			}
-			,'orientation': {
-				 r: false
-				,t: testOrientation
-			}
-			,'margin': {
-				 t: testMargin
-			}
-			,'direction': {
-				 r: true
-				,t: testDirection
-			}
-			,'behaviour': {
-				 r: true
-				,t: testBehaviour
-			}
-			,'serialization': {
-				 r: true
-				,t: testSerialization
-			}
+			'step': { r: false, t: testStep },
+			'range': { r: true, t: testRange },
+			'start': { r: true, t: testStart },
+			'snap': { r: false, t: testSnap },
+			'connect': { r: true, t: testConnect },
+			'orientation': { r: false, t: testOrientation },
+			'margin': { r: false, t: testMargin },
+			'direction': { r: true, t: testDirection },
+			'behaviour': { r: true, t: testBehaviour },
+			'serialization': { r: true, t: testSerialization }
 		};
 
 		// Set defaults where applicable.
@@ -953,28 +906,15 @@
 		// be handled properly. E.g. wrapping integers in arrays.
 		$.each( tests, function( name, test ){
 
-			var value = options[name];
-
-			if ( value === undefined ) {
+			if ( options[name] === undefined ) {
 				if ( test.r ) {
-					value = '-missing-';
+					throwError("'" + name + "' is required.");
 				} else {
 					return true;
 				}
-			} else if ( test.t( parsed, value, sliders ) ) {
-				return true;
 			}
 
-			// For debugging purposes it might be very useful to know
-			// what option caused the trouble. Since throwing an error
-			// will prevent further script execution, log the error first.
-			dev.group( 'Invalid noUiSlider initialisation:' );
-			dev.log( 'Option:\t', name );
-			dev.log( 'Value:\t', value );
-			dev.log( 'Slider(s):\t', sliders );
-			dev.groupEnd();
-
-			throw new RangeError('noUiSlider');
+			test.t( parsed, options[name], sliders );
 		});
 
 		// Pre-define the styles.
@@ -1004,8 +944,10 @@
 	}
 
 	// Create a copy of an element-creating Link.
-	function addElement ( list, handle, link ) {
+	function addElement ( handle, link ) {
 
+		// If the Link requires creation of a new element,
+		// create this element and return a new Link instance.
 		if ( link.el ) {
 			link = new Link({
 				'target': $(link.el).clone().appendTo( handle ),
@@ -1014,7 +956,46 @@
 			});
 		}
 
-		list.push(link);
+		// Otherwise, return the reference.
+		return link;
+	}
+
+	// Loop all links for a handle.
+	function addElements ( elements, handle, formatting ) {
+
+		var index, list = [];
+
+		// Use the Link interface to provide unified
+		// formatting for the .val() method.
+		list.push ( new Link({ 'format': formatting }) );
+
+		// Loop all links in either 'lower' or 'upper'.
+		for ( index = 0; index < elements.length; index++ ) {
+			list.push(addElement(handle, elements[index]));
+		}
+
+		return list;
+	}
+
+	// Go over all Links and assign them to a handle.
+	function addLinks ( options, handles ) {
+
+		var index, links = [];
+
+		// Copy the links into a new array, instead of modifying
+		// the 'options.ser' list. This allows replacement of the invalid
+		// '.el' Links, while the others are still passed by reference.
+		for ( index = 0; index < options.handles; index++ ) {
+
+			// Append a new array.
+			links[index] = addElements(
+				options.ser[index],
+				handles[index].children(),
+				options.formatting
+			);
+		}
+
+		return links;
 	}
 
 	// Add the proper connection classes.
@@ -1040,32 +1021,20 @@
 	// Add handles and loop Link elements.
 	function addHandles ( options, base ) {
 
-		var index, links = [], handles = [];
+		var index, handles = [];
 
 		// Append handles.
 		for ( index = 0; index < options.handles; index++ ) {
 
 			// Keep a list of all added handles.
 			handles.push( addHandle( options, index ).appendTo(base) );
-
-			links[index] = [ new Link({ 'format': options.formatting }) ];
-
-			// Copy the links into a new array, instead of modifying
-			// the 'options.ser' list. This allows replacement of the invalid
-			// '.el' Links, while the others are still passed by reference.
-			$.each(options.ser[index], function(){
-				addElement(links[index], handles[index].children(), this);
-			});
 		}
 
-		return {
-			handles: handles,
-			serialization: links
-		};
+		return handles;
 	}
 
 	// Initialize a single slider.
-	function addSlider ( target, options ) {
+	function addSlider ( options, target ) {
 
 		// Apply classes and data to the target.
 		target.addClass([
@@ -1091,6 +1060,22 @@ function closure ( target, options, originalOptions ){
 			return this.base[['width', 'height'][options.ort]]();
 		}
 	};
+
+
+// External event handling
+
+	function fireEvents ( events ) {
+
+		// Use the external api to get the values.
+		var values = Memory.target.val();
+
+		$.each(events, function(i,a){
+			// Wrap the values in an array, as .trigger takes
+			// only one additional argument.
+			Memory.target.trigger(a, [ values ]);
+		});
+	}
+
 
 // Handle placement
 
@@ -1185,10 +1170,7 @@ function closure ( target, options, originalOptions ){
 		// Move the handle to the new position.
 		setHandle( handle, to );
 
-		Memory.target
-			.trigger('slide')
-			.trigger('set')
-			.trigger('change');
+		fireEvents(['slide', 'set', 'change']);
 	}
 
 
@@ -1258,7 +1240,7 @@ function closure ( target, options, originalOptions ){
 		} else {
 
 			// Fire the 'slide' event if the handle moved.
-			Memory.target.trigger('slide');
+			fireEvents(['slide']);
 		}
 	}
 
@@ -1277,11 +1259,11 @@ function closure ( target, options, originalOptions ){
 		// Unbind the move and end events, which are added on 'start'.
 		doc.off( namespace );
 
+		// Remove blocking classes.
+		Memory.target.removeClass( Classes[11] +' '+ Classes[12] );
+
 		// Fire the change and set events.
-		Memory.target
-			.removeClass( Classes[11] +' '+ Classes[12] )
-			.trigger('set')
-			.trigger('change');
+		fireEvents(['set', 'change']);
 	}
 
 	// Bind move events on document.
@@ -1418,16 +1400,17 @@ function closure ( target, options, originalOptions ){
 	}
 
 	// Create the base element, initialise HTML and set classes.
-	Memory.base = addSlider( Memory.target, options );
-
 	// Add handles and links.
-	$.extend(Memory, addHandles( options, Memory.base ));
+	Memory.base = addSlider( options, Memory.target );
+	Memory.handles = addHandles( options, Memory.base );
+	Memory.serialization = addLinks( options, Memory.handles );
 
 	// Set the connect classes.
 	addConnection ( options.connect, Memory.target, Memory.handles );
 
 	// Attach user events.
 	events( options.events );
+
 
 // Methods
 
@@ -1481,7 +1464,7 @@ function closure ( target, options, originalOptions ){
 
 		// Optionally fire the 'set' event.
 		if( callback === true ) {
-			$(this).trigger('set');
+			fireEvents(['set']);
 		}
 
 		return this;
