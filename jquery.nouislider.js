@@ -19,28 +19,28 @@
 
 	var
 	// Cache the document selector;
-	 doc = $(document)
+/** @const */ doc = $(document),
 	// Namespace for binding and unbinding slider events;
-	,namespace = '.nui'
+/** @const */ namespace = '.nui',
 	// Copy of the current value function;
-	,$val = $.fn.val
+/** @const */ $val = $.fn.val,
 	// Determine the events to bind. IE11 implements pointerEvents without
 	// a prefix, which breaks compatibility with the IE10 implementation.
-	,actions = window.navigator.pointerEnabled ? {
-		 start: 'pointerdown'
-		,move: 'pointermove'
-		,end: 'pointerup'
+/** @const */ actions = window.navigator.pointerEnabled ? {
+		start: 'pointerdown',
+		move: 'pointermove',
+		end: 'pointerup'
 	} : window.navigator.msPointerEnabled ? {
-		 start: 'MSPointerDown'
-		,move: 'MSPointerMove'
-		,end: 'MSPointerUp'
+		start: 'MSPointerDown',
+		move: 'MSPointerMove',
+		end: 'MSPointerUp'
 	} : {
-		 start: 'mousedown touchstart'
-		,move: 'mousemove touchmove'
-		,end: 'mouseup touchend'
-	}
+		start: 'mousedown touchstart',
+		move: 'mousemove touchmove',
+		end: 'mouseup touchend'
+	},
 	// Re-usable list of classes;
-	,Classes = [
+/** @const */ Classes = [
 /*  0 */  'noUi-target'
 /*  1 */ ,'noUi-base'
 /*  2 */ ,'noUi-origin'
@@ -59,8 +59,8 @@
 /* 15 */ ,'noUi-active'
 /* 16 */ ,'noUi-extended'
 /* 17 */ ,'noUi-stacking'
-	]
-	,Formatting = [
+	],
+/** @const */ Formatting = [
 /*  0 */  'decimals'
 /*  1 */ ,'mark'
 /*  2 */ ,'thousand'
@@ -70,8 +70,8 @@
 /*  6 */ ,'decoder'
 /*  7 */ ,'negative'
 /*  8 */ ,'negativeBefore'
-	]
-	,FormatDefaults = [
+	],
+/** @const */ FormatDefaults = [
 /*  0 */  2
 /*  1 */ ,'.'
 /*  2 */ ,''
@@ -541,11 +541,11 @@
 		if ( isMethod ) {
 
 			this.method = target;
-			this.isFunction = true;
+		//	this.isFunction = true;
 
 			// Set an empty $ object so the destroy function won't have
 			// to handle .isFunction objects differently.
-			this.target = $([]);
+		//	this.target = $([]);
 
 			return;
 		}
@@ -555,6 +555,7 @@
 
 			// The method must exist on the element.
 			if ( method && ( methodIsFunction || methodIsName ) ) {
+			//	console.log(target);
 				this.target = target;
 				this.method = method;
 				return;
@@ -620,7 +621,9 @@
 
 		// Branch between serialization to a function or an object.
 		if ( typeof this.method === 'function' ) {
-			this.method.call( this.target, value, handle, slider );
+			// When target is undefined, the target was a function.
+			// In that case, provided the slider as the calling scope.
+			this.method.call( this.target || slider, value, handle, slider );
 		} else {
 			this.target[ this.method ]( value, handle, slider );
 		}
@@ -660,7 +663,7 @@
 		// Loop all entries.
 		$.each( entry, function ( index, value ) {
 
-			var prcnt;
+			var percentage;
 
 			// Wrap numerical input in an array.
 			if ( typeof value === "number" ) {
@@ -673,23 +676,27 @@
 			}
 
 			// Covert min/max syntax to 0 and 100.
-			prcnt = index === 'min' ? 0 :
-					index === 'max' ? 100 :
-					parseFloat( index );
+			if ( index === 'min' ) {
+				percentage = 0;
+			} else if ( index === 'max' ) {
+				percentage = 100;
+			} else {
+				percentage = parseFloat( index );
+			}
 
 			// Check for correct input.
-			if ( !isNumeric( prcnt ) || !isNumeric( value[0] ) ) {
+			if ( !isNumeric( percentage ) || !isNumeric( value[0] ) ) {
 				throwError("'range' value isn't numeric.");
 			}
 
 			// Store values.
-			parsed.xPct.push( prcnt );
+			parsed.xPct.push( percentage );
 			parsed.xVal.push( value[0] );
 
 			// NaN will evaluate to false too, but to keep
 			// logging clear, set step explicitly. Make sure
 			// not to override the 'step' setting with false.
-			if ( !prcnt ) {
+			if ( !percentage ) {
 				if ( !isNaN( value[1] ) ) {
 					parsed.xSteps[0] = value[1];
 				}
@@ -979,7 +986,7 @@
 				'target': $(link.el).clone().appendTo( handle ),
 				'method': link.method,
 				'format': link.formatting
-			});
+			}, true);
 		}
 
 		// Otherwise, return the reference.
@@ -993,7 +1000,11 @@
 
 		// Use the Link interface to provide unified
 		// formatting for the .val() method.
-		list.push ( new Link({ 'format': formatting }) );
+		list.push(
+			new Link({
+				'format': formatting
+			}, true)
+		);
 
 		// Loop all links in either 'lower' or 'upper'.
 		for ( index = 0; index < elements.length; index++ ) {
@@ -1079,13 +1090,17 @@ function closure ( target, options, originalOptions ){
 
 // Internal variables
 
-	var Memory = {
-		 target: $(target)
-		,locations: [-1, -1]
-		,baseSize: function(){
-			return this.base[['width', 'height'][options.ort]]();
-		}
-	};
+	// All variables local to 'closure' are marked $.
+	var $Target = $(target),
+		$Locations = [-1, -1],
+		$Base,
+		$Serialization,
+		$Handles;
+
+	// Shorthand for base dimensions.
+	function baseSize ( ) {
+		return $Base[['width', 'height'][options.ort]]();
+	}
 
 
 // External event handling
@@ -1095,10 +1110,10 @@ function closure ( target, options, originalOptions ){
 		// Use the external api to get the values.
 		// Wrap the values in an array, as .trigger takes
 		// only one additional argument.
-		var index, values = [ Memory.target.val() ];
+		var index, values = [ $Target.val() ];
 
 		for ( index = 0; index < events.length; index++ ){
-			Memory.target.trigger(events[index], values);
+			$Target.trigger(events[index], values);
 		}
 	}
 
@@ -1108,12 +1123,12 @@ function closure ( target, options, originalOptions ){
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to, delimit ) {
 
-		var n = handle[0] !== Memory.handles[0][0] ? 1 : 0,
-			lower = Memory.locations[0] + options.margin,
-			upper = Memory.locations[1] - options.margin;
+		var n = handle[0] !== $Handles[0][0] ? 1 : 0,
+			lower = $Locations[0] + options.margin,
+			upper = $Locations[1] - options.margin;
 
 		// Don't delimit range dragging.
-		if ( delimit && Memory.handles.length > 1 ) {
+		if ( delimit && $Handles.length > 1 ) {
 			to = n ? Math.max( to, lower ) : Math.min( to, upper );
 		}
 
@@ -1128,8 +1143,8 @@ function closure ( target, options, originalOptions ){
 
 		// Return falsy if handle can't move. False for 0 or 100 limit,
 		// '0' for limiting by another handle.
-		if ( to === Memory.locations[n] ) {
-			if ( Memory.handles.length === 1 ) {
+		if ( to === $Locations[n] ) {
+			if ( $Handles.length === 1 ) {
 				return false;
 			}
 			return ( to === lower || to === upper ) ? 0 : false;
@@ -1143,11 +1158,11 @@ function closure ( target, options, originalOptions ){
 			handle.toggleClass(Classes[17], to > 50 );
 		}
 
-		// Update memory locations.
-		Memory.locations[n] = to;
+		// Update locations.
+		$Locations[n] = to;
 
 		// Remove blocked state, as the handle could move.
-		Memory.target.removeClass(Classes[11]);
+		$Target.removeClass(Classes[11]);
 
 		// Invert the value if this is a right-to-left slider.
 		if ( options.dir ) {
@@ -1156,8 +1171,8 @@ function closure ( target, options, originalOptions ){
 
 		// Write values to serialization Links.
 		// Convert the value to the correct relative representation.
-		$(Memory.serialization[n]).each(function(){
-			this.write( options, to, handle.children(), Memory.target );
+		$($Serialization[n]).each(function(){
+			this.write( options, to, handle.children(), $Target );
 		});
 
 		return true;
@@ -1192,11 +1207,11 @@ function closure ( target, options, originalOptions ){
 		if ( !instant ) {
 			// Flag the slider as it is now in a transitional state.
 			// Transition takes 300 ms, so re-enable the slider afterwards.
-			addClassFor( Memory.target, Classes[14], 300 );
+			addClassFor( $Target, Classes[14], 300 );
 		}
 
 		// Move the handle to the new position.
-		setHandle( handle, to );
+		setHandle( handle, to, false );
 
 		fireEvents(['slide', 'set', 'change']);
 	}
@@ -1204,7 +1219,7 @@ function closure ( target, options, originalOptions ){
 
 // Events
 
-	// Handler for attaching events trough a proxy
+	// Handler for attaching events trough a proxy.
 	function attach ( events, element, callback, data ) {
 
 		// Add the noUiSlider namespace to all events.
@@ -1214,13 +1229,13 @@ function closure ( target, options, originalOptions ){
 		return element.on( events, function( e ){
 
 			// jQuery and Zepto handle unset attributes differently.
-			var disabled = Memory.target.attr('disabled');
+			var disabled = $Target.attr('disabled');
 				disabled = !( disabled === undefined || disabled === null );
 
 			// Test if there is anything that should prevent an event
 			// from being handled, such as a disabled state or an active
 			// 'tap' transition.
-			if( Memory.target.hasClass( Classes[14] ) || disabled ) {
+			if( $Target.hasClass( Classes[14] ) || disabled ) {
 				return false;
 			}
 
@@ -1235,9 +1250,9 @@ function closure ( target, options, originalOptions ){
 	// Handle movement on document for handle and range drag.
 	function move ( event, data ) {
 
-		var handles = data.handles || Memory.handles, positions, state = false,
-			proposal = ((event.calcPoint - data.start) * 100) / Memory.baseSize(),
-			h = handles[0][0] !== Memory.handles[0][0] ? 1 : 0;
+		var handles = data.handles || $Handles, positions, state = false,
+			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
+			h = handles[0][0] !== $Handles[0][0] ? 1 : 0;
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
@@ -1251,7 +1266,7 @@ function closure ( target, options, originalOptions ){
 		// If no handles where set
 		if ( !state ) {
 
-			if ( !getsClass( Memory.target, Classes[11] ) ) {
+			if ( !getsClass( $Target, Classes[11] ) ) {
 				return;
 			}
 
@@ -1259,11 +1274,11 @@ function closure ( target, options, originalOptions ){
 			// the margin option is set, and when the margin
 			// is the cause for the blocking.
 			if ( options.margin && state === 0 ) {
-				addClassFor( Memory.target, Classes[13], 450 );
+				addClassFor( $Target, Classes[13], 450 );
 			}
 
 			// Fire callback on unsuccessful handle movement.
-			Memory.target.trigger('block');
+			$Target.trigger('block');
 
 		} else {
 
@@ -1288,7 +1303,7 @@ function closure ( target, options, originalOptions ){
 		doc.off( namespace );
 
 		// Remove blocking classes.
-		Memory.target.removeClass( Classes[11] +' '+ Classes[12] );
+		$Target.removeClass( Classes[11] +' '+ Classes[12] );
 
 		// Fire the change and set events.
 		fireEvents(['set', 'change']);
@@ -1307,16 +1322,16 @@ function closure ( target, options, originalOptions ){
 
 		// Attach the move event.
 		attach ( actions.move, doc, move, {
-			 start: event.calcPoint
-			,handles: data.handles
-			,positions: [
-				Memory.locations[0],
-				Memory.locations[Memory.handles.length - 1]
+			start: event.calcPoint,
+			handles: data.handles,
+			positions: [
+				$Locations[0],
+				$Locations[$Handles.length - 1]
 			]
 		});
 
 		// Unbind all movement when the drag ends.
-		attach ( actions.end, doc, end );
+		attach ( actions.end, doc, end, null );
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
@@ -1326,8 +1341,8 @@ function closure ( target, options, originalOptions ){
 			$('body').css('cursor', $(event.target).css('cursor'));
 
 			// Mark the target with a dragging state.
-			if ( Memory.handles.length > 1 ) {
-				Memory.target.addClass(Classes[12]);
+			if ( $Handles.length > 1 ) {
+				$Target.addClass(Classes[12]);
 			}
 
 			// Prevent text selection when dragging the handles.
@@ -1344,36 +1359,36 @@ function closure ( target, options, originalOptions ){
 		event.stopPropagation();
 
 		// Add up the handle offsets.
-		$.each( Memory.handles, function(){
+		$.each( $Handles, function(){
 			total += this.offset()[ options.style ];
 		});
 
 		// Find the handle closest to the tapped position.
-		total = ( location < total/2 || Memory.handles.length === 1 ) ? 0 : 1;
+		total = ( location < total/2 || $Handles.length === 1 ) ? 0 : 1;
 
-		location -= Memory.base.offset()[ options.style ];
+		location -= $Base.offset()[ options.style ];
 
 		// Calculate the new position.
-		to = ( location * 100 ) / Memory.baseSize();
+		to = ( location * 100 ) / baseSize();
 
 		// Find the closest handle and calculate the tapped point.
 		// The set handle to the new position.
-		jump( Memory.handles[total], to, options.events.snap );
+		jump( $Handles[total], to, options.events.snap );
 
 		if ( options.events.snap ) {
-			start(event, { handles: [Memory.handles[total]] });
+			start(event, { handles: [$Handles[total]] });
 		}
 	}
 
 	// Move handle to edges when target gets tapped.
 	function edge ( event ) {
 
-		var i = event.calcPoint < Memory.base.offset()[ options.style ],
+		var i = event.calcPoint < $Base.offset()[ options.style ],
 			to = i ? 0 : 100;
 
-		i = i ? 0 : Memory.handles.length - 1;
+		i = i ? 0 : $Handles.length - 1;
 
-		jump( Memory.handles[i], to, false );
+		jump( $Handles[i], to, false );
 	}
 
 	// Attach events to several slider parts.
@@ -1384,45 +1399,51 @@ function closure ( target, options, originalOptions ){
 		// Attach the standard drag event to the handles.
 		if ( !behaviour.fixed ) {
 
-			for ( i = 0; i < Memory.handles.length; i++ ) {
+			for ( i = 0; i < $Handles.length; i++ ) {
 
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
-				attach ( actions.start, Memory.handles[i].children(), start, {
-					handles: [ Memory.handles[i] ]
+				attach ( actions.start, $Handles[i].children(), start, {
+					handles: [ $Handles[i] ]
 				});
 			}
 		}
 
 		// Attach the tap event to the slider base.
 		if ( behaviour.tap ) {
-			attach ( actions.start, Memory.base, tap, Memory );
+			attach ( actions.start, $Base, tap, {
+				handles: $Handles
+			});
 		}
 
 		// Extend tapping behaviour to target
 		if ( behaviour.extend ) {
 
-			Memory.target.addClass( Classes[16] );
+			$Target.addClass( Classes[16] );
 
 			if ( behaviour.tap ) {
-				attach ( actions.start, Memory.target, edge, Memory );
+				attach ( actions.start, $Target, edge, {
+					handles: $Handles
+				});
 			}
 		}
 
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			drag = Memory.base.find( '.' + Classes[7] ).addClass( Classes[10] );
+			drag = $Base.find( '.' + Classes[7] ).addClass( Classes[10] );
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first
 			// origin will propagate the start event upward,
 			// but it needs to be bound manually on the other.
 			if ( behaviour.fixed ) {
-				drag = drag.add(Memory.base.children().not( drag ).children());
+				drag = drag.add($Base.children().not( drag ).children());
 			}
 
-			attach ( actions.start, drag, start, Memory );
+			attach ( actions.start, drag, start, {
+				handles: $Handles
+			});
 		}
 	}
 
@@ -1430,18 +1451,18 @@ function closure ( target, options, originalOptions ){
 // Initialize slider
 
 	// Throw an error if the slider was already initialized.
-	if ( !Memory.target.is(':empty') ) {
+	if ( !$Target.is(':empty') ) {
 		throw new Error('Slider was already initialized.');
 	}
 
 	// Create the base element, initialise HTML and set classes.
 	// Add handles and links.
-	Memory.base = addSlider( options, Memory.target );
-	Memory.handles = addHandles( options, Memory.base );
-	Memory.serialization = addLinks( options, Memory.handles );
+	$Base = addSlider( options, $Target );
+	$Handles = addHandles( options, $Base );
+	$Serialization = addLinks( options, $Handles );
 
 	// Set the connect classes.
-	addConnection ( options.connect, Memory.target, Memory.handles );
+	addConnection ( options.connect, $Target, $Handles );
 
 	// Attach user events.
 	events( options.events );
@@ -1462,15 +1483,15 @@ function closure ( target, options, originalOptions ){
 
 		// Animation is optional.
 		if ( animate ) {
-			addClassFor( Memory.target, Classes[14], 300 );
+			addClassFor( $Target, Classes[14], 300 );
 		}
 
 		// If there are multiple handles to be set run the setting
 		// mechanism twice for the first handle, to make sure it
 		// can be bounced of the second one properly.
-		for ( i = 0; i < ( Memory.handles.length > 1 ? 3 : 1 ); i++ ) {
+		for ( i = 0; i < ( $Handles.length > 1 ? 3 : 1 ); i++ ) {
 
-			to = link || Memory.serialization[i%2][0];
+			to = link || $Serialization[i%2][0];
 			to = to.valueOf( values[i%2] );
 
 			if ( to === false ) {
@@ -1486,17 +1507,17 @@ function closure ( target, options, originalOptions ){
 			}
 
 			// Force delimitation.
-			if ( setHandle( Memory.handles[i%2], to, true ) === true ) {
+			if ( setHandle( $Handles[i%2], to, true ) === true ) {
 				continue;
 			}
 
 			// Reset the input if it doesn't match the slider.
-			$(Memory.serialization[i%2]).each(function(){
+			$($Serialization[i%2]).each(function(){
 				this.write(
 					options,
-					Memory.locations[i%2],
-					Memory.handles[i%2].children(),
-					Memory.target,
+					$Locations[i%2],
+					$Handles[i%2].children(),
+					$Target,
 					update
 				);
 			});
@@ -1516,7 +1537,7 @@ function closure ( target, options, originalOptions ){
 		var i, retour = [];
 
 		for ( i = 0; i < options.handles; i++ ){
-			retour[i] = Memory.serialization[i][0].saved;
+			retour[i] = $Serialization[i][0].saved;
 		}
 
 		if ( retour.length === 1 ){
@@ -1535,7 +1556,7 @@ function closure ( target, options, originalOptions ){
 
 		// Loop all linked serialization objects and unbind all
 		// events in the noUiSlider namespace.
-		$.each(Memory.serialization, function(){
+		$.each($Serialization, function(){
 			$.each(this, function(){
 				// Won't remove 'change' when bound implicitly.
 				this.target.off( namespace );
@@ -1547,15 +1568,12 @@ function closure ( target, options, originalOptions ){
 			.removeClass(Classes.join(' '))
 			.empty();
 
-		// Dump storage in the closure. Garbage collector should catch this.
-		Memory = null;
-
 		// Return the original options from the closure.
 		return originalOptions;
 	};
 
 	// Use the public value method to set the start values.
-	Memory.target.val( options.start );
+	$Target.val( options.start );
 }
 
 
