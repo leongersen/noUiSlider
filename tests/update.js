@@ -29,7 +29,6 @@
 				],
 				format: {
 					encoder: function( value ){
-						console.log(value);
 						return 3 * Number(value);
 					},
 					decoder: function( value ){
@@ -61,7 +60,7 @@
 		}, true);
 
 		equal( Q.find('input').length, 1, 'Hidden input is gone.' );
-		equal( Q.find('input.input').val(), '90|0000', 'Input didn\t update.' );
+		equal( Q.find('input.input').val(), '90|0000', "Input didn't update." );
 
 		deepEqual( slider.val(), ['-40.00', '1500.00'], 'Slider has new settings.' );
 

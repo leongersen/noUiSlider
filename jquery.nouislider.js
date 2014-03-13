@@ -539,14 +539,8 @@
 
 		// The target can also be a function, which will be called.
 		if ( isMethod ) {
-
+			this.target = false;
 			this.method = target;
-		//	this.isFunction = true;
-
-			// Set an empty $ object so the destroy function won't have
-			// to handle .isFunction objects differently.
-		//	this.target = $([]);
-
 			return;
 		}
 
@@ -555,7 +549,6 @@
 
 			// The method must exist on the element.
 			if ( method && ( methodIsFunction || methodIsName ) ) {
-			//	console.log(target);
 				this.target = target;
 				this.method = method;
 				return;
@@ -1559,7 +1552,9 @@ function closure ( target, options, originalOptions ){
 		$.each($Serialization, function(){
 			$.each(this, function(){
 				// Won't remove 'change' when bound implicitly.
-				this.target.off( namespace );
+				if ( this.target ) {
+					this.target.off( namespace );
+				}
 			});
 		});
 
