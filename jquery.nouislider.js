@@ -1529,10 +1529,12 @@ function closure ( target, options, originalOptions ){
 
 		var i, retour = [];
 
+		// Get the value from all handles.
 		for ( i = 0; i < options.handles; i++ ){
 			retour[i] = $Serialization[i][0].saved;
 		}
 
+		// If only one handle is used, return a single value.
 		if ( retour.length === 1 ){
 			return retour[0];
 		}
@@ -1567,6 +1569,9 @@ function closure ( target, options, originalOptions ){
 		return originalOptions;
 	};
 
+
+// Value setting
+
 	// Use the public value method to set the start values.
 	$Target.val( options.start );
 }
@@ -1576,6 +1581,11 @@ function closure ( target, options, originalOptions ){
 
 	// Run the standard initializer
 	function initialize ( originalOptions ) {
+
+		// Throw error if group is empty.
+		if ( !this.length ){
+			throwError("Can't initialize slider on empty selection.");
+		}
 
 		// Test the options once, not for every slider.
 		var options = test( originalOptions, this );

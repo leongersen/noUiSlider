@@ -3,7 +3,7 @@
 
 		Q.html('\
 			<div class="slider"></div>\
-			<input class="input"></div>\
+			<input class="input">\
 		');
 
 		var slider = $('.slider'),
