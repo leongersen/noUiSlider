@@ -124,7 +124,7 @@
 
 	// Test in an object is an instance of jQuery or Zepto.
 	function isInstance ( a ) {
-		return a instanceof $ || ( $.zepto && $.zepto.isZ(a) );
+		return a instanceof $ || ( $['zepto'] && $['zepto']['isZ'](a) );
 	}
 
 	// Checks whether a value is numerical.
