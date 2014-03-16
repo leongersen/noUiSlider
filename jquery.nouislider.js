@@ -52,9 +52,9 @@
 /*  8 */ ,'noUi-ltr'
 /*  9 */ ,'noUi-rtl'
 /* 10 */ ,'noUi-dragable'
-/* 11 */ ,'noUi-block'
+/* 11 */ ,''
 /* 12 */ ,'noUi-state-drag'
-/* 13 */ ,'noUi-state-blocked'
+/* 13 */ ,''
 /* 14 */ ,'noUi-state-tap'
 /* 15 */ ,'noUi-active'
 /* 16 */ ,'noUi-extended'
@@ -1154,9 +1154,6 @@ function closure ( target, options, originalOptions ){
 		// Update locations.
 		$Locations[n] = to;
 
-		// Remove blocked state, as the handle could move.
-		$Target.removeClass(Classes[11]);
-
 		// Invert the value if this is a right-to-left slider.
 		if ( options.dir ) {
 			to = 100 - to;
@@ -1256,26 +1253,8 @@ function closure ( target, options, originalOptions ){
 			state = setHandle ( handles[1], positions[h?0:1], false ) || state;
 		}
 
-		// If no handles where set
-		if ( !state ) {
-
-			if ( !getsClass( $Target, Classes[11] ) ) {
-				return;
-			}
-
-			// The visual effects should only be applied when
-			// the margin option is set, and when the margin
-			// is the cause for the blocking.
-			if ( options.margin && state === 0 ) {
-				addClassFor( $Target, Classes[13], 450 );
-			}
-
-			// Fire callback on unsuccessful handle movement.
-			$Target.trigger('block');
-
-		} else {
-
-			// Fire the 'slide' event if the handle moved.
+		// Fire the 'slide' event if any handle moved.
+		if ( state ) {
 			fireEvents(['slide']);
 		}
 	}
@@ -1284,7 +1263,6 @@ function closure ( target, options, originalOptions ){
 	function end ( event ) {
 
 		// The handle is no longer active, so remove the class.
-
 		$('.' + Classes[15]).removeClass(Classes[15]);
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -1295,8 +1273,8 @@ function closure ( target, options, originalOptions ){
 		// Unbind the move and end events, which are added on 'start'.
 		doc.off( namespace );
 
-		// Remove blocking classes.
-		$Target.removeClass( Classes[11] +' '+ Classes[12] );
+		// Remove dragging class.
+		$Target.removeClass(Classes[12]);
 
 		// Fire the change and set events.
 		fireEvents(['set', 'change']);

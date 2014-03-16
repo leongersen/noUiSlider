@@ -163,10 +163,3 @@
 [disabled] .noUi-handle {
 	cursor: not-allowed;
 }
-
-/* Blocked state;
- */
-.noUi-state-blocked.noUi-connect,
-.noUi-state-blocked .noUi-connect {
-	background: #4FDACF;
-}
