@@ -26,15 +26,15 @@
 			ok(handle.hasClass("noUi-handle"), "Handle is really a handle.");
 			ok(handle.hasClass("noUi-handle-lower"), "Handle is really the lower handle.");
 			ok(sliderInstance.hasClass("noUi-target"), "Slider is really a slider.");
-			ok(sliderInstance.is($(this)), "Slider is scope of call.");
+			ok(sliderInstance[0] === this, "Slider is scope of call.");
 		}
 
 		function linkMethodFunction( value, handle, sliderInstance ){
 			equal(value, vals[val2++], "Value as expected, change ("+val2+"/4).");
 			ok(handle.hasClass("noUi-handle"), "Handle is really a handle.");
 			ok(sliderInstance.hasClass("noUi-target"), "Slider is really a slider.");
-			ok(box.is($(this)), "Element is scope of call.");
-			ok(slider.is(sliderInstance), "Slider argument is slider.");
+			ok(box[0] === this, "Element is scope of call.");
+			ok(slider[0] === sliderInstance[0], "Slider argument is slider.");
 		}
 
 		slider.noUiSlider({

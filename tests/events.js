@@ -30,12 +30,12 @@
 			deepEqual( values, ['50,-', '70,-'], "Slide event has proper parameters." );
 		});
 
-		handles.first().trigger(jQuery.Event('mousedown', {
+		handles.first().trigger($.Event('mousedown', {
 			clientX: 10,
 			clientY: 0
 		}));
 
-		$(document).trigger(jQuery.Event('mousemove', {
+		$(document).trigger($.Event('mousemove', {
 			clientX: 52,
 			clientY: 0
 		}));
@@ -44,12 +44,12 @@
 
 		deepEqual( slider.val(), ['50,-', '50,-'], "Slider didn't cross." );
 
-		handles.last().trigger(jQuery.Event('mousedown', {
+		handles.last().trigger($.Event('mousedown', {
 			clientX: 10,
 			clientY: 0
 		}));
 
-		$(document).trigger(jQuery.Event('mousemove', {
+		$(document).trigger($.Event('mousemove', {
 			clientX: 130,
 			clientY: 0
 		}));

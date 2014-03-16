@@ -22,7 +22,7 @@
 					new Link({
 						target: '-tooltip-<div class="tooltip"/>',
 						method: function( value, handle, slider ){
-							ok( $("#slider").is( slider ) );
+							ok( $("#slider")[0] === slider[0] );
 							ok( handle.hasClass('noUi-handle') );
 						},
 						format: {

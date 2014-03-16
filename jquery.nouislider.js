@@ -511,7 +511,7 @@
 		is$ = ( isInstance(target) ),
 		isInput = ( is$ && target.is('input, select, textarea') ),
 		methodIsFunction = ( is$ && typeof method === 'function' ),
-		methodIsName = ( is$ && typeof method === 'string' && $.prototype[method] );
+		methodIsName = ( is$ && typeof method === 'string' && target[method] );
 
 		// If target is a string, a new hidden input will be created.
 		if ( isTooltip ) {
@@ -592,11 +592,8 @@
 		throw new RangeError("Link: Invalid Link.");
 	}
 
-	// Alias the Link prototype.
-	Link.fn = Link.prototype;
-
 	// Provides external items with the slider value.
-	Link.fn.write = function ( options, value, handle, slider, update ) {
+	Link.prototype.write = function ( options, value, handle, slider, update ) {
 
 		// Don't synchronize this Link.
 		if ( this.update && update === false ) {
@@ -616,19 +613,20 @@
 		if ( typeof this.method === 'function' ) {
 			// When target is undefined, the target was a function.
 			// In that case, provided the slider as the calling scope.
-			this.method.call( this.target || slider, value, handle, slider );
+			// Use [0] to get the DOM element, not the $ instance.
+			this.method.call( this.target[0] || slider[0], value, handle, slider );
 		} else {
 			this.target[ this.method ]( value, handle, slider );
 		}
 	};
 
 	// Parses slider value to user defined display.
-	Link.fn.format = function ( a ) {
+	Link.prototype.format = function ( a ) {
 		return this.formatting.to(a);
 	};
 
 	// Converts a formatted value back to a real number.
-	Link.fn.valueOf = function ( a ) {
+	Link.prototype.valueOf = function ( a ) {
 		return this.formatting.from(a);
 	};
 
@@ -1600,8 +1598,11 @@ function closure ( target, options, originalOptions ){
 
 
 	// Expose serialization constructor.
+	/** @expose */
 	$.noUiSlider = { 'Link': Link };
 
+	// Extend jQuery/Zepto with the noUiSlider method.
+	/** @expose */
 	$.fn.noUiSlider = function ( options, re ) {
 		return ( re ? rebuild : initialize ).call(this, options);
 	};
@@ -1646,4 +1647,4 @@ function closure ( target, options, originalOptions ){
 		});
 	};
 
-}(window.jQuery || window.Zepto));
+}( window['jQuery'] || window['Zepto'] ));
