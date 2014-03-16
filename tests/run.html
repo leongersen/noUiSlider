@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<head>
+
+	<title>Testing</title>
+
+	<script> // Check URL, load jQuery or Zepto
+		var script=document.createElement("script");0>window.location.href.indexOf("zepto")?
+		script.src="http://code.jquery.com/jquery-1.10.2.js":
+		script.src="http://cdnjs.cloudflare.com/ajax/libs/zepto/1.0/zepto.js";
+		document.write(script.outerHTML);
+	</script>
+	<style>
+
+		body {
+			padding: 20px;
+		}
+		#qunit {
+			width: 400px;
+			margin: 0 auto;
+		}
+
+		.noUi-target {
+			width: 242px;
+		}
+		.noUi-vertical {
+			height: 150px;
+		}
+
+		section {
+			border-bottom: 2px solid #888;
+			margin-bottom: 80px;
+			padding-bottom: 40px;
+		}
+
+		.tooltip {
+			display: none;
+			position: absolute;
+			border: 1px solid #D9D9D9;
+			font: 400 12px/12px Arial;
+			border-radius: 3px;
+			top: 40px;
+			padding: 5px;
+			left: 17px;
+		}
+		.tooltip.top {
+			top: auto;
+			bottom: 40px;
+		}
+		.noUi-active .tooltip {
+			display: block;
+		}
+
+	</style>
+
+	<link href="http://code.jquery.com/qunit/qunit-1.12.0.css" rel="stylesheet">
+	<link href="../jquery.nouislider.css" rel="stylesheet">
+
+	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
+	<script src="../jquery.nouislider.js"></script>
+	<script>var Link = $.noUiSlider.Link;</script>
+
+</head>
+
+<body>
+
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+
+	<script>
+		var Q = $("#qunit-fixture");
+	</script>
+
+	<script src="inputs.js"></script>
+	<script src="shared-link.js"></script>
+	<script src="format.js"></script>
+	<script src="select.js"></script>
+	<script src="set.js"></script>
+	<script src="errors.js"></script>
+	<script src="events.js"></script>
+	<script src="update.js"></script>
+	<script src="links.js"></script>
+
+</body>
