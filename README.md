@@ -10,16 +10,20 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changes
 -------
 
-**Changelog for version 5.0.0:**
+**Changelog for version 6.0.0:**
 
-**Please note:** noUiSlider 5 is a *major* revision, which means it isn't 100% compatible with version 4. The Javascript API is **compatible**, but your **stylesheet might break**.
+**Please note:** noUiSlider 6 is a *major* revision, which means it isn't compatible with version 5. Your stylesheet will keep working, but the JavaScript API has changed, and your current implementation will no longer work.
 
-+ Added support for dragging the slider range.
-+ Added option to disable 'tap'.
-+ Added `extend` settings, which allows for designs where the handles fit within the slider bar.
-+ Added `rebuild` method.
-+ Brand new design, improved class structure.
-+ Compatibility with Google Closure compiler in Advanced mode.
++ Added optional **non-linear** ranges, including stepping.
++ Added new behaviour settings.
++ Added object-oriented serialization.
++ Change events to use jQuery's/Zepto's `.on` and `.off`.
++ Removed `block` event.
+
+Unit Testing
+------------
+
+Unit tests where added with noUiSlider 6. The event testing coverage isn't 100% yet, but coverage of the `Link` is extensive. More tests will be added eventually.
 
 Version numbering
 ------------------------------
