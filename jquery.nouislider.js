@@ -381,7 +381,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		} else if ( entry === false ) {
 			parsed.connect = 0;
 		} else {
-			throwError("'connect' option was doesn't match handle count.");
+			throwError("'connect' option doesn't match handle count.");
 		}
 	}
 
@@ -1066,7 +1066,7 @@ function closure ( target, options, originalOptions ){
 
 		var args = Array.prototype.slice.call( arguments, 0 ),
 			callback, link, update, animate,
-			i, actual, to, values = asArray( args[0] );
+			i, count, actual, to, values = asArray( args[0] );
 
 		// Extract modifiers for value method.
 		if ( typeof args[1] === 'object' ) {
@@ -1091,10 +1091,16 @@ function closure ( target, options, originalOptions ){
 			addClassFor( $Target, Classes[14], 300 );
 		}
 
+		// Determine how often to set the handles.
+		count = $Handles.length > 1 ? 3 : 1;
+		if ( values.length === 1 ) {
+			count = 1;
+		}
+
 		// If there are multiple handles to be set run the setting
 		// mechanism twice for the first handle, to make sure it
 		// can be bounced of the second one properly.
-		for ( i = 0; i < ( $Handles.length > 1 ? 3 : 1 ); i++ ) {
+		for ( i = 0; i < count; i++ ) {
 
 			to = link || $Serialization[i%2][0];
 			to = to.getValue( values[i%2] );

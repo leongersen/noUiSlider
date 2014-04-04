@@ -232,11 +232,48 @@ var
 		return new Link.prototype.init( entry['target']||function(){}, entry['method'], entry['format']||{}, update );
 	}
 
-	// Initialisor
-	Link.prototype.init = function ( target, method, format, update ) {
+	Link.prototype.setTooltip = function ( target, method ) {
+
+		// By default, use the 'html' method.
+		this.method = method || 'html';
+
+		// Use jQuery to create the element
+		this.el = $( target.replace('-tooltip-', '') || '<div/>' )[0];
+	};
+
+	Link.prototype.setHidden = function ( target ) {
+
+		this.method = 'val';
+
+		this.el = document.createElement('input');
+		this.el.name = target;
+		this.el.type = 'hidden';
+	};
+
+	Link.prototype.setField = function ( target ) {
+
+		// Returns nulled array.
+		function at(a,b,c){
+			return [c?a:b, c?b:a];
+		}
 
 		// In IE < 9, .bind() isn't available, need this link in .change().
-	var that = this;
+		var that = this;
+
+		// Default to .val if this is an input element.
+		this.method = 'val';
+		// Set the slider to a new value on change.
+		this.target = target.on('change', function( e ){
+			that.obj.val(
+				at(null, $(e.target).val(), that.N),
+				{ 'link': that }
+			);
+		});
+	};
+
+
+	// Initialisor
+	Link.prototype.init = function ( target, method, format, update ) {
 
 		// Write all formatting to this object.
 		// No validation needed, as we'll merge these with the parent
@@ -246,93 +283,50 @@ var
 		// Store the update option.
 		this.update = !update;
 
-	var
-		// Find the type of this link.
-		isTooltip = ( typeof target === 'string' && target.indexOf('-tooltip-') === 0 ),
-		isHidden = ( typeof target === 'string' && target.indexOf('-') !== 0 ),
-		isMethod = ( typeof target === 'function' ),
-		is$ = ( isInstance(target) ),
-		isInput = ( is$ && target.is('input, select, textarea') ),
-		methodIsFunction = ( is$ && typeof method === 'function' ),
-		methodIsName = ( is$ && typeof method === 'string' && target[method] );
-
 		// If target is a string, a new hidden input will be created.
-		if ( isTooltip ) {
-
-			// By default, use the 'html' method.
-			this.method = method || 'html';
-
-			// Use jQuery to create the element
-			this.el = $( target.replace('-tooltip-', '') || '<div/>' )[0];
-
+		if ( typeof target === 'string' && target.indexOf('-tooltip-') === 0 ) {
+			this.setTooltip( target, method );
 			return;
 		}
 
 		// If the string doesn't begin with '-', which is reserved, add a new hidden input.
-		if ( isHidden ) {
-
-			this.method = 'val';
-
-			this.el = document.createElement('input');
-			this.el.name = target;
-			this.el.type = 'hidden';
-
+		if ( typeof target === 'string' && target.indexOf('-') !== 0 ) {
+			this.setHidden( target, method );
 			return;
 		}
 
 		// The target can also be a function, which will be called.
-		if ( isMethod ) {
+		if ( typeof target === 'function' ) {
 			this.target = false;
 			this.method = target;
 			return;
 		}
 
-		// If the target is and $ element.
-		if ( is$ ) {
-
-			// The method must exist on the element.
-			if ( method && ( methodIsFunction || methodIsName ) ) {
-				this.target = target;
-				this.method = method;
-				return;
-			}
-
+		if ( isInstance(target) ) {
 			// If a jQuery/Zepto input element is provided, but no method is set,
 			// the element can assume it needs to respond to 'change'...
-			if ( !method && isInput ) {
 
-				// Default to .val if this is an input element.
-				this.method = 'val';
-				this.target = target;
+			if ( !method ) {
 
-				// Set the slider to a new value on change.
-				this.target.on('change', function( e ){
+				if ( target.is('input, select, textarea') ) {
+					this.setField( target );
+					return;
+				}
 
-					// Returns null array.
-					function at(a,b,c){
-						return [c?a:b, c?b:a];
-					}
-
-					var output = at(null, $(e.target).val(), that.N);
-
-					that.obj.val(output, { 'link': that });
-				});
-
-				return;
+				// If no method is set, and we are not auto-binding an input, default to 'html'.
+				method = 'html';
 			}
 
-			// ... or not.
-			if ( !method && !isInput ) {
-
-				// Default arbitrarily to 'html'.
-				this.method = 'html';
+			// The method must exist on the element.
+			if ( typeof method === 'function' || (typeof method === 'string' && target[method]) ) {
+				this.method = method;
 				this.target = target;
-
 				return;
 			}
 		}
 
-		throw new RangeError("Link: Invalid Link.");
+		// Nothing matched, throw error.
+		throw new RangeError("(Link) Invalid Link.");
 	}
 
 	// Provides external items with the slider value.
@@ -366,10 +360,6 @@ var
 	Link.prototype.setFormatting = function ( options ) {
 		this.formatting = new Format( $.extend({}, options, this.formatting ));
 	};
-
-	// Link.prototype.setScope = function ( scope ) {
-		// this.scope = scope;
-	// }
 
 	Link.prototype.setObject = function ( obj ) {
 		this.obj = obj;

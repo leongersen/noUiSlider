@@ -27,40 +27,18 @@
 			height: 150px;
 		}
 
-		section {
-			border-bottom: 2px solid #888;
-			margin-bottom: 80px;
-			padding-bottom: 40px;
-		}
-
-		.tooltip {
-			display: none;
-			position: absolute;
-			border: 1px solid #D9D9D9;
-			font: 400 12px/12px Arial;
-			border-radius: 3px;
-			top: 40px;
-			padding: 5px;
-			left: 17px;
-		}
-		.tooltip.top {
-			top: auto;
-			bottom: 40px;
-		}
-		.noUi-active .tooltip {
-			display: block;
-		}
-
 	</style>
 
 	<link href="http://code.jquery.com/qunit/qunit-1.12.0.css" rel="stylesheet">
 	<link href="../jquery.nouislider.css" rel="stylesheet">
 
 	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
-	<script src="../../classVal/jquery.classval.js"></script>
-	<script src="../Link.js"></script>
-	<script src="../jquery.nouislider.js"></script>
+	<script src="../../compile/result/jquery.nouislider.min.js"></script>
 	<script>var Link = $.noUiSlider.Link;</script>
+
+	<!-- Shameless in-test debugging
+	<script>ok = deepEqual = equal = throws = $.noop; test = function(a,b){$(b)};</script>
+	<style>#qunit-fixture { position: static; }</style> -->
 
 </head>
 
@@ -68,8 +46,6 @@
 
 	<div id="qunit"></div>
 	<div id="qunit-fixture"></div>
-	
-	<style>/* #qunit-fixture { position: static; } *//* Shameless in-test debugging */</style>
 
 	<script>
 		var Q = $("#qunit-fixture");
