@@ -1,0 +1,3 @@
+new Link({
+	target: $("#salary")
+});
