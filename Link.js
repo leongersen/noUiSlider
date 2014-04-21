@@ -5,12 +5,6 @@ $.Link (part of noUiSlider) - WTFPL */
 /*jslint sub: true */
 /*jslint white: true */
 
-// ==ClosureCompiler==
-// @externs_url http://refreshless.com/externs/jquery-1.8.js
-// @compilation_level ADVANCED_OPTIMIZATIONS
-// @warning_level VERBOSE
-// ==/ClosureCompiler==
-
 (function( $ ){
 
 	'use strict';
@@ -18,7 +12,7 @@ $.Link (part of noUiSlider) - WTFPL */
 	// Throw an error if formatting options are incompatible.
 	function throwEqualError( F, a, b ) {
 		if ( (F[a] || F[b]) && (F[a] === F[b]) ) {
-			throwError("(Link) '"+a+"' can't match '"+b+"'.'");
+			throw new Error("(Link) '"+a+"' can't match '"+b+"'.'");
 		}
 	}
 
@@ -65,7 +59,7 @@ var
 		}
 
 		if ( typeof options !== 'object' ){
-			throwError("(Format) 'format' option must be an object.");
+			throw new Error("(Format) 'format' option must be an object.");
 		}
 
 		var settings = {};
@@ -84,7 +78,7 @@ var
 				// More can't be guaranteed due to floating point issues.
 				if ( val === 'decimals' ){
 					if ( options[val] < 0 || options[val] > 7 ){
-						throwError("(Format) 'format.decimals' option must be between 0 and 7.");
+						throw new Error("(Format) 'format.decimals' option must be between 0 and 7.");
 					}
 				}
 
@@ -92,7 +86,7 @@ var
 
 			// If the value isn't valid, emit an error.
 			} else {
-				throwError("(Format) 'format."+val+"' must be a " + typeof FormatDefaults[i] + ".");
+				throw new Error("(Format) 'format."+val+"' must be a " + typeof FormatDefaults[i] + ".");
 			}
 		});
 
@@ -118,7 +112,14 @@ var
 
 		number = this.v('encoder')( number );
 
-		var negative = '', preNegative = '', base = '', mark = '';
+		var decimals = this.v('decimals'),
+			negative = '', preNegative = '', base = '', mark = '';
+
+		// Rounding away decimals might cause a value of -0
+		// when using very small ranges. Remove those cases.
+		if ( parseFloat(number.toFixed(decimals)) === 0 ) {
+			number = '0';
+		}
 
 		if ( number < 0 ) {
 			negative = this.v('negative');
@@ -126,14 +127,8 @@ var
 		}
 
 		// Round to proper decimal count
-		number = Math.abs(number).toFixed( this.v('decimals') ).toString();
+		number = Math.abs(number).toFixed(decimals).toString();
 		number = number.split('.');
-
-		// Rounding away decimals might cause a value of -0
-		// when using very small ranges. Remove those cases.
-		if ( parseFloat(number) === 0 ) {
-			number[0] = '0';
-		}
 
 		// Group numbers in sets of three.
 		if ( this.v('thousand') ) {
@@ -167,9 +162,11 @@ var
 		// The set request might want to ignore this handle.
 		// Test for 'undefined' too, as a two-handle slider
 		// can still be set with an integer.
-		if( input === null || input === undefined ) {
+		if ( input === null || input === undefined ) {
 			return false;
 		}
+
+		input = this.v('from')(input);
 
 		// Remove formatting and set period for float parsing.
 		input = input.toString();
@@ -189,7 +186,7 @@ var
 		input = input.replace(new RegExp('^'+esc( this.v('prefix') )), '');
 
 		// Only replace if a negative sign is set.
-		if ( this.v['negative'] ) {
+		if ( this.v('negative') ) {
 
 			// Reset isNeg to prevent double '-' insertion.
 			isNeg = '';
@@ -215,7 +212,7 @@ var
 			return false;
 		}
 
-		return this.v('from')(input);
+		return input;
 	};
 
 
@@ -273,6 +270,7 @@ var
 
 
 	// Initialisor
+	/** @constructor */
 	Link.prototype.init = function ( target, method, format, update ) {
 
 		// Write all formatting to this object.
@@ -291,7 +289,7 @@ var
 
 		// If the string doesn't begin with '-', which is reserved, add a new hidden input.
 		if ( typeof target === 'string' && target.indexOf('-') !== 0 ) {
-			this.setHidden( target, method );
+			this.setHidden( target );
 			return;
 		}
 
@@ -327,7 +325,7 @@ var
 
 		// Nothing matched, throw error.
 		throw new RangeError("(Link) Invalid Link.");
-	}
+	};
 
 	// Provides external items with the slider value.
 	Link.prototype.write = function ( value, handle, slider, update ) {
@@ -358,16 +356,19 @@ var
 
 	// Set formatting options.
 	Link.prototype.setFormatting = function ( options ) {
-		this.formatting = new Format( $.extend({}, options, this.formatting ));
+		this.formatting = new Format($.extend({},
+			options,
+			this.formatting instanceof Format ? this.formatting.settings : this.formatting
+		));
 	};
 
 	Link.prototype.setObject = function ( obj ) {
 		this.obj = obj;
-	}
+	};
 
 	Link.prototype.setIndex = function ( index ) {
 		this.N = index;
-	}
+	};
 
 	// Parses slider value to user defined display.
 	Link.prototype.format = function ( a ) {

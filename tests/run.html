@@ -33,8 +33,16 @@
 	<link href="../jquery.nouislider.css" rel="stylesheet">
 
 	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
+
 	<script src="../../compile/result/jquery.nouislider.min.js"></script>
-	<script>var Link = $.noUiSlider.Link;</script>
+
+	<!--
+	<script src="../../classVal/jquery.classval.js"></script>
+	<script src="../Link.js"></script>
+	<script src="../jquery.nouislider.js"></script>
+	-->
+
+	<script>/* Tests assume copy syntax */ var Link = $.noUiSlider.Link;</script>
 
 	<!-- Shameless in-test debugging
 	<script>ok = deepEqual = equal = throws = $.noop; test = function(a,b){$(b)};</script>
@@ -61,5 +69,7 @@
 	<script src="update.js"></script>
 	<script src="links.js"></script>
 	<script src="rtl.js"></script>
+	<script src="val.js"></script>
+	<script src="update-link.js"></script>
 
 </body>

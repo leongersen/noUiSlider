@@ -7,24 +7,21 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 /*jslint continue: true */
 /*jslint plusplus: true */
 
-// ==ClosureCompiler==
-// @externs_url http://refreshless.com/externs/jquery-1.8.js
-// @compilation_level ADVANCED_OPTIMIZATIONS
-// @warning_level VERBOSE
-// ==/ClosureCompiler==
-
 (function( $ ){
 
 	'use strict';
 
 	var
 	// Cache the document selector;
-/** @const */ doc = $(document),
+	/** @const */
+	doc = $(document),
 	// Namespace for binding and unbinding slider events;
-/** @const */ namespace = '.nui',
+	/** @const */
+	namespace = '.nui',
 	// Determine the events to bind. IE11 implements pointerEvents without
 	// a prefix, which breaks compatibility with the IE10 implementation.
-/** @const */ actions = window.navigator['pointerEnabled'] ? {
+	/** @const */
+	actions = window.navigator['pointerEnabled'] ? {
 		start: 'pointerdown',
 		move: 'pointermove',
 		end: 'pointerup'
@@ -38,7 +35,8 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		end: 'mouseup touchend'
 	},
 	// Re-usable list of classes;
-/** @const */ Classes = [
+	/** @const */
+	Classes = [
 /*  0 */  'noUi-target'
 /*  1 */ ,'noUi-base'
 /*  2 */ ,'noUi-origin'
@@ -58,13 +56,6 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 /* 16 */ ,'noUi-extended'
 /* 17 */ ,'noUi-stacking'
 	];
-
-
-// Error handling
-
-	function throwError( message ){
-		throw new RangeError('noUiSlider: ' + message);
-	}
 
 
 // General helpers
@@ -260,7 +251,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 	function testStep ( parsed, entry ) {
 
 		if ( !isNumeric( entry ) ) {
-			throwError("'step' is not numeric.");
+			throw new Error("noUiSlider: 'step' is not numeric.");
 		}
 
 		// The step option can still be used to set stepping
@@ -272,7 +263,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 		// Filter incorrect input.
 		if ( typeof entry !== 'object' || $.isArray(entry) ) {
-			throwError("'range' is not an object.");
+			throw new Error("noUiSlider: 'range' is not an object.");
 		}
 
 		// Loop all entries.
@@ -287,7 +278,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 			// Reject any invalid input.
 			if ( !$.isArray( value ) ){
-				throwError("'range' contains invalid value.");
+				throw new Error("noUiSlider: 'range' contains invalid value.");
 			}
 
 			// Covert min/max syntax to 0 and 100.
@@ -301,7 +292,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 			// Check for correct input.
 			if ( !isNumeric( percentage ) || !isNumeric( value[0] ) ) {
-				throwError("'range' value isn't numeric.");
+				throw new Error("noUiSlider: 'range' value isn't numeric.");
 			}
 
 			// Store values.
@@ -349,7 +340,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		// Validate input. Values aren't tested, the internal Link will do
 		// that and provide a valid location.
 		if ( !$.isArray( entry ) || !entry.length || entry.length > 2 ) {
-			throwError("'start' option is incorrect.");
+			throw new Error("noUiSlider: 'start' option is incorrect.");
 		}
 
 		// Store the number of handles.
@@ -366,7 +357,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		parsed.snap = entry;
 
 		if ( typeof entry !== 'boolean' ){
-			throwError("'snap' option must be a boolean.");
+			throw new Error("noUiSlider: 'snap' option must be a boolean.");
 		}
 	}
 
@@ -381,7 +372,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		} else if ( entry === false ) {
 			parsed.connect = 0;
 		} else {
-			throwError("'connect' option doesn't match handle count.");
+			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
 		}
 	}
 
@@ -397,14 +388,14 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 			parsed.ort = 1;
 			break;
 		  default:
-			throwError("'orientation' option is invalid.");
+			throw new Error("noUiSlider: 'orientation' option is invalid.");
 		}
 	}
 
 	function testMargin ( parsed, entry ) {
 
 		if ( parsed.xPct.length > 2 ) {
-			throwError("'margin' option is only supported on linear sliders.");
+			throw new Error("noUiSlider: 'margin' option is only supported on linear sliders.");
 		}
 
 		// Parse value to range and store. As xVal is checked
@@ -412,7 +403,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		parsed.margin = fromPercentage(parsed.xVal, entry);
 
 		if ( !isNumeric(entry) ){
-			throwError("'margin' option must be numeric.");
+			throw new Error("noUiSlider: 'margin' option must be numeric.");
 		}
 	}
 
@@ -430,7 +421,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 			parsed.connect = [0,2,1,3][parsed.connect];
 			break;
 		  default:
-			throwError("'direction' option was not recognized.");
+			throw new Error("noUiSlider: 'direction' option was not recognized.");
 		}
 	}
 
@@ -438,7 +429,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 		// Make sure the input is a string.
 		if ( typeof entry !== 'string' ) {
-			throwError("'behaviour' must be a string containing options.");
+			throw new Error("noUiSlider: 'behaviour' must be a string containing options.");
 		}
 
 		// Check if the string contains any keywords.
@@ -467,24 +458,20 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 			// Check if the provided option is an array.
 			if ( !$.isArray(linkInstances) ) {
-				throwError("'serialization."+(!index ? 'lower' : 'upper')+"' must be an array.");
+				throw new Error("noUiSlider: 'serialization."+(!index ? 'lower' : 'upper')+"' must be an array.");
 			}
 
 			$.each(linkInstances, function(){
 
 				// Check if entry is a Link.
 				if ( !(this instanceof $.Link) ) {
-					throwError("'serialization."+(!index ? 'lower' : 'upper')+"' can only contain Link instances.");
+					throw new Error("noUiSlider: 'serialization."+(!index ? 'lower' : 'upper')+"' can only contain Link instances.");
 				}
 
 				// Assign properties.
 				this.setIndex ( index );
 				this.setObject( sliders );
 				this.setFormatting( entry['format'] );
-
-			//	this.setScope( this.scope || sliders );
-			// Run internal validator.
-
 			});
 		});
 
@@ -534,10 +521,10 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 		// Set defaults where applicable.
 		options = $.extend({
-			 'connect': false
-			,'direction': 'ltr'
-			,'behaviour': 'tap'
-			,'orientation': 'horizontal'
+			'connect': false,
+			'direction': 'ltr',
+			'behaviour': 'tap',
+			'orientation': 'horizontal'
 		}, options);
 
 		// Make sure the test for serialization runs.
@@ -553,11 +540,12 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		$.each( tests, function( name, test ){
 
 			if ( options[name] === undefined ) {
+
 				if ( test.r ) {
-					throwError("'" + name + "' is required.");
-				} else {
-					return true;
+					throw new Error("noUiSlider: '" + name + "' is required.");
 				}
+
+				return true;
 			}
 
 			test.t( parsed, options[name], sliders );
@@ -595,7 +583,8 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		// If the Link requires creation of a new element,
 		// create this element and return a new Link instance.
 		if ( link.el ) {
-			link = new Link({
+
+			link = new $.Link({
 				'target': $(link.el).clone().appendTo( handle ),
 				'method': link.method,
 				'format': link.formatting
@@ -609,7 +598,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 	// Loop all links for a handle.
 	function addElements ( elements, handle, formatting ) {
 
-		var index, list = [], standard = new Link({}, true);
+		var index, list = [], standard = new $.Link({}, true);
 
 		// Use the Link interface to provide unified
 		// formatting for the .val() method.
@@ -1062,7 +1051,8 @@ function closure ( target, options, originalOptions ){
 // Methods
 
 	// Set the slider value.
-	target.vSet = function (  ){
+	/** @expose */
+	target.vSet = function ( ) {
 
 		var args = Array.prototype.slice.call( arguments, 0 ),
 			callback, link, update, animate,
@@ -1127,10 +1117,10 @@ function closure ( target, options, originalOptions ){
 
 				if (!index) {
 					actual = this.actual;
+					return true;
 				}
 
 				this.write(
-					//fromStepping(options, actual),
 					actual,
 					$Handles[i%2].children(),
 					$Target,
@@ -1148,7 +1138,8 @@ function closure ( target, options, originalOptions ){
 	};
 
 	// Get the slider value.
-	target.vGet = function ( ){
+	/** @expose */
+	target.vGet = function ( ) {
 
 		var i, retour = [];
 
@@ -1170,7 +1161,8 @@ function closure ( target, options, originalOptions ){
 	};
 
 	// Destroy the slider and unbind all events.
-	target.destroy = function ( ){
+	/** @expose */
+	target.destroy = function ( ) {
 
 		// Loop all linked serialization objects and unbind all
 		// events in the noUiSlider namespace.
@@ -1207,7 +1199,7 @@ function closure ( target, options, originalOptions ){
 
 		// Throw error if group is empty.
 		if ( !this.length ){
-			throwError("Can't initialize slider on empty selection.");
+			throw new Error("noUiSlider: Can't initialize slider on empty selection.");
 		}
 
 		// Test the options once, not for every slider.
