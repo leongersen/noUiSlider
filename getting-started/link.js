@@ -7,10 +7,10 @@ $("#sample-readout").noUiSlider({
 	},
 	serialization: {
 		lower: [
-			new Link({
+			$.Link({
 				target: $('#span')
 			}),
-			new Link({
+			$.Link({
 				target: $('#input')
 			})
 		],

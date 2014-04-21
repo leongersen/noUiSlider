@@ -7,60 +7,43 @@
 
 <section>
 
-	<p>This page will guide you through setting up noUiSlider.</p>
-
-	<div class="notification">
-		<p><strong>Detailed information below.</strong> This article starts with the absolute basics, but more advanced features are detailed too.</p>
-	</div>
-
-</section>
-
-<h2>Including noUiSlider</h2>
-
-<section>
-
-	<div class="double-left">
-
-		<h3>Library support</h3>
-
-		<p>You'll need some resources on your page to use noUiSlider. noUiSlider requires jQuery 1.7.x or newer, or Zepto 1.0. While noUiSlider 5 needed Zepto's data module, noUiSlider 6 does not!</p>
-
-	</div>
-
-	<div class="double-right">
-
-		<h3>Browser support</h3>
+	<div class="wide">
 
 		<p>noUiSlider supports <strong>IE7 and up</strong>, and of course the latest versions of the <em>'evergreen'</em> browsers: <strong>Chrome</strong>, <strong>Safari</strong>, <strong>Firefox</strong> and <strong>Opera</strong>.</p>
 
+		<img src="/nouislider/assets/main-desktop.png" alt="Browser support">
+	</div>
+</section>
+
+<section>
+
+	<h2>Required scripts</h2>
+
+	<div class="wide">
+
+		<p>noUiSlider requires jQuery 1.7.x or newer, or Zepto 1.0. Zepto's <code>data</code> module is no longer required.</p>
+
+		<p>To create a slider, call <code>.noUiSlider()</code> with your options on a jQuery element. If you'd like to see a minimal example, you can have a look at this <a href="view-source:http://refreshless.com/nouislider/minimal-sample.html">minimal setup document</a>.</p>
 	</div>
 
-<pre class="language-markup clear"><code>&lt;!-- jQuery or Zepto --&gt;
+<pre class="language-markup"><code>&lt;!-- jQuery or Zepto --&gt;
 &lt;script src="jquery / zepto.js"&gt;&lt;/script&gt;
 
 &lt;!-- The noUiSlider script and stylesheet --&gt;
 &lt;link href="jquery.nouislider.css" rel="stylesheet"&gt;
 &lt;script src="jquery.nouislider.js"&gt;&lt;/script&gt;</code></pre>
 
-	<div class="double-left">
+	<div class="wide">
 
 		<p>Putting all your scripts in the page <code>&lt;head&gt;</code> will likely slow down your site. If you'd like to know why, consider reading <a href="http://developer.yahoo.com/performance/rules.html#js_bottom">this article by Yahoo!</a>.</p>
-
 	</div>
-
-	<div class="double-right">
-
-		<p>To create a slider, call <code>.noUiSlider()</code> with your options on a jQuery element. If you'd like to see a minimal example, you can have a look at this <a href="view-source:http://refreshless.com/nouislider/minimal-sample.html">minimal setup document</a>.</p>
-
-	</div>
-
 </section>
-
-<h2>Setting handles and the slider range</h2>
 
 <section>
 
-	<div class="double-left">
+	<h2>Setting handles and the slider range</h2>
+
+	<div class="double">
 
 		<p>Now that noUiSlider is included, you can start setting it up. Begin by defining the <code>range</code> and <code>start</code> options. They set the minimum and maximum for your slider, and the number of handles.</p>
 
@@ -73,17 +56,16 @@
 
 	</div>
 
-	<div class="double-right">
+	<div class="double">
 		<?php code('create'); ?>
 	</div>
-
 </section>
-
-<h2>Options</h2>
 
 <section>
 
-	<div class="double-left">
+	<h2>Options</h2>
+
+	<div class="double">
 
 		<p>With all values configured, you can set some specifics. All options are passed to noUiSlider as an object (so the bracket notation).</p>
 
@@ -96,31 +78,23 @@
 
 	</div>
 
-	<div class="double-right">
+	<div class="double">
 
 		<div class="notification">
 			<p><strong>Set dimensions</strong> Vertical sliders don't assume a default <code>height</code>, so you'll need to set one. You can use any unit you want, including <code>%</code> or <code>px</code>.</p>
 		</div>
 
 		<?php code('options'); ?>
-
 	</div>
-
 </section>
-
-<h2>Serialization</h2>
 
 <section>
 
-	<div class="double-left">
+	<h2>Serialization</h2>
 
-		<p>Now that you have the basic slider set up, you can start adding <em>'Links'</em>. Links allow you do write the slider value to other elements automaticly.</p>
+	<div class="double">
 
-		<p>Start by creating a copy of noUiSlider's <code>Link</code> method:</p>
-
-		<pre><code>var Link = $.noUiSlider.Link;</code></pre>
-
-		<p>You can now create new <em>Link</em> elements, and pass them in the serialization option.</p>
+		<p>Now that you have the basic slider set up, you can start adding <code>Link</code> elements. These elements allow you to write the slider value to other elements automaticly.</p>
 
 		<p>As you can see, noUiSlider now updates the value in the <code>$('#readout')</code> element. The value is formatted using the <code>mark</code> and <code>decimals</code> options. You can set many more formatting options, and you can even set different options for every <em>Link</em>. You'll find all details in the <a href="/nouislider/serialization">serialization documentation</a>.</p>
 
@@ -130,22 +104,18 @@
 			<input id="input">
 			<?php run('link', false); ?>
 		</div>
-
 	</div>
 
-	<div class="double-right">
-
+	<div class="double">
 		<?php code('link'); ?>
-
 	</div>
-
 </section>
-
-<h2>Slider behaviour</h2>
 
 <section>
 
-	<div class="double-left">
+	<h2>Slider behaviour</h2>
+
+	<div class="double">
 
 		<p>noUiSlider has a lot of optional features such as dragable ranges and tap-to-move. You can set this behaviour using the <code>behaviour</code> option. Read all about it in the <a href="/nouislider/behaviour-option">behaviour section</a>.</p>
 
@@ -156,44 +126,31 @@
 
 	</div>
 
-	<div class="double-right">
-
+	<div class="double">
 		<?php code('behaviour'); ?>
-
 	</div>
-
 </section>
-
-<h2>Callbacks</h2>
 
 <section>
 
-	<div class="double-left">
+	<h2>Events</h2>
+
+	<div class="double">
 
 		<p>If you want to listen to slider interaction, you can use the <code>block</code>, <code>set</code>, <code>slide</code> and <code>change</code> events. Read all about events in the <a href="/nouislider/events-callbacks">event documentation</a>.</p>
-
 	</div>
 
-	<div class="double-right">
-
+	<div class="double">
 		<?php code('events'); ?>
-
 	</div>
-
 </section>
-
-<h2>There is more!</h2>
 
 <section>
 
-	<div class="double-left">
+	<h2>There is more!</h2>
 
-		<p>The menu on the left contains several more pages with detailed information. Download the source and get started!</p>
+	<div class="double">
 
+		<p>The menu on the right contains several more pages with detailed information. Download the source and get started!</p>
 	</div>
-
-	<div class="double-right">
-
-	</div>
-
 </section>

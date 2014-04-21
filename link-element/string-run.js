@@ -7,7 +7,7 @@ $("#slider-string").noUiSlider({
 	serialization: {
 		lower: [
 		
-			new Link({	
+			$.Link({	
 				target: "maximum-rent"
 			})
 

@@ -8,7 +8,7 @@ $('#slider4').noUiSlider({
 	},
 	serialization: {
 		lower: [
-			new Link({
+			$.Link({
 				target: $("#slider4val")
 			})
 		]

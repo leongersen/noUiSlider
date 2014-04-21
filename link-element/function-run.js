@@ -7,7 +7,7 @@ $("#slider-function").noUiSlider({
 	serialization: {
 		lower: [
 
-			new Link({
+			$.Link({
 				target: function( val ){
 				
 					$('html').css({

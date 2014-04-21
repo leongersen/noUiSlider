@@ -1,5 +1,5 @@
 var slider = $('#update'),
-	write = new Link({
+	write = $.Link({
 		target: $('#value'),
 		method: 'text'
 	});

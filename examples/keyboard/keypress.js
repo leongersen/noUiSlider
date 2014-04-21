@@ -25,7 +25,7 @@ slider.noUiSlider({
 	},
 	serialization: {
 		lower: [
-			new Link({
+			$.Link({
 				target: input
 			})
 		],

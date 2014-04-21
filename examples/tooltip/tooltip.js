@@ -1,11 +1,11 @@
 // When no HTML is provided, noUiSlider creates an empty <div>
-var toolTip = new Link({
+var toolTip = $.Link({
 	target: '-tooltip-'
 });
 
 // Otherwise, the HTML will be inserted into the handle.
 // One level of HTML is supported.
-var customToolTip = new Link({
+var customToolTip = $.Link({
 	target: '-tooltip-<div class="tooltip"></div>',
 	method: function ( value ) {
 

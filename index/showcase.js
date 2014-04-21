@@ -12,12 +12,12 @@ $("#features").noUiSlider({
 	},
 	serialization: {
 		lower: [
-			new Link({
+			$.Link({
 				target: $("#value-input")
 			})
 		],
 		upper: [
-			new Link({
+			$.Link({
 				target: $("#value-span"),
 				method: "html"
 			})

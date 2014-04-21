@@ -8,7 +8,7 @@ $("#serialization").noUiSlider({
 		lower: [
 		// Write the values to
 		// an input with id 'field'
-			new Link({
+			$.Link({
 				target: $("#field")
 			})
 		],

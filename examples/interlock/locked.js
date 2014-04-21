@@ -58,12 +58,12 @@ slider1.noUiSlider({
 // using a custom function as the serialization
 // method. The function uses the global 'lockedState'
 // variable to decide whether the other slider is updated.
-			new Link({
+			$.Link({
 				target: slider2,
 				method: crossUpdate
 			}, false),
 
-			new Link({
+			$.Link({
 				target: $("#slider1-span")
 			})
 
@@ -80,12 +80,12 @@ slider2.noUiSlider({
 	serialization: {
 		lower: [
 
-			new Link({
+			$.Link({
 				target: slider1,
 				method: crossUpdate
 			}, false),
 
-			new Link({
+			$.Link({
 				target: $("#slider2-span")
 			})
 

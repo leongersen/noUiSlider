@@ -32,13 +32,19 @@
 </div>
 
 <div class="showcase">
-	<div id="features"></div>
-	<label class="label">Slider values:</label>
-	<input id="value-input">
-	<span id="value-span">80,0</span>
-	<?php run('showcase', false); ?>
+
+	<div class="example">
+		<div id="features"></div>
+		<label class="showcase-label">Slider values:</label>
+		<input id="value-input">
+		<span id="value-span">80,0</span>
+		<?php run('showcase', false); ?>
+	</div>
 </div>
+
+<div class="showcase-code">
 <?php code('showcase'); ?>
+</div>
 
 <div class="triple">
 	<h4>Well written and lightweight</h4>

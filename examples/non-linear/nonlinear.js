@@ -15,19 +15,19 @@ $("#nonlinear").noUiSlider({
 	},
 	serialization: {
 		lower: [
-			new Link ({
+			$.Link ({
 				target: $('#lower-value')
 			}),
-			new Link ({
+			$.Link ({
 				target: $('#lower-offset'),
 				method: leftValue
 			})
 		],
 		upper: [
-			new Link ({
+			$.Link ({
 				target: $('#upper-value')
 			}),
-			new Link ({
+			$.Link ({
 				target: $('#upper-offset'),
 				method: leftValue
 			})

@@ -1,3 +1,3 @@
-new Link({	
+$.Link({	
 	target: "maximum-rent"
 });

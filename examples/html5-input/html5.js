@@ -7,7 +7,7 @@ $('#html5').noUiSlider({
 	,connect: true
 	,serialization: {
 		lower: [
-			new Link({
+			$.Link({
 				target: $('#input-select'),
 				
 			// The select element wont show
@@ -18,7 +18,7 @@ $('#html5').noUiSlider({
 			})
 		],
 		upper: [
-			new Link({
+			$.Link({
 				target: $('#input-number')
 			})
 		]

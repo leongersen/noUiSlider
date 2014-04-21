@@ -5,7 +5,7 @@ function handleSliderValue( value ){
 	siteSearch();
 }
 
-new Link({
+$.Link({
 	target: $("#showvalue"),
 	method: handleSliderValue
 })

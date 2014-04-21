@@ -11,7 +11,7 @@ $("#function-object").noUiSlider({
 	serialization: {
 		lower: [
 
-			new Link({
+			$.Link({
 				target: $("#showvalue"),
 				method: handleSliderValue
 			})

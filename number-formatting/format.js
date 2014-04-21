@@ -1,4 +1,4 @@
-new Link(
+$.Link(
 	target: $("span"),
 	method: "html",
 	format: {

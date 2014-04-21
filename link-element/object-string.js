@@ -1,4 +1,4 @@
-new Link({
+$.Link({
 	target: $("#textlocation"),
 	method: "text"
 })

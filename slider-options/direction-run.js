@@ -7,7 +7,7 @@ $("#slider-direction").noUiSlider({
 	},
 	serialization: {
 		lower: [
-			new Link({
+			$.Link({
 				target: $("#field")
 			})
 		]
