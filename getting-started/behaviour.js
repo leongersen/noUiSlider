@@ -1,4 +1,4 @@
-$("#sample-behaviour").noUiSlider({
+$("#behaviour").noUiSlider({
 	start: [ 20, 40 ],
 	step: 10,
 	behaviour: 'drag-fixed',

@@ -1,4 +1,4 @@
-$("#sample-readout").noUiSlider({
+$("#serialization").noUiSlider({
 	start: [ 20 ],
 	step: 10,
 	range: {
@@ -7,12 +7,12 @@ $("#sample-readout").noUiSlider({
 	},
 	serialization: {
 		lower: [
-			$.Link({
-				target: $('#span')
-			}),
-			$.Link({
-				target: $('#input')
-			})
+		  $.Link({
+			target: $('#span')
+		  }),
+		  $.Link({
+			target: $('#input')
+		  })
 		],
 		format: {
 			decimals: 3,

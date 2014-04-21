@@ -72,7 +72,7 @@
 		<p>The available options are <code>connect</code>, <code>orientation</code>, <code>direction</code>, <code>step</code> and <code>margin</code>. You'll find details on all options in the <a href="/nouislider/slider-options">options and settings</a> documentation.</p>
 
 		<div class="example vertical">
-			<div id="slider-options"></div>
+			<div id="options"></div>
 			<?php run('options', false); ?>
 		</div>
 
@@ -80,11 +80,11 @@
 
 	<div class="double">
 
-		<div class="notification">
+		<?php code('options'); ?>
+		
+		<div class="notification" style="margin-top: 20px;">
 			<p><strong>Set dimensions</strong> Vertical sliders don't assume a default <code>height</code>, so you'll need to set one. You can use any unit you want, including <code>%</code> or <code>px</code>.</p>
 		</div>
-
-		<?php code('options'); ?>
 	</div>
 </section>
 
@@ -99,7 +99,7 @@
 		<p>As you can see, noUiSlider now updates the value in the <code>$('#readout')</code> element. The value is formatted using the <code>mark</code> and <code>decimals</code> options. You can set many more formatting options, and you can even set different options for every <em>Link</em>. You'll find all details in the <a href="/nouislider/serialization">serialization documentation</a>.</p>
 
 		<div class="example">
-			<div id="sample-readout"></div>
+			<div id="serialization"></div>
 			<span class="example-val" id="span"></span>
 			<input id="input">
 			<?php run('link', false); ?>
@@ -120,7 +120,7 @@
 		<p>noUiSlider has a lot of optional features such as dragable ranges and tap-to-move. You can set this behaviour using the <code>behaviour</code> option. Read all about it in the <a href="/nouislider/behaviour-option">behaviour section</a>.</p>
 
 		<div class="example">
-			<div id="sample-behaviour"></div>
+			<div id="behaviour"></div>
 			<?php run('behaviour', false); ?>
 		</div>
 

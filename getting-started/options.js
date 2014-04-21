@@ -1,4 +1,4 @@
-$('#slider-options').noUiSlider({
+$('#options').noUiSlider({
 	start: [ 4000, 8000 ],
 	orientation: 'vertical',
 	range: {
