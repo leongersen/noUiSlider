@@ -7,22 +7,23 @@
 
 <section>
 
-	<div class="double">
+	<div class="lonely">
 		<p>Number formatting is a powerful part of serialization in noUiSlider. It can be used to create multiple output formats for one slider.</p>
 	</div>
-	
-	<div class="double">
-		<p>Options can be set for the entire slider in the <code>serialization.format</code> option, and will be inherited by individual link elements. Formatting options specified for individual Link elements take precedence.</p>
+
+	<div class="notification">
+		<p>Number formatting options can be set for the entire slider in the <code>serialization.format</code> option, and will be inherited by individual link elements. Formatting options specified for individual Link elements take precedence.</p>
 	</div>
 </section>
 
 <section>
 
 	<h2>Usage</h2>
-	
+
 	<div class="lonely">
 		<p>Formatting options can be provided in an object. All options are optional.</p>
 	</div>
+
 	<?php code('format'); ?>
 
 	<table class="formatting-table">
@@ -86,6 +87,15 @@
 }</code></pre>
 			</td>
 		</tr>
+		<tr>
+			<td><code>to</code></td>
+			<td>-</td>
+			<td>Similar to <code>encoder</code>, but applied <em>after</em> all other formatting options are applied.</td>
+		</tr>
+		<tr>
+			<td><code>from</code></td>
+			<td>-</td>
+			<td>Similar to <code>decoder</code> and the reverse for <code>to</code>. Applied <em>before</em> all other formatting options are applied.</td>
+		</tr>
 	</table>
-
 </section>

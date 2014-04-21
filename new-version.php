@@ -34,6 +34,8 @@
 	<ol class="lonely list">
 		<li><p><code>$.noUiSlider.Link</code> is now available as <code>$.Link</code>, and will self-initialize (no need to use <code>new</code> anymore. The element is still aliased in the noUiSlider namespace, so all existing code will continue to work.</p></li>
 		<li><p>Several issues have been resolved, including a compression issue in IE11 and some value-setting in <code>RTL</code> configurations.</p></li>
+		<li><p>The <a href="/nouislider/slider-values"><code>snap</code></a> option and the <a href="/nouislider/examples/tooltip"><code>"-tooltip-"</code></a> modifier are now in the documentation.</p></li>
+		<li><p>Added <code>to</code> and <code>from</code> <a href="/nouislider/number-formatting">formatting options</a>, which allow modification of a formatted value.</p></li>
 	</ol>
 </section>
 

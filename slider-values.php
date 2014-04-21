@@ -99,4 +99,24 @@
 		<?php code('non-linear-step'); ?>
 		</div>
 	</div>
+	
+	<div class="jump">
+
+		<h3>Snapping between steps</h3>
+
+		<div class="double">
+			<p>When a non-linear slider has been configured, the <code>snap</code> option can be set to <code>true</code> to force the slider to jump between the specified values.</p>
+
+			<div class="example">
+				<div id="slider5"></div>
+				<span class="example-val" id="slider5val1"></span>
+				<span class="example-val" id="slider5val2"></span>
+				<?php run('snap'); ?>
+			</div>
+		</div>
+
+		<div class="double">
+		<?php code('snap'); ?>
+		</div>
+	</div>
 </section>
