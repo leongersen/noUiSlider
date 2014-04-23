@@ -10,6 +10,14 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changes
 -------
 
+**Changelog for version 6.1.0:**
+**Compatible with 6.0.0**
+
++ Split out value methods into [$.classVal](https://github.com/leongersen/classVal). This is **included** in the release download.
++ `$.noUiSlider.Link` is now an alias to `$.Link`. The Link functionality has been moved into a new file. (also in the download).
++ Several bug fixes.
++ Added `to` and `from` to [number formatting](http://refreshless.com/nouislider/number-formatting)
+
 **Changelog for version 6.0.0:**
 
 **Please note:** noUiSlider 6 is a *major* revision, which means it isn't compatible with version 5. Your stylesheet will keep working, but the JavaScript API has changed, and your current implementation will no longer work.

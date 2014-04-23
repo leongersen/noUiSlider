@@ -9,20 +9,22 @@
 		"handles",
 		"touch",
 		"input",
-		"slide"  
+		"slide"
 	],
 	"main": [
+		"Link.js",
 		"jquery.nouislider.js",
-		"jquery.nouislider.css"  
+		"jquery.nouislider.css"
 	],
 	"dependencies": {
-		"jquery": ">= 1.7.0"
+		"jquery": ">= 1.7.0",
+		"classval": ">= 0.1.0"
 	},
 	"ignore": [
 		"**/.*",
 		"**/*.json"
 	],
-	"license": "http://refreshless.com/nouislider/terms-of-use",
+	"license": "http://www.wtfpl.net/about/",
 	"homepage": "http://refreshless.com/nouislider/",
 	"author": {
 		"name": "Léon Gersen"
