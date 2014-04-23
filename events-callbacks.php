@@ -22,6 +22,8 @@
 				<div id="l-set">Set</div>
 				<div id="l-change">Change</div>
 			</div>
+			
+			<input id="input-log">
 
 			<div class="logger">
 				<button id="setter1">.val([ 5, 15 ])</button>

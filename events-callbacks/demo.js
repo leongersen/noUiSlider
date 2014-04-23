@@ -17,6 +17,13 @@ $("#eventslider").noUiSlider({
 	range: {
 		'min': [ 0 ],
 		'max': [ 20 ]
+	},
+	serialization: {
+		lower: [
+			$.Link({
+				target: $("#input-log")
+			})		
+		]
 	}
 }).on({
 	slide: function(){
