@@ -13,10 +13,10 @@
 
 		<p>noUiSlider is open source, and you can use it <strong>for free</strong> in any personal or commercial product. No attribution required. Both the uncompressed and compressed version of noUiSlider are available in a <code>.zip</code> release, which is hosted by Github and available over <code>https</code>.</p>
 
-		<a class="button" href="https://github.com/leongersen/noUiSlider/releases/download/6.0.0/6.0.0.zip" onclick="return trackLink(this, 'convert','download')">Download noUiSlider from Github</a>
+		<a class="button" href="https://github.com/leongersen/noUiSlider/releases/download/6.1.0/6.1.0.zip" onclick="return trackLink(this, 'convert','download')">Download noUiSlider from Github</a>
 
-		<p class="release">Released by <strong><a href="https://github.com/leongersen">leongersen</a></strong> on March 16, 2014.
-		<br>Final commit before this release was <strong><a onclick="return trackLink(this, 'outlink','commit')" href="https://github.com/leongersen/noUiSlider/commit/484cb0949779015112d7d225d9de7ba77567a065">484cb09</a></strong>.</p>
+		<p class="release">Released by <strong><a href="https://github.com/leongersen">leongersen</a></strong> on April 23, 2014.
+		<br>Final commit before this release was <strong><a onclick="return trackLink(this, 'outlink','commit')" href="https://github.com/leongersen/noUiSlider/commit/3932df464a757374b3534430a08cdae7a6c09810">3932df4</a></strong>.</p>
 
 		<div class="share">
 			<iframe class="github-star" src="http://ghbtns.com/github-btn.html?user=leongersen&repo=noUiSlider&type=watch&count=true&size=large" allowtransparency="true" frameborder="0" scrolling="0" width="150" height="30"></iframe>
