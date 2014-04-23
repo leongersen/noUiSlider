@@ -263,7 +263,7 @@ var
 		this.target = target.on('change', function( e ){
 			that.obj.val(
 				at(null, $(e.target).val(), that.N),
-				{ 'link': that }
+				{ 'link': that, 'set': true }
 			);
 		});
 	};
