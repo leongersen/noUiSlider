@@ -93,33 +93,5 @@
 	</article>
 </div>
 
-<script>
-
-function viewer(e,go){
-
-	var view = go || window.location.hash,
-		cls = 'show-code',
-		to = $(view);
-
-	if ( to.hasClass(cls) ){
-		return;
-	}
-
-	$('.code-viewer-tab')
-		.removeClass('active')
-		.filter('[href="'+view+'"]')
-		.addClass('active');
-
-	$('.' + cls).removeClass(cls);
-	to.addClass(cls);
-}
-
-$(window).on('hashchange.viewer', viewer);
-
-if ( !window.location.hash ) {
-	viewer(false,'#output');
-} else {
-	$(window).trigger('hashchange.viewer');
-}
-
-</script>
+<script src="/nouislider/assets/viewer.js"></script>
+<script>createViewer('#output');</script>
