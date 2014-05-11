@@ -15,6 +15,9 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 	// Cache the document selector;
 	/** @const */
 	doc = $(document),
+	// Make a backup of the original jQuery/Zepto .val() method.
+	/** @const */
+	$val = $.fn.val,
 	// Namespace for binding and unbinding slider events;
 	/** @const */
 	namespace = '.nui',
@@ -164,7 +167,10 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 	function getStep ( options, value ){
 
 		var j = 1, a, b;
-		while ( value >= options.xPct[j] ){
+
+		// Find the proper step for rtl sliders by search in inverse direction.
+		// Fixes issue #262.
+		while ( (options.dir ? (100 - value) : value) >= options.xPct[j] ){
 			j++;
 		}
 
@@ -264,6 +270,12 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		// Filter incorrect input.
 		if ( typeof entry !== 'object' || $.isArray(entry) ) {
 			throw new Error("noUiSlider: 'range' is not an object.");
+		}
+
+		// Catch missing start or end.
+		if ( entry['min'] === undefined ||
+				entry['max'] === undefined ) {
+			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
 		}
 
 		// Loop all entries.
@@ -506,15 +518,16 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 			,margin: 0
 		}, tests;
 
+		// Tests are executed in the order they are presented here.
 		tests = {
 			'step': { r: false, t: testStep },
-			'range': { r: true, t: testRange },
 			'start': { r: true, t: testStart },
-			'snap': { r: false, t: testSnap },
 			'connect': { r: true, t: testConnect },
+			'direction': { r: true, t: testDirection },
+			'range': { r: true, t: testRange },
+			'snap': { r: false, t: testSnap },
 			'orientation': { r: false, t: testOrientation },
 			'margin': { r: false, t: testMargin },
-			'direction': { r: true, t: testDirection },
 			'behaviour': { r: true, t: testBehaviour },
 			'serialization': { r: true, t: testSerialization }
 		};
@@ -1235,6 +1248,35 @@ function closure ( target, options, originalOptions ){
 		});
 	}
 
+	// Access the internal getting and setting methods based on argument count.
+	function value ( ) {
+		return this[0][ !arguments.length ? 'vGet' : 'vSet' ].apply(this[0], arguments);
+	}
+
+	// Override the .val() method. Test every element. Is it a slider? Go to
+	// the slider value handling. No? Use the standard method.
+	// Note how $.fn.val extects 'this' to be an instance of $. For convenience,
+	// the above 'value' function does too.
+	$.fn.val = function ( ) {
+
+		// this === instanceof $
+
+		function valMethod( a ){
+			return a.hasClass(Classes[0]) ? value : $val;
+		}
+
+		var args = arguments,
+			first = $(this[0]);
+
+		if ( !arguments.length ) {
+			return valMethod(first).call(first);
+		}
+
+		// Return the set so it remains chainable
+		return this.each(function(){
+			valMethod($(this)).apply($(this), args);
+		});
+	};
 
 // Remap the serialization constructor for legacy support.
 	/** @expose */
@@ -1245,8 +1287,5 @@ function closure ( target, options, originalOptions ){
 	$.fn.noUiSlider = function ( options, re ) {
 		return ( re ? rebuild : initialize ).call(this, options);
 	};
-
-// Attach a classbased val handler.
-	$.classVal(Classes[0], 'vGet', 'vSet', false);
 
 }( window['jQuery'] || window['Zepto'] ));

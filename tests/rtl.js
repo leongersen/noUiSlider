@@ -21,12 +21,12 @@
 			serialization: {
 				lower: [
 					new Link({
-						target: $("#min"),
+						target: $("#min")
 					})
 				],
 				upper: [
 					new Link({
-						target: $("#max"),
+						target: $("#max")
 					})
 				]
 			}
@@ -41,7 +41,7 @@
 
 		slider.val([30,35]);
 		deepEqual(slider.val(), ["30.00", "35.00"], "RTL slider understepped properly.");
-		
+
 	});
 
 	test( "RTL slider multiple value set.", function(){
@@ -62,17 +62,17 @@
 			serialization: {
 				lower: [
 					new Link({
-						target: $("#min"),
+						target: $("#min")
 					})
-				],
+				]
 			}
 		});
-		
+
 		equal(slider.val(), 0.4);
-		
+
 		slider.val(0.201, true);
 		equal(slider.val(), 0.2);
-		
+
 		slider.val(0.201, true);
 		equal(slider.val(), 0.2);
 	});

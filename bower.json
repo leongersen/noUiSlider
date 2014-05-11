@@ -12,13 +12,11 @@
 		"slide"
 	],
 	"main": [
-		"Link.js",
-		"jquery.nouislider.js",
+		"jquery.nouislider.min.js",
 		"jquery.nouislider.css"
 	],
 	"dependencies": {
-		"jquery": ">= 1.7.0",
-		"classval": ">= 0.1.0"
+		"jquery": ">= 1.7.0"
 	},
 	"ignore": [
 		"**/.*",

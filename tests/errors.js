@@ -2,7 +2,10 @@
 	test( "Testing input validation.", function(){
 
 		Q.html('\
-			<div class="slider"></div>\
+			<div class="slider1"></div>\
+			<div class="slider2"></div>\
+			<div class="slider3"></div>\
+			<div class="slider4"></div>\
 		');
 
 		var settings = {
@@ -15,7 +18,7 @@
 		};
 
 		throws(function(){
-			$('.slider').noUiSlider($.extend({}, {
+			$('.slider1').noUiSlider($.extend({}, {
 				serialization: {
 					lower: [
 						new Link({
@@ -30,7 +33,7 @@
 		}, "Decimal count.");
 
 		throws(function(){
-			$('.slider').noUiSlider($.extend({}, {
+			$('.slider2').noUiSlider($.extend({}, {
 				serialization: {
 					format: {
 						negative: function(){}
@@ -40,7 +43,7 @@
 		}, "Format item type.");
 
 		throws(function(){
-			$('.slider').noUiSlider($.extend({}, {
+			$('.slider3').noUiSlider($.extend({}, {
 				serialization: {
 					lower: [
 						new Link({
@@ -57,4 +60,10 @@
 			}, settings));
 		}, "Incompatible equal formatting options.");
 
+		throws(function(){
+			$('.slider4').noUiSlider({
+				range: { },
+				start: [20, 30]
+			});
+		}, "Missing 'min' or 'max' in range.");
 	});
