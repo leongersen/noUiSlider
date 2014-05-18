@@ -163,16 +163,24 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return isPercentage([va, vb], (value - pa) * subRangeRatio (pa, pb));
 	}
 
-	// (percentage) Get the step that applies at a certain value.
-	function getStep ( options, value ){
+	// (j) Get the applicable step position.
+	function getStepPoint ( options, value ) {
 
-		var j = 1, a, b;
+		var j = 1;
 
 		// Find the proper step for rtl sliders by search in inverse direction.
 		// Fixes issue #262.
 		while ( (options.dir ? (100 - value) : value) >= options.xPct[j] ){
 			j++;
 		}
+
+		return j;
+	}
+
+	// (percentage) Get the step that applies at a certain value.
+	function getStep ( options, value ){
+
+		var j = getStepPoint( options, value ), a, b;
 
 		if ( options.snap ) {
 
@@ -322,6 +330,9 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 				parsed.xSteps.push( isNaN(value[1]) ? false : value[1] );
 			}
 		});
+
+		// Store the actual step values.
+		parsed.xNumSteps = parsed.xSteps.slice(0);
 
 		$.each(parsed.xSteps, function(i,n){
 
@@ -512,10 +523,11 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		object, to make sure all values can be correctly looped elsewhere. */
 
 		var parsed = {
-			 xPct: []
-			,xVal: []
-			,xSteps: [ false ]
-			,margin: 0
+			xPct: [],
+			xVal: [],
+			xSteps: [ false ],
+			xNumSteps: [ false ],
+			margin: 0
 		}, tests;
 
 		// Tests are executed in the order they are presented here.
@@ -552,6 +564,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		// be handled properly. E.g. wrapping integers in arrays.
 		$.each( tests, function( name, test ){
 
+			// If the option isn't set, but it is required, throw an error.
 			if ( options[name] === undefined ) {
 
 				if ( test.r ) {
@@ -717,8 +730,9 @@ function closure ( target, options, originalOptions ){
 	}
 
 
-// External event handling
+// Helpers
 
+	// External event handling
 	function fireEvents ( events ) {
 
 		// Use the external api to get the values.
@@ -731,37 +745,47 @@ function closure ( target, options, originalOptions ){
 		}
 	}
 
+	// Check if the range is effectively 0.
+	function isNullRange ( ) {
+		return options.xVal.length === 2 && options.xVal[0] === options.xVal[1];
+	}
+
 
 // Handle placement
 
 	// Test suggested values and apply margin, step.
-	function setHandle ( handle, to, delimit ) {
+	function setHandle ( handle, to ) {
 
 		var n = handle[0] !== $Handles[0][0] ? 1 : 0,
 			lower = $Locations[0] + options.margin,
 			upper = $Locations[1] - options.margin;
 
-		// Don't delimit range dragging.
-		if ( delimit && $Handles.length > 1 ) {
-			to = n ? Math.max( to, lower ) : Math.min( to, upper );
-		}
+		// Check if the slider has no range. If so, lock in the center.
+		if ( isNullRange() ) {
 
-		// Handle the step option.
-		if ( to < 100 ){
-			to = getStep(options, to);
-		}
+			to = 50;
 
-		// Limit to 0/100 for .val input, trim anything beyond 7 digits, as
-		// JavaScript has some issues in its floating point implementation.
-		to = limit(parseFloat(to.toFixed(7)));
+		} else {
 
-		// Return falsy if handle can't move. False for 0 or 100 limit,
-		// '0' for limiting by another handle.
-		if ( to === $Locations[n] ) {
-			if ( $Handles.length === 1 ) {
+			// For sliders with multiple handles,
+			// limit movement to the other handle.
+			if ( $Handles.length > 1 ) {
+				to = n ? Math.max( to, lower ) : Math.min( to, upper );
+			}
+
+			// Handle the step option.
+			if ( to < 100 ){
+				to = getStep(options, to);
+			}
+
+			// Limit to 0/100 for .val input, trim anything beyond 7 digits, as
+			// JavaScript has some issues in its floating point implementation.
+			to = limit(parseFloat(to.toFixed(7)));
+
+			// Return false if handle can't move.
+			if ( to === $Locations[n] ) {
 				return false;
 			}
-			return ( to === lower || to === upper ) ? 0 : false;
 		}
 
 		// Set the handle to the new position.
@@ -823,7 +847,7 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Move the handle to the new position.
-		setHandle( handle, to, false );
+		setHandle( handle, to );
 
 		fireEvents(['slide', 'set', 'change']);
 	}
@@ -834,20 +858,27 @@ function closure ( target, options, originalOptions ){
 	// Handler for attaching events trough a proxy.
 	function attach ( events, element, callback, data ) {
 
+		// This function can be used to 'filter' events to the slider.
+
 		// Add the noUiSlider namespace to all events.
 		events = events.replace( /\s/g, namespace + ' ' ) + namespace;
 
 		// Bind a closure on the target.
 		return element.on( events, function( e ){
 
-			// jQuery and Zepto handle unset attributes differently.
-			var disabled = $Target.attr('disabled');
-				disabled = !( disabled === undefined || disabled === null );
+			// jQuery and Zepto (1) handle unset attributes differently,
+			// but always falsy; #208
+			if ( !!$Target.attr('disabled') ) {
+				return false;
+			}
 
-			// Test if there is anything that should prevent an event
-			// from being handled, such as a disabled state or an active
-			// 'tap' transition.
-			if( $Target.hasClass( Classes[14] ) || disabled ) {
+			// Stop if an active 'tap' transition is taking place.
+			if ( $Target.hasClass( Classes[14] ) ) {
+				return false;
+			}
+
+			// Ignore all events if the range is effectively 0. #236
+			if ( isNullRange() ) {
 				return false;
 			}
 
@@ -869,10 +900,10 @@ function closure ( target, options, originalOptions ){
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
 
-		state = setHandle ( handles[0], positions[h], handles.length === 1 );
+		state = setHandle ( handles[0], positions[h] );
 
 		if ( handles.length > 1 ) {
-			state = setHandle ( handles[1], positions[h?0:1], false ) || state;
+			state = setHandle ( handles[1], positions[h?0:1] ) || state;
 		}
 
 		// Fire the 'slide' event if any handle moved.
@@ -1041,6 +1072,38 @@ function closure ( target, options, originalOptions ){
 	}
 
 
+// Helpers
+
+	// Set handles from the .val method.
+	function loopValues ( i, values, link, update ) {
+
+		// Use the passed link, or default to the first one,
+		// which stores the value.
+		link = link || $Serialization[i%2][0];
+
+	var to = link.getValue( values[i%2] );
+
+		if ( to !== false ) {
+
+			// Calculate the new handle position
+			to = toStepping( options, to );
+
+			// Invert the value if this is a right-to-left slider.
+			if ( options.dir ) {
+				to = 100 - to;
+			}
+
+			// Set the handle.
+			if ( setHandle( $Handles[i%2], to ) === true ) {
+				return;
+			}
+		}
+
+		// If it the handle cannot be set, correct the Link.
+		link.reset( update );
+	}
+
+
 // Initialize slider
 
 	// Throw an error if the slider was already initialized.
@@ -1068,19 +1131,13 @@ function closure ( target, options, originalOptions ){
 	target.vSet = function ( ) {
 
 		var args = Array.prototype.slice.call( arguments, 0 ),
-			callback, link, update, animate,
-			i, count, actual, to, values = asArray( args[0] );
-
-		// Extract modifiers for value method.
-		if ( typeof args[1] === 'object' ) {
-			callback = args[1]['set'];
-			link = args[1]['link'];
-			update = args[1]['update'];
-			animate = args[1]['animate'];
+			i, count, values = asArray( args[0] );
 
 		// Support the 'true' option.
-		} else if ( args[1] === true ) {
-			callback = true;
+		if ( args[1] === true ) {
+			args[1] = { 'set': true };
+		} else if ( typeof args[1] !== 'object' ) {
+			args[1] = {};
 		}
 
 		// The RTL settings is implemented by reversing the front-end,
@@ -1090,7 +1147,7 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Animation is optional.
-		if ( animate ) {
+		if ( args[1]['animate'] ) {
 			addClassFor( $Target, Classes[14], 300 );
 		}
 
@@ -1104,46 +1161,11 @@ function closure ( target, options, originalOptions ){
 		// mechanism twice for the first handle, to make sure it
 		// can be bounced of the second one properly.
 		for ( i = 0; i < count; i++ ) {
-
-			to = link || $Serialization[i%2][0];
-			to = to.getValue( values[i%2] );
-
-			if ( to === false ) {
-				continue;
-			}
-
-			// Calculate the new handle position
-			to = toStepping( options, to );
-
-			// Invert the value if this is a right-to-left slider.
-			if ( options.dir ) {
-				to = 100 - to;
-			}
-
-			// Force delimitation.
-			if ( setHandle( $Handles[i%2], to, true ) === true ) {
-				continue;
-			}
-
-			// Reset the input if it doesn't match the slider.
-			$($Serialization[i%2]).each(function(index){
-
-				if (!index) {
-					actual = this.actual;
-					return true;
-				}
-
-				this.write(
-					actual,
-					$Handles[i%2].children(),
-					$Target,
-					update
-				);
-			});
+			loopValues( i, values, args[1]['link'], args[1]['update'] );
 		}
 
 		// Optionally fire the 'set' event.
-		if( callback === true ) {
+		if ( args[1]['set'] === true ) {
 			fireEvents(['set']);
 		}
 
@@ -1158,7 +1180,7 @@ function closure ( target, options, originalOptions ){
 
 		// Get the value from all handles.
 		for ( i = 0; i < options.handles; i++ ){
-			retour[i] = $Serialization[i][0].saved;
+			retour[i] = $Serialization[i][0].getSaved();
 		}
 
 		// If only one handle is used, return a single value.
@@ -1197,8 +1219,17 @@ function closure ( target, options, originalOptions ){
 		return originalOptions;
 	};
 
+	// Get the current step size for the slider.
+	/** @expose */
+	target.getStep = function ( ) {
 
-// Value setting
+		// Check all locations, map them to their stepping point.
+		return $.map($Locations, function( value ){
+			// Get the step point, then find it in the input list.
+			return options.xNumSteps[getStepPoint(options, value) - 1];
+		});
+	};
+
 
 	// Use the public value method to set the start values.
 	$Target.val( options.start );
@@ -1255,7 +1286,7 @@ function closure ( target, options, originalOptions ){
 
 	// Override the .val() method. Test every element. Is it a slider? Go to
 	// the slider value handling. No? Use the standard method.
-	// Note how $.fn.val extects 'this' to be an instance of $. For convenience,
+	// Note how $.fn.val expects 'this' to be an instance of $. For convenience,
 	// the above 'value' function does too.
 	$.fn.val = function ( ) {
 

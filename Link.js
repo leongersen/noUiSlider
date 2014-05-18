@@ -335,13 +335,18 @@ var
 			return;
 		}
 
+		// Store the numerical value.
 		this.actual = value;
 
 		// Format values for display.
 		value = this.format( value );
 
-		// Store the numerical value.
+		// Store the formatted value.
 		this.saved = value;
+
+		// Store parameters for use in reset()
+		this.resetHandle = handle;
+		this.resetSlider = slider;
 
 		// Branch between serialization to a function or an object.
 		if ( typeof this.method === 'function' ) {
@@ -375,9 +380,19 @@ var
 		return this.formatting.to(a);
 	};
 
+	// Allow calling the 'write' method from cache.
+	Link.prototype.reset = function ( update ) {
+		this.write( this.actual, this.resetHandle, this.resetSlider, update );
+	};
+
 	// Converts a formatted value back to a real number.
 	Link.prototype.getValue = function ( a ) {
 		return this.formatting.from(a);
+	};
+
+	// Return saved (formatted) value.
+	Link.prototype.getSaved = function ( a ) {
+		return this.saved;
 	};
 
 	// We can now test for Link.init to be an instance of Link.
