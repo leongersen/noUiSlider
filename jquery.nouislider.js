@@ -182,11 +182,13 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 		var j = getStepPoint( options, value ), a, b;
 
+		// If 'snap' is set, steps are used as fixed points on the slider.
 		if ( options.snap ) {
 
 			a = options.xPct[j-1];
 			b = options.xPct[j];
 
+			// Find the closest position, a or b.
 			if ((value - a) > ((b-a)/2)){
 				return b;
 			}
@@ -1103,6 +1105,20 @@ function closure ( target, options, originalOptions ){
 		link.reset( update );
 	}
 
+	// Returns the input array, respecting the slider direction configuration.
+	function inSliderOrder ( values ) {
+
+		// If only one handle is used, return a single value.
+		if ( values.length === 1 ){
+			return values[0];
+		}
+
+		if ( options.dir ) {
+			return values.reverse();
+		}
+
+		return values;
+	}
 
 // Initialize slider
 
@@ -1183,16 +1199,7 @@ function closure ( target, options, originalOptions ){
 			retour[i] = $Serialization[i][0].getSaved();
 		}
 
-		// If only one handle is used, return a single value.
-		if ( retour.length === 1 ){
-			return retour[0];
-		}
-
-		if ( options.dir ) {
-			return retour.reverse();
-		}
-
-		return retour;
+		return inSliderOrder( retour );
 	};
 
 	// Destroy the slider and unbind all events.
@@ -1224,12 +1231,54 @@ function closure ( target, options, originalOptions ){
 	target.getStep = function ( ) {
 
 		// Check all locations, map them to their stepping point.
-		return $.map($Locations, function( value ){
+		var retour = $.map($Locations, function( value ){
 			// Get the step point, then find it in the input list.
 			return options.xNumSteps[getStepPoint(options, value) - 1];
 		});
+
+		// Return values in the proper order.
+		return inSliderOrder( retour );
 	};
 
+	target.getSpread = function ( edged ) {
+
+		// We could get just the large edges.
+		if ( edged ) {
+			return options.xVal.slice();
+		}
+
+		// We'll build a list of steps.
+		var indexes = {};
+
+		$.each(options.xVal, function ( index, value ) {
+
+			// Get the current step and the lower + upper positions.
+			var step = options.xNumSteps[ index ],
+				low = options.xVal[index],
+				high = options.xVal[index+1],
+				i;
+
+			// Low can be 0.
+			if ( low === false || !high ) {
+				return;
+			}
+
+			if ( !step && !index ) {
+				indexes['0'] = low;
+				return;
+			}
+
+			// Find all steps in the subrange.
+			for ( i = low; i < high; i += step ) {
+				indexes[toStepping(options, i).toFixed(5)] = i;
+			}
+		});
+
+		// Add the 'max' value to the end of the list.
+		indexes['100'] = options.xVal[ options.xVal.length - 1 ];
+
+		return indexes;
+	};
 
 	// Use the public value method to set the start values.
 	$Target.val( options.start );
