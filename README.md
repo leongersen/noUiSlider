@@ -41,7 +41,7 @@ Compression and Error checking
 ------------------------------
 The plugin code is checked using ([JsLint](http://jslint.com/)). Any remaining errors and warnings are intentional.
 
-The plugin is compressed using the ([Google Closure Compiler](http://closure-compiler.appspot.com/home)). The source was adapted to facilitate the `ADVANCED_OPTIMIZATIONS` level. `$.Link` is merged into the file. On Windows, the folling BAT script can be used to run the compiler. On OS X or Linux enviroments, simply run the `java -jar` command from the command line.
+The plugin is compressed using the ([Google Closure Compiler](http://closure-compiler.appspot.com/home)). The source was adapted to facilitate the `ADVANCED_OPTIMIZATIONS` level. `$.Link` is merged into the file. On Windows, the following BAT script can be used to run the compiler. On OS X or Linux enviroments, simply run the `java -jar` command from the command line.
 
 ```bat
 @echo off
