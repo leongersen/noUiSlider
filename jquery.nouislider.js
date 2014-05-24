@@ -78,6 +78,11 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return (100 / (pb - pa));
 	}
 
+	// Returns reordered array.
+	function reIndex ( a, b, c ){
+		return [c?a:b, c?b:a];
+	}
+
 
 // Type validation
 
@@ -358,9 +363,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 	function testStart ( parsed, entry ) {
 
-		if ( typeof entry === "number" ) {
-			entry = [entry];
-		}
+		entry = asArray(entry);
 
 		// Validate input. Values aren't tested, the internal Link will do
 		// that and provide a valid location.
@@ -486,17 +489,31 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 				throw new Error("noUiSlider: 'serialization."+(!index ? 'lower' : 'upper')+"' must be an array.");
 			}
 
-			$.each(linkInstances, function(){
+			$.each(linkInstances, function( ignore, linkInstance ){
 
 				// Check if entry is a Link.
-				if ( !(this instanceof $.Link) ) {
+				if ( !(linkInstance instanceof $.Link) ) {
 					throw new Error("noUiSlider: 'serialization."+(!index ? 'lower' : 'upper')+"' can only contain Link instances.");
 				}
 
 				// Assign properties.
-				this.setIndex ( index );
-				this.setObject( sliders );
-				this.setFormatting( entry['format'] );
+				linkInstance.setTarget( sliders );
+				linkInstance.setFormatting( entry['format'] );
+
+				// Set the changehandler to call .val on input change.
+				linkInstance.setChangeHandler(function( e ){
+					linkInstance.target.val(
+						// Determine which array position to 'null' based on 'index'.
+						reIndex(
+							null,
+							$(e.target).val(),
+							index
+						), {
+							'link': linkInstance,
+							'set': true
+						}
+					);
+				});
 			});
 		});
 
@@ -605,28 +622,11 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return handle;
 	}
 
-	// Create a copy of an element-creating Link.
-	function addElement ( handle, link ) {
-
-		// If the Link requires creation of a new element,
-		// create this element and return a new Link instance.
-		if ( link.el ) {
-
-			link = new $.Link({
-				'target': $(link.el).clone().appendTo( handle ),
-				'method': link.method,
-				'format': link.formatting
-			}, true);
-		}
-
-		// Otherwise, return the reference.
-		return link;
-	}
-
 	// Loop all links for a handle.
 	function addElements ( elements, handle, formatting ) {
 
-		var index, list = [], standard = new $.Link({}, true);
+		var list = [], standard = new $.Link({}, true),
+			oldElement, newElement;
 
 		// Use the Link interface to provide unified
 		// formatting for the .val() method.
@@ -636,9 +636,26 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		list.push( standard );
 
 		// Loop all links in either 'lower' or 'upper'.
-		for ( index = 0; index < elements.length; index++ ) {
-			list.push(addElement(handle, elements[index]));
-		}
+		$.each(elements, function( index, linkInstance ){
+
+		// If the Link requires creation of a new element,
+		// create this element and return a new Link instance.
+			oldElement = linkInstance.needsClone();
+
+			if ( oldElement ) {
+
+				// Clone the old element (which isn't in the DOM) and add it to the handle.
+				newElement = $( oldElement ).clone().appendTo( handle );
+
+				// Create a new linkInstance.
+				list.push( linkInstance.clone( newElement ) );
+
+			} else {
+
+				// This linkInstance needs no clone, use it immediately.
+				list.push( linkInstance );
+			}
+		});
 
 		return list;
 	}
@@ -810,7 +827,7 @@ function closure ( target, options, originalOptions ){
 		// Convert the value to the correct relative representation.
 		// Convert the value to the slider stepping/range.
 		$($Serialization[n]).each(function(){
-			this.write( fromStepping( options, to ), handle.children(), $Target );
+			this.setValue( fromStepping( options, to ), true, handle.children(), $Target );
 		});
 
 		return true;
@@ -1077,13 +1094,13 @@ function closure ( target, options, originalOptions ){
 // Helpers
 
 	// Set handles from the .val method.
-	function loopValues ( i, values, link, update ) {
+	function loopValues ( i, values, linkInstance, update ) {
 
-		// Use the passed link, or default to the first one,
+		// Use the passed linkInstance, or default to the first one,
 		// which stores the value.
-		link = link || $Serialization[i%2][0];
+		linkInstance = linkInstance || $Serialization[i%2][0];
 
-	var to = link.getValue( values[i%2] );
+		var to = linkInstance.getValue( values[i%2] );
 
 		if ( to !== false ) {
 
@@ -1101,8 +1118,8 @@ function closure ( target, options, originalOptions ){
 			}
 		}
 
-		// If it the handle cannot be set, correct the Link.
-		link.reset( update );
+		// If it the handle cannot be set, correct the linkInstance.
+		linkInstance.resetValue( update );
 	}
 
 	// Returns the input array, respecting the slider direction configuration.
@@ -1146,7 +1163,7 @@ function closure ( target, options, originalOptions ){
 	/** @expose */
 	target.vSet = function ( ) {
 
-		var args = Array.prototype.slice.call( arguments, 0 ),
+		var args = Array.prototype.slice.call( arguments ),
 			i, count, values = asArray( args[0] );
 
 		// Support the 'true' option.
@@ -1196,7 +1213,7 @@ function closure ( target, options, originalOptions ){
 
 		// Get the value from all handles.
 		for ( i = 0; i < options.handles; i++ ){
-			retour[i] = $Serialization[i][0].getSaved();
+			retour[i] = $Serialization[i][0].getFormattedValue();
 		}
 
 		return inSliderOrder( retour );
@@ -1240,44 +1257,23 @@ function closure ( target, options, originalOptions ){
 		return inSliderOrder( retour );
 	};
 
-	target.getSpread = function ( edged ) {
-
-		// We could get just the large edges.
-		if ( edged ) {
-			return options.xVal.slice();
+	// Return clones of some private variables.
+	/** @expose */
+	target.api = function ( ) {
+		return {
+			'slider': this,
+			'range': {
+				'positions': options.xPct.slice(),
+				'values': options.xVal.slice()
+			},
+			'steps': {
+				'positions': options.xSteps.slice(),
+				'values': options.xNumSteps.slice()
+			},
+			'toStepping': function ( value ) {
+				return toStepping( options, value );
+			}
 		}
-
-		// We'll build a list of steps.
-		var indexes = {};
-
-		$.each(options.xVal, function ( index, value ) {
-
-			// Get the current step and the lower + upper positions.
-			var step = options.xNumSteps[ index ],
-				low = options.xVal[index],
-				high = options.xVal[index+1],
-				i;
-
-			// Low can be 0.
-			if ( low === false || !high ) {
-				return;
-			}
-
-			if ( !step && !index ) {
-				indexes['0'] = low;
-				return;
-			}
-
-			// Find all steps in the subrange.
-			for ( i = low; i < high; i += step ) {
-				indexes[toStepping(options, i).toFixed(5)] = i;
-			}
-		});
-
-		// Add the 'max' value to the end of the list.
-		indexes['100'] = options.xVal[ options.xVal.length - 1 ];
-
-		return indexes;
 	};
 
 	// Use the public value method to set the start values.
@@ -1364,8 +1360,8 @@ function closure ( target, options, originalOptions ){
 
 // Extend jQuery/Zepto with the noUiSlider method.
 	/** @expose */
-	$.fn.noUiSlider = function ( options, re ) {
-		return ( re ? rebuild : initialize ).call(this, options);
+	$.fn.noUiSlider = function ( options, rebuildFlag ) {
+		return options === 'api' ? this[0].api() : ( rebuildFlag ? rebuild : initialize ).call(this, options);
 	};
 
 }( window['jQuery'] || window['Zepto'] ));

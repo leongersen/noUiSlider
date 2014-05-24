@@ -21,8 +21,9 @@ $.Link (part of noUiSlider) - WTFPL */
 		return a instanceof $ || ( $['zepto'] && $['zepto']['isZ'](a) );
 	}
 
+
 var
-/** @const */ Formatting = [
+/** @const */ FormatNames = [
 /*  0 */  'decimals'
 /*  1 */ ,'mark'
 /*  2 */ ,'thousand'
@@ -47,11 +48,24 @@ var
 /*  8 */ ,''
 /*  9 */ ,function(a){ return a; }
 /* 10 */ ,function(a){ return a; }
+	],
+/** @const */ Public_Methods = [
+		'setValue',
+		'setFormatting',
+		'setChangeHandler',
+		'setTarget',
+		'resetValue',
+		'getValue',
+		'getFormattedValue'
 	];
-
 
 	/** @constructor */
 	function Format( options ){
+
+		// Allow 'init' from existing object.
+		if ( options instanceof Format ) {
+			return options;
+		}
 
 		// If no settings where provided, the defaults will be loaded.
 		if ( options === undefined ){
@@ -65,7 +79,7 @@ var
 		var settings = {};
 
 		// Copy all values into a new object.
-		$(Formatting).each(function(i, val){
+		$(FormatNames).each(function(i, val){
 
 			if ( options[val] === undefined ){
 
@@ -216,7 +230,6 @@ var
 	};
 
 
-/** @expose */
 /** @constructor */
 	function Link ( entry, update ) {
 
@@ -226,10 +239,15 @@ var
 
 		// Make sure Link isn't called as a function, in which case
 		// the 'this' scope would be the window.
-		return new Link.prototype.init( entry['target']||function(){}, entry['method'], entry['format']||{}, update );
+		this.init( entry['target']||function(){}, entry['method'], entry['format']||{}, update );
+
+		this.changeHandler = function ( e ) {
+			this.changeHandlerMethod(e);
+		}
 	}
 
-	Link.prototype.setTooltip = function ( target, method ) {
+// Target types
+	Link.prototype.configureTooltip = function ( target, method ) {
 
 		// By default, use the 'html' method.
 		this.method = method || 'html';
@@ -238,7 +256,7 @@ var
 		this.el = $( target.replace('-tooltip-', '') || '<div/>' )[0];
 	};
 
-	Link.prototype.setHidden = function ( target ) {
+	Link.prototype.configureHidden = function ( target ) {
 
 		this.method = 'val';
 
@@ -247,49 +265,35 @@ var
 		this.el.type = 'hidden';
 	};
 
-	Link.prototype.setField = function ( target ) {
-
-		// Returns nulled array.
-		function at(a,b,c){
-			return [c?a:b, c?b:a];
-		}
-
-		// In IE < 9, .bind() isn't available, need this link in .change().
-		var that = this;
+	Link.prototype.configureField = function ( target ) {
 
 		// Default to .val if this is an input element.
 		this.method = 'val';
 		// Set the slider to a new value on change.
-		this.target = target.on('change', function( e ){
-			that.obj.val(
-				at(null, $(e.target).val(), that.N),
-				{ 'link': that, 'set': true }
-			);
-		});
+		this.target = target.on('change', this.changeHandler);
 	};
 
 
-	// Initialisor
-	/** @constructor */
+// Initialisor
+
+	// Gets arguments from constructor.
 	Link.prototype.init = function ( target, method, format, update ) {
 
-		// Write all formatting to this object.
-		// No validation needed, as we'll merge these with the parent
-		// format options first.
-		this.formatting = format;
+		// Create a new Formatter. The constructor accepts 'undefined'.
+		this.formatInstance = new Format(format);
 
 		// Store the update option.
 		this.update = !update;
 
 		// If target is a string, a new hidden input will be created.
 		if ( typeof target === 'string' && target.indexOf('-tooltip-') === 0 ) {
-			this.setTooltip( target, method );
+			this.configureTooltip( target, method );
 			return;
 		}
 
 		// If the string doesn't begin with '-', which is reserved, add a new hidden input.
 		if ( typeof target === 'string' && target.indexOf('-') !== 0 ) {
-			this.setHidden( target );
+			this.configureHidden( target );
 			return;
 		}
 
@@ -300,18 +304,18 @@ var
 			return;
 		}
 
-		if ( isInstance(target) ) {
-			// If a jQuery/Zepto input element is provided, but no method is set,
-			// the element can assume it needs to respond to 'change'...
+		if ( isInstance( target ) ) {
 
 			if ( !method ) {
 
+			// If a jQuery/Zepto input element is provided, but no method is set,
+			// the element can assume it needs to respond to 'change'...
 				if ( target.is('input, select, textarea') ) {
-					this.setField( target );
+					this.configureField( target );
 					return;
 				}
 
-				// If no method is set, and we are not auto-binding an input, default to 'html'.
+			// If no method is set, and we are not auto-binding an input, default to 'html'.
 				method = 'html';
 			}
 
@@ -327,78 +331,123 @@ var
 		throw new RangeError("(Link) Invalid Link.");
 	};
 
+
+// Public setters
+
 	// Provides external items with the slider value.
-	Link.prototype.write = function ( value, handle, slider, update ) {
+	Link.prototype['setValue'] = function ( value, update ) {
 
 		// Don't synchronize this Link.
 		if ( this.update && update === false ) {
 			return;
 		}
 
-		// Store the numerical value.
+		// Ignore named arguments value and update, so only the passed-on
+		// arguments remain.
+		var args = Array.prototype.slice.call( arguments ),
+			additionalArgs = args.slice(2);
+
+		console.log(this);
+
+		// Store some values. The actual, numerical value,
+		// the formatted value and the parameters for use in 'resetValue'.
+		// Slice additionalArgs to break the relation.
 		this.actual = value;
+		this.saved = this.formatInstance.to( value );
+		this.args = additionalArgs.slice();
 
-		// Format values for display.
-		value = this.format( value );
+		// Prepend the value to the function arguments.
+		additionalArgs.unshift( this.saved );
 
-		// Store the formatted value.
-		this.saved = value;
-
-		// Store parameters for use in reset()
-		this.resetHandle = handle;
-		this.resetSlider = slider;
+		// When target is undefined, the target was a function.
+		// In that case, provided the slider as the calling scope.
+		// Use [0] to get the DOM element, not the $ instance.
 
 		// Branch between serialization to a function or an object.
-		if ( typeof this.method === 'function' ) {
-			// When target is undefined, the target was a function.
-			// In that case, provided the slider as the calling scope.
-			// Use [0] to get the DOM element, not the $ instance.
-			this.method.call( this.target[0] || slider[0], value, handle, slider );
-		} else {
-			this.target[ this.method ]( value, handle, slider );
-		}
+		( typeof this.method === 'function' ?
+			this.method :
+			this.target[ this.method ] ).apply( this.target, additionalArgs );
 	};
 
 	// Set formatting options.
-	Link.prototype.setFormatting = function ( options ) {
-		this.formatting = new Format($.extend({},
-			options,
-			this.formatting instanceof Format ? this.formatting.settings : this.formatting
-		));
+	Link.prototype['setFormatting'] = function ( options ) {
+		this.formatInstance = new Format (
+			$.extend( {}, options, this.formatInstance.settings )
+		);
 	};
 
-	Link.prototype.setObject = function ( obj ) {
-		this.obj = obj;
+	// Set the event handler to be triggered when a linked input changes.
+	Link.prototype['setChangeHandler'] = function ( handler ) {
+		this.changeHandlerMethod = handler;
+	}
+
+	// Set the target if it isn't set yet.
+	Link.prototype['setTarget'] = function ( target ) {
+		if ( !this.target ) {
+			this.target = target;
+		}
 	};
 
-	Link.prototype.setIndex = function ( index ) {
-		this.N = index;
-	};
 
-	// Parses slider value to user defined display.
-	Link.prototype.format = function ( a ) {
-		return this.formatting.to(a);
-	};
+// Public getters
 
-	// Allow calling the 'write' method from cache.
-	Link.prototype.reset = function ( update ) {
-		this.write( this.actual, this.resetHandle, this.resetSlider, update );
+	// Allow calling the 'setValue' method from cache.
+	Link.prototype['resetValue'] = function ( update ) {
+		var args = this.args.slice();
+		args.unshift(this.actual, update);
+		this.setValue.apply(this, args);
 	};
 
 	// Converts a formatted value back to a real number.
-	Link.prototype.getValue = function ( a ) {
-		return this.formatting.from(a);
+	Link.prototype['getValue'] = function ( a ) {
+		return this.formatInstance.from(a);
 	};
 
 	// Return saved (formatted) value.
-	Link.prototype.getSaved = function ( a ) {
+	Link.prototype['getFormattedValue'] = function ( a ) {
 		return this.saved;
 	};
 
-	// We can now test for Link.init to be an instance of Link.
-	Link.prototype.init.prototype = Link.prototype;
+
+// Expose a wrapper, not Link
+
+	function closure ( a, b ) {
+
+		var linkInstance = new Link(a,b),
+			that = this;
+
+		// Forward calls, but don't expose the actual Link.
+		$.each(Public_Methods, function( index, value ){
+			that[value] = function(){
+				return linkInstance[value].apply(linkInstance, arguments);
+			};
+		});
+
+		// See if this Link needs individual targets based on its usage.
+		// If so, return the element that needs to be copied by the
+		// implementing interface.
+		this.needsClone = function(){
+			return linkInstance.el || false;
+		};
+
+		// Create a new instance.
+		this.clone = function( target ){
+			return new LinkWrapper({
+				'target': target,
+				'method': this.method,
+				'format': this.formatInstance
+			}, true);
+		};
+	}
+
+	function LinkWrapper ( a, b ) {
+		if ( !(this instanceof LinkWrapper) ) {
+			return new LinkWrapper(a,b);
+		}
+		closure.call( this, a, b );
+	}
 
 	/** @expose */
-	$.Link = Link;
+	$.Link = LinkWrapper;
 
 }( window['jQuery'] || window['Zepto'] ));
