@@ -78,11 +78,6 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return (100 / (pb - pa));
 	}
 
-	// Returns reordered array.
-	function reIndex ( a, b, c ){
-		return [c?a:b, c?b:a];
-	}
-
 
 // Type validation
 
@@ -365,8 +360,8 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 		entry = asArray(entry);
 
-		// Validate input. Values aren't tested, the internal Link will do
-		// that and provide a valid location.
+		// Validate input. Values aren't tested, as the public .val method
+		// will always provide a valid location.
 		if ( !$.isArray( entry ) || !entry.length || entry.length > 2 ) {
 			throw new Error("noUiSlider: 'start' option is incorrect.");
 		}
@@ -486,34 +481,19 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 			// Check if the provided option is an array.
 			if ( !$.isArray(linkInstances) ) {
-				throw new Error("noUiSlider: 'serialization."+(!index ? 'lower' : 'upper')+"' must be an array.");
+				throw new Error( "noUiSlider: 'serialization." +
+					(!index ? 'lower' : 'upper') + "' must be an array." );
 			}
 
 			$.each(linkInstances, function( ignore, linkInstance ){
 
 				// Check if entry is a Link.
-				if ( !(linkInstance instanceof $.Link) ) {
-					throw new Error("noUiSlider: 'serialization."+(!index ? 'lower' : 'upper')+"' can only contain Link instances.");
+				if ( !( linkInstance instanceof $.Link ) ) {
+					throw new Error( "noUiSlider: 'serialization." +
+						(!index ? 'lower' : 'upper') + "' can only contain Link instances." );
 				}
 
-				// Assign properties.
-				linkInstance.setTarget( sliders );
-				linkInstance.setFormatting( entry['format'] );
-
-				// Set the changehandler to call .val on input change.
-				linkInstance.setChangeHandler(function( e ){
-					linkInstance.target.val(
-						// Determine which array position to 'null' based on 'index'.
-						reIndex(
-							null,
-							$(e.target).val(),
-							index
-						), {
-							'link': linkInstance,
-							'set': true
-						}
-					);
-				});
+				linkInstance.implement( sliders, parsed.formatting, createChangeHandler( index ));
 			});
 		});
 
@@ -622,65 +602,6 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return handle;
 	}
 
-	// Loop all links for a handle.
-	function addElements ( elements, handle, formatting ) {
-
-		var list = [], standard = new $.Link({}, true),
-			oldElement, newElement;
-
-		// Use the Link interface to provide unified
-		// formatting for the .val() method.
-		standard.setFormatting(formatting);
-
-		// The list now contains at least one element.
-		list.push( standard );
-
-		// Loop all links in either 'lower' or 'upper'.
-		$.each(elements, function( index, linkInstance ){
-
-		// If the Link requires creation of a new element,
-		// create this element and return a new Link instance.
-			oldElement = linkInstance.needsClone();
-
-			if ( oldElement ) {
-
-				// Clone the old element (which isn't in the DOM) and add it to the handle.
-				newElement = $( oldElement ).clone().appendTo( handle );
-
-				// Create a new linkInstance.
-				list.push( linkInstance.clone( newElement ) );
-
-			} else {
-
-				// This linkInstance needs no clone, use it immediately.
-				list.push( linkInstance );
-			}
-		});
-
-		return list;
-	}
-
-	// Go over all Links and assign them to a handle.
-	function addLinks ( options, handles ) {
-
-		var index, links = [];
-
-		// Copy the links into a new array, instead of modifying
-		// the 'options.ser' list. This allows replacement of the invalid
-		// '.el' Links, while the others are still passed by reference.
-		for ( index = 0; index < options.handles; index++ ) {
-
-			// Append a new array.
-			links[index] = addElements(
-				options.ser[index],
-				handles[index].children(),
-				options.formatting
-			);
-		}
-
-		return links;
-	}
-
 	// Add the proper connection classes.
 	function addConnection ( connect, target, handles ) {
 
@@ -701,7 +622,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		}
 	}
 
-	// Add handles and loop Link elements.
+	// Add handles to the slider base.
 	function addHandles ( options, base ) {
 
 		var index, handles = [];
@@ -727,6 +648,85 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		].join(' '));
 
 		return $('<div/>').appendTo(target).addClass( Classes[1] );
+	}
+
+
+// Implement the $.Link library
+
+	// Go over all Links and assign them to a handle.
+	function addLinks ( options, handles ) {
+
+		var index, links = [];
+
+		// Copy the links into a new array, instead of modifying
+		// the 'options.ser' list. This allows replacement of the invalid
+		// '.el' Links, while the others are still passed by reference.
+		for ( index = 0; index < options.handles; index++ ) {
+
+			// Use the Link interface to provide unified
+			// formatting for the .val() method.
+			// The list now contains at least one element.
+			links[index] = [ new $.Link({}, true).implement(null, options.formatting) ];
+
+			// Loop all links in either 'lower' or 'upper'.
+			$.each(options.ser[index], function( ignore, linkInstance ){
+
+				// If the Link requires creation of a new element,
+				// create this element and return a new Link instance.
+				var targetElement = linkInstance.needsClone();
+
+				if ( targetElement ) {
+
+					// Clone the old element (which isn't in the DOM) and add it to the handle.
+					targetElement = $( targetElement ).clone().appendTo( handles[index].children() );
+
+					// Create a new linkInstance.
+					links[index].push( linkInstance.clone( targetElement ) );
+
+				} else {
+
+					// This linkInstance needs no clone, use it immediately.
+					links[index].push( linkInstance );
+				}
+			});
+		}
+
+		return links;
+	}
+
+	// Create a new function which calls .val on input change.
+	function createChangeHandler ( index ) {
+
+		// Returns reordered array.
+		function reIndex ( a, b, c ){
+			return [c?a:b, c?b:a];
+		}
+
+		return function ( e ){
+
+			console.log(this);
+
+			this.target.val(
+				// Determine which array position to 'null' based on 'index'.
+				reIndex( null, $( e.target ).val(), index ), {
+					'link': this,
+					'set': true
+				}
+			);
+		}
+	}
+
+	// Get value from a Link
+	function aquireValue ( value, linkInstance, update ) {
+
+		var to = linkInstance.fromFormat( value );
+
+		// If it the handle cannot be set, correct the linkInstance.
+		if ( to === false ) {
+			linkInstance.resetValue( update );
+		}
+
+		return to;
 	}
 
 
@@ -1093,34 +1093,6 @@ function closure ( target, options, originalOptions ){
 
 // Helpers
 
-	// Set handles from the .val method.
-	function loopValues ( i, values, linkInstance, update ) {
-
-		// Use the passed linkInstance, or default to the first one,
-		// which stores the value.
-		linkInstance = linkInstance || $Serialization[i%2][0];
-
-		var to = linkInstance.getValue( values[i%2] );
-
-		if ( to !== false ) {
-
-			// Calculate the new handle position
-			to = toStepping( options, to );
-
-			// Invert the value if this is a right-to-left slider.
-			if ( options.dir ) {
-				to = 100 - to;
-			}
-
-			// Set the handle.
-			if ( setHandle( $Handles[i%2], to ) === true ) {
-				return;
-			}
-		}
-
-		// If it the handle cannot be set, correct the linkInstance.
-		linkInstance.resetValue( update );
-	}
 
 	// Returns the input array, respecting the slider direction configuration.
 	function inSliderOrder ( values ) {
@@ -1164,7 +1136,7 @@ function closure ( target, options, originalOptions ){
 	target.vSet = function ( ) {
 
 		var args = Array.prototype.slice.call( arguments ),
-			i, count, values = asArray( args[0] );
+			i, count, to, values = asArray( args[0] );
 
 		// Support the 'true' option.
 		if ( args[1] === true ) {
@@ -1194,7 +1166,29 @@ function closure ( target, options, originalOptions ){
 		// mechanism twice for the first handle, to make sure it
 		// can be bounced of the second one properly.
 		for ( i = 0; i < count; i++ ) {
-			loopValues( i, values, args[1]['link'], args[1]['update'] );
+
+			to = aquireValue(
+				// The passed-in value.
+				values[i%2],
+				// The passed linkInstance, or default to the first one.
+				args[1]['link'] || $Serialization[i%2][0],
+				// Whether the link updates for the new value.
+				args[1]['update']
+			);
+
+			if ( to !== false ) {
+
+				// Calculate the new handle position
+				to = toStepping( options, to );
+
+				// Invert the value if this is a right-to-left slider.
+				if ( options.dir ) {
+					to = 100 - to;
+				}
+
+				// Set the handle.
+				setHandle( $Handles[i%2], to );
+			}
 		}
 
 		// Optionally fire the 'set' event.
@@ -1213,7 +1207,7 @@ function closure ( target, options, originalOptions ){
 
 		// Get the value from all handles.
 		for ( i = 0; i < options.handles; i++ ){
-			retour[i] = $Serialization[i][0].getFormattedValue();
+			retour[i] = $Serialization[i][0].toFormat();
 		}
 
 		return inSliderOrder( retour );
