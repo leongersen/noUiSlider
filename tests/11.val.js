@@ -10,11 +10,9 @@
 			start: [ 0, 10 ],
 			behaviour: 'drag',
 			connect: true,
-			serialization: {
-				format: {
-					'decimals': 1
-				}
-			}
+			format: wNumb({
+				'decimals': 1
+			})
 		});
 
 		deepEqual(slider.val(), ["0.0", "10.0"]);

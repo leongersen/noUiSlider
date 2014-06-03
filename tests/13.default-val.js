@@ -14,7 +14,10 @@
 
 		var slider = $("#simpleslider").noUiSlider({
 			range: { min: 20, max: 120 },
-			start: 30
+			start: 30,
+			format: wNumb({
+				decimals: 2
+			})
 		});
 
 		one.val(35);

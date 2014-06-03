@@ -30,6 +30,9 @@
 		}
 
 		function linkMethodFunction( value, handle, sliderInstance ){
+			
+			console.log(val);
+		
 			equal(value, vals[val2++], "Value as expected, change ("+val2+"/4).");
 			ok(handle.hasClass("noUi-handle"), "Handle is really a handle.");
 			ok(sliderInstance.hasClass("noUi-target"), "Slider is really a slider.");
@@ -41,41 +44,37 @@
 			 range: {
 				'min': -100,
 				'max': 9000
-			}
-			,start: [-500, 10000]
-			,connect: true
-			,serialization: {
-				lower: [
-					new Link({
-						target: linkTargetFunction
-					}),
-					new Link({
-						target: box,
-						method: linkMethodFunction
-					}),
-					new Link({
-						target: "hiddenInputField",
-						format: {
-							decimals: 1,
-							negative: '',
-							prefix: '++',
-							negativeBefore: '='
-						}
-					})
-				],
-				upper: [
-					new Link({
-						target: item,
-						method: "cake"
-					}),
-					new Link({
-						target: thing,
-						method: "html"
-					})
-				]
-			}
+			},
+			start: [-500, 10000],
+			connect: true,
+			format: wNumb({
+				decimals: 2
+			})
 		});
 
+		slider.Link('lower', {
+			target: linkTargetFunction
+		}, {
+			target: box,
+			method: linkMethodFunction
+		}, {
+			target: "hiddenInputField",
+			format: wNumb({
+				decimals: 1,
+				negative: '',
+				prefix: '++',
+				negativeBefore: '='
+			})
+		})
+		
+		slider.Link('upper', {
+			target: item,
+			method: "cake"
+		}, {
+			target: thing,
+			method: "html"
+		});
+		
 		equal(item.html(), '9000.00', 'Setting by custom method works.');
 
 		ok($('input[name="hiddenInputField"]').is('input'), "Input field was generated.");

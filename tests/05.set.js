@@ -6,21 +6,21 @@
 		');
 
 		var slider = $('.slider');
-		
+
 		slider.noUiSlider({
-			 range: {
+			start: [ 50, 100 ],
+			connect: true,
+			range: {
 				'min': 30,
 				'max': 980
-			}
-			,start: [50,100]
-			,connect: true
-			,serialization: {
-				lower: []
-			}
+			},
+			format: wNumb({
+				decimals: 2
+			})
 		});
 
 		slider.val( [ 150, 600 ] );
-		
+
 		deepEqual( slider.val(), ['150.00', '600.00'], 'Slider correctly overstepped limits.' );
-		
+
 	});

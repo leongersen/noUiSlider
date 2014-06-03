@@ -58,7 +58,11 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 /* 15 */ ,'noUi-active'
 /* 16 */ ,'noUi-extended'
 /* 17 */ ,'noUi-stacking'
-	];
+	],
+	/** @const */
+	defaultFormatter = { 'to': function( value ){
+		return value.toFixed(2);
+	}, 'from': Number };
 
 
 // General helpers
@@ -122,7 +126,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return ((value * ( range[1] - range[0] )) / 100) + range[0];
 	}
 
-	// (percentage)
+	// (percentage) Input a value, find where, on a scale of 0-100, it applies.
 	function toStepping ( options, value ) {
 
 		if ( value >= options.xVal.slice(-1)[0] ){
@@ -142,7 +146,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return pa + (toPercentage([va, vb], value) / subRangeRatio (pa, pb));
 	}
 
-	// (value)
+	// (value) Input a percentage, find where it is on the specified range.
 	function fromStepping ( options, value ) {
 
 		// There is no range group that fits 100
@@ -343,9 +347,6 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 				return true;
 			}
 
-			// Check if step fits. Not required, but this might serve some goal.
-			// !((parsed.xVal[i+1] - parsed.xVal[i]) % n);
-
 			// Factor to range ratio
 			parsed.xSteps[i] = fromPercentage([
 				 parsed.xVal[i]
@@ -472,37 +473,16 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		};
 	}
 
-	function testSerialization ( parsed, entry, sliders ) {
+	function testFormat ( parsed, entry ) {
 
-		parsed.ser = [ entry['lower'], entry['upper'] ];
-		parsed.formatting = entry['format'];
+		parsed.format = entry;
 
-		$.each( parsed.ser, function( index, linkInstances ){
-
-			// Check if the provided option is an array.
-			if ( !$.isArray(linkInstances) ) {
-				throw new Error( "noUiSlider: 'serialization." +
-					(!index ? 'lower' : 'upper') + "' must be an array." );
-			}
-
-			$.each(linkInstances, function( ignore, linkInstance ){
-
-				// Check if entry is a Link.
-				if ( !( linkInstance instanceof $.Link ) ) {
-					throw new Error( "noUiSlider: 'serialization." +
-						(!index ? 'lower' : 'upper') + "' can only contain Link instances." );
-				}
-
-				linkInstance.implement( sliders, parsed.formatting, createChangeHandler( index ));
-			});
-		});
-
-		// If the slider has two handles and is RTL,
-		// reverse the serialization input. For one handle,
-		// lower is still lower.
-		if ( parsed.dir && parsed.handles > 1 ) {
-			parsed.ser.reverse();
+		// Any object with a to and from method is supported.
+		if ( typeof entry['to'] === 'function' && typeof entry['from'] === 'function' ) {
+			return true;
 		}
+
+		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
 	}
 
 	// Test all developer settings and parse to assumption-safe values.
@@ -526,7 +506,8 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 			xVal: [],
 			xSteps: [ false ],
 			xNumSteps: [ false ],
-			margin: 0
+			margin: 0,
+			format: defaultFormatter
 		}, tests;
 
 		// Tests are executed in the order they are presented here.
@@ -540,7 +521,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 			'orientation': { r: false, t: testOrientation },
 			'margin': { r: false, t: testMargin },
 			'behaviour': { r: true, t: testBehaviour },
-			'serialization': { r: true, t: testSerialization }
+			'format': { r: false, t: testFormat }
 		};
 
 		// Set defaults where applicable.
@@ -550,13 +531,6 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 			'behaviour': 'tap',
 			'orientation': 'horizontal'
 		}, options);
-
-		// Make sure the test for serialization runs.
-		options['serialization'] = $.extend({
-			 'lower': []
-			,'upper': []
-			,'format': {}
-		}, options['serialization']);
 
 		// Run all options through a testing mechanism to ensure correct
 		// input. It should be noted that options might get modified to
@@ -651,83 +625,76 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 	}
 
 
-// Implement the $.Link library
+// Legend
 
-	// Go over all Links and assign them to a handle.
-	function addLinks ( options, handles ) {
+	function generateSpread ( options, mode, stepped ) {
 
-		var index, links = [];
+		var indexes = {};
 
-		// Copy the links into a new array, instead of modifying
-		// the 'options.ser' list. This allows replacement of the invalid
-		// '.el' Links, while the others are still passed by reference.
-		for ( index = 0; index < options.handles; index++ ) {
+		// Set 'mode' to true for only the actual range points.
+		if ( mode === 'range' ) {
 
-			// Use the Link interface to provide unified
-			// formatting for the .val() method.
-			// The list now contains at least one element.
-			links[index] = [ new $.Link({}, true).implement(null, options.formatting) ];
+			$.each(options.xVal, function(i,v){
+				indexes[options.xPct[i]] = v;
+			});
+		}
+		
+		if ( mode === 'steps' ) {
 
-			// Loop all links in either 'lower' or 'upper'.
-			$.each(options.ser[index], function( ignore, linkInstance ){
+			// We'll build a list of steps.
+			var last = options.xVal.length - 1;
 
-				// If the Link requires creation of a new element,
-				// create this element and return a new Link instance.
-				var targetElement = linkInstance.needsClone();
+			$.each(options.xVal, function ( index, value ) {
 
-				if ( targetElement ) {
+				// Get the current step and the lower + upper positions.
+				var step = options.xNumSteps[ index ],
+					low = options.xVal[index],
+					high = options.xVal[index+1],
+					i;
 
-					// Clone the old element (which isn't in the DOM) and add it to the handle.
-					targetElement = $( targetElement ).clone().appendTo( handles[index].children() );
-
-					// Create a new linkInstance.
-					links[index].push( linkInstance.clone( targetElement ) );
-
-				} else {
-
-					// This linkInstance needs no clone, use it immediately.
-					links[index].push( linkInstance );
+				// Low can be 0.
+				if ( low === false || !high ) {
+					return;
 				}
+
+				if ( !step && !index ) {
+					indexes['0'] = low;
+					return;
+				}
+
+				// Find all steps in the subrange.
+				for ( i = low; i < high; i += step ) {
+					indexes[toStepping(options, i).toFixed(5)] = i;
+				}
+			});
+
+			// Add the 'max' value to the end of the list.
+			indexes['100'] = options.xVal[ last ];
+		}
+		
+		// Provide an array based on the number of points to be displayed.
+		if ( typeof mode === 'number' ) {
+		
+			var spread = ( 100 / (mode-1) ), v, i = 0;
+			
+			mode = [];
+			
+			while ((v=i++*spread) <= 100 ) {
+				mode.push(v);
+			}
+		}
+		
+		// Provide the stepped value for all points in an array.
+		if ( $.isArray(mode) ) {
+
+			$.each(mode, function(ignore, value){
+				indexes[value] = fromStepping(options, stepped ? getStep(options, value) : value);
 			});
 		}
 
-		return links;
-	}
+		return indexes;
+	};
 
-	// Create a new function which calls .val on input change.
-	function createChangeHandler ( index ) {
-
-		// Returns reordered array.
-		function reIndex ( a, b, c ){
-			return [c?a:b, c?b:a];
-		}
-
-		return function ( e ){
-
-			console.log(this);
-
-			this.target.val(
-				// Determine which array position to 'null' based on 'index'.
-				reIndex( null, $( e.target ).val(), index ), {
-					'link': this,
-					'set': true
-				}
-			);
-		}
-	}
-
-	// Get value from a Link
-	function aquireValue ( value, linkInstance, update ) {
-
-		var to = linkInstance.fromFormat( value );
-
-		// If it the handle cannot be set, correct the linkInstance.
-		if ( to === false ) {
-			linkInstance.resetValue( update );
-		}
-
-		return to;
-	}
 
 
 // Slider scope
@@ -740,16 +707,23 @@ function closure ( target, options, originalOptions ){
 	var $Target = $(target),
 		$Locations = [-1, -1],
 		$Base,
-		$Serialization,
-		$Handles;
+		$Handles,
+		$Values = [],
+	// libLink
+		triggerPos = ['lower', 'upper'];
+
+	// Invert the libLink connection for rtl sliders.
+	if ( options.dir ) {
+		triggerPos.reverse();
+	}
+
+
+// Helpers
 
 	// Shorthand for base dimensions.
 	function baseSize ( ) {
 		return $Base[['width', 'height'][options.ort]]();
 	}
-
-
-// Helpers
 
 	// External event handling
 	function fireEvents ( events ) {
@@ -769,13 +743,28 @@ function closure ( target, options, originalOptions ){
 		return options.xVal.length === 2 && options.xVal[0] === options.xVal[1];
 	}
 
+	// Returns the input array, respecting the slider direction configuration.
+	function inSliderOrder ( values ) {
+
+		// If only one handle is used, return a single value.
+		if ( values.length === 1 ){
+			return values[0];
+		}
+
+		if ( options.dir ) {
+			return values.reverse();
+		}
+
+		return values;
+	}
+
 
 // Handle placement
 
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to ) {
 
-		var n = handle[0] !== $Handles[0][0] ? 1 : 0,
+		var trigger = handle[0] !== $Handles[0][0] ? 1 : 0,
 			lower = $Locations[0] + options.margin,
 			upper = $Locations[1] - options.margin;
 
@@ -789,7 +778,7 @@ function closure ( target, options, originalOptions ){
 			// For sliders with multiple handles,
 			// limit movement to the other handle.
 			if ( $Handles.length > 1 ) {
-				to = n ? Math.max( to, lower ) : Math.min( to, upper );
+				to = trigger ? Math.max( to, lower ) : Math.min( to, upper );
 			}
 
 			// Handle the step option.
@@ -802,7 +791,7 @@ function closure ( target, options, originalOptions ){
 			to = limit(parseFloat(to.toFixed(7)));
 
 			// Return false if handle can't move.
-			if ( to === $Locations[n] ) {
+			if ( to === $Locations[trigger] ) {
 				return false;
 			}
 		}
@@ -816,19 +805,17 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Update locations.
-		$Locations[n] = to;
+		$Locations[trigger] = to;
 
 		// Invert the value if this is a right-to-left slider.
 		if ( options.dir ) {
 			to = 100 - to;
 		}
 
-		// Write values to serialization Links.
-		// Convert the value to the correct relative representation.
 		// Convert the value to the slider stepping/range.
-		$($Serialization[n]).each(function(){
-			this.setValue( fromStepping( options, to ), true, handle.children(), $Target );
-		});
+		$Values[trigger] = fromStepping( options, to );
+
+		LinkUpdate(triggerPos[trigger]);
 
 		return true;
 	}
@@ -869,6 +856,52 @@ function closure ( target, options, originalOptions ){
 		setHandle( handle, to );
 
 		fireEvents(['slide', 'set', 'change']);
+	}
+
+	// Loop values from value method and apply them.
+	function setValues ( count, values ) {
+
+		var i, trigger, to;
+
+		// If there are multiple handles to be set run the setting
+		// mechanism twice for the first handle, to make sure it
+		// can be bounced of the second one properly.
+		for ( i = 0; i < count; i++ ) {
+
+			trigger = i%2;
+
+			// Get the current argument from the array.
+			to = values[trigger];
+
+			// Setting with null indicates an 'ignore'.
+			if ( to === null ) {
+				continue;
+			}
+
+			// If a formatted number was passed, attemt to decode it.
+			if ( typeof to === 'number' ) {
+				to = String(to);
+			}
+
+			to = options.format.from( to );
+
+			// Request an update for all links if the value was invalid.
+			if ( to === false || isNaN(to) ) {
+				LinkUpdate(triggerPos[trigger]);
+				continue;
+			}
+
+			// Calculate the new handle position
+			to = toStepping( options, to );
+
+			// Invert the value if this is a right-to-left slider.
+			if ( options.dir ) {
+				to = 100 - to;
+			}
+
+			// Set the handle.
+			setHandle( $Handles[trigger], to );
+		}
 	}
 
 
@@ -1091,24 +1124,6 @@ function closure ( target, options, originalOptions ){
 	}
 
 
-// Helpers
-
-
-	// Returns the input array, respecting the slider direction configuration.
-	function inSliderOrder ( values ) {
-
-		// If only one handle is used, return a single value.
-		if ( values.length === 1 ){
-			return values[0];
-		}
-
-		if ( options.dir ) {
-			return values.reverse();
-		}
-
-		return values;
-	}
-
 // Initialize slider
 
 	// Throw an error if the slider was already initialized.
@@ -1120,7 +1135,6 @@ function closure ( target, options, originalOptions ){
 	// Add handles and links.
 	$Base = addSlider( options, $Target );
 	$Handles = addHandles( options, $Base );
-	$Serialization = addLinks( options, $Handles );
 
 	// Set the connect classes.
 	addConnection ( options.connect, $Target, $Handles );
@@ -1129,14 +1143,81 @@ function closure ( target, options, originalOptions ){
 	events( options.events );
 
 
+// libLink integration
+
+	// Create a new function which calls .val on input change.
+	function createChangeHandler ( trigger ) {
+		return function ( e, value ){
+			// Determine which array position to 'null' based on 'trigger'.
+			$Target.val( [ trigger ? null : value, trigger ? value : null ], true );
+		}
+	}
+
+	// Called by libLink when it wants a set of links updated.
+	function LinkUpdate ( flag ) {
+		// The API might not have been set yet.
+
+		var trigger = $.inArray(flag, triggerPos);
+
+		try {
+			$Target[0].linkAPI[flag].change(
+				$Values[trigger],
+				$Handles[trigger].children(),
+				$Target
+			);
+		} catch ( ignore ) { }
+	}
+
+	// Called by libLink to append an element to the slider.
+	function LinkConfirm ( flag, element ) {
+
+		// Find the trigger for the passed flag.
+		var trigger = $.inArray(flag, triggerPos);
+
+		// If set, append the element to the handle it belongs to.
+		if ( element ) {
+			element.appendTo( $Handles[trigger].children() );
+		}
+
+		// The public API is reversed for rtl sliders, so the changeHandler
+		// should not be aware of the inverted trigger positions.
+		if ( options.dir ) {
+			trigger = trigger === 1 ? 0 : 1;
+		}
+
+		return createChangeHandler( trigger );
+	}
+
+	/** @expose */
+	target.LinkUpdate = LinkUpdate;
+	/** @expose */
+	target.LinkConfirm = LinkConfirm;
+	/** @expose */
+	target.LinkDefaultFlag = 'lower';
+	/** @expose */
+	target.LinkDefaultFormatter = options.format;
+
+
+
+	target.spread1 = generateSpread(options, 'range');
+	target.spread2 = generateSpread(options, 'steps');
+	target.spread3 = generateSpread(options, [0,25,50,75,100]);
+	target.spread4 = generateSpread(options, [0,25,50,75,100], true);
+	target.spread5 = generateSpread(options, 8);
+	target.spread6 = generateSpread(options, 8, true);
+	// todo, add support for value input [ 200, 1000, 4000, 6000 ] and return the percentages.
+
+
+
 // Methods
+
 
 	// Set the slider value.
 	/** @expose */
 	target.vSet = function ( ) {
 
 		var args = Array.prototype.slice.call( arguments ),
-			i, count, to, values = asArray( args[0] );
+			count, values = asArray( args[0] );
 
 		// Support the 'true' option.
 		if ( args[1] === true ) {
@@ -1158,38 +1239,12 @@ function closure ( target, options, originalOptions ){
 
 		// Determine how often to set the handles.
 		count = $Handles.length > 1 ? 3 : 1;
+
 		if ( values.length === 1 ) {
 			count = 1;
 		}
 
-		// If there are multiple handles to be set run the setting
-		// mechanism twice for the first handle, to make sure it
-		// can be bounced of the second one properly.
-		for ( i = 0; i < count; i++ ) {
-
-			to = aquireValue(
-				// The passed-in value.
-				values[i%2],
-				// The passed linkInstance, or default to the first one.
-				args[1]['link'] || $Serialization[i%2][0],
-				// Whether the link updates for the new value.
-				args[1]['update']
-			);
-
-			if ( to !== false ) {
-
-				// Calculate the new handle position
-				to = toStepping( options, to );
-
-				// Invert the value if this is a right-to-left slider.
-				if ( options.dir ) {
-					to = 100 - to;
-				}
-
-				// Set the handle.
-				setHandle( $Handles[i%2], to );
-			}
-		}
+		setValues ( count, values );
 
 		// Optionally fire the 'set' event.
 		if ( args[1]['set'] === true ) {
@@ -1207,7 +1262,7 @@ function closure ( target, options, originalOptions ){
 
 		// Get the value from all handles.
 		for ( i = 0; i < options.handles; i++ ){
-			retour[i] = $Serialization[i][0].toFormat();
+			retour[i] = options.format.to( $Values[i] );
 		}
 
 		return inSliderOrder( retour );
@@ -1217,17 +1272,6 @@ function closure ( target, options, originalOptions ){
 	/** @expose */
 	target.destroy = function ( ) {
 
-		// Loop all linked serialization objects and unbind all
-		// events in the noUiSlider namespace.
-		$.each($Serialization, function(){
-			$.each(this, function(){
-				// Won't remove 'change' when bound implicitly.
-				if ( this.target ) {
-					this.target.off( namespace );
-				}
-			});
-		});
-
 		// Unbind events on the slider, remove all classes and child elements.
 		$(this).off(namespace)
 			.removeClass(Classes.join(' '))
@@ -1235,6 +1279,18 @@ function closure ( target, options, originalOptions ){
 
 		// Return the original options from the closure.
 		return originalOptions;
+	};
+
+	// Place elements back on the slider.
+	/** @expose */
+	target.reappend = function ( ) {
+
+		// The API keeps a list of elements: we can re-append them on rebuild.
+		$.each(this.linkAPI, function( trigger, elements ){
+			$.each(elements, function(i, element) {
+				element.appendTo( $Handles[trigger].children() );
+			});
+		});
 	};
 
 	// Get the current step size for the slider.
@@ -1249,25 +1305,6 @@ function closure ( target, options, originalOptions ){
 
 		// Return values in the proper order.
 		return inSliderOrder( retour );
-	};
-
-	// Return clones of some private variables.
-	/** @expose */
-	target.api = function ( ) {
-		return {
-			'slider': this,
-			'range': {
-				'positions': options.xPct.slice(),
-				'values': options.xVal.slice()
-			},
-			'steps': {
-				'positions': options.xSteps.slice(),
-				'values': options.xNumSteps.slice()
-			},
-			'toStepping': function ( value ) {
-				return toStepping( options, value );
-			}
-		}
 	};
 
 	// Use the public value method to set the start values.
@@ -1310,6 +1347,9 @@ function closure ( target, options, originalOptions ){
 			// Run the standard initializer.
 			$(this).noUiSlider( newOptions );
 
+			// Place Link elements back.
+			this.reappend();
+
 			// If the start option hasn't changed,
 			// reset the previous values.
 			if ( originalOptions.start === newOptions.start ) {
@@ -1348,14 +1388,10 @@ function closure ( target, options, originalOptions ){
 		});
 	};
 
-// Remap the serialization constructor for legacy support.
-	/** @expose */
-	$.noUiSlider = { 'Link': $.Link };
-
 // Extend jQuery/Zepto with the noUiSlider method.
 	/** @expose */
 	$.fn.noUiSlider = function ( options, rebuildFlag ) {
-		return options === 'api' ? this[0].api() : ( rebuildFlag ? rebuild : initialize ).call(this, options);
+		return ( rebuildFlag ? rebuild : initialize ).call(this, options);
 	};
 
 }( window['jQuery'] || window['Zepto'] ));

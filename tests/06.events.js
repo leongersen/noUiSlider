@@ -14,12 +14,10 @@
 				'min': [ 50 ],
 				'max': [ 90 ]
 			},
-			serialization: {
-				format: {
-					decimals: 0,
-					postfix: ',-'
-				}
-			}
+			format: wNumb({
+				decimals: 0,
+				postfix: ',-'
+			})
 		});
 
 		var w = slider.width();

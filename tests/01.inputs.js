@@ -10,23 +10,19 @@
 		');
 
 		Q.find(".slider").noUiSlider({
-			  range: {
+			start: [ 20, 80 ],
+			range: {
 				'min': [   0 ],
 				'max': [ 100 ]
 			}
-			,start: [ 20, 80 ]
-			,serialization: {
-				 lower: [
-					new Link({
-						target: 'lower'
-					})
-				]
-				,upper: [
-					new Link({
-						target: 'upper'
-					})
-				]
-			}
+		});
+
+		$('.slider').Link('lower', {
+			target: 'lower'
+		});
+
+		$('.slider').Link('upper', {
+			target: 'upper'
 		});
 
 		$("#slidera").val([50, 61]);

@@ -10,7 +10,10 @@
 		slider.noUiSlider({
 			range: { min: 3, max: 106 },
 			start: [ 20, 50 ],
-			step: 10
+			step: 10,
+			format: wNumb({
+				decimals: 2
+			})
 		});
 
 		deepEqual( slider.val(), ['23.00', '53.00'] );
