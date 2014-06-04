@@ -126,6 +126,9 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return ((value * ( range[1] - range[0] )) / 100) + range[0];
 	}
 
+	
+// Range conversion
+	
 	// (percentage) Input a value, find where, on a scale of 0-100, it applies.
 	function toStepping ( options, value ) {
 
@@ -631,15 +634,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 		var indexes = {};
 
-		// Set 'mode' to true for only the actual range points.
-		if ( mode === 'range' ) {
-
-			$.each(options.xVal, function(i,v){
-				indexes[options.xPct[i]] = v;
-			});
-		}
-		
-		if ( mode === 'steps' ) {
+		if ( mode === 'range' || mode === 'steps' ) {
 
 			// We'll build a list of steps.
 			var last = options.xVal.length - 1;
@@ -657,19 +652,38 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 					return;
 				}
 
-				if ( !step && !index ) {
-					indexes['0'] = low;
-					return;
+				// Generate a list of points between the range-points.
+				var increment = step ? (step / 10) : ((high - low) / 20);
+				
+				// These sub-points are marked 'false' to indicate
+				// the values shouldn't be displayed.
+				for ( i = low; i < high; i += increment ) {
+					indexes[toStepping(options, i).toFixed(5)] = [i, false];
 				}
+				
+				// Set 'mode' to 'range' for only the actual range points.
+				if ( mode === 'range' ) {
+					indexes[options.xPct[index].toFixed(5)] = [value, true];
+				}
+				
+				// ... or to 'steps' to generate points for all steps.
+				if ( mode === 'steps' ) {
+				
+					if ( !step && !index ) {
+						indexes[0] = [low, true];
+						return;
+					}
 
-				// Find all steps in the subrange.
-				for ( i = low; i < high; i += step ) {
-					indexes[toStepping(options, i).toFixed(5)] = i;
+					// Find all steps in the subrange.
+					for ( i = low; i < high; i += step ) {
+						indexes[toStepping(options, i).toFixed(5)] = [i, true];
+					}
 				}
+				
 			});
 
 			// Add the 'max' value to the end of the list.
-			indexes['100'] = options.xVal[ last ];
+			indexes[100] = [options.xVal[ last ], true];
 		}
 		
 		// Provide an array based on the number of points to be displayed.
@@ -688,7 +702,11 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		if ( $.isArray(mode) ) {
 
 			$.each(mode, function(ignore, value){
-				indexes[value] = fromStepping(options, stepped ? getStep(options, value) : value);
+				
+				var step = getStep(options, value);
+			
+				// TODO indexes[ step ] ??
+				indexes[ stepped ? step : value ] = fromStepping(options, stepped ? step : value);
 			});
 		}
 

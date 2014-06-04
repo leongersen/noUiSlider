@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<head>
+	<title>Testing</title>
+
+	<style>
+		body {
+			padding: 80px;
+		}
+		#qunit {
+			width: 400px;
+			margin: 0 auto;
+		}
+		.noUi-target {
+		}
+		.noUi-vertical {
+			height: 150px;
+		}
+
+		.legend {
+			position: relative;
+			height: 50px;
+			font: 400 12px Arial;
+			color: #999;
+			padding: 10px 0;
+		}
+		.item {
+			width: 40px;
+			position: absolute;
+			margin-left: -20px;
+			text-align: center;
+			padding-top: 20px;
+		}
+		.item-sub {
+			color: #ccc;
+			padding-top: 10px;
+			font-size: 10px;
+		}
+
+		.point {
+			width: 2px;
+			position: absolute;
+			margin-left: -1px;
+			height: 5px;
+			background: #CCC;
+		}
+		.point-sub {
+			height: 10px;
+			background: #AAA;
+		}
+		.point-large {
+			height: 15px;
+			background: #AAA;
+		}
+
+	</style>
+
+	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="../jquery.nouislider.js"></script>
+	<link href="../jquery.nouislider.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+	<div id="slider"></div>
+	<div class="legend" id="legend1"></div>
+	<div class="legend" id="legend2"></div>
+	<div class="legend" id="legend3"></div>
+	<div class="legend" id="legend4"></div>
+	<div class="legend" id="legend5"></div>
+	<div class="legend" id="legend6"></div>
+
+	<script>
+
+		var slider = $("#slider").noUiSlider({
+
+			range: {
+				'min': [     0 ],
+				'10%': [   500,  500 ],
+				'50%': [  4000, 1000 ],
+				'max': [ 10000 ]
+			},
+
+			start: 0
+
+		}).on('slide', function(){
+			console.log(this.getStep());
+			console.log(this.vGet());
+		});
+
+		var legend1 = $("#legend1"),
+			legend2 = $("#legend2"),
+			legend3 = $("#legend3"),
+			legend4 = $("#legend4"),
+			legend5 = $("#legend5"),
+			legend6 = $("#legend6");
+
+		addMarking(slider[0].spread1, legend1, {
+			 500: '-large'
+		});
+		addMarking(slider[0].spread2, legend2, {
+			 500: '-sub',
+			1000: '-large'
+		});
+
+		function addMarking ( spread, element, every ) {
+
+			var keys = $.map(every, function(ignore, index) { return index; }).sort(function(a,b){
+				return a - b;
+			});
+			
+			function addSpread ( index, value ){
+			
+				var classes = '';
+
+				if ( value[1] ) {
+					for ( var j = 0; j < keys.length; j++ ) {
+						if ( !( value[0] % keys[j] ) ){
+							classes = every[keys[j]];
+						}
+					}
+				}
+
+				element.append('<div class="point ' + (classes ? ('point'+classes) : '') + '" style="left: ' + index + '%"></div>');
+
+				if ( value[1] ) {
+					element.append('<div class="item ' + (classes ? ('item'+classes) : '') + '" style="left: ' + index + '%">' + value[0] + '</div>');
+				}
+			}
+			
+			$.each(spread, addSpread);
+		};
+
+		function addPoints ( element, every ) {
+/*
+
+			console.log(keys);
+
+			for ( var i = 0; i < 101; i+=1 ) {
+				var classes = '';
+				if ( classes ) {
+					element.append('<div class="'+classes+'" style="left:'+i+'%"></div>');
+				}
+			}*/
+		}
+
+		addPoints(legend4, {
+			10: 'point point-large',
+			1: 'point point-single',
+			5: 'point point-sub'
+		});
+
+
+		$.each( slider[0].spread3, function ( index, value ) {
+			legend3.append('<div class="item" style="left: ' + index + '%">' + value + '</div>');
+		});
+		$.each( slider[0].spread4, function ( index, value ) {
+			legend4.append('<div class="item" style="left: ' + index + '%">' + value + '</div>');
+		});
+		$.each( slider[0].spread5, function ( index, value ) {
+			legend5.append('<div class="item" style="left: ' + index + '%">' + value + '</div>');
+		});
+		$.each( slider[0].spread6, function ( index, value ) {
+			legend6.append('<div class="item" style="left: ' + index + '%">' + value + '</div>');
+		});
+
+
+
+	</script>
+</body>
