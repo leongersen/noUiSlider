@@ -132,26 +132,6 @@
 			$.each(spread, addSpread);
 		};
 
-		function addPoints ( element, every ) {
-/*
-
-			console.log(keys);
-
-			for ( var i = 0; i < 101; i+=1 ) {
-				var classes = '';
-				if ( classes ) {
-					element.append('<div class="'+classes+'" style="left:'+i+'%"></div>');
-				}
-			}*/
-		}
-
-		addPoints(legend4, {
-			10: 'point point-large',
-			1: 'point point-single',
-			5: 'point point-sub'
-		});
-
-
 		$.each( slider[0].spread3, function ( index, value ) {
 			legend3.append('<div class="item" style="left: ' + index + '%">' + value + '</div>');
 		});
