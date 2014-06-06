@@ -63,6 +63,9 @@
 
 <body>
 
+	<div id="slider0"></div>
+	<div class="legend" id="legend0"></div>
+
 	<div id="slider"></div>
 	<div class="legend" id="legend1"></div>
 	<div class="legend" id="legend2"></div>
@@ -70,6 +73,8 @@
 	<div class="legend" id="legend4"></div>
 	<div class="legend" id="legend5"></div>
 	<div class="legend" id="legend6"></div>
+	<div class="legend" id="legend7"></div>
+	<div class="legend" id="legend8"></div>
 
 	<script>
 
@@ -89,63 +94,49 @@
 			console.log(this.vGet());
 		});
 
-		var legend1 = $("#legend1"),
-			legend2 = $("#legend2"),
-			legend3 = $("#legend3"),
-			legend4 = $("#legend4"),
-			legend5 = $("#legend5"),
-			legend6 = $("#legend6");
+		function addMarking ( spread, element, filterFunc ) {
 
-		addMarking(slider[0].spread1, legend1, {
-			 500: '-large'
-		});
-		addMarking(slider[0].spread2, legend2, {
-			 500: '-sub',
-			1000: '-large'
-		});
+			function getClass( type, value ){
+				return [ '-normal', '-large', '-sub' ][(type&&filterFunc) ? filterFunc(value, type) : type];
+			}
 
-		function addMarking ( spread, element, every ) {
-
-			var keys = $.map(every, function(ignore, index) { return index; }).sort(function(a,b){
-				return a - b;
-			});
-			
 			function addSpread ( index, value ){
-			
-				var classes = '';
+
+				element.append('<div class="point point' + getClass(value[1], value[0]) + '" style="left: ' + index + '%"></div>'); // '+value[1]+'
 
 				if ( value[1] ) {
-					for ( var j = 0; j < keys.length; j++ ) {
-						if ( !( value[0] % keys[j] ) ){
-							classes = every[keys[j]];
-						}
-					}
-				}
-
-				element.append('<div class="point ' + (classes ? ('point'+classes) : '') + '" style="left: ' + index + '%"></div>');
-
-				if ( value[1] ) {
-					element.append('<div class="item ' + (classes ? ('item'+classes) : '') + '" style="left: ' + index + '%">' + value[0] + '</div>');
+					element.append('<div class="item item' + getClass(value[1], value[0]) + '" style="left: ' + index + '%">' + Math.round(value[0]) + '</div>');
 				}
 			}
-			
+
 			$.each(spread, addSpread);
 		};
 
-		$.each( slider[0].spread3, function ( index, value ) {
-			legend3.append('<div class="item" style="left: ' + index + '%">' + value + '</div>');
-		});
-		$.each( slider[0].spread4, function ( index, value ) {
-			legend4.append('<div class="item" style="left: ' + index + '%">' + value + '</div>');
-		});
-		$.each( slider[0].spread5, function ( index, value ) {
-			legend5.append('<div class="item" style="left: ' + index + '%">' + value + '</div>');
-		});
-		$.each( slider[0].spread6, function ( index, value ) {
-			legend6.append('<div class="item" style="left: ' + index + '%">' + value + '</div>');
-		});
+		function filter500( value, type ){
+			return value%1000 ? 2 : 1;
+		}
 
-
-
+//		addMarking(slider.noUiSlider('getSpread', 'range'), $("#legend1"));
+//		addMarking(slider.noUiSlider('getSpread', 'steps'), $("#legend2"), filter500);
+//		addMarking(slider.noUiSlider('getSpread', 'positions', [0,25,50,75,100]), $("#legend3"));
+//		addMarking(slider.noUiSlider('getSpread', 'positions', [0,25,50,75,100], true), $("#legend4"));
+//		addMarking(slider.noUiSlider('getSpread', 'count', 8), $("#legend5"));
+//		addMarking(slider.noUiSlider('getSpread', 'count', 8, true), $("#legend6"));
+//		addMarking(slider.noUiSlider('getSpread', 'values', [50, 552, 750, 940, 5000, 6080, 9000]), $("#legend7"));
+//		addMarking(slider.noUiSlider('getSpread', 'values', [50, 552, 750, 940, 5000, 6080, 9000], true), $("#legend8"));
+	
+		var slider0 = $("#slider0").noUiSlider({
+			range: {
+				'min': 20,
+				'max': 100
+			},
+			step: 20,
+			start: 0
+		});
+		
+		addMarking(slider0.noUiSlider('getSpread', 'steps'), $("#legend0"), function(v,t){
+			return t===2?(v===60?1:2):t;
+		});
+		
 	</script>
 </body>

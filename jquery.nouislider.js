@@ -82,6 +82,13 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return (100 / (pb - pa));
 	}
 
+	// Removes duplicates from an array.
+	function unique(array) {
+		return $.grep(array, function(el, index) {
+			return index == $.inArray(el, array);
+		});
+	}
+
 
 // Type validation
 
@@ -630,89 +637,142 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 // Legend
 
-	function generateSpread ( options, mode, stepped ) {
+	function generateSpread ( options, mode, values, stepped ) {
 
-		var indexes = {};
+		var indexes = {}, group, density = 4;
 
-		if ( mode === 'range' || mode === 'steps' ) {
+		switch ( mode ) {
+			case 'range':
+			case 'steps':
 
-			// We'll build a list of steps.
-			var last = options.xVal.length - 1,
-				prevPct = 0;
+				// Use the range.
+				group = options.xVal;
+				break;
 
-			$.each(options.xVal, function ( index, value ) {
+			case 'count':
+				// Divide 0 - 100 in 'count' parts.
+				var spread = ( 100 / (values-1) ), v, i = 0;
+				values = [];
 
-				// Get the current step and the lower + upper positions.
-				var step = options.xNumSteps[ index ],
-					low = options.xVal[index],
-					high = options.xVal[index+1],
-					i;
-
-				// Low can be 0.
-				if ( low === false || !high ) {
-					return;
+				// List these parts and have them handled as 'positions'.
+				while ((v=i++*spread) <= 100 ) {
+					values.push(v);
 				}
 
-				// Set 'mode' to 'range' for only the actual range points.
-				if ( mode === 'range' ) {
-					indexes[options.xPct[index].toFixed(5)] = [value, true];
+			case 'positions':
+
+				// Map all percentages to on-range values.
+				group = $.map(values, function( value ){
+					return fromStepping( options, stepped ? getStep(options, value) : value );
+				});
+
+				break;
+
+			case 'values':
+
+				// If the value must be stepped, it needs to be converted to a percentage first.
+				if ( stepped ) {
+
+					group = $.map(values, function( value ){
+
+						// Convert to percentage, apply step, return to value.
+						return fromStepping(options, getStep(options, toStepping(options, value)));
+					});
+
+				} else {
+
+					// Otherwise, we can simply use the values.
+					group = values;
 				}
 
-				// ... or to 'steps' to generate points for all steps.
-				if ( mode === 'steps' ) {
-
-					if ( !step && !index ) {
-						indexes[0] = [low, true];
-						return;
-					}
-
-					// Find all steps in the subrange.
-					for ( i = low; i <= high; i += step ) {
-
-						var newPct = toStepping(options, i),
-							pctDifference = newPct - prevPct,
-							pctDifferenceRound = Math.round(pctDifference),
-							pctRatio = pctDifference/pctDifferenceRound;
-
-						for ( var q = 1; q < pctDifferenceRound; q += 1 ) {
-							var pos = prevPct + (pctRatio*q);
-							indexes[pos.toFixed(5)] = [pos, false];
-						}
-
-						indexes[newPct.toFixed(5)] = [i, true];
-						prevPct = newPct;
-					}
-				}
-
-			});
-
-			// Add the 'max' value to the end of the list.
-			indexes[100] = [options.xVal[ last ], true];
+				break;
 		}
 
-		// Provide an array based on the number of points to be displayed.
-		if ( typeof mode === 'number' ) {
+		// We'll build a list of steps.
+		var last = group.length - 1, firstInRange = options.xVal[0],
+			lastInRange = options.xVal[options.xVal.length-1],
+			ignoreFirst = 1, ignoreLast = 1, prevPct = 0;
 
-			var spread = ( 100 / (mode-1) ), v, i = 0;
+		// Create a copy of the group, sort it and filter away all duplicates.
+		group = unique(group.slice().sort(function(a, b){ return a - b; }));
 
-			mode = [];
+		// Make sure the range starts with the first element.
+		if ( group[0] !== firstInRange ) {
+			group.unshift(firstInRange);
+			ignoreFirst = 0;
+		}
 
-			while ((v=i++*spread) <= 100 ) {
-				mode.push(v);
+		// Likewise for the last one.
+		if ( group[last] !== lastInRange ) {
+			group.push(lastInRange);
+			ignoreLast = 0;
+		}
+
+		$.each(group, function ( index, value ) {
+
+			// Get the current step and the lower + upper positions.
+			var step, i,
+				low = group[index],
+				high = group[index+1];
+
+			// When using 'steps' mode, use the provided steps.
+			// Otherwise, we'll step on to the next subrange.
+			if ( mode === 'steps' ) {
+				step = options.xNumSteps[ index ]
 			}
-		}
 
-		// Provide the stepped value for all points in an array.
-		if ( $.isArray(mode) ) {
+			// Default to a 'full' step.
+			if ( !step ) {
+				step = high-low;
+			}
 
-			$.each(mode, function(ignore, value){
+			// Low can be 0, so test for false. If high is undefined,
+			// we are at the last subrange. Index 0 is already handled.
+			if ( low === false || high === undefined ) {
+				return;
+			}
 
-				var step = getStep(options, value);
+			// Find all steps in the subrange.
+			for ( i = low; i <= high; i += step ) {
 
-				// TODO indexes[ step ] ??
-				indexes[ stepped ? step : value ] = fromStepping(options, stepped ? step : value);
-			});
-		}
+				// Get the percentage value for the current step,
+				// calculate the size for the subrange.
+				var newPct = toStepping(options, i),
+					pctDifference = newPct - prevPct,
+					pctDifferenceRound = Math.round(pctDifference),
+					pctRatio = pctDifference/pctDifferenceRound || 1,
+
+					// Correct the percentage offset by the number of points
+					// per subrange. density = 1 will result in 100 points on the
+					// full range, 2 for 50, 4 for 25, etc.
+					firstStart = prevPct;// + (density / 2);
+
+				// Divide all points evenly, adding the correct number to this subrange.
+				for ( var q = density; q < pctDifferenceRound; q += density ) {
+
+					// The ratio between the rounded value and the actual size might be ~1% off.
+					var pos = firstStart + (pctRatio*q);
+					console.log(pos);
+					indexes[pos.toFixed(5)] = [pos, 0];
+				}
+
+				var type = ($.inArray(i, group) > -1) ? 1 : ( mode === 'steps' ? 2 : 0 );
+
+				// Enforce the 'ignoreFirst' option by overwriting the type for 0.
+				if ( !index && !ignoreFirst && !low ) {
+					type = 0;
+				}
+
+				// Mark the 'type' of this point. 0 = plain, 1 = real value, 2 = step value.
+				indexes[newPct.toFixed(5)] = [i, type];
+
+				// Update the percentage count.
+				prevPct = newPct;
+			}
+		});
+
+		// Add the 'max' value to the end of the list.
+		indexes[100] = [group[ last ], ignoreLast];
 
 		return indexes;
 	};
@@ -1220,19 +1280,7 @@ function closure ( target, options, originalOptions ){
 	target.LinkDefaultFormatter = options.format;
 
 
-
-	target.spread1 = generateSpread(options, 'range');
-	target.spread2 = generateSpread(options, 'steps');
-	target.spread3 = generateSpread(options, [0,25,50,75,100]);
-	target.spread4 = generateSpread(options, [0,25,50,75,100], true);
-	target.spread5 = generateSpread(options, 8);
-	target.spread6 = generateSpread(options, 8, true);
-	// todo, add support for value input [ 200, 1000, 4000, 6000 ] and return the percentages.
-
-
-
 // Methods
-
 
 	// Set the slider value.
 	/** @expose */
@@ -1329,6 +1377,12 @@ function closure ( target, options, originalOptions ){
 		return inSliderOrder( retour );
 	};
 
+	// Create a legend for a slider.
+	/** @expose */
+	target.getSpread = function ( mode, values, stepped ) {
+		return generateSpread( options, mode, values, stepped );
+	};
+
 	// Use the public value method to set the start values.
 	$Target.val( options.start );
 }
@@ -1413,6 +1467,9 @@ function closure ( target, options, originalOptions ){
 // Extend jQuery/Zepto with the noUiSlider method.
 	/** @expose */
 	$.fn.noUiSlider = function ( options, rebuildFlag ) {
+		if ( options === 'getSpread' ) {
+			return this[0].getSpread.apply(this[0], Array.prototype.slice.call(arguments, 1));
+		}
 		return ( rebuildFlag ? rebuild : initialize ).call(this, options);
 	};
 
