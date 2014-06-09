@@ -85,7 +85,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 	// Removes duplicates from an array.
 	function unique(array) {
 		return $.grep(array, function(el, index) {
-			return index == $.inArray(el, array);
+			return index === $.inArray(el, array);
 		});
 	}
 
@@ -637,61 +637,61 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 // Legend
 
-	function generateSpread ( options, mode, values, stepped ) {
+	function getGroup ( options, mode, values, stepped ) {
 
-		var indexes = {}, group, density = 4;
-
-		switch ( mode ) {
-			case 'range':
-			case 'steps':
-
-				// Use the range.
-				group = options.xVal;
-				break;
-
-			case 'count':
-				// Divide 0 - 100 in 'count' parts.
-				var spread = ( 100 / (values-1) ), v, i = 0;
-				values = [];
-
-				// List these parts and have them handled as 'positions'.
-				while ((v=i++*spread) <= 100 ) {
-					values.push(v);
-				}
-
-			case 'positions':
-
-				// Map all percentages to on-range values.
-				group = $.map(values, function( value ){
-					return fromStepping( options, stepped ? getStep(options, value) : value );
-				});
-
-				break;
-
-			case 'values':
-
-				// If the value must be stepped, it needs to be converted to a percentage first.
-				if ( stepped ) {
-
-					group = $.map(values, function( value ){
-
-						// Convert to percentage, apply step, return to value.
-						return fromStepping(options, getStep(options, toStepping(options, value)));
-					});
-
-				} else {
-
-					// Otherwise, we can simply use the values.
-					group = values;
-				}
-
-				break;
+		// Use the range.
+		if ( mode === 'range' || mode === 'steps' ) {
+			return options.xVal;
 		}
 
-		// We'll build a list of steps.
-		var last = group.length - 1, firstInRange = options.xVal[0],
+		if ( mode === 'count' ) {
+
+			// Divide 0 - 100 in 'count' parts.
+			var spread = ( 100 / (values-1) ), v, i = 0;
+			values = [];
+
+			// List these parts and have them handled as 'positions'.
+			while ((v=i++*spread) <= 100 ) {
+				values.push(v);
+			}
+
+			mode = 'positions';
+		}
+
+		if ( mode === 'positions' ) {
+
+			// Map all percentages to on-range values.
+			return $.map(values, function( value ){
+				return fromStepping( options, stepped ? getStep(options, value) : value );
+			});
+		}
+
+		if ( mode === 'values' ) {
+
+			// If the value must be stepped, it needs to be converted to a percentage first.
+			if ( stepped ) {
+
+				return $.map(values, function( value ){
+
+					// Convert to percentage, apply step, return to value.
+					return fromStepping(options, getStep(options, toStepping(options, value)));
+				});
+
+			}
+
+			// Otherwise, we can simply use the values.
+			return values;
+		}
+	}
+
+	function generateSpread ( options, density, mode, group ) {
+
+		var indexes = {},
+			firstInRange = options.xVal[0],
 			lastInRange = options.xVal[options.xVal.length-1],
-			ignoreFirst = 1, ignoreLast = 1, prevPct = 0;
+			ignoreFirst = false,
+			ignoreLast = false,
+			prevPct = 0;
 
 		// Create a copy of the group, sort it and filter away all duplicates.
 		group = unique(group.slice().sort(function(a, b){ return a - b; }));
@@ -699,26 +699,28 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		// Make sure the range starts with the first element.
 		if ( group[0] !== firstInRange ) {
 			group.unshift(firstInRange);
-			ignoreFirst = 0;
+			ignoreFirst = true;
 		}
 
 		// Likewise for the last one.
-		if ( group[last] !== lastInRange ) {
+		if ( group[group.length - 1] !== lastInRange ) {
 			group.push(lastInRange);
-			ignoreLast = 0;
+			ignoreLast = true;
 		}
 
 		$.each(group, function ( index, value ) {
 
 			// Get the current step and the lower + upper positions.
-			var step, i,
+			var step, i, q,
 				low = group[index],
-				high = group[index+1];
+				high = group[index+1],
+				newPct, pctDifference, pctPos, type,
+				steps, realSteps, stepsize;
 
 			// When using 'steps' mode, use the provided steps.
 			// Otherwise, we'll step on to the next subrange.
 			if ( mode === 'steps' ) {
-				step = options.xNumSteps[ index ]
+				step = options.xNumSteps[ index ];
 			}
 
 			// Default to a 'full' step.
@@ -737,46 +739,68 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 				// Get the percentage value for the current step,
 				// calculate the size for the subrange.
-				var newPct = toStepping(options, i),
-					pctDifference = newPct - prevPct,
-					pctDifferenceRound = Math.round(pctDifference),
-					pctRatio = pctDifference/pctDifferenceRound || 1,
+				newPct = toStepping(options, i);
+				pctDifference = newPct - prevPct;
 
+				steps = pctDifference / density;
+				realSteps = Math.round(steps);
+
+				// This ratio represents the ammount of percentage-space a point indicates.
+				// For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-devided.
+				// Round the percentage offset to an even number, then divide by two
+				// to spread the offset on both sides of the range.
+				stepsize = pctDifference/realSteps;
+
+				// Divide all points evenly, adding the correct number to this subrange.
+				// Run up to <= so that 100% gets a point, event if ignoreLast is set.
+				for ( q = 1; q <= realSteps; q += 1 ) {
+
+					// The ratio between the rounded value and the actual size might be ~1% off.
 					// Correct the percentage offset by the number of points
 					// per subrange. density = 1 will result in 100 points on the
 					// full range, 2 for 50, 4 for 25, etc.
-					firstStart = prevPct;// + (density / 2);
-
-				// Divide all points evenly, adding the correct number to this subrange.
-				for ( var q = density; q < pctDifferenceRound; q += density ) {
-
-					// The ratio between the rounded value and the actual size might be ~1% off.
-					var pos = firstStart + (pctRatio*q);
-					console.log(pos);
-					indexes[pos.toFixed(5)] = [pos, 0];
+					pctPos = prevPct + ( q * stepsize );
+					indexes[pctPos.toFixed(5)] = ['x', 0]; // todo
 				}
 
-				var type = ($.inArray(i, group) > -1) ? 1 : ( mode === 'steps' ? 2 : 0 );
+				// Determine the point type.
+				type = ($.inArray(i, group) > -1) ? 1 : ( mode === 'steps' ? 2 : 0 );
 
 				// Enforce the 'ignoreFirst' option by overwriting the type for 0.
-				if ( !index && !ignoreFirst && !low ) {
+				if ( !index && ignoreFirst && !low ) {
 					type = 0;
 				}
 
-				// Mark the 'type' of this point. 0 = plain, 1 = real value, 2 = step value.
-				indexes[newPct.toFixed(5)] = [i, type];
+				if ( !(i === high && ignoreLast)) {
+					// Mark the 'type' of this point. 0 = plain, 1 = real value, 2 = step value.
+					indexes[newPct.toFixed(5)] = [i, type];
+				}
 
 				// Update the percentage count.
 				prevPct = newPct;
 			}
 		});
 
-		// Add the 'max' value to the end of the list.
-		indexes[100] = [group[ last ], ignoreLast];
-
 		return indexes;
-	};
+	}
 
+	function addMarking ( spread, element, filterFunc ) {
+
+		function getClass( type, value ){
+			return [ '-normal', '-large', '-sub' ][(type&&filterFunc) ? filterFunc(value, type) : type];
+		}
+
+		function addSpread ( index, value ){
+
+			element.append('<div class="point point' + getClass(value[1], value[0]) + '" style="left: ' + index + '%"></div>');
+
+			if ( value[1] ) {
+				element.append('<div class="item item' + getClass(value[1], value[0]) + '" style="left: ' + index + '%">' + Math.round(value[0]) + '</div>');
+			}
+		}
+
+		$.each(spread, addSpread);
+	}
 
 
 // Slider scope
@@ -839,6 +863,61 @@ function closure ( target, options, originalOptions ){
 
 		return values;
 	}
+
+
+// libLink integration
+
+	// Create a new function which calls .val on input change.
+	function createChangeHandler ( trigger ) {
+		return function ( ignore, value ){
+			// Determine which array position to 'null' based on 'trigger'.
+			$Target.val( [ trigger ? null : value, trigger ? value : null ], true );
+		};
+	}
+
+	// Called by libLink when it wants a set of links updated.
+	function LinkUpdate ( flag ) {
+		// The API might not have been set yet.
+
+		var trigger = $.inArray(flag, triggerPos);
+
+		try {
+			$Target[0].linkAPI[flag].change(
+				$Values[trigger],
+				$Handles[trigger].children(),
+				$Target
+			);
+		} catch ( ignore ) { }
+	}
+
+	// Called by libLink to append an element to the slider.
+	function LinkConfirm ( flag, element ) {
+
+		// Find the trigger for the passed flag.
+		var trigger = $.inArray(flag, triggerPos);
+
+		// If set, append the element to the handle it belongs to.
+		if ( element ) {
+			element.appendTo( $Handles[trigger].children() );
+		}
+
+		// The public API is reversed for rtl sliders, so the changeHandler
+		// should not be aware of the inverted trigger positions.
+		if ( options.dir ) {
+			trigger = trigger === 1 ? 0 : 1;
+		}
+
+		return createChangeHandler( trigger );
+	}
+
+	/** @expose */
+	target.LinkUpdate = LinkUpdate;
+	/** @expose */
+	target.LinkConfirm = LinkConfirm;
+	/** @expose */
+	target.LinkDefaultFlag = 'lower';
+	/** @expose */
+	target.LinkDefaultFormatter = options.format;
 
 
 // Handle placement
@@ -1225,61 +1304,6 @@ function closure ( target, options, originalOptions ){
 	events( options.events );
 
 
-// libLink integration
-
-	// Create a new function which calls .val on input change.
-	function createChangeHandler ( trigger ) {
-		return function ( e, value ){
-			// Determine which array position to 'null' based on 'trigger'.
-			$Target.val( [ trigger ? null : value, trigger ? value : null ], true );
-		}
-	}
-
-	// Called by libLink when it wants a set of links updated.
-	function LinkUpdate ( flag ) {
-		// The API might not have been set yet.
-
-		var trigger = $.inArray(flag, triggerPos);
-
-		try {
-			$Target[0].linkAPI[flag].change(
-				$Values[trigger],
-				$Handles[trigger].children(),
-				$Target
-			);
-		} catch ( ignore ) { }
-	}
-
-	// Called by libLink to append an element to the slider.
-	function LinkConfirm ( flag, element ) {
-
-		// Find the trigger for the passed flag.
-		var trigger = $.inArray(flag, triggerPos);
-
-		// If set, append the element to the handle it belongs to.
-		if ( element ) {
-			element.appendTo( $Handles[trigger].children() );
-		}
-
-		// The public API is reversed for rtl sliders, so the changeHandler
-		// should not be aware of the inverted trigger positions.
-		if ( options.dir ) {
-			trigger = trigger === 1 ? 0 : 1;
-		}
-
-		return createChangeHandler( trigger );
-	}
-
-	/** @expose */
-	target.LinkUpdate = LinkUpdate;
-	/** @expose */
-	target.LinkConfirm = LinkConfirm;
-	/** @expose */
-	target.LinkDefaultFlag = 'lower';
-	/** @expose */
-	target.LinkDefaultFormatter = options.format;
-
-
 // Methods
 
 	// Set the slider value.
@@ -1357,7 +1381,7 @@ function closure ( target, options, originalOptions ){
 
 		// The API keeps a list of elements: we can re-append them on rebuild.
 		$.each(this.linkAPI, function( trigger, elements ){
-			$.each(elements, function(i, element) {
+			$.each(elements, function( ignore, element ) {
 				element.appendTo( $Handles[trigger].children() );
 			});
 		});
@@ -1379,8 +1403,23 @@ function closure ( target, options, originalOptions ){
 
 	// Create a legend for a slider.
 	/** @expose */
-	target.getSpread = function ( mode, values, stepped ) {
-		return generateSpread( options, mode, values, stepped );
+	target.createLegend = function ( grid ) {
+
+	var mode = grid['mode'],
+		element = grid['element'],
+		density = grid['density'] || 1,
+		filter = grid['filter'] || false,
+		values = grid['values'] || false,
+		stepped = grid['stepped'] || false,
+
+		group = getGroup( options, mode, values, stepped ),
+		spread = generateSpread( options, density, mode, group );
+
+		addMarking(
+			spread,
+			element,
+			filter
+		);
 	};
 
 	// Use the public value method to set the start values.
@@ -1467,9 +1506,11 @@ function closure ( target, options, originalOptions ){
 // Extend jQuery/Zepto with the noUiSlider method.
 	/** @expose */
 	$.fn.noUiSlider = function ( options, rebuildFlag ) {
-		if ( options === 'getSpread' ) {
-			return this[0].getSpread.apply(this[0], Array.prototype.slice.call(arguments, 1));
+
+		if ( options === 'legend' ) {
+			return this[0].createLegend.apply(this[0], Array.prototype.slice.call(arguments, 1));
 		}
+
 		return ( rebuildFlag ? rebuild : initialize ).call(this, options);
 	};
 

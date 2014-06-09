@@ -94,49 +94,74 @@
 			console.log(this.vGet());
 		});
 
-		function addMarking ( spread, element, filterFunc ) {
-
-			function getClass( type, value ){
-				return [ '-normal', '-large', '-sub' ][(type&&filterFunc) ? filterFunc(value, type) : type];
-			}
-
-			function addSpread ( index, value ){
-
-				element.append('<div class="point point' + getClass(value[1], value[0]) + '" style="left: ' + index + '%"></div>'); // '+value[1]+'
-
-				if ( value[1] ) {
-					element.append('<div class="item item' + getClass(value[1], value[0]) + '" style="left: ' + index + '%">' + Math.round(value[0]) + '</div>');
-				}
-			}
-
-			$.each(spread, addSpread);
-		};
-
 		function filter500( value, type ){
 			return value%1000 ? 2 : 1;
 		}
 
-//		addMarking(slider.noUiSlider('getSpread', 'range'), $("#legend1"));
-//		addMarking(slider.noUiSlider('getSpread', 'steps'), $("#legend2"), filter500);
-//		addMarking(slider.noUiSlider('getSpread', 'positions', [0,25,50,75,100]), $("#legend3"));
-//		addMarking(slider.noUiSlider('getSpread', 'positions', [0,25,50,75,100], true), $("#legend4"));
-//		addMarking(slider.noUiSlider('getSpread', 'count', 8), $("#legend5"));
-//		addMarking(slider.noUiSlider('getSpread', 'count', 8, true), $("#legend6"));
-//		addMarking(slider.noUiSlider('getSpread', 'values', [50, 552, 750, 940, 5000, 6080, 9000]), $("#legend7"));
-//		addMarking(slider.noUiSlider('getSpread', 'values', [50, 552, 750, 940, 5000, 6080, 9000], true), $("#legend8"));
-	
-		var slider0 = $("#slider0").noUiSlider({
-			range: {
-				'min': 20,
-				'max': 100
-			},
-			step: 20,
-			start: 0
+		slider.noUiSlider('legend', {
+			element: $("#legend1"),
+			mode: 'range',
+			density: 3
 		});
-		
-		addMarking(slider0.noUiSlider('getSpread', 'steps'), $("#legend0"), function(v,t){
-			return t===2?(v===60?1:2):t;
+
+		slider.noUiSlider('legend', {
+			element: $("#legend2"),
+			mode: 'steps',
+			density: 2,
+			filter: filter500
 		});
-		
+
+		slider.noUiSlider('legend', {
+			element: $("#legend3"),
+			mode: 'positions',
+			values: [0,25,50,75,100]
+		});
+
+		slider.noUiSlider('legend', {
+			element: $("#legend4"),
+			mode: 'positions',
+			values: [0,25,50,75,100],
+			stepped: true
+		});
+
+		slider.noUiSlider('legend', {
+			element: $("#legend5"),
+			mode: 'count',
+			values: 8
+		});
+
+		slider.noUiSlider('legend', {
+			element: $("#legend6"),
+			mode: 'count',
+			values: 8,
+			stepped: true
+		});
+
+		slider.noUiSlider('legend', {
+			element: $("#legend7"),
+			mode: 'values',
+			values: [50, 552, 750, 940, 5000, 6080, 9000]
+		});
+
+		slider.noUiSlider('legend', {
+			element: $("#legend8"),
+			mode: 'values',
+			values: [50, 552, 750, 940, 5000, 6080, 9000],
+			stepped: true
+		});
+
+//		var slider0 = $("#slider0").noUiSlider({
+//			range: {
+//				'min': 0,
+//				'max': 100
+//			},
+//			step: 10,
+//			start: 0
+//		});
+//
+//		addMarking(slider0.noUiSlider('getSpread', 'steps'), $("#legend0"), function(v,t){
+//			return t===2?(v===60?1:2):t;
+//		});
+
 	</script>
 </body>
