@@ -47,6 +47,15 @@
 	cursor: inherit !important;
 }
 
+/* Painting and performance;
+ * Browsers can paint handles in their own layer.
+ */
+.noUi-origin,
+.noUi-handle {
+	-webkit-transform: translate3d(0,0,0);
+	transform: translate3d(0,0,0);
+}
+
 /* Slider size and handle placement;
  */
 .noUi-horizontal {

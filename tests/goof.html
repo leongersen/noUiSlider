@@ -4,53 +4,17 @@
 	<title>Testing</title>
 
 	<style>
+
 		body {
 			padding: 80px;
 		}
-		#qunit {
-			width: 400px;
-			margin: 0 auto;
+		#slider0 {
+			height: 300px;
+			display: inline-block;
+			margin-bottom: 50px;
 		}
-		.noUi-target {
-		}
-		.noUi-vertical {
-			height: 150px;
-		}
-
-		.legend {
-			position: relative;
-			height: 50px;
-			font: 400 12px Arial;
-			color: #999;
-			padding: 10px 0;
-		}
-		.item {
-			width: 40px;
-			position: absolute;
-			margin-left: -20px;
-			text-align: center;
-			padding-top: 20px;
-		}
-		.item-sub {
-			color: #ccc;
-			padding-top: 10px;
-			font-size: 10px;
-		}
-
-		.point {
-			width: 2px;
-			position: absolute;
-			margin-left: -1px;
-			height: 5px;
-			background: #CCC;
-		}
-		.point-sub {
-			height: 10px;
-			background: #AAA;
-		}
-		.point-large {
-			height: 15px;
-			background: #AAA;
+		#legend0 {
+			margin-bottom: 50px;
 		}
 
 	</style>
@@ -58,6 +22,7 @@
 	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 	<script src="../jquery.nouislider.js"></script>
 	<link href="../jquery.nouislider.css" rel="stylesheet">
+	<link href="../jquery.nouislider.legend.css" rel="stylesheet">
 
 </head>
 
@@ -86,6 +51,8 @@
 				'50%': [  4000, 1000 ],
 				'max': [ 10000 ]
 			},
+
+			direction: 'rtl',
 
 			start: 0
 
@@ -150,18 +117,25 @@
 			stepped: true
 		});
 
-//		var slider0 = $("#slider0").noUiSlider({
-//			range: {
-//				'min': 0,
-//				'max': 100
-//			},
-//			step: 10,
-//			start: 0
-//		});
-//
-//		addMarking(slider0.noUiSlider('getSpread', 'steps'), $("#legend0"), function(v,t){
-//			return t===2?(v===60?1:2):t;
-//		});
+		var slider0 = $("#slider0").noUiSlider({
+			range: {
+				'min': 0,
+				'max': 100
+			},
+			step: 10,
+			start: 0,
+			direction: 'rtl',
+			orientation: 'vertical'
+		});
+
+		slider0.noUiSlider('legend', {
+			element: $("#legend0"),
+			mode: 'steps',
+			density: 2,
+			filter: function(v,t){
+				return t===2?(v===60?1:2):t;
+			}
+		});
 
 	</script>
 </body>

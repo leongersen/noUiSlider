@@ -56,7 +56,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 /* 13 */ ,''
 /* 14 */ ,'noUi-state-tap'
 /* 15 */ ,'noUi-active'
-/* 16 */ ,'noUi-extended'
+/* 16 */ ,''
 /* 17 */ ,'noUi-stacking'
 	],
 	/** @const */
@@ -469,14 +469,12 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		// Check if the string contains any keywords.
 		// None are required.
 		var tap = entry.indexOf('tap') >= 0,
-			extend = entry.indexOf('extend') >= 0,
 			drag = entry.indexOf('drag') >= 0,
 			fixed = entry.indexOf('fixed') >= 0,
 			snap = entry.indexOf('snap') >= 0;
 
 		parsed.events = {
 			tap: tap || snap,
-			extend: extend,
 			drag: drag,
 			fixed: fixed,
 			snap: snap
@@ -784,21 +782,38 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return indexes;
 	}
 
-	function addMarking ( spread, element, filterFunc ) {
+	function addMarking ( options, spread, element, filterFunc ) {
 
-		function getClass( type, value ){
+		var style = ['horizontal', 'vertical'][options.ort];
+
+		element.addClass('noUi-legend noUi-legend-'+style);
+
+		function getSize( type, value ){
 			return [ '-normal', '-large', '-sub' ][(type&&filterFunc) ? filterFunc(value, type) : type];
 		}
+		function getTags( offset, source, values ) {
+			return 'class="' + source + ' ' +
+				source + '-' + style + ' ' +
+				source + getSize(values[1], values[0]) +
+				'" style="' + options.style + ': ' + offset + '%"';
+		}
+		function addSpread ( offset, values ){
 
-		function addSpread ( index, value ){
+			// Invert the scale for rtl sliders.
+			if ( options.dir ) {
+				offset = 100 - offset;
+			}
 
-			element.append('<div class="point point' + getClass(value[1], value[0]) + '" style="left: ' + index + '%"></div>');
+			// Add a marker for every point
+			element.append('<div '+getTags(offset, 'noUi-marker', values)+'></div>');
 
-			if ( value[1] ) {
-				element.append('<div class="item item' + getClass(value[1], value[0]) + '" style="left: ' + index + '%">' + Math.round(value[0]) + '</div>');
+			// Values are only appended for points marked '1' or '2'.
+			if ( values[1] ) {
+				element.append('<div '+getTags(offset, 'noUi-value', values)+'>' + Math.round(values[0]) + '</div>');
 			}
 		}
 
+		// Append all points.
 		$.each(spread, addSpread);
 	}
 
@@ -1248,21 +1263,15 @@ function closure ( target, options, originalOptions ){
 
 		// Attach the tap event to the slider base.
 		if ( behaviour.tap ) {
+
 			attach ( actions.start, $Base, tap, {
 				handles: $Handles
 			});
-		}
 
-		// Extend tapping behaviour to target
-		if ( behaviour.extend ) {
-
-			$Target.addClass( Classes[16] );
-
-			if ( behaviour.tap ) {
-				attach ( actions.start, $Target, edge, {
-					handles: $Handles
-				});
-			}
+			// Extend tapping behaviour to target
+			attach ( actions.start, $Target, edge, {
+				handles: $Handles
+			});
 		}
 
 		// Make the range dragable.
@@ -1416,6 +1425,7 @@ function closure ( target, options, originalOptions ){
 		spread = generateSpread( options, density, mode, group );
 
 		addMarking(
+			options,
 			spread,
 			element,
 			filter
