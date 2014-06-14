@@ -12,31 +12,30 @@
 			this.html(val);
 		};
 
-		var val1 = 0,
-			val2 = 0,
-			vals = ['-100.00', '-100.00', '-90.00', '-90.00'];
-
 		var slider = $('.slider'),
 			box = $('.box'),
 			item = $('.item'),
 			thing = $('.thing');
 
+		var ltfCount = 0, lmfCount = 0, Expect = ['-100.00', '-90.00'];
+			
 		function linkTargetFunction( value, handle, sliderInstance ){
-			equal(value, vals[val1++], "Value as expected, change ("+val1+"/4).");
+			
+			equal(value, Expect[ltfCount], "Value as expected, change ("+(ltfCount++)+"/2).");
+			
 			ok(handle.hasClass("noUi-handle"), "Handle is really a handle.");
 			ok(handle.hasClass("noUi-handle-lower"), "Handle is really the lower handle.");
 			ok(sliderInstance.hasClass("noUi-target"), "Slider is really a slider.");
-			ok(sliderInstance[0] === this, "Slider is scope of call.");
+			ok(sliderInstance[0] === this[0], "Slider is scope of call and $.");
 		}
 
 		function linkMethodFunction( value, handle, sliderInstance ){
 			
-			console.log(val);
-		
-			equal(value, vals[val2++], "Value as expected, change ("+val2+"/4).");
+			equal(value, Expect[lmfCount], "Value as expected, change ("+(lmfCount++)+"/2).");
+			
 			ok(handle.hasClass("noUi-handle"), "Handle is really a handle.");
 			ok(sliderInstance.hasClass("noUi-target"), "Slider is really a slider.");
-			ok(box[0] === this, "Element is scope of call.");
+			ok(box[0] === this[0], "Element is scope of call and $.");
 			ok(slider[0] === sliderInstance[0], "Slider argument is slider.");
 		}
 
@@ -75,19 +74,21 @@
 			method: "html"
 		});
 		
-		equal(item.html(), '9000.00', 'Setting by custom method works.');
-
+		// See if values bounced properly.
+		deepEqual(slider.val(), ['-100.00', '9000.00'], 'Slider has proper value');
+			
+		// Check hidden input updates.
 		ok($('input[name="hiddenInputField"]').is('input'), "Input field was generated.");
-		ok($('input[name="hiddenInputField"]').val(), '=++90.0', "Value is formatted as expected.");
+		equal($('input[name="hiddenInputField"]').val(), '=++100.0', "Value is formatted as expected.");
 
+		equal(item.html(), '9000.00', 'Setting by custom method works.');
 		
 		slider.val([-90, 8051]);
 
 		deepEqual(slider.val(), ['-90.00', '8051.00']);
 
-		// Link updated 4 times.
-		equal(val1, 4);
-
 		equal(thing.html(), '8051.00', 'Setting by existing method works.');
 
+		equal(ltfCount, 2, 'Pre-bound link updated 4 times.');
+		equal(lmfCount, 2, 'Post-bound Link updated 2 times.');
 	});

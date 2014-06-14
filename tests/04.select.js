@@ -3,13 +3,13 @@
 
 		Q.html('\
 			<div class="slider"></div>\
-			<select id="input"></select>\
+			<select id="select"></select>\
 		');
 
-		var input = $('#input');
+		var select = $('#select');
 
 		for( var i = -20; i <= 40; i++ ){
-			input.append(
+			select.append(
 				'<option value="'+i+'">'+i+'</option>'
 			);
 		}
@@ -24,14 +24,14 @@
 		});
 
 		$('.slider').Link({
-			target: input,
+			target: select,
 			format: wNumb({
 				decimals: 0
 			})
 		});
 
-		input.val( 40 ).change();
+		select.val( 40 ).change();
 
-		equal( input.val(), '30', 'Select was reset properly.' );
+		equal( select.val(), '30', 'Select was reset properly.' );
 
 	});

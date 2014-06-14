@@ -5,7 +5,7 @@
 			<div class="slider"></div>\
 		');
 
-		var slider = $('.slider');
+		var slider = $('.slider').width(242);
 
 		slider.noUiSlider({
 			start: [ 30, 40 ],

@@ -55,7 +55,7 @@
 			})
 		}, true);
 
-		equal( Q.find('input').length, 1, 'Hidden input is gone.' );
+		equal( Q.find('input').length, 2, 'Hidden input is still available.' );
 	
 		equal( Q.find('input[name="newInput"]').length, 1 );
 	

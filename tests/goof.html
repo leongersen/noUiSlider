@@ -13,7 +13,7 @@
 			display: inline-block;
 			margin-bottom: 50px;
 		}
-		#legend0 {
+		#slider0 + .noUi-legend {
 			margin-bottom: 50px;
 		}
 
@@ -29,21 +29,11 @@
 <body>
 
 	<div id="slider0"></div>
-	<div class="legend" id="legend0"></div>
-
-	<div id="slider"></div>
-	<div class="legend" id="legend1"></div>
-	<div class="legend" id="legend2"></div>
-	<div class="legend" id="legend3"></div>
-	<div class="legend" id="legend4"></div>
-	<div class="legend" id="legend5"></div>
-	<div class="legend" id="legend6"></div>
-	<div class="legend" id="legend7"></div>
-	<div class="legend" id="legend8"></div>
+	<div id="slider1"></div>
 
 	<script>
 
-		var slider = $("#slider").noUiSlider({
+		var slider = $("#slider1").noUiSlider({
 
 			range: {
 				'min': [     0 ],
@@ -66,52 +56,44 @@
 		}
 
 		slider.noUiSlider('legend', {
-			element: $("#legend1"),
 			mode: 'range',
 			density: 3
 		});
 
 		slider.noUiSlider('legend', {
-			element: $("#legend2"),
 			mode: 'steps',
 			density: 2,
 			filter: filter500
 		});
 
 		slider.noUiSlider('legend', {
-			element: $("#legend3"),
 			mode: 'positions',
 			values: [0,25,50,75,100]
 		});
 
 		slider.noUiSlider('legend', {
-			element: $("#legend4"),
 			mode: 'positions',
 			values: [0,25,50,75,100],
 			stepped: true
 		});
 
 		slider.noUiSlider('legend', {
-			element: $("#legend5"),
 			mode: 'count',
 			values: 8
 		});
 
 		slider.noUiSlider('legend', {
-			element: $("#legend6"),
 			mode: 'count',
 			values: 8,
 			stepped: true
 		});
 
 		slider.noUiSlider('legend', {
-			element: $("#legend7"),
 			mode: 'values',
 			values: [50, 552, 750, 940, 5000, 6080, 9000]
 		});
 
 		slider.noUiSlider('legend', {
-			element: $("#legend8"),
 			mode: 'values',
 			values: [50, 552, 750, 940, 5000, 6080, 9000],
 			stepped: true
@@ -129,7 +111,6 @@
 		});
 
 		slider0.noUiSlider('legend', {
-			element: $("#legend0"),
 			mode: 'steps',
 			density: 2,
 			filter: function(v,t){

@@ -89,6 +89,12 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		});
 	}
 
+	// Rounds a number to 7 supported decimals.
+	function accurateNumber( number ) {
+		var p = Math.pow(10, 7);
+		return Number((Math.round(number*p)/p).toFixed(7));
+	}
+
 
 // Type validation
 
@@ -782,9 +788,10 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return indexes;
 	}
 
-	function addMarking ( options, spread, element, filterFunc ) {
+	function addMarking ( options, spread, filterFunc ) {
 
-		var style = ['horizontal', 'vertical'][options.ort];
+		var style = ['horizontal', 'vertical'][options.ort],
+			element = $('<div/>');
 
 		element.addClass('noUi-legend noUi-legend-'+style);
 
@@ -815,6 +822,8 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 		// Append all points.
 		$.each(spread, addSpread);
+
+		return element;
 	}
 
 
@@ -830,14 +839,14 @@ function closure ( target, options, originalOptions ){
 		$Base,
 		$Handles,
 		$Values = [],
-	// libLink
-		triggerPos = ['lower', 'upper'];
+	// libLink. For rtl sliders, 'lower' and 'upper' should not be inverted
+	// for one-handle sliders, so trim 'upper' it that case.
+		triggerPos = ['lower', 'upper'].slice(0, options.handles);
 
 	// Invert the libLink connection for rtl sliders.
 	if ( options.dir ) {
 		triggerPos.reverse();
 	}
-
 
 // Helpers
 
@@ -892,17 +901,17 @@ function closure ( target, options, originalOptions ){
 
 	// Called by libLink when it wants a set of links updated.
 	function LinkUpdate ( flag ) {
-		// The API might not have been set yet.
 
 		var trigger = $.inArray(flag, triggerPos);
 
-		try {
+		// The API might not have been set yet.
+		if ( $Target[0].linkAPI && $Target[0].linkAPI[flag] ) {
 			$Target[0].linkAPI[flag].change(
 				$Values[trigger],
 				$Handles[trigger].children(),
 				$Target
 			);
-		} catch ( ignore ) { }
+		}
 	}
 
 	// Called by libLink to append an element to the slider.
@@ -989,7 +998,7 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Convert the value to the slider stepping/range.
-		$Values[trigger] = fromStepping( options, to );
+		$Values[trigger] = accurateNumber(fromStepping( options, to ));
 
 		LinkUpdate(triggerPos[trigger]);
 
@@ -1388,12 +1397,14 @@ function closure ( target, options, originalOptions ){
 	/** @expose */
 	target.reappend = function ( ) {
 
+		var i, flag;
+
 		// The API keeps a list of elements: we can re-append them on rebuild.
-		$.each(this.linkAPI, function( trigger, elements ){
-			$.each(elements, function( ignore, element ) {
-				element.appendTo( $Handles[trigger].children() );
-			});
-		});
+		for ( i = 0; i < triggerPos.length; i++ ) {
+			if ( this.linkAPI && this.linkAPI[(flag = triggerPos[i])] ) {
+				this.linkAPI[flag].reconfirm(flag);
+			}
+		}
 	};
 
 	// Get the current step size for the slider.
@@ -1415,7 +1426,6 @@ function closure ( target, options, originalOptions ){
 	target.createLegend = function ( grid ) {
 
 	var mode = grid['mode'],
-		element = grid['element'],
 		density = grid['density'] || 1,
 		filter = grid['filter'] || false,
 		values = grid['values'] || false,
@@ -1424,12 +1434,11 @@ function closure ( target, options, originalOptions ){
 		group = getGroup( options, mode, values, stepped ),
 		spread = generateSpread( options, density, mode, group );
 
-		addMarking(
+		$Target.after(addMarking(
 			options,
 			spread,
-			element,
 			filter
-		);
+		));
 	};
 
 	// Use the public value method to set the start values.
