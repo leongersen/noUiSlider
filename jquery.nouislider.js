@@ -72,23 +72,6 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return Math.max(Math.min(a, 100), 0);
 	}
 
-	// Round a value to the closest 'to'.
-	function closest ( value, to ) {
-		return Math.round(value / to) * to;
-	}
-
-	// Determine the size of a sub-range in relation to a full range.
-	function subRangeRatio ( pa, pb ) {
-		return (100 / (pb - pa));
-	}
-
-	// Removes duplicates from an array.
-	function unique(array) {
-		return $.grep(array, function(el, index) {
-			return index === $.inArray(el, array);
-		});
-	}
-
 	// Rounds a number to 7 supported decimals.
 	function accurateNumber( number ) {
 		var p = Math.pow(10, 7);
@@ -119,112 +102,6 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		}, duration);
 	}
 
-
-// Value calculation
-
-	// (percentage) How many percent is this value of this range?
-	function fromPercentage ( range, value ) {
-		return (value * 100) / ( range[1] - range[0] );
-	}
-
-	// (percentage) Where is this value on this range?
-	function toPercentage ( range, value ) {
-		return fromPercentage( range, range[0] < 0 ?
-			value + Math.abs(range[0]) :
-				value - range[0] );
-	}
-
-	// (value) How much is this percentage on this range?
-	function isPercentage ( range, value ) {
-		return ((value * ( range[1] - range[0] )) / 100) + range[0];
-	}
-
-
-// Range conversion
-
-	// (percentage) Input a value, find where, on a scale of 0-100, it applies.
-	function toStepping ( options, value ) {
-
-		if ( value >= options.xVal.slice(-1)[0] ){
-			return 100;
-		}
-
-		var j = 1, va, vb, pa, pb;
-		while ( value >= options.xVal[j] ){
-			j++;
-		}
-
-		va = options.xVal[j-1];
-		vb = options.xVal[j];
-		pa = options.xPct[j-1];
-		pb = options.xPct[j];
-
-		return pa + (toPercentage([va, vb], value) / subRangeRatio (pa, pb));
-	}
-
-	// (value) Input a percentage, find where it is on the specified range.
-	function fromStepping ( options, value ) {
-
-		// There is no range group that fits 100
-		if ( value >= 100 ){
-			return options.xVal.slice(-1)[0];
-		}
-
-		var j = 1, va, vb, pa, pb;
-		while ( value >= options.xPct[j] ){
-			j++;
-		}
-
-		va = options.xVal[j-1];
-		vb = options.xVal[j];
-		pa = options.xPct[j-1];
-		pb = options.xPct[j];
-
-		return isPercentage([va, vb], (value - pa) * subRangeRatio (pa, pb));
-	}
-
-	// (j) Get the applicable step position.
-	function getStepPoint ( options, value ) {
-
-		var j = 1;
-
-		// Find the proper step for rtl sliders by search in inverse direction.
-		// Fixes issue #262.
-		while ( (options.dir ? (100 - value) : value) >= options.xPct[j] ){
-			j++;
-		}
-
-		return j;
-	}
-
-	// (percentage) Get the step that applies at a certain value.
-	function getStep ( options, value ){
-
-		var j = getStepPoint( options, value ), a, b;
-
-		// If 'snap' is set, steps are used as fixed points on the slider.
-		if ( options.snap ) {
-
-			a = options.xPct[j-1];
-			b = options.xPct[j];
-
-			// Find the closest position, a or b.
-			if ((value - a) > ((b-a)/2)){
-				return b;
-			}
-
-			return a;
-		}
-
-		if ( !options.xSteps[j-1] ){
-			return value;
-		}
-
-		return options.xPct[j-1] + closest(
-			value - options.xPct[j-1],
-			options.xSteps[j-1]
-		);
-	}
 
 
 // Event handling
@@ -292,7 +169,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 		// The step option can still be used to set stepping
 		// for linear sliders. Overwritten if set in 'range'.
-		parsed.xSteps[0] = entry;
+		parsed.singleStep = entry;
 	}
 
 	function testRange ( parsed, entry ) {
@@ -308,69 +185,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
 		}
 
-		// Loop all entries.
-		$.each( entry, function ( index, value ) {
-
-			var percentage;
-
-			// Wrap numerical input in an array.
-			if ( typeof value === "number" ) {
-				value = [value];
-			}
-
-			// Reject any invalid input.
-			if ( !$.isArray( value ) ){
-				throw new Error("noUiSlider: 'range' contains invalid value.");
-			}
-
-			// Covert min/max syntax to 0 and 100.
-			if ( index === 'min' ) {
-				percentage = 0;
-			} else if ( index === 'max' ) {
-				percentage = 100;
-			} else {
-				percentage = parseFloat( index );
-			}
-
-			// Check for correct input.
-			if ( !isNumeric( percentage ) || !isNumeric( value[0] ) ) {
-				throw new Error("noUiSlider: 'range' value isn't numeric.");
-			}
-
-			// Store values.
-			parsed.xPct.push( percentage );
-			parsed.xVal.push( value[0] );
-
-			// NaN will evaluate to false too, but to keep
-			// logging clear, set step explicitly. Make sure
-			// not to override the 'step' setting with false.
-			if ( !percentage ) {
-				if ( !isNaN( value[1] ) ) {
-					parsed.xSteps[0] = value[1];
-				}
-			} else {
-				parsed.xSteps.push( isNaN(value[1]) ? false : value[1] );
-			}
-		});
-
-		// Store the actual step values.
-		parsed.xNumSteps = parsed.xSteps.slice(0);
-
-		$.each(parsed.xSteps, function(i,n){
-
-			// Ignore 'false' stepping.
-			if ( !n ) {
-				return true;
-			}
-
-			// Factor to range ratio
-			parsed.xSteps[i] = fromPercentage([
-				 parsed.xVal[i]
-				,parsed.xVal[i+1]
-			], n) / subRangeRatio (
-				parsed.xPct[i],
-				parsed.xPct[i+1] );
-		});
+		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
 	}
 
 	function testStart ( parsed, entry ) {
@@ -516,10 +331,6 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		object, to make sure all values can be correctly looped elsewhere. */
 
 		var parsed = {
-			xPct: [],
-			xVal: [],
-			xSteps: [ false ],
-			xNumSteps: [ false ],
 			margin: 0,
 			format: defaultFormatter
 		}, tests;
@@ -574,12 +385,12 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 // DOM additions
 
 	// Append a handle to the base.
-	function addHandle ( options, index ) {
+	function addHandle ( direction, index ) {
 
 		var handle = $('<div><div/></div>').addClass( Classes[2] ),
 			additions = [ '-lower', '-upper' ];
 
-		if ( options.dir ) {
+		if ( direction ) {
 			additions.reverse();
 		}
 
@@ -611,219 +422,31 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 	}
 
 	// Add handles to the slider base.
-	function addHandles ( options, base ) {
+	function addHandles ( nrHandles, direction, base ) {
 
 		var index, handles = [];
 
 		// Append handles.
-		for ( index = 0; index < options.handles; index++ ) {
+		for ( index = 0; index < nrHandles; index++ ) {
 
 			// Keep a list of all added handles.
-			handles.push( addHandle( options, index ).appendTo(base) );
+			handles.push( addHandle( direction, index ).appendTo(base) );
 		}
 
 		return handles;
 	}
 
 	// Initialize a single slider.
-	function addSlider ( options, target ) {
+	function addSlider ( direction, orientation, target ) {
 
 		// Apply classes and data to the target.
 		target.addClass([
 			Classes[0],
-			Classes[8 + options.dir],
-			Classes[4 + options.ort]
+			Classes[8 + direction],
+			Classes[4 + orientation]
 		].join(' '));
 
 		return $('<div/>').appendTo(target).addClass( Classes[1] );
-	}
-
-
-// Legend
-
-	function getGroup ( options, mode, values, stepped ) {
-
-		// Use the range.
-		if ( mode === 'range' || mode === 'steps' ) {
-			return options.xVal;
-		}
-
-		if ( mode === 'count' ) {
-
-			// Divide 0 - 100 in 'count' parts.
-			var spread = ( 100 / (values-1) ), v, i = 0;
-			values = [];
-
-			// List these parts and have them handled as 'positions'.
-			while ((v=i++*spread) <= 100 ) {
-				values.push(v);
-			}
-
-			mode = 'positions';
-		}
-
-		if ( mode === 'positions' ) {
-
-			// Map all percentages to on-range values.
-			return $.map(values, function( value ){
-				return fromStepping( options, stepped ? getStep(options, value) : value );
-			});
-		}
-
-		if ( mode === 'values' ) {
-
-			// If the value must be stepped, it needs to be converted to a percentage first.
-			if ( stepped ) {
-
-				return $.map(values, function( value ){
-
-					// Convert to percentage, apply step, return to value.
-					return fromStepping(options, getStep(options, toStepping(options, value)));
-				});
-
-			}
-
-			// Otherwise, we can simply use the values.
-			return values;
-		}
-	}
-
-	function generateSpread ( options, density, mode, group ) {
-
-		var indexes = {},
-			firstInRange = options.xVal[0],
-			lastInRange = options.xVal[options.xVal.length-1],
-			ignoreFirst = false,
-			ignoreLast = false,
-			prevPct = 0;
-
-		// Create a copy of the group, sort it and filter away all duplicates.
-		group = unique(group.slice().sort(function(a, b){ return a - b; }));
-
-		// Make sure the range starts with the first element.
-		if ( group[0] !== firstInRange ) {
-			group.unshift(firstInRange);
-			ignoreFirst = true;
-		}
-
-		// Likewise for the last one.
-		if ( group[group.length - 1] !== lastInRange ) {
-			group.push(lastInRange);
-			ignoreLast = true;
-		}
-
-		$.each(group, function ( index, value ) {
-
-			// Get the current step and the lower + upper positions.
-			var step, i, q,
-				low = group[index],
-				high = group[index+1],
-				newPct, pctDifference, pctPos, type,
-				steps, realSteps, stepsize;
-
-			// When using 'steps' mode, use the provided steps.
-			// Otherwise, we'll step on to the next subrange.
-			if ( mode === 'steps' ) {
-				step = options.xNumSteps[ index ];
-			}
-
-			// Default to a 'full' step.
-			if ( !step ) {
-				step = high-low;
-			}
-
-			// Low can be 0, so test for false. If high is undefined,
-			// we are at the last subrange. Index 0 is already handled.
-			if ( low === false || high === undefined ) {
-				return;
-			}
-
-			// Find all steps in the subrange.
-			for ( i = low; i <= high; i += step ) {
-
-				// Get the percentage value for the current step,
-				// calculate the size for the subrange.
-				newPct = toStepping(options, i);
-				pctDifference = newPct - prevPct;
-
-				steps = pctDifference / density;
-				realSteps = Math.round(steps);
-
-				// This ratio represents the ammount of percentage-space a point indicates.
-				// For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-devided.
-				// Round the percentage offset to an even number, then divide by two
-				// to spread the offset on both sides of the range.
-				stepsize = pctDifference/realSteps;
-
-				// Divide all points evenly, adding the correct number to this subrange.
-				// Run up to <= so that 100% gets a point, event if ignoreLast is set.
-				for ( q = 1; q <= realSteps; q += 1 ) {
-
-					// The ratio between the rounded value and the actual size might be ~1% off.
-					// Correct the percentage offset by the number of points
-					// per subrange. density = 1 will result in 100 points on the
-					// full range, 2 for 50, 4 for 25, etc.
-					pctPos = prevPct + ( q * stepsize );
-					indexes[pctPos.toFixed(5)] = ['x', 0]; // todo
-				}
-
-				// Determine the point type.
-				type = ($.inArray(i, group) > -1) ? 1 : ( mode === 'steps' ? 2 : 0 );
-
-				// Enforce the 'ignoreFirst' option by overwriting the type for 0.
-				if ( !index && ignoreFirst && !low ) {
-					type = 0;
-				}
-
-				if ( !(i === high && ignoreLast)) {
-					// Mark the 'type' of this point. 0 = plain, 1 = real value, 2 = step value.
-					indexes[newPct.toFixed(5)] = [i, type];
-				}
-
-				// Update the percentage count.
-				prevPct = newPct;
-			}
-		});
-
-		return indexes;
-	}
-
-	function addMarking ( options, spread, filterFunc ) {
-
-		var style = ['horizontal', 'vertical'][options.ort],
-			element = $('<div/>');
-
-		element.addClass('noUi-legend noUi-legend-'+style);
-
-		function getSize( type, value ){
-			return [ '-normal', '-large', '-sub' ][(type&&filterFunc) ? filterFunc(value, type) : type];
-		}
-		function getTags( offset, source, values ) {
-			return 'class="' + source + ' ' +
-				source + '-' + style + ' ' +
-				source + getSize(values[1], values[0]) +
-				'" style="' + options.style + ': ' + offset + '%"';
-		}
-		function addSpread ( offset, values ){
-
-			// Invert the scale for rtl sliders.
-			if ( options.dir ) {
-				offset = 100 - offset;
-			}
-
-			// Add a marker for every point
-			element.append('<div '+getTags(offset, 'noUi-marker', values)+'></div>');
-
-			// Values are only appended for points marked '1' or '2'.
-			if ( values[1] ) {
-				element.append('<div '+getTags(offset, 'noUi-value', values)+'>' + Math.round(values[0]) + '</div>');
-			}
-		}
-
-		// Append all points.
-		$.each(spread, addSpread);
-
-		return element;
 	}
 
 
@@ -838,6 +461,7 @@ function closure ( target, options, originalOptions ){
 		$Locations = [-1, -1],
 		$Base,
 		$Handles,
+		$Spectrum = options.spectrum,
 		$Values = [],
 	// libLink. For rtl sliders, 'lower' and 'upper' should not be inverted
 	// for one-handle sliders, so trim 'upper' it that case.
@@ -870,7 +494,8 @@ function closure ( target, options, originalOptions ){
 
 	// Check if the range is effectively 0.
 	function isNullRange ( ) {
-		return options.xVal.length === 2 && options.xVal[0] === options.xVal[1];
+		return false;
+		return options.xVal.length === 2 && options.xVal[0] === options.xVal[1]; // TODO
 	}
 
 	// Returns the input array, respecting the slider direction configuration.
@@ -968,7 +593,7 @@ function closure ( target, options, originalOptions ){
 
 			// Handle the step option.
 			if ( to < 100 ){
-				to = getStep(options, to);
+				to = $Spectrum.getStep( to );
 			}
 
 			// Limit to 0/100 for .val input, trim anything beyond 7 digits, as
@@ -998,7 +623,7 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Convert the value to the slider stepping/range.
-		$Values[trigger] = accurateNumber(fromStepping( options, to ));
+		$Values[trigger] = accurateNumber( $Spectrum.fromStepping( to ) );
 
 		LinkUpdate(triggerPos[trigger]);
 
@@ -1077,7 +702,7 @@ function closure ( target, options, originalOptions ){
 			}
 
 			// Calculate the new handle position
-			to = toStepping( options, to );
+			to = $Spectrum.toStepping( to );
 
 			// Invert the value if this is a right-to-left slider.
 			if ( options.dir ) {
@@ -1312,8 +937,8 @@ function closure ( target, options, originalOptions ){
 
 	// Create the base element, initialise HTML and set classes.
 	// Add handles and links.
-	$Base = addSlider( options, $Target );
-	$Handles = addHandles( options, $Base );
+	$Base = addSlider( options.dir, options.ort, $Target );
+	$Handles = addHandles( options.handles, options.dir, $Base );
 
 	// Set the connect classes.
 	addConnection ( options.connect, $Target, $Handles );
@@ -1409,13 +1034,11 @@ function closure ( target, options, originalOptions ){
 
 	// Get the current step size for the slider.
 	/** @expose */
-	target.getStep = function ( ) {
+	target.getCurrentStep = function ( ) {
 
 		// Check all locations, map them to their stepping point.
-		var retour = $.map($Locations, function( value ){
-			// Get the step point, then find it in the input list.
-			return options.xNumSteps[getStepPoint(options, value) - 1];
-		});
+		// Get the step point, then find it in the input list.
+		var retour = $.map($Locations, $Spectrum.getApplicableStep);
 
 		// Return values in the proper order.
 		return inSliderOrder( retour );
@@ -1431,11 +1054,13 @@ function closure ( target, options, originalOptions ){
 		values = grid['values'] || false,
 		stepped = grid['stepped'] || false,
 
-		group = getGroup( options, mode, values, stepped ),
-		spread = generateSpread( options, density, mode, group );
+		group = getGroup( $Spectrum, mode, values, stepped ),
+		spread = generateSpread( $Spectrum, density, mode, group );
 
 		$Target.after(addMarking(
-			options,
+			options.style,
+			options.ort,
+			options.dir,
 			spread,
 			filter
 		));
