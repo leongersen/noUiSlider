@@ -72,12 +72,6 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		return Math.max(Math.min(a, 100), 0);
 	}
 
-	// Rounds a number to 7 supported decimals.
-	function accurateNumber( number ) {
-		var p = Math.pow(10, 7);
-		return Number((Math.round(number*p)/p).toFixed(7));
-	}
-
 
 // Type validation
 
@@ -341,8 +335,8 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 			'start': { r: true, t: testStart },
 			'connect': { r: true, t: testConnect },
 			'direction': { r: true, t: testDirection },
-			'range': { r: true, t: testRange },
 			'snap': { r: false, t: testSnap },
+			'range': { r: true, t: testRange },
 			'orientation': { r: false, t: testOrientation },
 			'margin': { r: false, t: testMargin },
 			'behaviour': { r: true, t: testBehaviour },
@@ -492,12 +486,6 @@ function closure ( target, options, originalOptions ){
 		}
 	}
 
-	// Check if the range is effectively 0.
-	function isNullRange ( ) {
-		return false;
-		return options.xVal.length === 2 && options.xVal[0] === options.xVal[1]; // TODO
-	}
-
 	// Returns the input array, respecting the slider direction configuration.
 	function inSliderOrder ( values ) {
 
@@ -578,32 +566,22 @@ function closure ( target, options, originalOptions ){
 			lower = $Locations[0] + options.margin,
 			upper = $Locations[1] - options.margin;
 
-		// Check if the slider has no range. If so, lock in the center.
-		if ( isNullRange() ) {
+		// For sliders with multiple handles,
+		// limit movement to the other handle.
+		if ( $Handles.length > 1 ) {
+			to = trigger ? Math.max( to, lower ) : Math.min( to, upper );
+		}
 
-			to = 50;
+		// Handle the step option.
+		to = $Spectrum.getStep( to );
 
-		} else {
+		// Limit to 0/100 for .val input, trim anything beyond 7 digits, as
+		// JavaScript has some issues in its floating point implementation.
+		to = limit(parseFloat(to.toFixed(7)));
 
-			// For sliders with multiple handles,
-			// limit movement to the other handle.
-			if ( $Handles.length > 1 ) {
-				to = trigger ? Math.max( to, lower ) : Math.min( to, upper );
-			}
-
-			// Handle the step option.
-			if ( to < 100 ){
-				to = $Spectrum.getStep( to );
-			}
-
-			// Limit to 0/100 for .val input, trim anything beyond 7 digits, as
-			// JavaScript has some issues in its floating point implementation.
-			to = limit(parseFloat(to.toFixed(7)));
-
-			// Return false if handle can't move.
-			if ( to === $Locations[trigger] ) {
-				return false;
-			}
+		// Return false if handle can't move.
+		if ( to === $Locations[trigger] ) {
+			return false;
 		}
 
 		// Set the handle to the new position.
@@ -617,13 +595,8 @@ function closure ( target, options, originalOptions ){
 		// Update locations.
 		$Locations[trigger] = to;
 
-		// Invert the value if this is a right-to-left slider.
-		if ( options.dir ) {
-			to = 100 - to;
-		}
-
 		// Convert the value to the slider stepping/range.
-		$Values[trigger] = accurateNumber( $Spectrum.fromStepping( to ) );
+		$Values[trigger] = $Spectrum.fromStepping( to );
 
 		LinkUpdate(triggerPos[trigger]);
 
@@ -704,11 +677,6 @@ function closure ( target, options, originalOptions ){
 			// Calculate the new handle position
 			to = $Spectrum.toStepping( to );
 
-			// Invert the value if this is a right-to-left slider.
-			if ( options.dir ) {
-				to = 100 - to;
-			}
-
 			// Set the handle.
 			setHandle( $Handles[trigger], to );
 		}
@@ -736,11 +704,6 @@ function closure ( target, options, originalOptions ){
 
 			// Stop if an active 'tap' transition is taking place.
 			if ( $Target.hasClass( Classes[14] ) ) {
-				return false;
-			}
-
-			// Ignore all events if the range is effectively 0. #236
-			if ( isNullRange() ) {
 				return false;
 			}
 

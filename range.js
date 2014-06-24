@@ -1,20 +1,30 @@
+/*jslint browser: true, white: true */
+
 (function(){
+
+	'use strict';
 
 // Helpers
 
 	// Determine the size of a sub-range in relation to a full range.
-	function subRangeRatio ( pa, pb ) { // 0
+	function subRangeRatio ( pa, pb ) {
 		return (100 / (pb - pa));
 	}
 
 	// Round a value to the closest 'to'.
-	function closest ( value, to ) { // 0
+	function closest ( value, to ) {
 		return Math.round(value / to) * to;
 	}
 
 	// Checks whether a value is numerical.
 	function isNumeric ( a ) {
 		return typeof a === 'number' && !isNaN( a ) && isFinite( a );
+	}
+
+	// Rounds a number to 7 supported decimals.
+	function accurateNumber( number ) {
+		var p = Math.pow(10, 7);
+		return Number((Math.round(number*p)/p).toFixed(7));
 	}
 
 
@@ -26,31 +36,39 @@
 	}
 
 	// (percentage) Where is this value on this range?
-	function toPercentage ( range, value ) { // 0
+	function toPercentage ( range, value ) {
 		return fromPercentage( range, range[0] < 0 ?
 			value + Math.abs(range[0]) :
 				value - range[0] );
 	}
 
 	// (value) How much is this percentage on this range?
-	function isPercentage ( range, value ) { // 0
+	function isPercentage ( range, value ) {
 		return ((value * ( range[1] - range[0] )) / 100) + range[0];
 	}
 
 
 // Range conversion
 
+	function getJ ( value, arr ) {
+
+		var j = 1;
+
+		while ( value >= arr[j] ){
+			j += 1;
+		}
+
+		return j;
+	}
+
 	// (percentage) Input a value, find where, on a scale of 0-100, it applies.
-	function toStepping ( xVal, xPct, value ) { // 3
+	function toStepping ( xVal, xPct, value ) {
 
 		if ( value >= xVal.slice(-1)[0] ){
 			return 100;
 		}
 
-		var j = 1, va, vb, pa, pb;
-		while ( value >= xVal[j] ){
-			j++;
-		}
+		var j = getJ( value, xVal ), va, vb, pa, pb;
 
 		va = xVal[j-1];
 		vb = xVal[j];
@@ -61,17 +79,14 @@
 	}
 
 	// (value) Input a percentage, find where it is on the specified range.
-	function fromStepping ( xVal, xPct, value ) { // 3
+	function fromStepping ( xVal, xPct, value ) {
 
 		// There is no range group that fits 100
 		if ( value >= 100 ){
 			return xVal.slice(-1)[0];
 		}
 
-		var j = 1, va, vb, pa, pb;
-		while ( value >= xPct[j] ){
-			j++;
-		}
+		var j = getJ( value, xPct ), va, vb, pa, pb;
 
 		va = xVal[j-1];
 		vb = xVal[j];
@@ -81,24 +96,14 @@
 		return isPercentage([va, vb], (value - pa) * subRangeRatio (pa, pb));
 	}
 
-	// (j) Get the applicable step position.
-	function getStepPoint ( direction, xPct, value ) { // 1
+	// (percentage) Get the step that applies at a certain value.
+	function getStep ( xPct, xSteps, snap, value ) {
 
-		var j = 1;
-
-		// Find the proper step for rtl sliders by search in inverse direction.
-		// Fixes issue #262.
-		while ( (direction ? (100 - value) : value) >= xPct[j] ){
-			j++;
+		if ( value === 100 ) {
+			return value;
 		}
 
-		return j;
-	}
-
-	// (percentage) Get the step that applies at a certain value.
-	function getStep ( xPct, xSteps, snap, direction, value ) { // 3
-
-		var j = getStepPoint( direction, xPct, value ), a, b;
+		var j = getJ( value, xPct ), a, b;
 
 		// If 'snap' is set, steps are used as fixed points on the slider.
 		if ( snap ) {
@@ -190,6 +195,9 @@
 
 // Interface
 
+	// The interface to Spectrum handles all direction-based
+	// conversions, so the above values are unaware.
+
 	function Spectrum ( entry, snap, direction, singleStep ) {
 
 		this.xPct = [];
@@ -220,21 +228,53 @@
 	}
 
 	Spectrum.prototype.toStepping = function ( value ) {
-		return toStepping(this.xVal, this.xPct, value );
+
+		value = toStepping( this.xVal, this.xPct, value );
+
+		// Invert the value if this is a right-to-left slider.
+		if ( this.direction ) {
+			value = 100 - value;
+		}
+
+		return value;
 	};
 
 	Spectrum.prototype.fromStepping = function ( value ) {
-		return fromStepping(this.xVal, this.xPct, value );
+
+		// Invert the value if this is a right-to-left slider.
+		if ( this.direction ) {
+			value = 100 - value;
+		}
+
+		return accurateNumber(fromStepping( this.xVal, this.xPct, value ));
 	};
 
 	Spectrum.prototype.getStep = function ( value ) {
-		return getStep(this.xPct, this.xSteps, this.snap, this.direction, value );
+
+		// Find the proper step for rtl sliders by search in inverse direction.
+		// Fixes issue #262.
+		if ( this.direction ) {
+			value = 100 - value;
+		}
+
+		value = getStep(this.xPct, this.xSteps, this.snap, value );
+
+		if ( this.direction ) {
+			value = 100 - value;
+		}
+
+		return value;
 	};
 
 	Spectrum.prototype.getApplicableStep = function ( value ) {
-		return this.xNumSteps[getStepPoint(this.direction, this.xPct, value) - 1];
+		return this.xNumSteps[getJ(value, this.xPct) - 1];
+	};
+
+	// Outside testing
+	Spectrum.prototype.convert = function ( value ) {
+		return this.getStep(this.toStepping(value));
 	};
 
 	window.Spectrum = Spectrum;
-	
+
 }());
