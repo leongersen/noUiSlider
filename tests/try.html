@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<head>
+
+	<title>Trying</title>
+
+	<style>
+
+		.noUi-horizontal {
+			width: 300px;
+		}
+		.noUi-vertical {
+			height: 150px;
+		}
+
+		.noUi-target {
+			margin: 50px;
+		}
+		
+
+		
+		
+		.noUi-handle {
+			opacity: 0.3;
+		}
+
+	</style>
+
+	<link href="../jquery.nouislider.css" rel="stylesheet">
+
+	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+
+	<script src="C:\Users\Leon\Documents\GitHub\libLink\jquery.libLink.js"></script>
+	<script src="C:\Users\Leon\Documents\GitHub\wnumb\wNumb.js"></script>
+
+	<script src="../range.js"></script>
+	<script src="../jquery.nouislider.js"></script>
+
+</head>
+
+<body>
+
+	<div class="slider noUi-extended" id="sliderltr"></div>
+	<span></span>
+
+	<div class="slider noUi-extended" id="sliderrtl"></div>
+	<span></span>
+
+	<div class="slider noUi-extended" id="sliderstepltr"></div>
+	<span></span>
+
+	<div class="slider noUi-extended" id="slidersteprtl"></div>
+	<span></span>
+
+	<script>
+
+	$("#sliderltr").noUiSlider({
+		range: {
+			'min': 0,
+			'50%':[10,10],
+			'max': 50
+		},
+		connect: 'upper',
+		snap: true,
+		start: 0,
+	});
+
+	$("#sliderrtl").noUiSlider({
+		range: {
+			'min': 0,
+			'50%':[10,10],
+			'max': 50
+		},
+		connect: 'lower',
+		snap: true,
+		start: 0
+	//	direction : 'rtl'
+	});
+
+	$("#sliderstepltr").noUiSlider({
+		range: {
+			'min': 0,
+			'max': 100
+		},
+		step: 15,
+		start: 0,
+		connect: 'upper',
+		orientation: 'vertical'
+	});
+
+	$("#slidersteprtl").noUiSlider({
+		range: {
+			'min': 0,
+			'max': 100
+		},
+		step: 15,
+		start: 0,
+		connect: 'lower',
+		orientation: 'vertical'
+	//	direction : 'rtl'
+	});
+
+	$(".slider").each(function(){
+		$(this).Link('lower', $(this).next() )
+	});
+
+	</script>
+
+</body>

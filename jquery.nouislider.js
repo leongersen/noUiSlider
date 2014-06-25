@@ -210,6 +210,16 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		}
 	}
 
+	function testAnimate ( parsed, entry ) {
+
+		// Enforce 100% stepping within subranges.
+		parsed.animate = entry;
+
+		if ( typeof entry !== 'boolean' ){
+			throw new Error("noUiSlider: 'animate' option must be a boolean.");
+		}
+	}
+
 	function testConnect ( parsed, entry ) {
 
 		if ( entry === 'lower' && parsed.handles === 1 ) {
@@ -243,16 +253,12 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 	function testMargin ( parsed, entry ) {
 
-		if ( parsed.xPct.length > 2 ) {
-			throw new Error("noUiSlider: 'margin' option is only supported on linear sliders.");
-		}
-
-		// Parse value to range and store. As xVal is checked
-		// to be no bigger than 2, use it as range.
-		parsed.margin = fromPercentage(parsed.xVal, entry);
-
 		if ( !isNumeric(entry) ){
 			throw new Error("noUiSlider: 'margin' option must be numeric.");
+		}
+
+		if ( !(parsed.margin = parsed.spectrum.getMargin(entry)) ) {
+			throw new Error("noUiSlider: 'margin' option is only supported on linear sliders.");
 		}
 	}
 
@@ -326,6 +332,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 		var parsed = {
 			margin: 0,
+			animate: true,
 			format: defaultFormatter
 		}, tests;
 
@@ -336,6 +343,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 			'connect': { r: true, t: testConnect },
 			'direction': { r: true, t: testDirection },
 			'snap': { r: false, t: testSnap },
+			'animate': { r: false, t: testAnimate },
 			'range': { r: true, t: testRange },
 			'orientation': { r: false, t: testOrientation },
 			'margin': { r: false, t: testMargin },
@@ -551,8 +559,6 @@ function closure ( target, options, originalOptions ){
 	target.LinkUpdate = LinkUpdate;
 	/** @expose */
 	target.LinkConfirm = LinkConfirm;
-	/** @expose */
-	target.LinkDefaultFlag = 'lower';
 	/** @expose */
 	target.LinkDefaultFormatter = options.format;
 
@@ -829,17 +835,6 @@ function closure ( target, options, originalOptions ){
 		}
 	}
 
-	// Move handle to edges when target gets tapped.
-	function edge ( event ) {
-
-		var i = event.calcPoint < $Base.offset()[ options.style ],
-			to = i ? 0 : 100;
-
-		i = i ? 0 : $Handles.length - 1;
-
-		jump( $Handles[i], to, false );
-	}
-
 	// Attach events to several slider parts.
 	function events ( behaviour ) {
 
@@ -862,11 +857,6 @@ function closure ( target, options, originalOptions ){
 		if ( behaviour.tap ) {
 
 			attach ( actions.start, $Base, tap, {
-				handles: $Handles
-			});
-
-			// Extend tapping behaviour to target
-			attach ( actions.start, $Target, edge, {
 				handles: $Handles
 			});
 		}
@@ -914,17 +904,9 @@ function closure ( target, options, originalOptions ){
 
 	// Set the slider value.
 	/** @expose */
-	target.vSet = function ( ) {
+	target.vSet = function ( input ) {
 
-		var args = Array.prototype.slice.call( arguments ),
-			count, values = asArray( args[0] );
-
-		// Support the 'true' option.
-		if ( args[1] === true ) {
-			args[1] = { 'set': true };
-		} else if ( typeof args[1] !== 'object' ) {
-			args[1] = {};
-		}
+		var count, values = asArray( input );
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
@@ -933,7 +915,7 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Animation is optional.
-		if ( args[1]['animate'] ) {
+		if ( options.animate ) {
 			addClassFor( $Target, Classes[14], 300 );
 		}
 
@@ -946,10 +928,9 @@ function closure ( target, options, originalOptions ){
 
 		setValues ( count, values );
 
-		// Optionally fire the 'set' event.
-		if ( args[1]['set'] === true ) {
-			fireEvents(['set']);
-		}
+		// Fire the 'set' event. As of noUiSlider 7,
+		// this is no longer optional.
+		fireEvents(['set']);
 
 		return this;
 	};
@@ -1001,32 +982,18 @@ function closure ( target, options, originalOptions ){
 
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
-		var retour = $.map($Locations, $Spectrum.getApplicableStep);
+		var retour = $.map($Locations, function( location, index ){
+
+			var step = $Spectrum.getApplicableStep( location ),
+				value = $Values[index],
+				increment = step[2],
+				decrement = (value - step[2]) >= step[1] ? step[2] : step[0];
+
+			return [[decrement, increment]];
+		});
 
 		// Return values in the proper order.
 		return inSliderOrder( retour );
-	};
-
-	// Create a legend for a slider.
-	/** @expose */
-	target.createLegend = function ( grid ) {
-
-	var mode = grid['mode'],
-		density = grid['density'] || 1,
-		filter = grid['filter'] || false,
-		values = grid['values'] || false,
-		stepped = grid['stepped'] || false,
-
-		group = getGroup( $Spectrum, mode, values, stepped ),
-		spread = generateSpread( $Spectrum, density, mode, group );
-
-		$Target.after(addMarking(
-			options.style,
-			options.ort,
-			options.dir,
-			spread,
-			filter
-		));
 	};
 
 	// Use the public value method to set the start values.
@@ -1113,11 +1080,6 @@ function closure ( target, options, originalOptions ){
 // Extend jQuery/Zepto with the noUiSlider method.
 	/** @expose */
 	$.fn.noUiSlider = function ( options, rebuildFlag ) {
-
-		if ( options === 'legend' ) {
-			return this[0].createLegend.apply(this[0], Array.prototype.slice.call(arguments, 1));
-		}
-
 		return ( rebuildFlag ? rebuild : initialize ).call(this, options);
 	};
 

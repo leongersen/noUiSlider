@@ -31,7 +31,7 @@
 // Value calculation
 
 	// (percentage) How many percent is this value of this range?
-	function fromPercentage ( range, value ) { // 1
+	function fromPercentage ( range, value ) {
 		return (value * 100) / ( range[1] - range[0] );
 	}
 
@@ -227,6 +227,10 @@
 		}
 	}
 
+	Spectrum.prototype.getMargin = function ( value ) {
+		return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;
+	};
+
 	Spectrum.prototype.toStepping = function ( value ) {
 
 		value = toStepping( this.xVal, this.xPct, value );
@@ -267,7 +271,10 @@
 	};
 
 	Spectrum.prototype.getApplicableStep = function ( value ) {
-		return this.xNumSteps[getJ(value, this.xPct) - 1];
+
+		// If the value is 100%, return the negative step twice.
+		var j = getJ(value, this.xPct), offset = value === 100 ? 2 : 1;
+		return [this.xNumSteps[j-2], this.xVal[j-offset], this.xNumSteps[j-offset]];
 	};
 
 	// Outside testing

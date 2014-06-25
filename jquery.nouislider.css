@@ -67,12 +67,6 @@
 	left: -17px;
 	top: -6px;
 }
-.noUi-horizontal.noUi-extended {
-	padding: 0 15px;
-}
-.noUi-horizontal.noUi-extended .noUi-origin  {
-	right: -15px;
-}
 .noUi-vertical {
 	width: 18px;
 }
@@ -81,12 +75,6 @@
 	height: 34px;
 	left: -6px;
 	top: -17px;
-}
-.noUi-vertical.noUi-extended {
-	padding: 15px 0;
-}
-.noUi-vertical.noUi-extended .noUi-origin  {
-	bottom: -15px;
 }
 
 /* Styling;
