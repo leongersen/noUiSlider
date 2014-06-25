@@ -7,6 +7,20 @@
 
 <section>
 
+	- removed .val() modifiers
+		- removed 'update': libLink can work without this hint
+		- removed 'animate': value setting is now animated by default
+		- removed 'set': set callback now always fires on value setting
+		- removed 'link': libLink support value encoding/decoding. Input must now match slider encoding.
+	- added 'animate' option to disable animation on value setting
+	- removed serialization
+	- added support for libLink
+	- added format option
+	- removed 'extend' behaviour
+	- added painting sliders in new layers for performance improvement
+	- Added generation of legend
+	- Complete documentation overhaul
+
 	<h2>New version</h2>
 
 	<div class="double">

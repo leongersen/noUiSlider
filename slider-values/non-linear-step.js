@@ -1,4 +1,4 @@
-$('.slider').noUiSlider({
+$('#slider-non-linear-step').noUiSlider({
 	start: [ 500, 4000 ],
 	range: {
 		'min': [     0 ],

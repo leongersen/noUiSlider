@@ -7,40 +7,28 @@
 
 <section>
 
-	<div class="double">
+	<div class="view">
 
 		<p>noUiSlider offers several ways to handle user interaction. The range can be set to drag, and handles can move to taps. All these effects are optional, and can be enable by adding their keyword to the <code>behaviour</code> option.</p>
 
+		<p>This option accepts a <code>"-"</code> separated list of <code>"drag"</code>, <code>"tap"</code>, <code>"fixed"</code>, <code>"snap"</code> or <code>"none"</code>.</p>
+
 		<div class="example">
 			<div id="behaviour"></div>
-			<?php run('behaviour-option', false); ?>
+			<?php run('behaviour-option'); ?>
 		</div>
 	</div>
 
-	<div class="double">
+	<div class="side">
 		<?php code('behaviour-option'); ?>
 	</div>
 
 </section>
 
+
+<h2>Example configurations</h2>
+
 <section>
-
-	<h2>Behaviour</h2>
-
-	<div class="double">
-
-		<p>This option can be used to set the slider response to dragging or tapping. The <code>"extend"</code> keyword will contain the handles within the slider bar.</p>
-	</div>
-
-	<div class="double">
-
-		<p>This option accepts a <code>"-"</code> separated list of <code>"drag"</code>, <code>"tap"</code>, <code>"extend"</code>, <code>"fixed"</code>, <code>"snap"</code> or <code>"none"</code>.</p>
-	</div>
-</section>
-
-<section class="under">
-
-	<h2>Example configurations</h2>
 
 	<div class="double">
 
@@ -68,115 +56,86 @@
 
 	<div class="double">
 
-		<pre><code>behaviour: "extend-drag"</code></pre>
-		<p>Extend events to the '.noUi-target' element.</p>
-	</div>
-
-	<div class="double">
-
 		<pre><code>behaviour: "none"</code></pre>
 		<p>Turn off all behaviour, except for standard moving.</p>
 	</div>
 </section>
 
+
+<h2>Tap</h2>
+
 <section>
-	<div class="double">
-		<h3>Tap</h3>
-		<p>A handle snaps to a clicked location. A smooth transition is used. This option is default.</p>
+	<div class="view">
+		<p>A handle snaps to a clicked location. A smooth transition is used. This option is <strong>default</strong>.</p>
 		<div class="example">
 			<div id="tap"></div>
-			<?php run('tap', false); ?>
+			<?php run('tap'); ?>
 		</div>
 	</div>
-	<div class="double">
+	<div class="side">
 		<?php code('tap'); ?>
 	</div>
 </section>
 
+
+<h2>Drag</h2>
+
 <section>
-	<div class="double">
-		<h3>Drag</h3>
+	<div class="view">
 		<p>Makes the range dragable. Requires two handles.</p>
 		<div class="example">
 			<div id="drag"></div>
-			<?php run('drag', false); ?>
+			<?php run('drag'); ?>
 		</div>
 	</div>
-	<div class="double">
+	<div class="side">
 		<?php code('drag'); ?>
 	</div>
 </section>
 
+
+<h2>Fixed dragging</h2>
+
 <section>
-	<div class="double">
-		<h3>Fixed dragging</h3>
+	<div class="view">
 		<p>Keeps the distance between handles fixed when the <code>'drag'</code> flag is set.</p>
 		<div class="example">
 			<div id="drag-fixed"></div>
-			<?php run('drag-fixed', false); ?>
+			<?php run('drag-fixed'); ?>
 		</div>
 	</div>
-	<div class="double">
+	<div class="side">
 		<?php code('drag-fixed'); ?>
 	</div>
 </section>
 
+
+<h2>Snap</h2>
+
 <section>
-	<div class="double">
-		<h3>Snap</h3>
-		<p>A handle snaps to a clicked location. It can immediatly be moved.</p>
+	<div class="view">
+		<p>A handle snaps to a clicked location. It can immediatly be moved, without a <code>mouseup</code> + <code>mousedown</code>.</p>
 		<div class="example">
 			<div id="snap"></div>
-			<?php run('snap', false); ?>
+			<?php run('snap'); ?>
 		</div>
 	</div>
-	<div class="double">
+	<div class="side">
 		<?php code('snap'); ?>
 	</div>
 </section>
 
+<h2>Combined options</h2>
+
 <section>
-	<div class="double">
-		<h3>Combined options</h3>
+	<div class="view">
 		<p>Most <code>'behaviour'</code> flags can be combined.</p>
 		<div class="example">
 			<div id="combined"></div>
-			<?php run('combined', false); ?>
+			<?php run('combined'); ?>
 		</div>
 	</div>
-	<div class="double">
+	<div class="side">
 		<?php code('combined'); ?>
 	</div>
 </section>
-
-<h2>Extending slider events</h2>
-
-<section class="demo">
-
-	<div class="double">
-
-		<p>The behaviour option also offers the <code>extend</code> keyword, which instructs the slider to receive tap event on the <code>.noUi-target</code> element.</p>
-
-		<p>With the <code>extend</code> option enabled, a padding can be set on the <code>.noUi-target</code> to contain the handles in the slider bar. This padding will accept events and pass tapping on to the slider. To demonstrate the difference, the handles are transparent.</p>
-
-		<div class="example">
-			<div id="slider1"></div>
-			<?php run('extend1', false); ?>
-		</div>
-		<?php code('extend1'); ?>
-
-	</div>
-
-	<div class="double">
-
-		<p>Otherwise, the handles will overlap the slider bar, so that the handle center is equal to its relative position. Padding can still be set on the <code>.noUi-target</code>, but tapping on this padding will not be passed on to the slider. </p>
-
-		<div class="example">
-			<div id="slider2"></div>
-			<?php run('extend2', false); ?>
-		</div>
-		<?php code('extend2'); ?>
-
-	</div>
-</section>
-

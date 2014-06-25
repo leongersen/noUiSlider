@@ -1,6 +1,7 @@
-$('.slider').noUiSlider({
-	start: [ 0, 1000 ],
+$('#slider-snap').noUiSlider({
+	start: [ 0, 500 ],
 	snap: true,
+	connect: true,
 	range: {
 		'min': 0,
 		'10%': 50,

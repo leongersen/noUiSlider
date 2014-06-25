@@ -1,4 +1,4 @@
-$('.slider').noUiSlider({
+$('#slider-step').noUiSlider({
 	start: [ 4000 ],
 	step: 1000,
 	range: {
