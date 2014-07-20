@@ -1197,6 +1197,12 @@ function closure ( target, options, originalOptions ){
 		return originalOptions;
 	};
 
+    // Get original options
+    /** @expose */
+    target.getOriginalOptions = function ( ) {
+        return originalOptions;
+    }
+
 
 // Value setting
 
@@ -1248,6 +1254,11 @@ function closure ( target, options, originalOptions ){
 		});
 	}
 
+    // Get the internals "originalOptions"
+    function internals ( ) {
+        return this[0].getOriginalOptions();
+    }
+
 	// Access the internal getting and setting methods based on argument count.
 	function value ( ) {
 		return this[0][ !arguments.length ? 'vGet' : 'vSet' ].apply(this[0], arguments);
@@ -1285,7 +1296,11 @@ function closure ( target, options, originalOptions ){
 // Extend jQuery/Zepto with the noUiSlider method.
 	/** @expose */
 	$.fn.noUiSlider = function ( options, re ) {
-		return ( re ? rebuild : initialize ).call(this, options);
+        if(options === 'internals') {
+            return internals.call(this);
+        } else {
+            return ( re ? rebuild : initialize ).call(this, options);
+        }
 	};
 
 }( window['jQuery'] || window['Zepto'] ));
