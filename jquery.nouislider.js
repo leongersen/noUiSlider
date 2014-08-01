@@ -319,6 +319,8 @@ function closure ( target, options, originalOptions ){
 	target.LinkConfirm = linkConfirm;
 	/** @expose */
 	target.LinkDefaultFormatter = options.format;
+	/** @expose */
+	target.LinkDefaultFlag = 'lower';
 
 
 // Handle placement
@@ -418,16 +420,18 @@ function closure ( target, options, originalOptions ){
 			to = options.format.from( to );
 
 			// Request an update for all links if the value was invalid.
-			if ( to === false || isNaN(to) ) {
-				linkUpdate(triggerPos[trigger]);
-				continue;
+			if ( to !== false && !isNaN(to) ) {
+
+				// Calculate the new handle position
+				to = $Spectrum.toStepping( to );
+
+				// Set the handle.
+				if ( setHandle( $Handles[trigger], to ) !== false ) {
+					continue;
+				}
 			}
 
-			// Calculate the new handle position
-			to = $Spectrum.toStepping( to );
-
-			// Set the handle.
-			setHandle( $Handles[trigger], to );
+			linkUpdate(triggerPos[trigger]);
 		}
 	}
 
