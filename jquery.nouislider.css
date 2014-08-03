@@ -13,6 +13,9 @@
 -moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
+.noUi-target {
+	position: relative;
+}
 .noUi-base {
 	width: 100%;
 	height: 100%;

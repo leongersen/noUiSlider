@@ -13,11 +13,7 @@
 			range: {
 				'min': [ 50 ],
 				'max': [ 90 ]
-			},
-			format: wNumb({
-				decimals: 0,
-				postfix: ',-'
-			})
+			}
 		});
 
 		var w = slider.width();
@@ -25,7 +21,7 @@
 		var handles = slider.find('.noUi-handle');
 
 		slider.on("slide", function( event, values ){
-			deepEqual( values, ['50,-', '70,-'], "Slide event has proper parameters." );
+			deepEqual( values, ['50.00', '70.00'], "Slide event has proper parameters." );
 		});
 
 		handles.first().trigger($.Event('mousedown', {
@@ -40,7 +36,7 @@
 
 		$(document).trigger('mouseup');
 
-		deepEqual( slider.val(), ['50,-', '50,-'], "Slider didn't cross." );
+		deepEqual( slider.val(), ['50.00', '50.00'], "Slider didn't cross." );
 
 		handles.last().trigger($.Event('mousedown', {
 			clientX: 10,
@@ -54,6 +50,6 @@
 
 		$(document).trigger('mouseup');
 
-		deepEqual( slider.val(), ['50,-', '70,-'], "Slider moved properly." );
+		deepEqual( slider.val(), ['50.00', '70.00'], "Slider moved properly." );
 
 	});
