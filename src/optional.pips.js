@@ -1,4 +1,4 @@
-(function(){
+(function( $ ){
 
 	// Removes duplicates from an array.
 	function unique(array) {
@@ -58,7 +58,7 @@
 
 	function generateSpread ( $Spectrum, density, mode, group ) {
 
-		var originalSpectrumDirection = $Spectrum.direction;
+		var originalSpectrumDirection = $Spectrum.direction,
 			indexes = {},
 			firstInRange = $Spectrum.xVal[0],
 			lastInRange = $Spectrum.xVal[$Spectrum.xVal.length-1],
@@ -232,4 +232,4 @@
 		});
 	};
 
-}());
+}( window.jQuery || window.Zepto ));

@@ -1,6 +1,6 @@
 /*jslint browser: true, white: true */
 
-(function(){
+(function( $ ){
 
 	'use strict';
 
@@ -282,6 +282,8 @@
 		return this.getStep(this.toStepping(value));
 	};
 
-	window.Spectrum = Spectrum;
+	$.noUiSlider = {
+		Spectrum: Spectrum
+	};
 
-}());
+}( window.jQuery || window.Zepto ));

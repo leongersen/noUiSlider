@@ -23,11 +23,11 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 	// Determine the events to bind. IE11 implements pointerEvents without
 	// a prefix, which breaks compatibility with the IE10 implementation.
 	/** @const */
-	actions = window.navigator['pointerEnabled'] ? {
+	actions = window.navigator.pointerEnabled ? {
 		start: 'pointerdown',
 		move: 'pointermove',
 		end: 'pointerup'
-	} : window.navigator['msPointerEnabled'] ? {
+	} : window.navigator.msPointerEnabled ? {
 		start: 'MSPointerDown',
 		move: 'MSPointerMove',
 		end: 'MSPointerUp'
@@ -346,18 +346,13 @@ function closure ( target, options, originalOptions ){
 				this.linkAPI[flag].reconfirm(flag);
 			}
 		}
-	};
+	}
 
-	/** @expose */
 	target.LinkUpdate = linkUpdate;
-	/** @expose */
 	target.LinkConfirm = linkConfirm;
-	/** @expose */
 	target.LinkDefaultFormatter = options.format;
-	/** @expose */
 	target.LinkDefaultFlag = 'lower';
 
-	/** @expose */
 	target.reappend = reAppendLink;
 
 
@@ -718,7 +713,7 @@ function closure ( target, options, originalOptions ){
 
 		// Return the original options from the closure.
 		return originalOptions;
-	};
+	}
 
 	// Get the current step size for the slider.
 	function getCurrentStep ( ) {
@@ -737,7 +732,7 @@ function closure ( target, options, originalOptions ){
 
 		// Return values in the proper order.
 		return inSliderOrder( retour );
-	};
+	}
 
 
 
@@ -761,23 +756,18 @@ function closure ( target, options, originalOptions ){
 
 // Methods
 
-	/** @expose */
 	target.vSet = valueSet;
-	/** @expose */
 	target.vGet = valueGet;
-	/** @expose */
 	target.destroy = destroyTarget;
-	/** @expose */
 	target.getCurrentStep = getCurrentStep;
-	
 	target.getInfo = function(){
 		return [
 			$Spectrum,
 			options.style,
-			options.ort,
+			options.ort
 		];
 	};
-	
+
 	// Use the public value method to set the start values.
 	$Target.val( options.start );
 }
@@ -794,7 +784,7 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Test the options once, not for every slider.
-		var options = test_noUiSliderOptions( originalOptions, this );
+		var options = $.noUiSlider.testOptions( originalOptions, this );
 
 		// Loop all items, and provide a new closed-scope environment.
 		return this.each(function(){
@@ -865,9 +855,8 @@ function closure ( target, options, originalOptions ){
 	};
 
 // Extend jQuery/Zepto with the noUiSlider method.
-	/** @expose */
 	$.fn.noUiSlider = function ( options, rebuildFlag ) {
 		return ( rebuildFlag ? rebuild : initialize ).call(this, options);
 	};
 
-}( window['jQuery'] || window['Zepto'] ));
+}( window.jQuery || window.Zepto ));

@@ -11,7 +11,7 @@
 	or true when everything is OK. It can also modify the option
 	object, to make sure all values can be correctly looped elsewhere. */
 
-(function(){
+(function( $ ){
 
 	// Wraps a variable as an array, if it isn't one yet.
 	function asArray ( a ) {
@@ -52,7 +52,7 @@
 			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
 		}
 
-		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
+		parsed.spectrum = new $.noUiSlider.Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
 	}
 
 	function testStart ( parsed, entry ) {
@@ -187,8 +187,7 @@
 		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
 	}
 
-	// Test all developer settings and parse to assumption-safe values.
-	window.test_noUiSliderOptions = function ( options ){
+	function testOptions ( options ) {
 
 		var parsed = {
 			margin: 0,
@@ -243,4 +242,7 @@
 		return parsed;
 	}
 
-}());
+	// Test all developer settings and parse to assumption-safe values.
+	$.noUiSlider.testOptions = testOptions;
+
+}( window.jQuery || window.Zepto ));
