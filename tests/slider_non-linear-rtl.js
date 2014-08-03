@@ -18,9 +18,7 @@
 			},
 			start: 44,
 			direction : 'rtl',
-			format: wNumb({
-				decimals: 0
-			})
+			format: TEST_ROUND_FORMAT
 		});
 
 		sliderLTR.noUiSlider({
@@ -31,9 +29,7 @@
 				'max': 50
 			},
 			start: 44,
-			format: wNumb({
-				decimals: 0
-			})
+			format: TEST_ROUND_FORMAT
 		});
 
 		equal(sliderRTL.val(), '40', 'Start stepping on rtl works');

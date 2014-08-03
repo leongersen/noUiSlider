@@ -1,3 +1,4 @@
+(function(){
 
 	// Removes duplicates from an array.
 	function unique(array) {
@@ -6,7 +7,7 @@
 		});
 	}
 
-// Legend
+// Pips
 
 	function getGroup ( $Spectrum, mode, values, stepped ) {
 
@@ -57,12 +58,18 @@
 
 	function generateSpread ( $Spectrum, density, mode, group ) {
 
-		var indexes = {},
+		var originalSpectrumDirection = $Spectrum.direction;
+			indexes = {},
 			firstInRange = $Spectrum.xVal[0],
 			lastInRange = $Spectrum.xVal[$Spectrum.xVal.length-1],
 			ignoreFirst = false,
 			ignoreLast = false,
 			prevPct = 0;
+
+		// This function loops the spectrum in an ltr linear fashion,
+		// while the toStepping method is direction aware. Trick it into
+		// believing it is ltr.
+		$Spectrum.direction = 0;
 
 		// Create a copy of the group, sort it and filter away all duplicates.
 		group = unique(group.slice().sort(function(a, b){ return a - b; }));
@@ -78,6 +85,8 @@
 			group.push(lastInRange);
 			ignoreLast = true;
 		}
+
+		var loglist = [];
 
 		$.each(group, function ( index, value ) {
 
@@ -152,6 +161,9 @@
 			}
 		});
 
+		// Reset the spectrum.
+		$Spectrum.direction = originalSpectrumDirection;
+
 		return indexes;
 	}
 
@@ -160,7 +172,7 @@
 		var style = ['horizontal', 'vertical'][orientation],
 			element = $('<div/>');
 
-		element.addClass('noUi-legend noUi-legend-'+style);
+		element.addClass('noUi-pips noUi-pips-'+style);
 
 		function getSize( type, value ){
 			return [ '-normal', '-large', '-sub' ][(type&&filterFunc) ? filterFunc(value, type) : type];
@@ -173,7 +185,6 @@
 		}
 		function addSpread ( offset, values ){
 
-			// Invert the scale for rtl sliders.
 			if ( direction ) {
 				offset = 100 - offset;
 			}
@@ -192,3 +203,33 @@
 
 		return element;
 	}
+
+	$.fn.noUiSlider_pips = function ( grid ) {
+
+	var mode = grid['mode'],
+		density = grid['density'] || 1,
+		filter = grid['filter'] || false,
+		values = grid['values'] || false,
+		stepped = grid['stepped'] || false;
+
+		return this.each(function(){
+
+		var info = this.getInfo(),
+			group = getGroup( info[0], mode, values, stepped ),
+			spread = generateSpread( info[0], density, mode, group );
+
+			if ( mode === 'range' ) {
+				console.log(spread, Object.keys(spread).length);
+			}
+
+			return $(this).append(addMarking(
+				info[1],
+				info[2],
+				info[0].direction,
+				spread,
+				filter
+			));
+		});
+	};
+
+}());

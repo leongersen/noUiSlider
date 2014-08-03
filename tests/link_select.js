@@ -23,12 +23,7 @@
 			}
 		});
 
-		$('.slider').Link({
-			target: select,
-			format: wNumb({
-				decimals: 0
-			})
-		});
+		$('.slider').Link('lower').to(select, null, TEST_ROUND_FORMAT);
 
 		select.val( 40 ).change();
 

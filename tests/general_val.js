@@ -1,5 +1,5 @@
 
-	test( "Value setting/getting on normal inputs", function(){
+	test( "Make sure .val() behaviour didn't change.", function(){
 
 		Q.html('\
 			<input id="one">\
@@ -14,10 +14,7 @@
 
 		var slider = $("#simpleslider").noUiSlider({
 			range: { min: 20, max: 120 },
-			start: 30,
-			format: wNumb({
-				decimals: 2
-			})
+			start: 30
 		});
 
 		one.val(35);

@@ -9,7 +9,7 @@
 			</form>\
 		');
 
-		Q.find(".slider").noUiSlider({
+		Q.find('.slider').noUiSlider({
 			start: [ 20, 80 ],
 			range: {
 				'min': [   0 ],
@@ -17,13 +17,8 @@
 			}
 		});
 
-		$('.slider').Link('lower', {
-			target: 'lower'
-		});
-
-		$('.slider').Link('upper', {
-			target: 'upper'
-		});
+		Q.find('.slider').Link('lower').to('input-lower');
+		Q.find('.slider').Link('upper').to('input-upper');
 
 		$("#slidera").val([50, 61]);
 		$("#sliderb").val([51, 62]);
@@ -40,4 +35,6 @@
 		equal( $(inputs[4]).val(), '52.00' );
 		equal( $(inputs[5]).val(), '63.00' );
 
+		equal(Q.find('[name="input-lower"]').length, 3);
+		
 	});

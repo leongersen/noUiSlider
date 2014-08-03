@@ -2,7 +2,6 @@
 $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 
 /*jslint browser: true */
-/*jslint sub: true */
 /*jslint white: true */
 /*jslint continue: true */
 /*jslint plusplus: true */
@@ -82,6 +81,29 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		setTimeout(function(){
 			element.removeClass(className);
 		}, duration);
+	}
+
+	// Delimit proposed values for handle positions.
+	function getPositions ( a, b, delimit ) {
+
+		// Add movement to current position.
+		var c = a + b[0], d = a + b[1];
+
+		// Only alter the other position on drag,
+		// not on standard sliding.
+		if ( delimit ) {
+			if ( c < 0 ) {
+				d += Math.abs(c);
+			}
+			if ( d > 100 ) {
+				c -= ( d - 100 );
+			}
+
+			// Limit values to 0 and 100.
+			return [limit(c), limit(d)];
+		}
+
+		return [c,d];
 	}
 
 
@@ -313,6 +335,19 @@ function closure ( target, options, originalOptions ){
 		return createChangeHandler( trigger );
 	}
 
+	// Place elements back on the slider.
+	function reAppendLink ( ) {
+
+		var i, flag;
+
+		// The API keeps a list of elements: we can re-append them on rebuild.
+		for ( i = 0; i < triggerPos.length; i++ ) {
+			if ( this.linkAPI && this.linkAPI[(flag = triggerPos[i])] ) {
+				this.linkAPI[flag].reconfirm(flag);
+			}
+		}
+	};
+
 	/** @expose */
 	target.LinkUpdate = linkUpdate;
 	/** @expose */
@@ -322,8 +357,9 @@ function closure ( target, options, originalOptions ){
 	/** @expose */
 	target.LinkDefaultFlag = 'lower';
 
+	/** @expose */
+	target.reappend = reAppendLink;
 
-// Handle placement
 
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to ) {
@@ -369,29 +405,6 @@ function closure ( target, options, originalOptions ){
 		return true;
 	}
 
-	// Delimit proposed values for handle positions.
-	function getPositions ( a, b, delimit ) {
-
-		// Add movement to current position.
-		var c = a + b[0], d = a + b[1];
-
-		// Only alter the other position on drag,
-		// not on standard sliding.
-		if ( delimit ) {
-			if ( c < 0 ) {
-				d += Math.abs(c);
-			}
-			if ( d > 100 ) {
-				c -= ( d - 100 );
-			}
-
-			// Limit values to 0 and 100.
-			return [limit(c), limit(d)];
-		}
-
-		return [c,d];
-	}
-
 	// Loop values from value method and apply them.
 	function setValues ( count, values ) {
 
@@ -408,7 +421,8 @@ function closure ( target, options, originalOptions ){
 			to = values[trigger];
 
 			// Setting with null indicates an 'ignore'.
-			if ( to === null ) {
+			// Inputting 'false' is invalid.
+			if ( to === null || to === false ) {
 				continue;
 			}
 
@@ -436,7 +450,6 @@ function closure ( target, options, originalOptions ){
 	}
 
 
-// Events
 
 	// Handler for attaching events trough a proxy.
 	function attach ( events, element, callback, data ) {
@@ -636,30 +649,9 @@ function closure ( target, options, originalOptions ){
 	}
 
 
-// Initialize slider
-
-	// Throw an error if the slider was already initialized.
-	if ( $Target.hasClass(Classes[0]) ) {
-		throw new Error('Slider was already initialized.');
-	}
-
-	// Create the base element, initialise HTML and set classes.
-	// Add handles and links.
-	$Base = addSlider( options.dir, options.ort, $Target );
-	$Handles = addHandles( options.handles, options.dir, $Base );
-
-	// Set the connect classes.
-	addConnection ( options.connect, $Target, $Handles );
-
-	// Attach user events.
-	events( options.events );
-
-
-// Methods
 
 	// Set the slider value.
-	/** @expose */
-	target.vSet = function ( input ) {
+	function valueSet ( input ) {
 
 		var count, values = asArray( input );
 
@@ -688,11 +680,10 @@ function closure ( target, options, originalOptions ){
 		fireEvents(['set']);
 
 		return this;
-	};
+	}
 
 	// Get the slider value.
-	/** @expose */
-	target.vGet = function ( ) {
+	function valueGet ( ) {
 
 		var i, retour = [];
 
@@ -702,38 +693,35 @@ function closure ( target, options, originalOptions ){
 		}
 
 		return inSliderOrder( retour );
-	};
+	}
+
+
 
 	// Destroy the slider and unbind all events.
-	/** @expose */
-	target.destroy = function ( ) {
+	function destroyTarget ( ) {
 
 		// Unbind events on the slider, remove all classes and child elements.
 		$(this).off(namespace)
 			.removeClass(Classes.join(' '))
 			.empty();
 
+		delete this.LinkUpdate;
+		delete this.LinkConfirm;
+		delete this.LinkDefaultFormatter;
+		delete this.LinkDefaultFlag;
+		delete this.reappend;
+		delete this.vGet;
+		delete this.vSet;
+		delete this.getCurrentStep;
+		delete this.getInfo;
+		delete this.destroy;
+
 		// Return the original options from the closure.
 		return originalOptions;
 	};
 
-	// Place elements back on the slider.
-	/** @expose */
-	target.reappend = function ( ) {
-
-		var i, flag;
-
-		// The API keeps a list of elements: we can re-append them on rebuild.
-		for ( i = 0; i < triggerPos.length; i++ ) {
-			if ( this.linkAPI && this.linkAPI[(flag = triggerPos[i])] ) {
-				this.linkAPI[flag].reconfirm(flag);
-			}
-		}
-	};
-
 	// Get the current step size for the slider.
-	/** @expose */
-	target.getCurrentStep = function ( ) {
+	function getCurrentStep ( ) {
 
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
@@ -751,6 +739,45 @@ function closure ( target, options, originalOptions ){
 		return inSliderOrder( retour );
 	};
 
+
+
+// Initialize slider
+
+	// Throw an error if the slider was already initialized.
+	if ( $Target.hasClass(Classes[0]) ) {
+		throw new Error('Slider was already initialized.');
+	}
+
+	// Create the base element, initialise HTML and set classes.
+	// Add handles and links.
+	$Base = addSlider( options.dir, options.ort, $Target );
+	$Handles = addHandles( options.handles, options.dir, $Base );
+
+	// Set the connect classes.
+	addConnection ( options.connect, $Target, $Handles );
+
+	// Attach user events.
+	events( options.events );
+
+// Methods
+
+	/** @expose */
+	target.vSet = valueSet;
+	/** @expose */
+	target.vGet = valueGet;
+	/** @expose */
+	target.destroy = destroyTarget;
+	/** @expose */
+	target.getCurrentStep = getCurrentStep;
+	
+	target.getInfo = function(){
+		return [
+			$Spectrum,
+			options.style,
+			options.ort,
+		];
+	};
+	
 	// Use the public value method to set the start values.
 	$Target.val( options.start );
 }
@@ -780,10 +807,15 @@ function closure ( target, options, originalOptions ){
 
 		return this.each(function(){
 
+			// The rebuild flag can be used if the slider wasn't initialized yet.
+			if ( !this.destroy ) {
+				$(this).noUiSlider( options );
+				return;
+			}
+
 			// Get the current values from the slider,
 			// including the initialization options.
-			var values = $(this).val(),
-				originalOptions = this.destroy(),
+			var values = $(this).val(), originalOptions = this.destroy(),
 
 				// Extend the previous options with the newly provided ones.
 				newOptions = $.extend( {}, originalOptions, options );

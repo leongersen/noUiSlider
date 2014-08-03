@@ -20,47 +20,34 @@
 				decimals: 5
 			})
 		});
-		
-		var one = {
-			target: '-inline-<div class="tooltip"/>',
-			method: function( value, handle, slider ){
-				ok( $("#slider")[0] === slider[0] );
-				ok( handle.hasClass('noUi-handle') );
+
+		$("#slider").Link('lower').to('-inline-<div class="tooltip"/>', function( value, handle, slider ){
+			ok( $("#slider")[0] === slider[0] );
+			ok( handle.hasClass('noUi-handle') );
+		}, wNumb({
+			decimals: 6,
+			prefix: '#',
+			negativeBefore: '!',
+			negative: ''
+		}));
+
+		$("#slider").Link('lower').to($("#inputChange"), null, wNumb({
+			mark: '.',
+			thousand: ',',
+			prefix: '$',
+			postfix: ' p.p.',
+			decimals: 3,
+			negativeBefore: '-',
+			negative: '',
+			encoder: function( a ){
+				return a * 1E7;
 			},
-			format: wNumb({
-				decimals: 6,
-				prefix: '#',
-				negativeBefore: '!',
-				negative: ''
-			})
-		};
+			decoder: function( a ){
+				return a / 1E7;
+			}
+		}));
 		
-		var two = {
-			target: $("#inputChange"),
-			format: wNumb({
-				mark: '.',
-				thousand: ',',
-				prefix: '$',
-				postfix: ' p.p.',
-				decimals: 3,
-				negativeBefore: '-',
-				negative: '',
-				encoder: function( a ){
-					return a * 1E7;
-				},
-				decoder: function( a ){
-					return a / 1E7;
-				}
-			})
-		};
-		
-		var three = {
-			target: $("#inputVal"),
-			method: 'val'
-		};
-		
-		$("#slider").Link('lower', one, two);
-		$("#slider").Link('upper', three);
+		$("#slider").Link('upper').to($("#inputVal"), 'val');
 
 		$("#inputChange").val( "15000" ).trigger('change');
 

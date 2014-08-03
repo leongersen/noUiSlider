@@ -2,13 +2,13 @@
 /* Base;
  *
  */
-.noUi-legend,
-.noUi-legend * {
+.noUi-pips,
+.noUi-pips * {
 -moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
-.noUi-legend {
-	position: relative;
+.noUi-pips {
+	position: absolute;
 	font: 400 12px Arial;
 	color: #999;
 }
@@ -43,9 +43,12 @@
 /* Horizontal layout;
  *
  */
-.noUi-legend-horizontal {
+.noUi-pips-horizontal {
 	padding: 10px 0;
 	height: 50px;
+	top: 100%;
+	left: 0;
+	width: 100%;
 }
 .noUi-value-horizontal {
 	margin-left: -20px;
@@ -70,10 +73,11 @@
 /* Vertical layout;
  *
  */
-.noUi-legend-vertical {
+.noUi-pips-vertical {
 	padding: 0 10px;
-	height: 300px;
-	display: inline-block;
+	height: 100%;
+	top: 0;
+	left: 100%;
 }
 .noUi-value-vertical {
 	width: 15px;
