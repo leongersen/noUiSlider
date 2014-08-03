@@ -144,7 +144,7 @@
 		<p>The orientation setting can be used to set the slider to <code>"vertical"</code> or <code>"horizontal"</code>.</p>
 
 		<p><strong>Set dimensions!</strong> Vertical sliders don't assume a default <code>height</code>, so you'll need to set one. You can use any unit you want, including <code>%</code> or <code>px</code>.</p>
-		
+
 		<div class="example vertical">
 			<div id="slider-vertical"></div>
 			<?php run('orientation'); ?>
@@ -178,6 +178,7 @@
 			<div id="slider-direction"></div>
 			<div class="example-val" id="field"></div>
 			<?php run('direction'); ?>
+			<?php run('direction-link'); ?>
 		</div>
 
 		<div class="options">
@@ -211,10 +212,13 @@
 
 		<p>Set the animate option to <code>false</code> to prevent the slider from animating to a new value with when calling <code>.val()</code>.</p>
 
-		<div class="example">
+		<div class="example" style="margin: 0; padding-bottom: 20px">
 			<div class="sliders" id="slider-animate-true"></div>
-			<div class="sliders" id="slider-animate-false"></div>
 			<button id="set-sliders">Set sliders</button>
+		</div>
+
+		<div class="example" style="margin: 0;">
+			<div class="sliders" id="slider-animate-false"></div>
 			<?php run('animate'); ?>
 		</div>
 

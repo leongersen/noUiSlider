@@ -1,1 +1,1 @@
-$("#slider-direction").Link('lower', $("#field"));
+$("#slider-direction").Link('lower').to($("#field"));

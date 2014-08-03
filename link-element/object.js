@@ -1,3 +1,0 @@
-$.Link({
-	target: $("#salary")
-});

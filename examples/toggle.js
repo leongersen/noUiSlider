@@ -16,4 +16,4 @@ $("#slider-toggle").noUiSlider({
 
 $("#slider-toggle").addClass('toggle');
 
-$("#slider-toggle").Link('lower', toggle);
+$("#slider-toggle").Link('lower').to(toggle);

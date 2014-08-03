@@ -8,7 +8,4 @@ $('#slider-update').noUiSlider({
 	step: 2
 });
 
-$('#slider-update').Link({
-	target: $('#slider-update-value'),
-	method: 'text'
-});
+$('#slider-update').Link().to( $('#slider-update-value'), 'text' );

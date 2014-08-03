@@ -1,1 +1,1 @@
-$('#slider-non-linear-step').Link('lower', $('#slider-non-linear-step-value'));
+$('#slider-non-linear-step').Link('lower').to($('#slider-non-linear-step-value'));

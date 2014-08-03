@@ -22,8 +22,14 @@ $('#range').noUiSlider({
 	}
 });
 
-// Reading/writing from an input? One line.
-$('#range').Link('lower', $('#value-input'));
+// Reading/writing + validation from an input? One line.
+$('#range').Link('lower').to($('#value-input'));
 
 // Write to a span? One line.
-$('#range').Link('upper', $('#value-span'), 'html');
+$('#range').Link('upper').to($('#value-span'), 'html');
+
+// Optional addon: creating Pips (Percentage In Point);
+$('#range').noUiSlider_pips({
+	mode: 'steps',
+	density: 2
+});

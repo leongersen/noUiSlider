@@ -12,4 +12,4 @@ slider.noUiSlider({
 	}
 });
 
-slider.Link('lower', input);
+slider.Link('lower').to(input);

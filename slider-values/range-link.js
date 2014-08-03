@@ -1,1 +1,1 @@
-$('#slider-range').Link('lower', $('#slider-range-value'));
+$('#slider-range').Link('lower').to($('#slider-range-value'));

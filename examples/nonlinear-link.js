@@ -7,10 +7,10 @@ function leftValue ( value, handle, slider ) {
 // The first item will display the slider value, 
 // the second shows how far the handle moved
 // from the left edge of the slider.
-$("#nonlinear").Link('lower', $('#lower-value'));
-$("#nonlinear").Link('lower', $('#lower-offset'), leftValue);
+$("#nonlinear").Link('lower').to($('#lower-value'));
+$("#nonlinear").Link('lower').to($('#lower-offset'), leftValue);
 
 
 // Do the same for the upper handle.
-$("#nonlinear").Link('upper', $('#upper-value'));
-$("#nonlinear").Link('upper', $('#upper-offset'), leftValue);
+$("#nonlinear").Link('upper').to($('#upper-value'));
+$("#nonlinear").Link('upper').to($('#upper-offset'), leftValue);

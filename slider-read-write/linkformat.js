@@ -1,1 +1,1 @@
-$("#slider-format").Link('lower', $('#input-format'));
+$("#slider-format").Link('lower').to($('#input-format'));

@@ -1,3 +1,3 @@
-$("#slider-date").Link('lower', $("#event-start"), setDate);
+$("#slider-date").Link('lower').to($("#event-start"), setDate);
 
-$("#slider-date").Link('upper', $("#event-end"), setDate);
+$("#slider-date").Link('upper').to($("#event-end"), setDate);

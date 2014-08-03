@@ -7,5 +7,5 @@ $("#slider-link").noUiSlider({
 	}
 });
 
-$("#slider-link").Link('lower', $('#span'));
-$("#slider-link").Link('lower', $('#input'));
+$("#slider-link").Link('lower').to($('#span'));
+$("#slider-link").Link('lower').to($('#input'));

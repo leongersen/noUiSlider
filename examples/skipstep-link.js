@@ -1,3 +1,3 @@
-$("#skipstep").Link('lower', $("#skip-value-lower"));
+$("#skipstep").Link('lower').to($("#skip-value-lower"));
 
-$("#skipstep").Link('upper', $("#skip-value-upper"));
+$("#skipstep").Link('upper').to($("#skip-value-upper"));
