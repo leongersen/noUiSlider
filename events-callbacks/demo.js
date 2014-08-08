@@ -17,4 +17,4 @@ $("#slider-events").noUiSlider({
 	}
 });
 
-$("#slider-events").Link('lower', $("#input-log"));
+$("#slider-events").Link('lower').to($("#input-log"));

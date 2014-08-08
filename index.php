@@ -72,7 +72,7 @@
 	<p>noUiSlider supports <strong>IE7 and up</strong>, and of course the latest versions of the <em>'evergreen'</em> browsers:<br>
 	<strong>Chrome</strong>, <strong>Safari</strong>, <strong>Firefox</strong> and <strong>Opera</strong>.</p>
 
-	<img src="/nouislider/assets/main-desktop.png" alt="Browser support">
+	<img src="/assets/main-desktop.png" alt="Browser support">
 </div>
 
 <h1>Let's get started!</h1>

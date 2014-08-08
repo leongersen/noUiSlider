@@ -3,14 +3,11 @@ var onSlide = function(){ ... };
 function onSlide(){ ... };
 
 // Reference a function
-$('.slider').noUiSlider({
-	slide: onSlide
-});
+$('.slider').on('slide', onSlide);
 
 // Provide a function directly
-$('#slider').noUiSlider({
-	set: function(){
+$('#slider').on('set', function(){
+
 	// The slider is the scope, so:
 	// $(this) == $('#slider')
-	}
 });

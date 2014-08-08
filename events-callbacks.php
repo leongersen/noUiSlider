@@ -21,11 +21,9 @@
 				<div id="l-change">Change</div>
 			</div>
 
-			<input id="input-log">
-
 			<div class="logger">
+				<input id="input-log">
 				<button id="setter1">.val([ 5, 15 ])</button>
-				<button id="setter2">.val([ 5, 15 ], true)</button>
 			</div>
 
 			<?php run('demo'); ?>
@@ -113,7 +111,6 @@
 	</div>
 
 	<div class="side">
-		<?php code('set'); ?>
 	</div>
 
 </section>
