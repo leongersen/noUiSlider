@@ -1,10 +1,5 @@
-/**@preserve
-$.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
-
 /*jslint browser: true */
 /*jslint white: true */
-/*jslint continue: true */
-/*jslint plusplus: true */
 
 (function( $ ){
 
@@ -208,7 +203,7 @@ $.fn.noUiSlider - WTFPL - refreshless.com/nouislider/ */
 		var index, handles = [];
 
 		// Append handles.
-		for ( index = 0; index < nrHandles; index++ ) {
+		for ( index = 0; index < nrHandles; index += 1 ) {
 
 			// Keep a list of all added handles.
 			handles.push( addHandle( direction, index ).appendTo(base) );
@@ -269,7 +264,7 @@ function closure ( target, options, originalOptions ){
 		// only one additional argument.
 		var index, values = [ $Target.val() ];
 
-		for ( index = 0; index < events.length; index++ ){
+		for ( index = 0; index < events.length; index += 1 ){
 			$Target.trigger(events[index], values);
 		}
 	}
@@ -341,7 +336,7 @@ function closure ( target, options, originalOptions ){
 		var i, flag;
 
 		// The API keeps a list of elements: we can re-append them on rebuild.
-		for ( i = 0; i < triggerPos.length; i++ ) {
+		for ( i = 0; i < triggerPos.length; i += 1 ) {
 			if ( this.linkAPI && this.linkAPI[(flag = triggerPos[i])] ) {
 				this.linkAPI[flag].reconfirm(flag);
 			}
@@ -408,7 +403,7 @@ function closure ( target, options, originalOptions ){
 		// If there are multiple handles to be set run the setting
 		// mechanism twice for the first handle, to make sure it
 		// can be bounced of the second one properly.
-		for ( i = 0; i < count; i++ ) {
+		for ( i = 0; i < count; i += 1 ) {
 
 			trigger = i%2;
 
@@ -417,30 +412,22 @@ function closure ( target, options, originalOptions ){
 
 			// Setting with null indicates an 'ignore'.
 			// Inputting 'false' is invalid.
-			if ( to === null || to === false ) {
-				continue;
-			}
+			if ( to !== null && to !== false ) {
 
-			// If a formatted number was passed, attemt to decode it.
-			if ( typeof to === 'number' ) {
-				to = String(to);
-			}
+				// If a formatted number was passed, attemt to decode it.
+				if ( typeof to === 'number' ) {
+					to = String(to);
+				}
 
-			to = options.format.from( to );
+				to = options.format.from( to );
 
-			// Request an update for all links if the value was invalid.
-			if ( to !== false && !isNaN(to) ) {
+				// Request an update for all links if the value was invalid.
+				// Do so too if setting the handle fails.
+				if ( to === false || isNaN(to) || setHandle( $Handles[trigger], $Spectrum.toStepping( to ) ) === false ) {
 
-				// Calculate the new handle position
-				to = $Spectrum.toStepping( to );
-
-				// Set the handle.
-				if ( setHandle( $Handles[trigger], to ) !== false ) {
-					continue;
+					linkUpdate(triggerPos[trigger]);
 				}
 			}
-
-			linkUpdate(triggerPos[trigger]);
 		}
 	}
 
@@ -606,7 +593,7 @@ function closure ( target, options, originalOptions ){
 		// Attach the standard drag event to the handles.
 		if ( !behaviour.fixed ) {
 
-			for ( i = 0; i < $Handles.length; i++ ) {
+			for ( i = 0; i < $Handles.length; i += 1 ) {
 
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
@@ -657,7 +644,9 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Animation is optional.
-		if ( options.animate ) {
+		// Make sure the initial values where set before using animated
+		// placement. (no report, unit testing);
+		if ( options.animate && $Locations[0] !== -1 ) {
 			addClassFor( $Target, Classes[14], 300 );
 		}
 
@@ -683,7 +672,7 @@ function closure ( target, options, originalOptions ){
 		var i, retour = [];
 
 		// Get the value from all handles.
-		for ( i = 0; i < options.handles; i++ ){
+		for ( i = 0; i < options.handles; i += 1 ){
 			retour[i] = options.format.to( $Values[i] );
 		}
 

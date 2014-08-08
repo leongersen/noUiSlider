@@ -1,4 +1,5 @@
-/*jslint browser: true, white: true */
+/*jslint browser: true */
+/*jslint white: true */
 
 (function( $ ){
 

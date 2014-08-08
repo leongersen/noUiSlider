@@ -1,3 +1,6 @@
+/*jslint browser: true */
+/*jslint white: true */
+
 /*	Every input option is tested and parsed. This'll prevent
 	endless validation in internal methods. These tests are
 	structured with an item for every option available. An
@@ -12,6 +15,8 @@
 	object, to make sure all values can be correctly looped elsewhere. */
 
 (function( $ ){
+
+	'use strict';
 
 	// Wraps a variable as an array, if it isn't one yet.
 	function asArray ( a ) {
@@ -47,8 +52,7 @@
 		}
 
 		// Catch missing start or end.
-		if ( entry['min'] === undefined ||
-				entry['max'] === undefined ) {
+		if ( entry.min === undefined || entry.max === undefined ) {
 			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
 		}
 
@@ -130,7 +134,9 @@
 			throw new Error("noUiSlider: 'margin' option must be numeric.");
 		}
 
-		if ( !(parsed.margin = parsed.spectrum.getMargin(entry)) ) {
+		parsed.margin = parsed.spectrum.getMargin(entry);
+
+		if ( !parsed.margin ) {
 			throw new Error("noUiSlider: 'margin' option is only supported on linear sliders.");
 		}
 	}
@@ -180,7 +186,7 @@
 		parsed.format = entry;
 
 		// Any object with a to and from method is supported.
-		if ( typeof entry['to'] === 'function' && typeof entry['from'] === 'function' ) {
+		if ( typeof entry.to === 'function' && typeof entry.from === 'function' ) {
 			return true;
 		}
 

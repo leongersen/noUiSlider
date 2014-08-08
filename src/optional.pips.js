@@ -1,4 +1,9 @@
+/*jslint browser: true */
+/*jslint white: true */
+
 (function( $ ){
+
+	'use strict';
 
 	// Removes duplicates from an array.
 	function unique(array) {
@@ -217,10 +222,6 @@
 		var info = this.getInfo(),
 			group = getGroup( info[0], mode, values, stepped ),
 			spread = generateSpread( info[0], density, mode, group );
-
-			if ( mode === 'range' ) {
-				console.log(spread, Object.keys(spread).length);
-			}
 
 			return $(this).append(addMarking(
 				info[1],
