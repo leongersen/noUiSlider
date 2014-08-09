@@ -352,16 +352,27 @@ function closure ( target, options, originalOptions ){
 
 
 	// Test suggested values and apply margin, step.
-	function setHandle ( handle, to ) {
+	function setHandle ( handle, to, noLimitOption ) {
 
 		var trigger = handle[0] !== $Handles[0][0] ? 1 : 0,
-			lower = $Locations[0] + options.margin,
-			upper = $Locations[1] - options.margin;
+			lowerMargin = $Locations[0] + options.margin,
+			upperMargin = $Locations[1] - options.margin,
+			lowerLimit = $Locations[0] + options.limit,
+			upperLimit = $Locations[1] - options.limit;
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
+		// Apply the margin option by adding it to the handle positions.
 		if ( $Handles.length > 1 ) {
-			to = trigger ? Math.max( to, lower ) : Math.min( to, upper );
+			to = trigger ? Math.max( to, lowerMargin ) : Math.min( to, upperMargin );
+		}
+
+		// The limit option has the opposite effect, limiting handles to a
+		// maximum distance from another. Limit must be > 0, as otherwise
+		// handles would be unmoveable. 'noLimitOption' is set to 'false'
+		// for the .val() method, except for pass 4/4.
+		if ( noLimitOption !== false && options.limit && $Handles.length > 1 ) {
+			to = trigger ? Math.min ( to, lowerLimit ) : Math.max( to, upperLimit );
 		}
 
 		// Handle the step option.
@@ -400,6 +411,11 @@ function closure ( target, options, originalOptions ){
 
 		var i, trigger, to;
 
+		// With the limit option, we'll need another limiting pass.
+		if ( options.limit ) {
+			count += 1;
+		}
+
 		// If there are multiple handles to be set run the setting
 		// mechanism twice for the first handle, to make sure it
 		// can be bounced of the second one properly.
@@ -423,7 +439,7 @@ function closure ( target, options, originalOptions ){
 
 				// Request an update for all links if the value was invalid.
 				// Do so too if setting the handle fails.
-				if ( to === false || isNaN(to) || setHandle( $Handles[trigger], $Spectrum.toStepping( to ) ) === false ) {
+				if ( to === false || isNaN(to) || setHandle( $Handles[trigger], $Spectrum.toStepping( to ), i === (3 - options.dir) ) === false ) {
 
 					linkUpdate(triggerPos[trigger]);
 				}

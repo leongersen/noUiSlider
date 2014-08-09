@@ -141,6 +141,19 @@
 		}
 	}
 
+	function testLimit ( parsed, entry ) {
+
+		if ( !isNumeric(entry) ){
+			throw new Error("noUiSlider: 'limit' option must be numeric.");
+		}
+
+		parsed.limit = parsed.spectrum.getMargin(entry);
+
+		if ( !parsed.limit ) {
+			throw new Error("noUiSlider: 'limit' option is only supported on linear sliders.");
+		}
+	}
+
 	function testDirection ( parsed, entry ) {
 
 		// Set direction as a numerical value for easy parsing.
@@ -197,6 +210,7 @@
 
 		var parsed = {
 			margin: 0,
+			limit: 0,
 			animate: true,
 			format: defaultFormatter
 		}, tests;
@@ -212,6 +226,7 @@
 			'range': { r: true, t: testRange },
 			'orientation': { r: false, t: testOrientation },
 			'margin': { r: false, t: testMargin },
+			'limit': { r: false, t: testLimit },
 			'behaviour': { r: true, t: testBehaviour },
 			'format': { r: false, t: testFormat }
 		};
