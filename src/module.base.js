@@ -651,6 +651,11 @@ function closure ( target, options, originalOptions ){
 	// Set the slider value.
 	function valueSet ( input ) {
 
+		// LibLink: don't accept new values when currently emitting changes.
+		if ( $Target[0].LinkIsEmitting ) {
+			return this;
+		}
+
 		var count, values = asArray( input );
 
 		// The RTL settings is implemented by reversing the front-end,
