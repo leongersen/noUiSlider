@@ -489,10 +489,10 @@ function closure ( target, options, originalOptions ){
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
 
-		state = setHandle ( handles[0], positions[h] );
+		state = setHandle ( handles[0], positions[h], handles.length === 1 );
 
 		if ( handles.length > 1 ) {
-			state = setHandle ( handles[1], positions[h?0:1] ) || state;
+			state = setHandle ( handles[1], positions[h?0:1], false ) || state;
 		}
 
 		// Fire the 'slide' event if any handle moved.
