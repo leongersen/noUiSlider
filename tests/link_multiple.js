@@ -9,25 +9,16 @@
 			</form>\
 		');
 
-		Q.find(".slider").noUiSlider({
-			  range: {
+		Q.find('.slider').noUiSlider({
+			start: [ 20, 80 ],
+			range: {
 				'min': [   0 ],
 				'max': [ 100 ]
 			}
-			,start: [ 20, 80 ]
-			,serialization: {
-				 lower: [
-					new Link({
-						target: 'lower'
-					})
-				]
-				,upper: [
-					new Link({
-						target: 'upper'
-					})
-				]
-			}
 		});
+
+		Q.find('.slider').Link('lower').to('input-lower');
+		Q.find('.slider').Link('upper').to('input-upper');
 
 		$("#slidera").val([50, 61]);
 		$("#sliderb").val([51, 62]);
@@ -44,4 +35,6 @@
 		equal( $(inputs[4]).val(), '52.00' );
 		equal( $(inputs[5]).val(), '63.00' );
 
+		equal(Q.find('[name="input-lower"]').length, 3);
+		
 	});

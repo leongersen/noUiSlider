@@ -1,5 +1,5 @@
 
-	test( "Testing val setting", function(){
+	test( "Value setting/getting", function(){
 
 		Q.html('\
 			<div class="slider" id="slider"></div>\
@@ -10,10 +10,11 @@
 			start: [ 0, 10 ],
 			behaviour: 'drag',
 			connect: true,
-			serialization: {
-				format: {
-					'decimals': 1
-				}
+			format: {
+				to: function(x){
+					return x.toFixed(1);
+				},
+				from: Number
 			}
 		});
 

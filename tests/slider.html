@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<head>
+	<title>Testing</title>
+
+	<style>
+
+		.noUi-horizontal {
+			width: 300px;
+		}
+		.noUi-vertical {
+			height: 150px;
+		}
+
+	</style>
+
+	<link href="../jquery.nouislider.css" rel="stylesheet">
+	<link href="http://code.jquery.com/qunit/qunit-1.12.0.css" rel="stylesheet">
+
+	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
+	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/blanket.js/1.1.4/blanket.min.js"></script>
+
+	<script src="../libLink/jquery.liblink.js"></script>
+	<script src="../wnumb/wnumb.js"></script>
+
+	<script src="../src/module.range.js" data-cover></script>
+	<script src="../src/module.options.js" data-cover></script>
+	<script src="../src/module.base.js" data-cover></script>
+	<script src="../src/optional.pips.js" data-cover></script>
+
+</head>
+
+<body>
+
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+
+	<script>
+		var Q = $("#qunit-fixture");
+
+		var TEST_ROUND_FORMAT = {
+			to: function(x){
+				return Math.round(x).toString();
+			},
+			from: Number
+		};
+
+	</script>
+
+	<script src="general_val.js"></script>
+
+	<script src="slider_values.js"></script>
+	<script src="slider_limit.js"></script>
+	<script src="slider_step.js"></script>
+	<script src="slider_rtl.js"></script>
+	<script src="slider_non-linear-rtl.js"></script>
+	<script src="slider_setting-getting.js"></script>
+	<script src="slider_update.js"></script>
+	<script src="slider_events.js"></script>
+
+	<script src="link_basic.js"></script>
+	<script src="link_multiple.js"></script>
+	<script src="link_update.js"></script>
+	<script src="link_select.js"></script>
+
+	<script src="wnumb_basic.js"></script>
+
+	<script src="addon_pips.js"></script>
+
+
+
+</body>

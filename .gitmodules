@@ -1,0 +1,6 @@
+[submodule "libLink"]
+	path = libLink
+	url = https://github.com/leongersen/libLink
+[submodule "wnumb"]
+	path = wnumb
+	url = https://github.com/leongersen/wnumb

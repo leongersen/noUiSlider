@@ -13,6 +13,9 @@
 -moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
+.noUi-target {
+	position: relative;
+}
 .noUi-base {
 	width: 100%;
 	height: 100%;
@@ -47,6 +50,15 @@
 	cursor: inherit !important;
 }
 
+/* Painting and performance;
+ * Browsers can paint handles in their own layer.
+ */
+.noUi-origin,
+.noUi-handle {
+	-webkit-transform: translate3d(0,0,0);
+	transform: translate3d(0,0,0);
+}
+
 /* Slider size and handle placement;
  */
 .noUi-horizontal {
@@ -58,12 +70,6 @@
 	left: -17px;
 	top: -6px;
 }
-.noUi-horizontal.noUi-extended {
-	padding: 0 15px;
-}
-.noUi-horizontal.noUi-extended .noUi-origin  {
-	right: -15px;
-}
 .noUi-vertical {
 	width: 18px;
 }
@@ -72,12 +78,6 @@
 	height: 34px;
 	left: -6px;
 	top: -17px;
-}
-.noUi-vertical.noUi-extended {
-	padding: 15px 0;
-}
-.noUi-vertical.noUi-extended .noUi-origin  {
-	bottom: -15px;
 }
 
 /* Styling;
