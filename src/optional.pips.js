@@ -91,9 +91,7 @@
 			ignoreLast = true;
 		}
 
-		var loglist = [];
-
-		$.each(group, function ( index, value ) {
+		$.each(group, function ( index ) {
 
 			// Get the current step and the lower + upper positions.
 			var step, i, q,
@@ -145,7 +143,7 @@
 					// per subrange. density = 1 will result in 100 points on the
 					// full range, 2 for 50, 4 for 25, etc.
 					pctPos = prevPct + ( q * stepsize );
-					indexes[pctPos.toFixed(5)] = ['x', 0]; // todo
+					indexes[pctPos.toFixed(5)] = ['x', 0];
 				}
 
 				// Determine the point type.
@@ -211,11 +209,11 @@
 
 	$.fn.noUiSlider_pips = function ( grid ) {
 
-	var mode = grid['mode'],
-		density = grid['density'] || 1,
-		filter = grid['filter'] || false,
-		values = grid['values'] || false,
-		stepped = grid['stepped'] || false;
+	var mode = grid.mode,
+		density = grid.density || 1,
+		filter = grid.filter || false,
+		values = grid.values || false,
+		stepped = grid.stepped || false;
 
 		return this.each(function(){
 
