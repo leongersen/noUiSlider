@@ -28,6 +28,13 @@
 		return Number((Math.round(number*p)/p).toFixed(7));
 	}
 
+	// sort the array ascending 
+	function sortAscending(array) {
+		return array.sort(function(a, b){
+			return a-b;
+		});
+	}
+
 
 // Value calculation
 
@@ -175,6 +182,12 @@
 		} else {
 			that.xSteps.push( isNaN(value[1]) ? false : value[1] );
 		}
+
+		// sort percentage ascending
+		that.xPct = sortAscending(that.xPct);
+
+		// sort values ascending
+		that.xVal = sortAscending(that.xVal);
 	}
 
 	function handleStepPoint ( i, n, that ) {
