@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-	var VERSION_TEMPLATE = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+	var VERSION_TEMPLATE = '/*! <%= pkg.name %> - <%= pkg.version %> - ' +
 	'<%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %> */' +
 	'\n\n';
 
@@ -85,11 +85,21 @@ module.exports = function(grunt) {
 			all: ['distribute/jquery.nouislider.all.js']
 		},
 		uglify: {
-			build: {
+			all: {
 				files: {
 					'distribute/jquery.nouislider.min.js': 'distribute/jquery.nouislider.js',
 					'distribute/jquery.nouislider.all.min.js': 'distribute/jquery.nouislider.all.js'
 				}
+			}
+		},
+		compress: {
+			all: {
+				options: {
+					archive: 'noUiSlider.<%= pkg.version %>.zip'
+				},
+				files: [
+					{ src: ['**/*', 'src/jquery.nouislider.css', 'src/jquery.nouislider.pips.css'], dest: '', cwd: 'distribute/', expand: true }
+				]
 			}
 		}
     });
@@ -108,7 +118,11 @@ module.exports = function(grunt) {
 
 	// https://github.com/gruntjs/grunt-contrib-cssmin
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
-
+	
+	// https://github.com/gruntjs/grunt-contrib-compress
+	grunt.loadNpmTasks('grunt-contrib-compress');
+	
     grunt.registerTask('default', ['concat', 'jshint']);
-    grunt.registerTask('all', ['concat', 'jshint', 'uglify', 'cssmin', 'string-replace']);
+    grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'cssmin']);
+	grunt.registerTask('release', ['string-replace', 'compress']);
 };
