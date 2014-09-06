@@ -11,16 +11,6 @@
 	or true when everything is OK. It can also modify the option
 	object, to make sure all values can be correctly looped elsewhere. */
 
-	// Wraps a variable as an array, if it isn't one yet.
-	function asArray ( a ) {
-		return $.isArray(a) ? a : [a];
-	}
-
-	// Checks whether a value is numerical.
-	function isNumeric ( a ) {
-		return typeof a === 'number' && !isNaN( a ) && isFinite( a );
-	}
-
 	/** @const */
 	var defaultFormatter = { 'to': function( value ){
 		return value.toFixed(2);

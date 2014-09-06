@@ -1,19 +1,3 @@
-/*jslint browser: true */
-/*jslint white: true */
-
-(function( $ ){
-
-	'use strict';
-
-	// Removes duplicates from an array.
-	function unique(array) {
-		return $.grep(array, function(el, index) {
-			return index === $.inArray(el, array);
-		});
-	}
-
-// Pips
-
 	function getGroup ( $Spectrum, mode, values, stepped ) {
 
 		// Use the range.
@@ -230,5 +214,3 @@
 			));
 		});
 	};
-
-}( window.jQuery || window.Zepto ));
