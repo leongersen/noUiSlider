@@ -1,9 +1,3 @@
-/*jslint browser: true */
-/*jslint white: true */
-
-(function( $ ){
-
-	'use strict';
 
 	var
 	// Cache the document selector;
@@ -794,7 +788,7 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Test the options once, not for every slider.
-		var options = $.noUiSlider.testOptions( originalOptions, this );
+		var options = testOptions( originalOptions, this );
 
 		// Loop all items, and provide a new closed-scope environment.
 		return this.each(function(){
@@ -868,5 +862,3 @@ function closure ( target, options, originalOptions ){
 	$.fn.noUiSlider = function ( options, rebuildFlag ) {
 		return ( rebuildFlag ? rebuild : initialize ).call(this, options);
 	};
-
-}( window.jQuery || window.Zepto ));

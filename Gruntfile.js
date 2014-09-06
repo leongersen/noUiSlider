@@ -6,10 +6,11 @@ module.exports = function(grunt) {
         concat: {
 			options: {
 				banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-					'<%= grunt.template.today("yyyy-mm-dd") %> */',
+					'<%= grunt.template.today("yyyy-mm-dd") %> */' +
+					'\n\n',
 			},
 			basic: {
-				src: ['src/range.js', 'src/options.js', 'src/base.js'],
+				src: ['src/helpers/intro.js', 'src/range.js', 'src/options.js', 'src/base.js', 'src/helpers/outro.js'],
 				dest: 'distribute/jquery.nouislider.js',
 			},
 			all: {

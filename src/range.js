@@ -1,9 +1,3 @@
-/*jslint browser: true */
-/*jslint white: true */
-
-(function( $ ){
-
-	'use strict';
 
 // Helpers
 
@@ -282,9 +276,3 @@
 	Spectrum.prototype.convert = function ( value ) {
 		return this.getStep(this.toStepping(value));
 	};
-
-	$.noUiSlider = {
-		Spectrum: Spectrum
-	};
-
-}( window.jQuery || window.Zepto ));
