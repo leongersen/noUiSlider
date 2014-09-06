@@ -1,19 +1,3 @@
-/*jslint browser: true */
-/*jslint white: true */
-
-(function( $ ){
-
-	'use strict';
-
-	// Removes duplicates from an array.
-	function unique(array) {
-		return $.grep(array, function(el, index) {
-			return index === $.inArray(el, array);
-		});
-	}
-
-// Pips
-
 	function getGroup ( $Spectrum, mode, values, stepped ) {
 
 		// Use the range.
@@ -170,7 +154,7 @@
 		return indexes;
 	}
 
-	function addMarking ( CSSstyle, orientation, direction, spread, filterFunc ) {
+	function addMarking ( CSSstyle, orientation, direction, spread, filterFunc, formatter ) {
 
 		var style = ['horizontal', 'vertical'][orientation],
 			element = $('<div/>');
@@ -197,7 +181,7 @@
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				element.append('<div '+getTags(offset, 'noUi-value', values)+'>' + Math.round(values[0]) + '</div>');
+				element.append('<div '+getTags(offset, 'noUi-value', values)+'>' + formatter.to(values[0]) + '</div>');
 			}
 		}
 
@@ -213,6 +197,9 @@
 		density = grid.density || 1,
 		filter = grid.filter || false,
 		values = grid.values || false,
+		format = grid.format || {
+			to: Math.round
+		},
 		stepped = grid.stepped || false;
 
 		return this.each(function(){
@@ -226,9 +213,8 @@
 				info[2],
 				info[0].direction,
 				spread,
-				filter
+				filter,
+				format
 			));
 		});
 	};
-
-}( window.jQuery || window.Zepto ));

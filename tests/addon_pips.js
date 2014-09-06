@@ -28,14 +28,19 @@
 
 		slider.noUiSlider_pips({
 			mode: 'range',
-			density: 3
+			density: 3,
+			format: wNumb({
+				decimals: 2
+			})
 		});
 
 		ok( Q.find('.noUi-pips'), 'Pips where created' );
 
-		var markers = Q.find('.noUi-marker').length;
-		ok( markers >= 32 && markers <= 34, 'Density of 1/3 was applied' );
-
+		var markers = Q.find('.noUi-marker');
+		ok( markers.length >= 32 && markers.length <= 34, 'Density of 1/3 was applied' );
+		
+		// Test formatter
+		equal( Q.find('.noUi-value').first().text(), '0.00' );
 	});
 
 	test( "Steps", function(){
@@ -81,7 +86,7 @@
 	test( "Positions, stepped", function(){
 
 		expect(0); // TODO
-	
+
 		var slider = test_slider();
 
 	// POSITIONS (STEPPED)
@@ -119,7 +124,7 @@
 	test( "Count, stepped", function(){
 
 		expect(0); // TODO
-	
+
 		var slider = test_slider();
 
 	// COUNT (STEPPED)

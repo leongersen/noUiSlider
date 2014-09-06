@@ -1,6 +1,3 @@
-/*jslint browser: true */
-/*jslint white: true */
-
 /*	Every input option is tested and parsed. This'll prevent
 	endless validation in internal methods. These tests are
 	structured with an item for every option available. An
@@ -13,20 +10,6 @@
 	The testing function returns false when an error is detected,
 	or true when everything is OK. It can also modify the option
 	object, to make sure all values can be correctly looped elsewhere. */
-
-(function( $ ){
-
-	'use strict';
-
-	// Wraps a variable as an array, if it isn't one yet.
-	function asArray ( a ) {
-		return $.isArray(a) ? a : [a];
-	}
-
-	// Checks whether a value is numerical.
-	function isNumeric ( a ) {
-		return typeof a === 'number' && !isNaN( a ) && isFinite( a );
-	}
 
 	/** @const */
 	var defaultFormatter = { 'to': function( value ){
@@ -56,7 +39,7 @@
 			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
 		}
 
-		parsed.spectrum = new $.noUiSlider.Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
+		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
 	}
 
 	function testStart ( parsed, entry ) {
@@ -206,6 +189,7 @@
 		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
 	}
 
+	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
 
 		var parsed = {
@@ -262,8 +246,3 @@
 
 		return parsed;
 	}
-
-	// Test all developer settings and parse to assumption-safe values.
-	$.noUiSlider.testOptions = testOptions;
-
-}( window.jQuery || window.Zepto ));

@@ -1,35 +1,10 @@
-/*jslint browser: true */
-/*jslint white: true */
 
-(function( $ ){
-
-	'use strict';
-
-// Helpers
+// Value calculation
 
 	// Determine the size of a sub-range in relation to a full range.
 	function subRangeRatio ( pa, pb ) {
 		return (100 / (pb - pa));
 	}
-
-	// Round a value to the closest 'to'.
-	function closest ( value, to ) {
-		return Math.round(value / to) * to;
-	}
-
-	// Checks whether a value is numerical.
-	function isNumeric ( a ) {
-		return typeof a === 'number' && !isNaN( a ) && isFinite( a );
-	}
-
-	// Rounds a number to 7 supported decimals.
-	function accurateNumber( number ) {
-		var p = Math.pow(10, 7);
-		return Number((Math.round(number*p)/p).toFixed(7));
-	}
-
-
-// Value calculation
 
 	// (percentage) How many percent is this value of this range?
 	function fromPercentage ( range, value ) {
@@ -282,9 +257,3 @@
 	Spectrum.prototype.convert = function ( value ) {
 		return this.getStep(this.toStepping(value));
 	};
-
-	$.noUiSlider = {
-		Spectrum: Spectrum
-	};
-
-}( window.jQuery || window.Zepto ));
