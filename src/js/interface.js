@@ -80,5 +80,11 @@
 
 // Extend jQuery/Zepto with the noUiSlider method.
 	$.fn.noUiSlider = function ( options, rebuildFlag ) {
+		
+		switch ( options ) {
+			case 'step': return this[0].getCurrentStep();
+			case 'options': return this[0].getOriginalOptions();
+		}
+	
 		return ( rebuildFlag ? rebuild : initialize ).call(this, options);
 	};

@@ -189,6 +189,10 @@
 		return inSliderOrder( retour );
 	}
 
+	// Get the original set of options.
+	function getOriginalOptions ( ) {
+		return originalOptions;
+	}
 
 
 // Initialize slider
@@ -214,7 +218,10 @@
 	target.vSet = valueSet;
 	target.vGet = valueGet;
 	target.destroy = destroyTarget;
+
 	target.getCurrentStep = getCurrentStep;
+	target.getOriginalOptions = getOriginalOptions;
+
 	target.getInfo = function(){
 		return [
 			$Spectrum,
