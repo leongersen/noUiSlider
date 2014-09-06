@@ -1,0 +1,31 @@
+﻿{
+	"name": "nouislider",
+	"title": "noUiSlider - jQuery Range Slider",
+	"description": "A lightweight, highly customizable range slider without bloat.",
+	"keywords": [
+		"range",
+		"slider",
+		"form",
+		"input",
+		"serialize",
+		"handle"
+	],
+	"licenses": [
+		{
+			"type": "WTFPL",
+			"url": "http://www.wtfpl.net/"
+		}
+	],
+	"version": "{{VERSION}}",
+	"author": {
+		"name": "Léon Gersen",
+		"url": "https://twitter.com/LeonGersen"
+	},
+	"bugs": "https://github.com/leongersen/noUiSlider/issues",
+	"homepage": "http://refreshless.com/nouislider/",
+	"docs": "http://refreshless.com/nouislider/",
+	"download": "http://refreshless.com/nouislider/download/",
+	"dependencies": {
+		"jquery": ">=1.7"
+	}
+}

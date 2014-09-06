@@ -1,59 +1,88 @@
 module.exports = function(grunt) {
 
+	var VERSION_TEMPLATE = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+	'<%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %> */' +
+	'\n\n';
+
 	function getFiles ( append ) {
 
 		var files = [
-			'src/helpers/intro.js',
-			'src/helpers.js',
-			'src/constants.js',
-			'src/range.js',
-			'src/options.js',
-			'src/structure.js',
-			'src/scope_start.js',
-			'src/scope_helpers.js',
-			'src/scope_link.js',
-			'src/scope_events.js',
-			'src/scope.js',
-			'src/scope_end.js',
-			'src/interface.js'
+			'src/js/helpers/intro.js',
+			'src/js/helpers.js',
+			'src/js/constants.js',
+			'src/js/range.js',
+			'src/js/options.js',
+			'src/js/structure.js',
+			'src/js/scope_start.js',
+			'src/js/scope_helpers.js',
+			'src/js/scope_link.js',
+			'src/js/scope_events.js',
+			'src/js/scope.js',
+			'src/js/scope_end.js',
+			'src/js/interface.js'
 		];
 
 		if ( append ) {
 			files = files.concat(append);
 		}
 
-		files.push('src/helpers/outro.js');
+		files.push('src/js/helpers/outro.js');
 
 		return files;
 	}
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        concat: {
+		concat: {
 			options: {
-				banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-					'<%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %> */' +
-					'\n\n',
+				banner: VERSION_TEMPLATE
 			},
 			basic: {
 				src: getFiles(),
 				dest: 'distribute/jquery.nouislider.js',
+				nonull: true
 			},
 			all: {
-				src: ['submodules/wNumb/wNumb.js', 'submodules/libLink/jquery.libLink.js'].concat(getFiles('src/pips.js')),
+				src: ['submodules/wNumb/wNumb.js', 'submodules/libLink/jquery.libLink.js'].concat(getFiles('src/js/pips.js')),
 				dest: 'distribute/jquery.nouislider.all.js',
+				nonull: true
 			},
         },
-		jslint: {
-			basic: {
+		cssmin: {
+			all: {
 				options: {
-					errorsOnly: false,
-					log: 'distribute/jslint.log'
+					banner: VERSION_TEMPLATE
 				},
-				src: [
-					'distribute/jquery.nouislider.js'
-				]
+				files: {
+					'distribute/jquery.nouislider.min.css': ['src/jquery.nouislider.css'],
+					'distribute/jquery.nouislider.pips.min.css': ['src/jquery.nouislider.pips.css']
+				}
 			}
+		},
+		'string-replace': {
+			version: {
+				files: {
+					'nouislider.jquery.json': 'src/jquery.json'
+				},
+				options: {
+					replacements: [{
+						pattern: /{{VERSION}}/g,
+						replacement: '<%= pkg.version %>'
+					}]
+				}
+			}
+		},
+		jshint: {
+			options: {
+				browser: true,
+				indent: false,
+				laxbreak: true,
+				laxcomma: true,
+				validthis: true,
+				newcap: false
+			},
+			basic: ['distribute/jquery.nouislider.js'],
+			all: ['distribute/jquery.nouislider.all.js']
 		},
 		uglify: {
 			build: {
@@ -65,11 +94,21 @@ module.exports = function(grunt) {
 		}
     });
 
+	// https://github.com/gruntjs/grunt-contrib-concat
     grunt.loadNpmTasks('grunt-contrib-concat');
+	
+	// https://github.com/gruntjs/grunt-contrib-uglify
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-jslint');
+	
+	// https://github.com/gruntjs/grunt-contrib-jshint
+	grunt.loadNpmTasks('grunt-contrib-jshint');
 
-    grunt.registerTask('default', ['jslint', 'concat']);
-    grunt.registerTask('merge', ['concat']);
-    grunt.registerTask('min', ['jslint', 'concat', 'uglify']);
+	// https://github.com/erickrdch/grunt-string-replace
+	grunt.loadNpmTasks('grunt-string-replace');
+
+	// https://github.com/gruntjs/grunt-contrib-cssmin
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
+
+    grunt.registerTask('default', ['concat', 'jshint']);
+    grunt.registerTask('all', ['concat', 'jshint', 'uglify', 'cssmin', 'string-replace']);
 };
