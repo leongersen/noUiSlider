@@ -98,7 +98,8 @@ module.exports = function(grunt) {
 					archive: 'noUiSlider.<%= pkg.version %>.zip'
 				},
 				files: [
-					{ src: ['**/*', 'src/jquery.nouislider.css', 'src/jquery.nouislider.pips.css'], dest: '', cwd: 'distribute/', expand: true }
+					{ src: ['**/*'], dest: '', cwd: 'distribute/', expand: true },
+					{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true }
 				]
 			}
 		}
