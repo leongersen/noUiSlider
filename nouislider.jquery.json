@@ -1,4 +1,4 @@
-﻿{
+{
 	"name": "nouislider",
 	"title": "noUiSlider - jQuery Range Slider",
 	"description": "A lightweight, highly customizable range slider without bloat.",
@@ -16,7 +16,7 @@
 			"url": "http://www.wtfpl.net/"
 		}
 	],
-	"version": "7.0.1",
+	"version": "7.0.2",
 	"author": {
 		"name": "Léon Gersen",
 		"url": "https://twitter.com/LeonGersen"
