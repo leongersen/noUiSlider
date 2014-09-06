@@ -99,7 +99,8 @@ module.exports = function(grunt) {
 				},
 				files: [
 					{ src: ['**/*'], dest: '', cwd: 'distribute/', expand: true },
-					{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true }
+					{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true },
+					{ src: ['**/archive.md'], rename: function(){ return 'README.md'; }, dest: '', cwd: 'src/', expand: true }
 				]
 			}
 		}

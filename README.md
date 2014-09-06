@@ -5,7 +5,12 @@ noUiSlider is lightweight plugin, developed to be a jQuery UI alternative. It fe
 Changelog
 ---------
 
-noUiSlider is currently on version 7.0. This version contains significant changes from 6.2, improving various aspects and moving some features in their own module.
+Latest changes:
++ Fixed an issue with the handle `z-index`. (#333)
++ Added pips formatting. (#330)
++ Added Grunt-based tasks.
+
+noUiSlider is currently on version 7. This version contains significant changes from 6, improving various aspects and moving some features in their own module.
 + All serialization features are now supported by my new project, [libLink](http://refreshless.com/liblink/).
 + All number formatting features have been moved into the [wNumb formatting library](http://refreshless.com/wnumb/).
 + The val method now only takes values, as all additional options are now automaticly detected.
@@ -32,8 +37,7 @@ Version numbering
 Version numbering follows the 'Semantic versioning' style.
 You'll find an excellent documentation at [Semver.org](http://semver.org/).
 
-Compression and error checking
+Contributing
 ------------------------------
-The plugin code is checked using ([JsLint](http://jslint.com/)). Any remaining errors and warnings are intentional.
-
-The plugin is compressed using the ([Google Closure Compiler](http://closure-compiler.appspot.com/home)). The source was initialy adapted to facilitate the `ADVANCED_OPTIMIZATIONS` level, but the risks this poses regarding to unintented renaming proved problematic. On Windows, the BAT script in this repository can be used to run the compiler. On OS X or Linux enviroments, simply run the `java -jar` command from the command line.
+The plugin code can be managed using a Grunt-based task runner.
+Use `npm install` to fetch all dependancies, then `grunt concat` to merge all files.
