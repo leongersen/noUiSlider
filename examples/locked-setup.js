@@ -1,6 +1,6 @@
 // Store the locked state and slider values.
 var lockedState = false,
-	values = [60, 60],
+	values = [60, 80],
 	slider1 = $("#slider1"),
 	slider2 = $("#slider2");
 

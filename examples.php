@@ -62,7 +62,7 @@
 	}
 	#colorpicker {
 		height: 240px;
-		width: 300px;
+		width: 310px;
 		margin: 0 auto;
 		padding: 10px;
 		border: 1px solid #BFBFBF;
@@ -254,7 +254,7 @@
 
 		<p>To keep the plugin small, features like keyboard interaction haven't been included. However, adding custom features to the input fields linked to the plugin is easy. noUiSlider provides <strong>API's</strong> to help you. In this example, pressing the keyboard arrow keys will increase/decrease the slider by one step.</p>
 
-		<p>This example uses the <code>getCurrentStep</code> API to determine by how much the slider should be changed. You don't need this function if your slider is linear. In that case, increase/decrease the value with the ammount of your <code>step</code>.</p>
+		<p>This example uses the <code>'step'</code> API to determine by how much the slider should be changed. You don't need this function if your slider is linear. In that case, increase/decrease the value with the ammount of your <code>step</code>.</p>
 
 		<p>We'll listen to keydown on the <code>$('#input-with-keypress')</code> element, and pass the event to a function so we can read the code that identifies the key.</p>
 
@@ -450,11 +450,11 @@
 	
 	<div class="view">
 
-		<p>Using the serialization feature, noUiSlider can provided handles with tooltips. These tooltips can be styled and modified on the fly, as demonstrated in this example.</p>
+		<p>Using the libLink feature, noUiSlider can provided handles with tooltips. These tooltips can be styled and modified on the fly, as demonstrated in this example.</p>
 		
-		<p>A basic tooltip implementation is part of the <a href="/nouislider/serialization">serialization</a> feature.</p>
+		<p>A basic tooltip implementation is part of the <a href="/liblink/">libLink</a> implementation.</p>
 		<p>The noUiSlider theme includes no tooltip styling. The following styles are used in this example:</p>
-		<div class="example">
+		<div class="example" style="padding-top: 50px;">
 			<div id="slider-tooltip"></div>
 			<?php run('tooltip'); ?>
 			<?php run('tooltip-simple'); ?>

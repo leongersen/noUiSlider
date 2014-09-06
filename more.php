@@ -137,7 +137,7 @@
 
 		<div class="viewer-content">
 
-			<table class="language-css styling-table">
+			<table class="language-css data-table styling-table">
 				<thead>
 					<tr>
 						<th width="250">Selector</th>

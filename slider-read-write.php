@@ -8,7 +8,7 @@
 
 <h1>Getting and setting slider values</h1>
 
-<h2>Reading slider values</h1>
+<h2>Reading slider values</h2>
 
 <section>
 
@@ -20,10 +20,6 @@
 		<?php code('read'); ?>
 
 		<p>For one-handle sliders, calling <code>.val()</code> will return the value. For two-handle sliders, an <code>array[value, value]</code> will be returned.</p>
-	</div>
-
-	<div class="side">
-
 	</div>
 </section>
 
@@ -96,7 +92,7 @@
 		
 		<p>Note how the input above has been linked with libLink. Typing in the input will change the slider. wNumb will validate and correct the input.</p>
 
-	<a href="/nouislider/serialization" class="readdocs">Using Link to bind inputs</a>
+		<a href="/nouislider/linking-input-fields/">Using Link to bind inputs</a>
 	
 	</div>
 

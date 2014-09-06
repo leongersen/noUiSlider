@@ -30,7 +30,7 @@
 			<?php run('binding-events'); ?>
 		</div>
 
-		<table class="events-table">
+		<table class="data-table events-table">
 			<thead>
 				<tr>
 					<th>&nbsp;</th>
@@ -94,10 +94,10 @@
 
 <section>
 
-	<div class="lonely">
+	<div class="view">
 		<p>This event is useful when you want to update a value or perform an actions every time a handle is dragged. For example, you can use the <code>'slide'</code> event to update graphs. For convenience, this function also fires on a change by 'tap'.</p>
 
-		<p><strong>Alternative available.</strong> noUiSlider has a powerful <code>serialization</code> feature, which probably does everything you need <code>slide</code> for, such as displaying numbers in text labels or input fields. Additionally, it can also format the slider output. Read more about <a href="/nouislider/serialization">serialization</a>.</p>
+		<p><strong>Alternative available.</strong> noUiSlider has a support for the powerful <code>libLink</code> library, which probably does everything you need <code>slide</code> for, such as displaying numbers in text labels or input fields. Additionally, it can also format the slider output. Read more about <a href="/liblink/">libLink</a>.</p>
 	</div>
 </section>
 
@@ -110,9 +110,6 @@
 		<p>Whenever a slider is changed to a new value, this event is fired. This function will trigger every time a slider <em>stops</em> changing, optionally even on calls to the <code>.val()</code> method. Because this creates the hazard of an infinite loop, any <code>.val()</code> call will have to explicitly request this event. You can consider this 'end of slide'.</p>
 	</div>
 
-	<div class="side">
-	</div>
-
 </section>
 
 
@@ -123,7 +120,7 @@
 	<div class="view">
 		<p>This event is great when you use the slider as 'just-another-input-type'. When your slider is part of a form, you can keep listening to the form <code>change</code> events, without using any events specific to the slider.</p>
 
-		<p><strong>Please note:</strong> The slider does not fire the change event when an input linked in the <a href="/nouislider/serialization">serialization options</a> is changed, so those fields can be in the same form, without triggering a <code>change</code> event twice.</p>
+		<p><strong>Please note:</strong> The slider does not fire the change event when an input linked by <a href="/liblink/">libLink</a> is changed. Therefore, those fields can be in the same form, without triggering a <code>change</code> event twice.</p>
 	</div>
 </section>
 

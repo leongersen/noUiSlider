@@ -9,7 +9,7 @@
 
 	<div class="double">
 
-		<p>noUiSlider can be configured with a wide variety of options, which can be use to customize the slider in to doing exactly what you want. For options regarding the slider range, see <a href="/nouislider/slider-values"> slider values</a>.</p>
+		<p>noUiSlider can be configured with a wide variety of options, which can be use to customize the slider in to doing exactly what you want. For options regarding the slider range, see <a href="/nouislider/slider-values/"> slider values</a>.</p>
 	</div>
 </section>
 
@@ -86,7 +86,10 @@
 
 		<div class="example">
 			<div id="slider-margin"></div>
-			<?php run('margin', false); ?>
+			<span class="example-val" id="slider-margin-value-min"></span>
+			<span class="example-val" id="slider-margin-value-max"></span>
+			<?php run('margin'); ?>
+			<?php run('margin-link'); ?>
 		</div>
 
 		<div class="options">
@@ -101,10 +104,54 @@
 
 	<div class="side">
 		<?php code('margin'); ?>
+		
+		<div class="viewer-header">Show the slider value</div>
+
+		<div class="viewer-content">
+			<?php code('margin-link'); ?>
+		</div>
 	</div>
 
 </section>
 
+
+<h2 id="limit">Limit</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>The limit option is the oposite of the margin option, limiting the maximum distance between two handles. As with the margin option, the limit option can only be used on linear sliders.</p>
+
+		<div class="example">
+			<div id="slider-limit"></div>
+			<span class="example-val" id="slider-limit-value-min"></span>
+			<span class="example-val" id="slider-limit-value-max"></span>
+			<?php run('limit'); ?>
+			<?php run('limit-link'); ?>
+		</div>
+
+		<div class="options">
+			<strong>Default</strong>
+			<div><em>none</em></div>
+
+			<strong>Accepted values</strong>
+			<div><code>number</code>
+			</div>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('limit'); ?>
+		
+		<div class="viewer-header">Show the slider value</div>
+
+		<div class="viewer-content">
+			<?php code('limit-link'); ?>
+		</div>
+	</div>
+
+</section>
 
 <h2 id="step">Step</h2>
 

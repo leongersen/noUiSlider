@@ -14,7 +14,9 @@
 		<div id="slider"></div>
 		<?php run('minimal', false); ?>
 		<?php code('minimal'); ?>
+	<a href="/nouislider/download/" class="hi-dl">Download noUiSlider</a>
 	</div>
+	
 </div>
 
 <h5>This is noUiSlider.</h5>
@@ -54,7 +56,7 @@
 
 <div class="triple">
 	<h4>Well written and lightweight</h4>
-	<p>When using noUiSlider in your forms, users get all the functionality they've come to expect, and powerful API's make implementation easy. When gzipped and minified, noUiSlider and the default CSS theme take just <strong>6293 Bytes</strong>.</p>
+	<p>When using noUiSlider in your forms, users get all the functionality they've come to expect, and powerful API's make implementation easy. When gzipped and minified, noUiSlider and the default CSS theme take just <strong><?php /*6293*/ ?>5541 Bytes</strong>.</p>
 </div>
 
 <div class="triple">
@@ -67,7 +69,7 @@
 	<p>noUiSlider works with pretty much any device, mouse, touchscreen or both, and it'll work beautifully in <strong>responsive designs</strong>. Have you tried this documentation on your phone?</p>
 </div>
 
-<div class="center">
+<div class="browser">
 
 	<p>noUiSlider supports <strong>IE7 and up</strong>, and of course the latest versions of the <em>'evergreen'</em> browsers:<br>
 	<strong>Chrome</strong>, <strong>Safari</strong>, <strong>Firefox</strong> and <strong>Opera</strong>.</p>
@@ -97,7 +99,10 @@
 
 &lt;!-- The noUiSlider script and stylesheet --&gt;
 &lt;link href="jquery.nouislider.css" rel="stylesheet"&gt;
-&lt;script src="jquery.nouislider.js"&gt;&lt;/script&gt;</code></pre>
+
+&lt;!-- Use the 'full' version to get all documented features. --&gt;
+&lt;!-- Includes wNumb, libLink and the pips add-on --&gt;
+&lt;script src="jquery.nouislider.full.min.js"&gt;&lt;/script&gt;</code></pre>
 
 	</div>
 </section>

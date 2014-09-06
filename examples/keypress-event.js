@@ -3,7 +3,7 @@ input.keydown(function( e ) {
 
 	// Convert the string to a number.
 	var value = Number( slider.val() ),
-		sliderStep = slider[0].getCurrentStep();
+		sliderStep = slider.noUiSlider('step');
 
 	// Select the stepping for the first handle.
 	sliderStep = sliderStep[0];

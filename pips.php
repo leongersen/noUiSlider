@@ -95,6 +95,8 @@
 		<p>The <code>filter</code> function must return <code>0</code> (no value), <code>1</code> (small value) or <code>2</code> (large value).</p>
 		<p>Here, we'll use large values for every step matching a thousand (<code>1000</code>, <code>2000</code>, <code>3000</code>), and small values for every step matching 500 (<code>2500</code>, <code>3500</code>, <code>4500</code>).</p>
 
+		<p>The Pips add-on supports <code>format</code> in the same way the slider itself does.</p>
+		
 	</div>
 
 	<div class="side">
