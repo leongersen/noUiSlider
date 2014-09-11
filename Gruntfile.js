@@ -108,16 +108,6 @@ module.exports = function(grunt) {
 				},
 				files: releaseFiles
 			}
-		},
-		copy: {
-			all: {
-				expand: true,
-				cwd: 'distribute/',
-				src: '**',
-				dest: 'submodules/noUiSlider-dist/',
-				flatten: true,
-				filter: 'isFile'
-			}
 		}
     });
 
@@ -139,10 +129,7 @@ module.exports = function(grunt) {
 	// https://github.com/gruntjs/grunt-contrib-compress
 	grunt.loadNpmTasks('grunt-contrib-compress');
 
-	// https://www.npmjs.org/package/grunt-contrib-copy
-	grunt.loadNpmTasks('grunt-contrib-copy');
-
     grunt.registerTask('default', ['concat', 'jshint']);
     grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'cssmin']);
-	grunt.registerTask('release', ['string-replace', 'compress', 'copy']);
+	grunt.registerTask('release', ['string-replace', 'compress']);
 };

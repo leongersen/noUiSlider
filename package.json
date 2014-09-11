@@ -1,6 +1,6 @@
 {
   "name": "noUiSlider",
-  "version": "7.0.5",
+  "version": "7.0.6",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-compress": "^0.11.0",
