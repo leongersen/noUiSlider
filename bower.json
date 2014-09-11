@@ -11,6 +11,11 @@
 		"input",
 		"slide"
 	],
+	"main": [
+		"distribute/jquery.nouislider.all.min.js",
+		"distribute/jquery.nouislider.min.css",
+		"distribute/jquery.nouislider.pips.min.css"
+	],
 	"dependencies": {
 		"jquery": ">= 1.7.0"
 	},

@@ -36,7 +36,8 @@
 
 		// The public API is reversed for rtl sliders, so the changeHandler
 		// should not be aware of the inverted trigger positions.
-		if ( options.dir ) {
+		// On rtl slider with one handle, 'lower' should be used.
+		if ( options.dir && options.handles > 1 ) {
 			trigger = trigger === 1 ? 0 : 1;
 		}
 

@@ -8,14 +8,17 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
-Latest changes:
+###7.0.3:
++ Fixed an issue with Link on single-handle RTL sliders.
++ Added minified files for Bower users.
++ Version information in minified JS.
+
+###7.0.2:
 + Fixed an issue with the handle `z-index`. (#333)
 + Added pips formatting. (#330)
 + Added Grunt-based tasks.
 
-**Note for Bower users:**
-The repository no longers contains any minified files. As you are using npm anyway, simply run `npm install` & `grunt create` to generate them.
-
+###7.x
 noUiSlider is currently on version 7. This version contains significant changes from 6, improving various aspects and moving some features in their own module.
 + All serialization features are now supported by my new project, [libLink](http://refreshless.com/liblink/).
 + All number formatting features have been moved into the [wNumb formatting library](http://refreshless.com/wnumb/).

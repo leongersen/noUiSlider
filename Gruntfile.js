@@ -86,6 +86,9 @@ module.exports = function(grunt) {
 		},
 		uglify: {
 			all: {
+				options: {
+					banner: VERSION_TEMPLATE
+				},
 				files: {
 					'distribute/jquery.nouislider.min.js': 'distribute/jquery.nouislider.js',
 					'distribute/jquery.nouislider.all.min.js': 'distribute/jquery.nouislider.all.js'
