@@ -1,4 +1,4 @@
-﻿{
+{
 	"name": "nouislider",
 	"description": "A lightweight, highly customizable range slider without bloat. Touch support on all modern devices and responsive design ready!",
 	"keywords": [
@@ -26,6 +26,6 @@
 	"license": "http://www.wtfpl.net/about/",
 	"homepage": "http://refreshless.com/nouislider/",
 	"author": {
-		"name": "Léon Gersen"
+		"name": "Leon Gersen"
 	}
 }
