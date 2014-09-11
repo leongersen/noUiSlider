@@ -6,8 +6,28 @@ Documentation
 -------
 An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](http://refreshless.com/nouislider/).
 
+Bower
+-----
+Bower users can install all compiled and minified files easily.
+
+Run:
+```
+bower install https://github.com/leongersen/noUiSlider/releases/download/<<Current Version>>/noUiSlider.<<Current Version>>.zip
+```
+
+Or create a `bower.json` with the following dependency:
+```
+"noUiSlider": "https://github.com/leongersen/noUiSlider/releases/download/<<Current Version>>/noUiSlider.<<Current Version>>.zip"
+```
+
+You can read more about the absence of minified files in [this blog post](http://refreshless.com/blog/git-repository-commit-minified-bower/).
+
 Changelog
 ---------
+###7.0.4:
++ Removed minified files.
++ Added a direct release for Bower users.
+
 ###7.0.3:
 + Fixed an issue with Link on single-handle RTL sliders.
 + Added minified files for Bower users.
