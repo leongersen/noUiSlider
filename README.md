@@ -8,7 +8,7 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Bower
 -----
-Bower users can install all compiled and minified files easily using `bower install noUiSlider --save`.
+Bower users can install all compiled and minified files easily using `bower install nouislider --save`.
 This will install [a separate repository](https://github.com/leongersen/noUiSlider-dist) which is only used for Bower.
 
 You can read more about the absence of minified files for this repository in [this blog post](http://refreshless.com/blog/git-repository-commit-minified-bower/).
