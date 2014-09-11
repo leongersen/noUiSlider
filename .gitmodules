@@ -4,3 +4,6 @@
 [submodule "submodules/libLink"]
 	path = submodules/libLink
 	url = https://github.com/leongersen/libLink
+[submodule "submodules/noUiSlider-dist"]
+	path = submodules/noUiSlider-dist
+	url = https://github.com/leongersen/noUiSlider-dist

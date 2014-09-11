@@ -31,6 +31,12 @@ module.exports = function(grunt) {
 		return files;
 	}
 
+	var releaseFiles = [
+		{ src: ['**/*'], dest: '', cwd: 'distribute/', expand: true },
+		{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true },
+		{ src: ['**/archive.md'], rename: function(){ return 'README.md'; }, dest: '', cwd: 'src/', expand: true }
+	];
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 		concat: {
@@ -100,21 +106,27 @@ module.exports = function(grunt) {
 				options: {
 					archive: 'noUiSlider.<%= pkg.version %>.zip'
 				},
-				files: [
-					{ src: ['**/*'], dest: '', cwd: 'distribute/', expand: true },
-					{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true },
-					{ src: ['**/archive.md'], rename: function(){ return 'README.md'; }, dest: '', cwd: 'src/', expand: true }
-				]
+				files: releaseFiles
+			}
+		},
+		copy: {
+			all: {
+				expand: true,
+				cwd: 'distribute/',
+				src: '**',
+				dest: 'submodules/noUiSlider-dist/',
+				flatten: true,
+				filter: 'isFile'
 			}
 		}
     });
 
 	// https://github.com/gruntjs/grunt-contrib-concat
     grunt.loadNpmTasks('grunt-contrib-concat');
-	
+
 	// https://github.com/gruntjs/grunt-contrib-uglify
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	
+
 	// https://github.com/gruntjs/grunt-contrib-jshint
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 
@@ -123,11 +135,14 @@ module.exports = function(grunt) {
 
 	// https://github.com/gruntjs/grunt-contrib-cssmin
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	
+
 	// https://github.com/gruntjs/grunt-contrib-compress
 	grunt.loadNpmTasks('grunt-contrib-compress');
-	
+
+	// https://www.npmjs.org/package/grunt-contrib-copy
+	grunt.loadNpmTasks('grunt-contrib-copy');
+
     grunt.registerTask('default', ['concat', 'jshint']);
     grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'cssmin']);
-	grunt.registerTask('release', ['string-replace', 'compress']);
+	grunt.registerTask('release', ['string-replace', 'compress', 'copy']);
 };
