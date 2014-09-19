@@ -154,7 +154,7 @@
 		$(this).off(namespace)
 			.removeClass(Classes.join(' '))
 			.find('.noUi-base')
-            .remove();
+			.remove();
 
 		delete this.LinkUpdate;
 		delete this.LinkConfirm;
