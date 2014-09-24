@@ -42,4 +42,9 @@
 		ok(one[0] === one.val(10)[0]);
 		ok(two[0] === two.val(20)[0]);
 
+		var expectedValues = ['10', '20', '50'];
+
+		Q.find("input").val(function(index, value){
+			equal(value, expectedValues[index]);
+		});
 	});

@@ -12,7 +12,10 @@ Bower users can install all compiled and minified files easily using `bower inst
 
 Changelog
 ---------
-###7.0.4 ~ 7.0.6
+###7.0.8
++ Fixed an issue in the way the `$.fn.val` method is overridden. (#350)
+
+###7.0.4 ~ 7.0.7
 + Bower support.
 
 ###7.0.3:
