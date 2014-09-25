@@ -1,6 +1,7 @@
 {
   "name": "noUiSlider",
   "version": "7.0.8",
+  "main": "distribute/jquery.nouislider.all.js",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-compress": "^0.11.0",
