@@ -12,6 +12,9 @@ Bower users can install all compiled and minified files easily using `bower inst
 
 Changelog
 ---------
+###7.0.9
++ Fixed an issue when using the pips plugin with sliders not starting at `0`. (#357)
+
 ###7.0.8
 + Fixed an issue in the way the `$.fn.val` method is overridden. (#350)
 

@@ -134,7 +134,7 @@
 				type = ($.inArray(i, group) > -1) ? 1 : ( mode === 'steps' ? 2 : 0 );
 
 				// Enforce the 'ignoreFirst' option by overwriting the type for 0.
-				if ( !index && ignoreFirst && !low ) {
+				if ( !index && ignoreFirst ) {
 					type = 0;
 				}
 

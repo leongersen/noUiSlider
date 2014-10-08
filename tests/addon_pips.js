@@ -3,7 +3,7 @@
 		return value%1000 ? 2 : 1;
 	}
 
-	function test_slider(){
+	function test_slider( first ){
 
 		Q.html('\
 			<div id="slider"></div>\
@@ -11,7 +11,7 @@
 
 		return Q.find("#slider").noUiSlider({
 			range: {
-				'min': [     0 ],
+				'min': [    (first || 0) ],
 				'10%': [   500,  500 ],
 				'50%': [  4000, 1000 ],
 				'max': [ 10000 ]
@@ -141,7 +141,8 @@
 
 	test( "Values", function(){
 
-		var slider = test_slider();
+		// #357
+		var slider = test_slider( 1 );
 
 		slider.noUiSlider_pips({
 			mode: 'values',
