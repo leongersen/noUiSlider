@@ -1,4 +1,4 @@
-/*! noUiSlider - 7.0.8 - 2014-10-08 16:47:58 */
+/*! noUiSlider - 7.0.9 - 2014-10-08 16:49:44 */
 
 /*jslint browser: true */
 /*jslint white: true */
