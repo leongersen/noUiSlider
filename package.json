@@ -1,6 +1,7 @@
 {
   "name": "noUiSlider",
   "version": "7.0.9",
+  "main": "index.js",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-compress": "^0.11.0",
@@ -14,5 +15,19 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/leongersen/noUiSlider.git"
+  },
+  "dependencies": {
+    "brfs": "^1.2.0",
+    "insert-css": "^0.2.0",
+    "sandboxed-module": "^1.0.3"
+  },
+  "browser": {
+    "./index.js": "./browser.js",
+    "./3rd-party-loaders/insert-css.js": "./3rd-party-loaders/insert-css.browser.js"
+  },
+  "browserify": {
+    "transform": [
+      "brfs"
+    ]
   }
 }
