@@ -47,4 +47,6 @@
 		Q.find("input").val(function(index, value){
 			equal(value, expectedValues[index]);
 		});
+
+		equal(one.val(undefined), one);
 	});
