@@ -48,5 +48,5 @@
 			equal(value, expectedValues[index]);
 		});
 
-		equal(one.val(undefined), one);
+		ok(one.val(undefined)[0] === one[0]);
 	});
