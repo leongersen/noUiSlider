@@ -192,6 +192,11 @@
 				handleEntryPoint(index, entry[index], that);
 			}
 		}
+		
+		// entry object is not ordered, and we depend on numbers being sorted further on
+		function numSort(a, b) { return a - b; };
+		this.xPct.sort(numSort);
+		this.xVal.sort(numSort);
 
 		// Store the actual step values.
 		that.xNumSteps = that.xSteps.slice(0);
