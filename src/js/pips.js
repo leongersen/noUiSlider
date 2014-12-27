@@ -162,22 +162,27 @@
 		element.addClass('noUi-pips noUi-pips-'+style);
 
 		function getSize( type, value ){
-			return [ '-normal', '-large', '-sub' ][(type&&filterFunc) ? filterFunc(value, type) : type];
+			return [ '-normal', '-large', '-sub' ][type];
 		}
+
 		function getTags( offset, source, values ) {
 			return 'class="' + source + ' ' +
 				source + '-' + style + ' ' +
 				source + getSize(values[1], values[0]) +
 				'" style="' + CSSstyle + ': ' + offset + '%"';
 		}
+
 		function addSpread ( offset, values ){
 
 			if ( direction ) {
 				offset = 100 - offset;
 			}
 
+			// Apply the filter function, if it is set.
+			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
+
 			// Add a marker for every point
-			element.append('<div '+getTags(offset, 'noUi-marker', values)+'></div>');
+			element.append('<div ' + getTags(offset, 'noUi-marker', values) + '></div>');
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
