@@ -184,22 +184,27 @@
 		this.snap = snap;
 		this.direction = direction;
 
-		var that = this, index;
+		var that = this, index, pair;
 
-		// Loop all entries.
+		// Sort all entries by value.
+		var ordered = [ /* [0, 'min'], [1, '50%'], [2, 'max'] */ ];
 		for ( index in entry ) {
 			if ( entry.hasOwnProperty(index) ) {
-				handleEntryPoint(index, entry[index], that);
+				ordered.push([entry[index], index]);
 			}
 		}
+		ordered.sort(function(a, b) { return a[0] - b[0]; });
 
+		// Loop all entries.
+		for ( index = 0; index < ordered.length; index++ ) {
+			pair = ordered[index];
+			handleEntryPoint(pair[1], pair[0], that);
+		}
 		// Store the actual step values.
 		that.xNumSteps = that.xSteps.slice(0);
 
-		for ( index in that.xNumSteps ) {
-			if ( that.xNumSteps.hasOwnProperty(index) ) {
-				handleStepPoint(Number(index), that.xNumSteps[index], that);
-			}
+		for ( index = 0; index < that.xNumSteps.length; index++ ) {
+			handleStepPoint(index, that.xNumSteps[index], that);
 		}
 	}
 
