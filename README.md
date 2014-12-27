@@ -12,6 +12,14 @@ Bower users can install all compiled and minified files easily using `bower inst
 
 Changelog
 ---------
+###7.0.10
++ Fixed an issue where calling `.val(undefined)` wouldn't match specification (#383);
++ Values in `range` are now properly sorted before being used (and can thus be passed in any order) (#393);
++ Fixed an error in `.noUiSlider('step')` where JS floating point precision would mess up a comparison (#391);
++ Fixed the slider styles failing when CSS `direction: rtl` is set (#275, #377);
++ Fixed throwing an error when running `.noUiSlider` on an empty selection (#325);
++ Fixed the filter function for the pips plugin not always being called (#365);
+
 ###7.0.9
 + Fixed an issue when using the pips plugin with sliders not starting at `0`. (#357)
 

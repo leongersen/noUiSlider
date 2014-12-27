@@ -1,4 +1,4 @@
-/*! noUiSlider - 7.0.9 - 2014-10-08 16:49:44 */
+/*! noUiSlider - 7.0.10 - 2014-12-27 14:50:46 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -47,6 +47,12 @@
 	// Wraps a variable as an array, if it isn't one yet.
 	function asArray ( a ) {
 		return $.isArray(a) ? a : [a];
+	}
+
+	// Counts decimals
+	function countDecimals ( numStr ) {
+		var pieces = numStr.split(".");
+		return pieces.length > 1 ? pieces[1].length : 0;
 	}
 
 
@@ -285,22 +291,30 @@
 		this.snap = snap;
 		this.direction = direction;
 
-		var that = this, index;
+		var index, ordered = [ /* [0, 'min'], [1, '50%'], [2, 'max'] */ ];
 
-		// Loop all entries.
+		// Map the object keys to an array.
 		for ( index in entry ) {
 			if ( entry.hasOwnProperty(index) ) {
-				handleEntryPoint(index, entry[index], that);
+				ordered.push([entry[index], index]);
 			}
 		}
 
-		// Store the actual step values.
-		that.xNumSteps = that.xSteps.slice(0);
+		// Sort all entries by value (numeric sort).
+		ordered.sort(function(a, b) { return a[0] - b[0]; });
 
-		for ( index in that.xNumSteps ) {
-			if ( that.xNumSteps.hasOwnProperty(index) ) {
-				handleStepPoint(Number(index), that.xNumSteps[index], that);
-			}
+		// Convert all entries to subranges.
+		for ( index = 0; index < ordered.length; index++ ) {
+			handleEntryPoint(ordered[index][1], ordered[index][0], this);
+		}
+
+		// Store the actual step values.
+		// xSteps is sorted in the same order as xPct and xVal.
+		this.xNumSteps = this.xSteps.slice(0);
+
+		// Convert all numeric steps to the percentage of the subrange they represent.
+		for ( index = 0; index < this.xNumSteps.length; index++ ) {
+			handleStepPoint(index, this.xNumSteps[index], this);
 		}
 	}
 
@@ -1255,9 +1269,25 @@ function closure ( target, options, originalOptions ){
 		var retour = $.map($Locations, function( location, index ){
 
 			var step = $Spectrum.getApplicableStep( location ),
+
+				// As per #391, the comparison for the decrement step can have some rounding issues.
+				// Round the value to the precision used in the step.
+				stepDecimals = countDecimals(String(step[2])),
+
+				// Get the current numeric value
 				value = $Values[index],
-				increment = step[2],
-				decrement = (value - step[2]) >= step[1] ? step[2] : step[0];
+
+				// To move the slider 'one step up', the current step value needs to be added.
+				// Use null if we are at the maximum slider value.
+				increment = location === 100 ? null : step[2],
+
+				// Going 'one step down' might put the slider in a different sub-range, so we
+				// need to switch between the current or the previous step.
+				prev = Number((value - step[2]).toFixed(stepDecimals)),
+
+				// If the value fits the step, return the current step value. Otherwise, use the
+				// previous step. Return null if the slider is at its minimum value.
+				decrement = location === 0 ? null : (prev >= step[1]) ? step[2] : (step[0] || false);
 
 			return [[decrement, increment]];
 		});
@@ -1315,11 +1345,6 @@ function closure ( target, options, originalOptions ){
 
 	// Run the standard initializer
 	function initialize ( originalOptions ) {
-
-		// Throw error if group is empty.
-		if ( !this.length ){
-			throw new Error("noUiSlider: Can't initialize slider on empty selection.");
-		}
 
 		// Test the options once, not for every slider.
 		var options = testOptions( originalOptions, this );
@@ -1380,7 +1405,7 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// If no value is passed, this is 'get'.
-		if ( arg === undefined ) {
+		if ( !arguments.length ) {
 			var first = $(this[0]);
 			return valMethod(first).call(first);
 		}
