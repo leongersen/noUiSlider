@@ -6,6 +6,7 @@
 <h1>Slider values</h1>
 
 
+<?php sect('handles'); ?>
 <h2>Handles</h2>
 
 <section>
@@ -26,6 +27,7 @@
 </section>
 
 
+<?php sect('range'); ?>
 <h2>Range</h2>
 
 <section>
@@ -53,6 +55,7 @@
 </section>
 
 
+<?php sect('step'); ?>
 <h3>Stepping and snapping to values</h3>
 
 <section>
@@ -79,6 +82,7 @@
 </section>
 
 
+<?php sect('non-linear'); ?>
 <h2>Non-linear sliders</h2>
 
 <section>
@@ -109,6 +113,7 @@
 </section>
 
 
+<?php sect('non-linear-step'); ?>
 <h3>Stepping in non-linear sliders</h3>
 
 <section>
@@ -136,6 +141,7 @@
 </section>
 
 
+<?php sect('snap'); ?>
 <h3>Snapping between steps</h3>
 
 <section>

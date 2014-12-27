@@ -6,6 +6,7 @@
 <h1>Linking input fields</h1>
 
 
+<?php sect('liblink'); ?>
 <h2>libLink support</h2>
 
 <section>
@@ -31,6 +32,7 @@
 </section>
 
 
+<?php sect('features'); ?>
 <h2>Feature overview</h2>
 
 <section>

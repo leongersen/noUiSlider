@@ -8,6 +8,8 @@
 
 <h1>Getting and setting slider values</h1>
 
+
+<?php sect('reading'); ?>
 <h2>Reading slider values</h2>
 
 <section>
@@ -24,6 +26,7 @@
 </section>
 
 
+<?php sect('setting'); ?>
 <h2>Setting slider values</h2>
 
 <section>
@@ -41,6 +44,7 @@
 </section>
 
 
+<?php sect('example'); ?>
 <h2>Example</h2>
 
 <section>
@@ -62,9 +66,9 @@
 
 	<div class="side">
 		<?php code('set'); ?>
-		
+
 		<div class="viewer-header">Handling button presses</div>
-		
+
 		<div class="viewer-content">
 			<?php code('buttons'); ?>
 		</div>
@@ -73,49 +77,49 @@
 </section>
 
 
+<?php sect('formatting'); ?>
 <h2>Number formatting</h2>
 
 <section>
 
 	<div class="view">
-	
+
 		<p>To format the slider output, noUiSlider offers a <code>format</code> option. Simply specify <code>to</code> and <code>from</code> functions to encode and decode the values.</p>
-		
+
 		<div class="example">
 			<div id="slider-format"></div>
 			<input id="input-format">
 			<?php run('wnumb'); ?>
 			<?php run('linkformat'); ?>
 		</div>
-		
+
 		<p>Manual formatting can be very tedious, so noUiSlider has support for <a href="">the wNumb formatting library</a>. wNumb offers a wide range of options and provides number validation.</p>
-		
+
 		<p>Note how the input above has been linked with libLink. Typing in the input will change the slider. wNumb will validate and correct the input.</p>
 
 		<a href="/nouislider/linking-input-fields/">Using Link to bind inputs</a>
-	
+
 	</div>
 
 	<div class="side">
-		
+
 		<div class="viewer-header">Formatting with wNumb</div>
 
 		<div class="viewer-content">
 			<?php code('wnumb'); ?>
 		</div>
-		
+
 		<div class="viewer-header">Manual formatting</div>
-		
+
 		<div class="viewer-content">
 			<?php code('format'); ?>
 		</div>
-		
+
 		<div class="viewer-header">Linking the input field</div>
-		
+
 		<div class="viewer-content">
 			<?php code('linkformat'); ?>
 		</div>
 	</div>
-	
-</section>
 
+</section>

@@ -24,6 +24,7 @@
 </section>
 
 
+<?php sect('range'); ?>
 <h2>Range</h2>
 
 <section>
@@ -84,6 +85,7 @@
 </section>
 
 
+<?php sect('steps'); ?>
 <h2>Steps</h2>
 
 <section>
@@ -92,7 +94,7 @@
 
 		<p>Like <code>range</code>, the <code>steps</code> mode uses the slider range. In <code>steps</code> mode, a pip is generated for every step. The <code>filter</code> option can be used to filter the generated pips.</p>
 
-		<p>The <code>filter</code> function must return <code>0</code> (no value), <code>1</code> (small value) or <code>2</code> (large value).</p>
+		<p>The <code>filter</code> function must return <code>0</code> (no value), <code>1</code> (large value) or <code>2</code> (small value).</p>
 		<p>Here, we'll use large values for every step matching a thousand (<code>1000</code>, <code>2000</code>, <code>3000</code>), and small values for every step matching 500 (<code>2500</code>, <code>3500</code>, <code>4500</code>).</p>
 
 		<p>The Pips add-on supports <code>format</code> in the same way the slider itself does.</p>
@@ -125,6 +127,7 @@
 </section>
 
 
+<?php sect('positions'); ?>
 <h2>Positions</h2>
 
 <section>
@@ -169,6 +172,7 @@
 </section>
 
 
+<?php sect('count'); ?>
 <h2>Count</h2>
 
 <section>
@@ -213,6 +217,7 @@
 </section>
 
 
+<?php sect('values'); ?>
 <h2>Values</h2>
 
 <section>

@@ -14,7 +14,8 @@
 </section>
 
 
-<h2 id="start">Start</h2>
+<?php sect('start'); ?>
+<h2>Start</h2>
 
 <section>
 
@@ -46,7 +47,8 @@
 </section>
 
 
-<h2 id="connect">Connect</h2>
+<?php sect('Connect'); ?>
+<h2>Connect</h2>
 
 <section>
 
@@ -76,7 +78,8 @@
 </section>
 
 
-<h2 id="margin">Margin</h2>
+<?php sect('margin'); ?>
+<h2>Margin</h2>
 
 <section>
 
@@ -104,7 +107,7 @@
 
 	<div class="side">
 		<?php code('margin'); ?>
-		
+
 		<div class="viewer-header">Show the slider value</div>
 
 		<div class="viewer-content">
@@ -115,7 +118,8 @@
 </section>
 
 
-<h2 id="limit">Limit</h2>
+<?php sect('limit'); ?>
+<h2>Limit</h2>
 
 <section>
 
@@ -143,7 +147,7 @@
 
 	<div class="side">
 		<?php code('limit'); ?>
-		
+
 		<div class="viewer-header">Show the slider value</div>
 
 		<div class="viewer-content">
@@ -153,7 +157,9 @@
 
 </section>
 
-<h2 id="step">Step</h2>
+
+<?php sect('step'); ?>
+<h2>Step</h2>
 
 <section>
 
@@ -182,7 +188,8 @@
 </section>
 
 
-<h2 id="orientation">Orientation</h2>
+<?php sect('orientation'); ?>
+<h2>Orientation</h2>
 
 <section>
 
@@ -213,7 +220,8 @@
 </section>
 
 
-<h2 id="direction">Direction</h2>
+<?php sect('direction'); ?>
+<h2>Direction</h2>
 
 <section>
 
@@ -251,7 +259,8 @@
 </section>
 
 
-<h2 id="animate">Animate</h2>
+<?php sect('animate'); ?>
+<h2>Animate</h2>
 
 <section>
 

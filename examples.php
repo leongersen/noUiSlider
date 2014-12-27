@@ -3,6 +3,8 @@
 	$description = "noUiSlider has a selection of examples you can use to implement a slider easily. Take a look!";
 ?>
 
+
+<?php sect('colorpicker'); ?>
 <h1>Colorpicker</h1>
 
 <section>
@@ -53,44 +55,8 @@
 	</div>
 </section>
 
-<style>
 
-	#red, #green, #blue {
-		margin: 10px;
-		display: inline-block;
-		height: 200px;
-	}
-	#colorpicker {
-		height: 240px;
-		width: 310px;
-		margin: 0 auto;
-		padding: 10px;
-		border: 1px solid #BFBFBF;
-	}
-	#colorpicker .result {
-		margin: 60px 26px;
-		height: 100px;
-		width: 100px;
-		display: inline-block;
-		vertical-align: top;
-		color: rgb(127, 127, 127);
-		background: rgb(127, 127, 127);
-		border: 1px solid #fff;
-		box-shadow: 0 0 10px;
-	}
-	#red {
-		background: #c0392b;
-	}
-	#green {
-		background: #27ae60;
-	}
-	#blue {
-		background: #2980b9;
-	}
-
-</style>
-
-
+<?php sect('html5'); ?>
 <h1>Using HTML5 input elements</h1>
 
 <section>
@@ -133,23 +99,8 @@
 	</div>
 </section>
 
-<style>
 
-#input-select,
-#input-number {
-	padding: 7px;
-	margin: 15px 5px 5px;
-	width: 70px;
-}
-#input-types {
-	width: 300px;
-	margin: 0 auto;
-	text-align: center;
-}
-
-</style>
-
-
+<?php sect('non-linear'); ?>
 <h1>Non linear slider</h1>
 
 <section>
@@ -186,6 +137,7 @@
 </section>
 
 
+<?php sect('lock'); ?>
 <h1>Locking sliders together</h1>
 
 <section>
@@ -246,6 +198,7 @@
 </section>
 
 
+<?php sect('keypress'); ?>
 <h1>Changing the slider by keypress</h1>
 
 <section>
@@ -286,6 +239,7 @@
 </section>
 
 
+<?php sect('skipping'); ?>
 <h1>Skipping steps</h1>
 
 <section>
@@ -320,6 +274,7 @@
 </section>
 
 
+<?php sect('dates'); ?>
 <h1>Working with dates</h1>
 
 <section>
@@ -373,25 +328,17 @@
 </section>
 
 
+<?php sect('toggle'); ?>
 <h1>Creating a toggle</h1>
 
 <section>
-
-<style>
-	.noUi-target.toggle {
-		height: 50px !important;
-	}
-	.noUi-target.toggle.off .noUi-handle {
-		border-color: red;
-	}
-</style>
 
 	<div class="view">
 
 		<p>Many application interfaces have options that can be turned on or off using switches. noUiSlider is well suited for this, especially because of the wide touch support.</p>
 
 		<p>The serialization option can be used to keep track of changes to the handle. We'll set the range to <code>[0, 1]</code>, which leaves one step of <code>1</code>.</p>
-		
+
 		<div class="example vertical">
 			<div id="slider-toggle"></div>
 			<?php run('toggle'); ?>
@@ -422,38 +369,19 @@
 </section>
 
 
+<?php sect('tooltips'); ?>
 <h1>Slider with Tooltips</h1>
 
 <section>
 
-	<style>
-
-	.tooltip {
-		display: block;
-		position: absolute;
-		border: 1px solid #D9D9D9;
-		font: 400 12px/12px Arial;
-		border-radius: 3px;
-		background: #fff;
-		top: -43px;
-		padding: 5px;
-		left: -9px;
-		text-align: center;
-		width: 50px;
-	}
-	.tooltip strong {
-		display: block;
-		padding: 2px;
-	}
-
-	</style>
-	
 	<div class="view">
 
 		<p>Using the libLink feature, noUiSlider can provided handles with tooltips. These tooltips can be styled and modified on the fly, as demonstrated in this example.</p>
-		
+
 		<p>A basic tooltip implementation is part of the <a href="/liblink/">libLink</a> implementation.</p>
-		<p>The noUiSlider theme includes no tooltip styling. The following styles are used in this example:</p>
+
+		<p>The noUiSlider theme includes no tooltip styling, so by default, the values will resemble the handle on the left.</p>
+
 		<div class="example" style="padding-top: 50px;">
 			<div id="slider-tooltip"></div>
 			<?php run('tooltip'); ?>
@@ -469,19 +397,19 @@
 		<div class="viewer-content">
 			<?php code('tooltip'); ?>
 		</div>
-		
+
 		<div class="viewer-header">Basic in-handle value</div>
 
 		<div class="viewer-content">
 			<?php code('tooltip-simple', true); ?>
 		</div>
-		
+
 		<div class="viewer-header">Tooltips with custom HTML</div>
 
 		<div class="viewer-content">
 			<?php code('tooltip-more', true); ?>
 		</div>
-		
+
 		<div class="viewer-header">Example tooltip styling</div>
 
 		<div class="viewer-content">

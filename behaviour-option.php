@@ -26,6 +26,7 @@
 </section>
 
 
+<?php sect('examples'); ?>
 <h2>Example configurations</h2>
 
 <section>
@@ -62,6 +63,7 @@
 </section>
 
 
+<?php sect('tap'); ?>
 <h2>Tap</h2>
 
 <section>
@@ -78,6 +80,7 @@
 </section>
 
 
+<?php sect('drag'); ?>
 <h2>Drag</h2>
 
 <section>
@@ -94,6 +97,7 @@
 </section>
 
 
+<?php sect('fixed'); ?>
 <h2>Fixed dragging</h2>
 
 <section>
@@ -110,6 +114,7 @@
 </section>
 
 
+<?php sect('snap'); ?>
 <h2>Snap</h2>
 
 <section>
@@ -125,6 +130,8 @@
 	</div>
 </section>
 
+
+<?php sect('combined'); ?>
 <h2>Combined options</h2>
 
 <section>

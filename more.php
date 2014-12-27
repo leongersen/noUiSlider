@@ -12,6 +12,7 @@
 
 <h1>More...</h1>
 
+<?php sect('disable'); ?>
 <h2>Disabling a slider</h2>
 
 <section>
@@ -48,6 +49,7 @@
 </section>
 
 
+<?php sect('update'); ?>
 <h2>Updating slider options</h2>
 
 <section>
@@ -115,6 +117,7 @@
 </section>
 
 
+<?php sect('styling'); ?>
 <h2>Styling</h2>
 
 <section>

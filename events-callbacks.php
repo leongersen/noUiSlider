@@ -90,6 +90,7 @@
 </section>
 
 
+<?php sect('slide'); ?>
 <h2>Slide</h2>
 
 <section>
@@ -102,6 +103,7 @@
 </section>
 
 
+<?php sect('set'); ?>
 <h2>Set</h2>
 
 <section>
@@ -113,6 +115,7 @@
 </section>
 
 
+<?php sect('change'); ?>
 <h2>Change</h2>
 
 <section>
@@ -125,6 +128,7 @@
 </section>
 
 
+<?php sect('functions'); ?>
 <h2>Passing functions as arguments</h2>
 
 <section>
