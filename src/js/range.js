@@ -184,22 +184,30 @@
 		this.snap = snap;
 		this.direction = direction;
 
-		var that = this, index;
+		var index, ordered = [ /* [0, 'min'], [1, '50%'], [2, 'max'] */ ];
 
-		// Loop all entries.
+		// Map the object keys to an array.
 		for ( index in entry ) {
 			if ( entry.hasOwnProperty(index) ) {
-				handleEntryPoint(index, entry[index], that);
+				ordered.push([entry[index], index]);
 			}
 		}
 
-		// Store the actual step values.
-		that.xNumSteps = that.xSteps.slice(0);
+		// Sort all entries by value (numeric sort).
+		ordered.sort(function(a, b) { return a[0] - b[0]; });
 
-		for ( index in that.xNumSteps ) {
-			if ( that.xNumSteps.hasOwnProperty(index) ) {
-				handleStepPoint(Number(index), that.xNumSteps[index], that);
-			}
+		// Convert all entries to subranges.
+		for ( index = 0; index < ordered.length; index++ ) {
+			handleEntryPoint(ordered[index][1], ordered[index][0], this);
+		}
+
+		// Store the actual step values.
+		// xSteps is sorted in the same order as xPct and xVal.
+		this.xNumSteps = this.xSteps.slice(0);
+
+		// Convert all numeric steps to the percentage of the subrange they represent.
+		for ( index = 0; index < this.xNumSteps.length; index++ ) {
+			handleStepPoint(index, this.xNumSteps[index], this);
 		}
 	}
 
