@@ -86,9 +86,11 @@
 
 	<div class="view">
 
-		<p>To format the slider output, noUiSlider offers a <code>format</code> option. Simply specify <code>to</code> and <code>from</code> functions to encode and decode the values.</p>
+		<p>To format the slider output, noUiSlider offers a <code>format</code> option. Simply specify <code>to</code> and <code>from</code> functions to encode and decode the values. See <em>manual formatting</em> to the right for usage information.</p>
 
 		<p>By default, noUiSlider will format output with <strong>2 decimals</strong>.</p>
+
+		<p>Manual formatting can be very tedious, so noUiSlider has support for <a href="/wnumb">the wNumb formatting library</a>. wNumb offers a wide range of options and provides number validation.</p>
 
 		<div class="example">
 			<div id="slider-format"></div>
@@ -96,14 +98,6 @@
 			<?php run('wnumb'); ?>
 			<?php run('linkformat'); ?>
 		</div>
-
-		<p>To format the slider output, pass an object with a <code>to</code> and <code>from</code> method as a <code>format</code> option. See the <em>Manual formatting</em> to the right for more information.</p>
-
-		<p>Manual formatting can be very tedious, so noUiSlider has support for <a href="/wnumb">the wNumb formatting library</a>. wNumb offers a wide range of options and provides number validation.</p>
-
-		<p>Note how the input above has been linked with libLink. Typing in the input will change the slider. wNumb will validate and correct the input.</p>
-
-		<a href="/nouislider/linking-input-fields/">Using Link to bind inputs</a>
 
 	</div>
 
