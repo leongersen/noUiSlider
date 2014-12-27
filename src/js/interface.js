@@ -2,11 +2,6 @@
 	// Run the standard initializer
 	function initialize ( originalOptions ) {
 
-		// Throw error if group is empty.
-		if ( !this.length ){
-			throw new Error("noUiSlider: Can't initialize slider on empty selection.");
-		}
-
 		// Test the options once, not for every slider.
 		var options = testOptions( originalOptions, this );
 
