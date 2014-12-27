@@ -61,7 +61,6 @@
 	</div>
 
 	<div class="side">
-		<?php run('options'); ?>
 		<?php code('options'); ?>
 	</div>
 
