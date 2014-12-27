@@ -178,9 +178,25 @@
 		var retour = $.map($Locations, function( location, index ){
 
 			var step = $Spectrum.getApplicableStep( location ),
+
+				// As per #391, the comparison for the decrement step can have some rounding issues.
+				// Round the value to the precision used in the step.
+				stepDecimals = countDecimals(String(step[2])),
+
+				// Get the current numeric value
 				value = $Values[index],
-				increment = step[2],
-				decrement = (value - step[2]) >= step[1] ? step[2] : step[0];
+
+				// To move the slider 'one step up', the current step value needs to be added.
+				// Use null if we are at the maximum slider value.
+				increment = location === 100 ? null : step[2],
+
+				// Going 'one step down' might put the slider in a different sub-range, so we
+				// need to switch between the current or the previous step.
+				prev = Number((value - step[2]).toFixed(stepDecimals)),
+
+				// If the value fits the step, return the current step value. Otherwise, use the
+				// previous step. Return null if the slider is at its minimum value.
+				decrement = location === 0 ? null : (prev >= step[1]) ? step[2] : (step[0] || false);
 
 			return [[decrement, increment]];
 		});

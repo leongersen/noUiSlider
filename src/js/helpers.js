@@ -39,3 +39,9 @@
 	function asArray ( a ) {
 		return $.isArray(a) ? a : [a];
 	}
+
+	// Counts decimals
+	function countDecimals ( numStr ) {
+		var pieces = numStr.split(".");
+		return pieces.length > 1 ? pieces[1].length : 0;
+	}
