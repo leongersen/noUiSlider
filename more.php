@@ -49,6 +49,25 @@
 </section>
 
 
+<?php sect('options'); ?>
+<h2>Reading options back</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>noUiSlider can return the options that where used to initialize a slider by passing <code>'options'</code>. Note that the returned object is indentical to the input: values are not sanitized or parsed.</p>
+
+	</div>
+
+	<div class="side">
+		<?php run('options'); ?>
+		<?php code('options'); ?>
+	</div>
+
+</section>
+
+
 <?php sect('update'); ?>
 <h2>Updating slider options</h2>
 

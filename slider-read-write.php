@@ -35,7 +35,9 @@
 
 		<p>noUiSlider will keep your values within the slider range, which saves you a bunch of validation.</p>
 
-		<p>If you have set the slider to use one handle, simply set it on the slider using the <code>.val()</code> method. If you have two handles, pass an array. One-handled sliders will also accept arrays. Within an array, you can set a position to <code>null</code> if you want to leave a handle unchanged.</p>
+		<p>If you have set the slider to use one handle, simply set it on the slider using the <code>.val()</code> method. If you have two handles, pass an array. One-handled sliders will also accept arrays.</p>
+
+		<p>Within an array, you can set a position to <code>null</code> if you want to leave a handle unchanged.</p>
 	</div>
 
 	<div class="side">
@@ -86,6 +88,8 @@
 
 		<p>To format the slider output, noUiSlider offers a <code>format</code> option. Simply specify <code>to</code> and <code>from</code> functions to encode and decode the values.</p>
 
+		<p>By default, noUiSlider will format output with <strong>2 decimals</strong>.</p>
+
 		<div class="example">
 			<div id="slider-format"></div>
 			<input id="input-format">
@@ -93,7 +97,9 @@
 			<?php run('linkformat'); ?>
 		</div>
 
-		<p>Manual formatting can be very tedious, so noUiSlider has support for <a href="">the wNumb formatting library</a>. wNumb offers a wide range of options and provides number validation.</p>
+		<p>To format the slider output, pass an object with a <code>to</code> and <code>from</code> method as a <code>format</code> option. See the <em>Manual formatting</em> to the right for more information.</p>
+
+		<p>Manual formatting can be very tedious, so noUiSlider has support for <a href="/wnumb">the wNumb formatting library</a>. wNumb offers a wide range of options and provides number validation.</p>
 
 		<p>Note how the input above has been linked with libLink. Typing in the input will change the slider. wNumb will validate and correct the input.</p>
 
