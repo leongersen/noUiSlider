@@ -434,3 +434,36 @@
 		</div>
 	</div>
 </section>
+
+
+<?php sect('soft-limits'); ?>
+<h1>Soft limits</h1>
+
+<section>
+
+	<div class="view">
+
+		<p>If you want to disable the edges of a slider, the set event can be used to reset the value if a limit is passed. Note how the handle 'bounces back' when it is released below <code>20</code> or above <code>80</code>. noUiSlider doesn't support disabling edges altogether, but this effect might be created visually by <a href="/nouislider/more#section-styling">setting padding</a> on the slider.</p>
+
+		<div class="example">
+			<div id="soft"></div>
+			<?php run('slider-soft-setup'); ?>
+			<?php run('slider-soft'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<div class="viewer-header">Setting up the slider</div>
+
+		<div class="viewer-content">
+			<?php code('slider-soft-setup'); ?>
+		</div>
+
+		<div class="viewer-header">Resetting using the <code>set</code> event</div>
+
+		<div class="viewer-content">
+			<?php code('slider-soft'); ?>
+		</div>
+	</div>
+</section>
