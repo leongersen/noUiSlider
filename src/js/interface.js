@@ -66,7 +66,7 @@
 		}
 
 		// If no value is passed, this is 'get'.
-		if ( arg === undefined ) {
+		if ( !arguments.length ) {
 			var first = $(this[0]);
 			return valMethod(first).call(first);
 		}
