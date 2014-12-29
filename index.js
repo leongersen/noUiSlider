@@ -2,7 +2,9 @@
 
 var sandbox = require('sandboxed-module');
 
-module.exports = function(window){
+var cssLoader = require('./css');
+
+var initializer = function(window){
   return sandbox.require('./distribute/jquery.nouislider.all', {
     globals: {
       window: window,
@@ -10,3 +12,7 @@ module.exports = function(window){
     }
   });
 };
+
+initializer.css = cssLoader;
+
+module.exports = initializer;

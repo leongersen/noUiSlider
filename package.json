@@ -17,9 +17,17 @@
     "url": "git://github.com/leongersen/noUiSlider.git"
   },
   "dependencies": {
+    "brfs": "^1.2.0",
+    "insert-css": "^0.2.0",
     "sandboxed-module": "^1.0.3"
   },
   "browser": {
-    "./index.js": "./browser.js"
+    "./index.js": "./browser.js",
+    "./3rd-party-loaders/insert-css.js": "./3rd-party-loaders/insert-css.browser.js"
+  },
+  "browserify": {
+    "transform": [
+      "brfs"
+    ]
   }
 }
