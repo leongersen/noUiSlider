@@ -1,6 +1,7 @@
 {
   "name": "noUiSlider",
   "version": "7.0.10",
+  "main": "index.js",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-compress": "^0.11.0",
@@ -14,5 +15,11 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/leongersen/noUiSlider.git"
+  },
+  "dependencies": {
+    "sandboxed-module": "^1.0.3"
+  },
+  "browser": {
+    "./index.js": "./browser.js"
   }
 }
