@@ -64,7 +64,26 @@ var jquery = require('jquery');
 require('nouislider')(jquery);
 
 console.log('Is noUiSlider loaded?');
-console.log(typeof jquery.nouislider === 'function');
+console.log(typeof jquery.fn.nouislider === 'function');
+
+jquery(".shor").nouislider({
+  start: 40,
+  connect: "lower",
+  range: {
+    min: 0,
+    max: 100
+  }
+});
+ 
+jquery(".svert").nouislider({
+  orientation: "vertical",
+  start: 40,
+  connect: "lower",
+  range: {
+    min: 0,
+    max: 100
+  }
+});
 ```
 
 Version numbering
