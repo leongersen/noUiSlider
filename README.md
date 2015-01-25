@@ -64,9 +64,9 @@ var jquery = require('jquery');
 require('nouislider')(jquery);
 
 console.log('Is noUiSlider loaded?');
-console.log(typeof jquery.fn.nouislider === 'function');
+console.log(typeof jquery.fn.noUiSlider === 'function');
 
-jquery(".shor").nouislider({
+jquery(".shor").noUiSlider({
   start: 40,
   connect: "lower",
   range: {
@@ -75,7 +75,7 @@ jquery(".shor").nouislider({
   }
 });
  
-jquery(".svert").nouislider({
+jquery(".svert").noUiSlider({
   orientation: "vertical",
   start: 40,
   connect: "lower",
