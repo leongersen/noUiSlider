@@ -55,6 +55,18 @@ Unit Testing
 ------------
 Unit tests where overhauled for noUiSlider 7. Most code is now covered, with events testing being slightly lacking due to it's browser dependant nature.
 
+Browserify
+----------
+This library is [CommonJS](http://www.commonjs.org/) compatible, so you can use it in this way:
+
+```javascript
+var jquery = require('jquery');
+require('nouislider')(jquery);
+
+console.log('Is noUiSlider loaded?');
+console.log(typeof jquery.nouislider === 'function');
+```
+
 Version numbering
 ------------------------------
 Version numbering follows the 'Semantic versioning' style.
