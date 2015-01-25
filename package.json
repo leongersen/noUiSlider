@@ -1,6 +1,7 @@
 {
-  "name": "noUiSlider",
+  "name": "nouislider",
   "version": "7.0.10",
+  "main": "./distribute/npm",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-compress": "^0.11.0",
