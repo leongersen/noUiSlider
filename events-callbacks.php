@@ -98,7 +98,7 @@
 	<div class="view">
 		<p>This event is useful when you want to update a value or perform an actions every time a handle is dragged. For example, you can use the <code>'slide'</code> event to update graphs. For convenience, this function also fires on a change by 'tap'.</p>
 
-		<p><strong>Alternative available.</strong> noUiSlider has a support for the powerful <code>libLink</code> library, which probably does everything you need <code>slide</code> for, such as displaying numbers in text labels or input fields. Additionally, it can also format the slider output. Read more about <a href="/liblink/">libLink</a>.</p>
+		<p><strong>Alternative available:</strong> noUiSlider has a support for the powerful <code>libLink</code> library, which probably does everything you need <code>slide</code> for, such as displaying numbers in text labels or input fields. Additionally, it can also format the slider output. Read more about <a href="/liblink/">libLink</a>.</p>
 	</div>
 </section>
 
@@ -109,7 +109,7 @@
 <section>
 
 	<div class="view">
-		<p>Whenever a slider is changed to a new value, this event is fired. This function will trigger every time a slider <em>stops</em> changing, optionally even on calls to the <code>.val()</code> method. Because this creates the hazard of an infinite loop, any <code>.val()</code> call will have to explicitly request this event. You can consider this 'end of slide'.</p>
+		<p>Whenever a slider is changed to a new value, this event is fired. This function will trigger every time a slider <em>stops</em> changing, <strong>including</strong> after calls to the <code>.val()</code> method. You can consider this 'end of slide'.</p>
 	</div>
 
 </section>
