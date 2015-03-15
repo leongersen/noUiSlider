@@ -153,7 +153,8 @@
 		// Unbind events on the slider, remove all classes and child elements.
 		$(this).off(namespace)
 			.removeClass(Classes.join(' '))
-			.empty();
+			.find('.noUi-base')
+			.remove();
 
 		delete this.LinkUpdate;
 		delete this.LinkConfirm;
