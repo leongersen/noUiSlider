@@ -1,4 +1,4 @@
-/*! noUiSlider - 7.0.10 - 2014-12-27 14:50:46 */
+/*! noUiSlider - 7.0.10 - 2015-03-02 12:56:27 */
 
 (function(){
 
@@ -651,7 +651,18 @@ var
 /*jslint browser: true */
 /*jslint white: true */
 
-(function( $ ){
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS
+        module.exports = factory(require('jquery'));
+    } else {
+        // Browser globals
+        factory(window.jQuery || window.Zepto);
+    }
+}(function( $ ){
 
 	'use strict';
 
@@ -2311,4 +2322,4 @@ function closure ( target, options, originalOptions ){
 		});
 	};
 
-}( window.jQuery || window.Zepto ));
+}));
