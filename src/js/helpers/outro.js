@@ -1,1 +1,1 @@
-}( window.jQuery || window.Zepto ));
+}));
