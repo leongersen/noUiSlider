@@ -2,7 +2,7 @@
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to, noLimitOption ) {
 
-		var trigger = handle[0] !== $Handles[0][0] ? 1 : 0,
+		var trigger = handle !== $Handles[0] ? 1 : 0,
 			lowerMargin = $Locations[0] + options.margin,
 			upperMargin = $Locations[1] - options.margin,
 			lowerLimit = $Locations[0] + options.limit,
@@ -36,11 +36,11 @@
 		}
 
 		// Set the handle to the new position.
-		handle.css( options.style, to + '%' );
+		handle.style[options.style] = to + '%';
 
 		// Force proper handle stacking
-		if ( handle.is(':first-child') ) {
-			handle.toggleClass(Classes[17], to > 50 );
+		if ( !handle.previousSibling ) {
+			handle.classList.toggle(Classes[17], to > 50 );
 		}
 
 		// Update locations.
@@ -99,7 +99,7 @@
 	function valueSet ( input ) {
 
 		// LibLink: don't accept new values when currently emitting changes.
-		if ( $Target[0].LinkIsEmitting ) {
+		if ( $Target.LinkIsEmitting ) {
 			return this;
 		}
 
@@ -214,7 +214,7 @@
 // Initialize slider
 
 	// Throw an error if the slider was already initialized.
-	if ( $Target.hasClass(Classes[0]) ) {
+	if ( $Target.classList.contains(Classes[0]) ) {
 		throw new Error('Slider was already initialized.');
 	}
 
@@ -247,4 +247,4 @@
 	};
 
 	// Use the public value method to set the start values.
-	$Target.val( options.start );
+	val.call([$Target], options.start);// TODO

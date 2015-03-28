@@ -30,7 +30,7 @@
 	function testRange ( parsed, entry ) {
 
 		// Filter incorrect input.
-		if ( typeof entry !== 'object' || $.isArray(entry) ) {
+		if ( typeof entry !== 'object' || Array.isArray(entry) ) {
 			throw new Error("noUiSlider: 'range' is not an object.");
 		}
 
@@ -48,7 +48,7 @@
 
 		// Validate input. Values aren't tested, as the public .val method
 		// will always provide a valid location.
-		if ( !$.isArray( entry ) || !entry.length || entry.length > 2 ) {
+		if ( !Array.isArray( entry ) || !entry.length || entry.length > 2 ) {
 			throw new Error("noUiSlider: 'start' option is incorrect.");
 		}
 
@@ -215,18 +215,26 @@
 			'format': { r: false, t: testFormat }
 		};
 
-		// Set defaults where applicable.
-		options = $.extend({
+		var defaults = {
 			'connect': false,
 			'direction': 'ltr',
 			'behaviour': 'tap',
 			'orientation': 'horizontal'
-		}, options);
+		};
+
+		// Set defaults where applicable.
+		Object.keys(defaults).forEach(function ( name ) {
+			if ( options[name] === undefined ) {
+				options[name] = defaults[name];
+			}
+		});
 
 		// Run all options through a testing mechanism to ensure correct
 		// input. It should be noted that options might get modified to
 		// be handled properly. E.g. wrapping integers in arrays.
-		$.each( tests, function( name, test ){
+		Object.keys(tests).forEach(function( name ){
+
+			var test = tests[name];
 
 			// If the option isn't set, but it is required, throw an error.
 			if ( options[name] === undefined ) {

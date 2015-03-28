@@ -1,9 +1,9 @@
 
 	// Removes duplicates from an array.
 	function unique(array) {
-		return $.grep(array, function(el, index) {
-			return index === $.inArray(el, array);
-		});
+		return array.filter(function(a){
+			return !this[a] ? this[a] = true : false;
+		}, {});
 	}
 
 	// Round a value to the closest 'to'.
@@ -24,9 +24,9 @@
 
 	// Sets a class and removes it after [duration] ms.
 	function addClassFor ( element, className, duration ) {
-		element.addClass(className);
+		element.classList.add(className);
 		setTimeout(function(){
-			element.removeClass(className);
+			element.classList.remove(className);
 		}, duration);
 	}
 
@@ -37,7 +37,7 @@
 
 	// Wraps a variable as an array, if it isn't one yet.
 	function asArray ( a ) {
-		return $.isArray(a) ? a : [a];
+		return Array.isArray(a) ? a : [a];
 	}
 
 	// Counts decimals

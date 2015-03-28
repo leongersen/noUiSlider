@@ -3,7 +3,7 @@ function closure ( target, options, originalOptions ){
 // Internal variables
 
 	// All variables local to 'closure' are marked $.
-	var $Target = $(target),
+	var $Target = target,
 		$Locations = [-1, -1],
 		$Base,
 		$Handles,

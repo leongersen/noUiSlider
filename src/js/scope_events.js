@@ -3,21 +3,18 @@
 	function attach ( events, element, callback, data ) {
 
 		// This function can be used to 'filter' events to the slider.
+		// element is a node, not a nodeList
 
-		// Add the noUiSlider namespace to all events.
-		events = events.replace( /\s/g, namespace + ' ' ) + namespace;
+		console.log('Attaching ' + events + ' to: ', element, Object.prototype.toString.call(element));
 
-		// Bind a closure on the target.
-		return element.on( events, function( e ){
+		var method = function ( e ){
 
-			// jQuery and Zepto (1) handle unset attributes differently,
-			// but always falsy; #208
-			if ( !!$Target.attr('disabled') ) {
+			if ( !!$Target.getAttribute('disabled') ) {
 				return false;
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( $Target.hasClass( Classes[14] ) ) {
+			if ( $Target.classList.contains( Classes[14] ) ) {
 				return false;
 			}
 
@@ -26,7 +23,15 @@
 
 			// Call the event handler with the event [ and additional data ].
 			callback ( e, data );
+		}, methods = [];
+
+		// Bind a closure on the target for every event type.
+		events.split(' ').forEach(function( eventName ){
+			element.addEventListener(eventName, method, false);
+			methods.push([eventName, method]);
 		});
+
+		return methods;
 	}
 
 	// Handle movement on document for handle and range drag.
@@ -34,7 +39,7 @@
 
 		var handles = data.handles || $Handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
-			h = handles[0][0] !== $Handles[0][0] ? 1 : 0;
+			h = handles[0] !== $Handles[0] ? 1 : 0;
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
@@ -55,18 +60,26 @@
 	function end ( event ) {
 
 		// The handle is no longer active, so remove the class.
-		$('.' + Classes[15]).removeClass(Classes[15]);
+		var active = document.getElementsByClassName(Classes[15]); // TODO why on document
+
+		if ( active.length ) {
+			active[0].classList.remove(Classes[15]);
+		}
 
 		// Remove cursor styles and text-selection events bound to the body.
 		if ( event.cursor ) {
-			$('body').css('cursor', '').off( namespace );
+		//	$('body').css('cursor', '').off( namespace ); // TODO
 		}
 
+		var d = document.documentElement;
+
 		// Unbind the move and end events, which are added on 'start'.
-		doc.off( namespace );
+		d.noUiListeners.forEach(function( c ) {
+			d.removeEventListener(c[0], c[1]);
+		});
 
 		// Remove dragging class.
-		$Target.removeClass(Classes[12]);
+		$Target.classList.remove(Classes[12]);
 
 		// Fire the change and set events.
 		fireEvents(['set', 'change']);
@@ -75,41 +88,42 @@
 	// Bind move events on document.
 	function start ( event, data ) {
 
+		var d = document.documentElement;
+
 		// Mark the handle as 'active' so it can be styled.
-		if( data.handles.length === 1 ) {
-			data.handles[0].children().addClass(Classes[15]);
+		if ( data.handles.length === 1 ) {
+			data.handles[0].children[0].classList.add(Classes[15]);
 		}
 
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
 
-		// Attach the move event.
-		attach ( actions.move, doc, move, {
+		// Attach the move and end events.
+		var moveEvent = attach(actions.move, d, move, {
 			start: event.calcPoint,
 			handles: data.handles,
 			positions: [
 				$Locations[0],
 				$Locations[$Handles.length - 1]
 			]
-		});
+		}), endEvent = attach(actions.end, d, end, null);
 
-		// Unbind all movement when the drag ends.
-		attach ( actions.end, doc, end, null );
+		d.noUiListeners = moveEvent.concat(endEvent);
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
 		if ( event.cursor ) {
 
 			// Prevent the 'I' cursor and extend the range-drag cursor.
-			$('body').css('cursor', $(event.target).css('cursor'));
+		//	$('body').css('cursor', $(event.target).css('cursor')); // TODO
 
 			// Mark the target with a dragging state.
 			if ( $Handles.length > 1 ) {
-				$Target.addClass(Classes[12]);
+				$Target.classList.add(Classes[12]);
 			}
 
 			// Prevent text selection when dragging the handles.
-			$('body').on('selectstart' + namespace, false);
+		//	$('body').on('selectstart' + namespace, false); // TODO
 		}
 	}
 
@@ -163,7 +177,7 @@
 
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
-				attach ( actions.start, $Handles[i].children(), start, {
+				attach ( actions.start, $Handles[i].children[0], start, {
 					handles: [ $Handles[i] ]
 				});
 			}
@@ -180,14 +194,14 @@
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			drag = $Base.find( '.' + Classes[7] ).addClass( Classes[10] );
+			drag = $Base.find( '.' + Classes[7] ).addClass( Classes[10] ); // TODO
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first
 			// origin will propagate the start event upward,
 			// but it needs to be bound manually on the other.
 			if ( behaviour.fixed ) {
-				drag = drag.add($Base.children().not( drag ).children());
+				drag = drag.add($Base.children().not( drag ).children()); // TODO
 			}
 
 			attach ( actions.start, drag, start, {

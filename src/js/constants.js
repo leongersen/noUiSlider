@@ -1,11 +1,5 @@
 
 	var
-	// Cache the document selector;
-	/** @const */
-	doc = $(document),
-	// Make a backup of the original jQuery/Zepto .val() method.
-	/** @const */
-	$val = $.fn.val,
 	// Namespace for binding and unbinding slider events;
 	/** @const */
 	namespace = '.nui',

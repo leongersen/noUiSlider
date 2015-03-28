@@ -5,10 +5,7 @@
 		// Test the options once, not for every slider.
 		var options = testOptions( originalOptions, this );
 
-		// Loop all items, and provide a new closed-scope environment.
-		return this.each(function(){
-			closure(this, options, originalOptions);
-		});
+		closure(this, options, originalOptions);
 	}
 
 	// Destroy the slider, then re-enter initialization.
@@ -45,50 +42,41 @@
 
 	// Access the internal getting and setting methods based on argument count.
 	function value ( ) {
-		return this[0][ !arguments.length ? 'vGet' : 'vSet' ].apply(this[0], arguments);
+		console.log(this, !arguments.length ? 'vGet' : 'vSet');
+		return this[ !arguments.length ? 'vGet' : 'vSet' ].apply(this, arguments);
 	}
 
-	// Override the .val() method. Test every element. Is it a slider? Go to
-	// the slider value handling. No? Use the standard method.
-	// Note how $.fn.val expects 'this' to be an instance of $. For convenience,
-	// the above 'value' function does too.
-	$.fn.val = function ( arg ) {
+	window.val = function ( arg ) {
 
-		// this === instanceof $
+		// this = nodeList
 
-		function valMethod( a ){
-			return a.hasClass(Classes[0]) ? value : $val;
+		function valMethod ( a ){
+			return a.classList.contains(Classes[0]) ? value : $val;
 		}
 
 		// If no value is passed, this is 'get'.
 		if ( !arguments.length ) {
-			var first = $(this[0]);
-			return valMethod(first).call(first);
+			return valMethod(this[0]).call(this[0]);
 		}
 
-		var isFunction = $.isFunction(arg);
-
-		// Return the set so it remains chainable. Make sure not to break
-		// jQuery's .val(function( index, value ){}) signature.
-		return this.each(function( i ){
-
-			var val = arg, $t = $(this);
-
-			if ( isFunction ) {
-				val = arg.call(this, i, $t.val());
-			}
-
-			valMethod($t).call($t, val);
+		Array.prototype.forEach.call(this, function( node ){
+			valMethod(node).call(node, arg);
 		});
 	};
 
+	// Override the .val() method. Test every element. Is it a slider? Go to
+	// the slider value handling. No? Use the standard method.
+	// $.fn.val
+
 // Extend jQuery/Zepto with the noUiSlider method.
-	$.fn.noUiSlider = function ( options, rebuildFlag ) {
+	window.noUiSlider = function ( targets, options, rebuildFlag ) {
 
 		switch ( options ) {
 			case 'step': return this[0].getCurrentStep();
 			case 'options': return this[0].getOriginalOptions();
 		}
 
-		return ( rebuildFlag ? rebuild : initialize ).call(this, options);
+		return ( rebuildFlag ? rebuild : initialize ).call(targets[0], options);
 	};
+
+	// $.fn.noUiSlider

@@ -11,11 +11,11 @@
 	// Called by libLink when it wants a set of links updated.
 	function linkUpdate ( flag ) {
 
-		var trigger = $.inArray(flag, triggerPos);
+		var trigger = triggerPos.indexOf(flag);
 
 		// The API might not have been set yet.
-		if ( $Target[0].linkAPI && $Target[0].linkAPI[flag] ) {
-			$Target[0].linkAPI[flag].change(
+		if ( $Target.linkAPI && $Target.linkAPI[flag] ) {
+			$Target.linkAPI[flag].change(
 				$Values[trigger],
 				$Handles[trigger].children(),
 				$Target
