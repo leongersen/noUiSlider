@@ -49,7 +49,7 @@
 		// Convert the value to the slider stepping/range.
 		scope_Values[trigger] = scope_Spectrum.fromStepping( to );
 
-		fireEvent('update', scope_Values, trigger); // NO TODO this doesnt take rtl
+		fireEvent('update', trigger);
 
 		return true;
 	}
@@ -88,7 +88,7 @@
 				// Request an update for all links if the value was invalid.
 				// Do so too if setting the handle fails.
 				if ( to === false || isNaN(to) || setHandle( scope_Handles[trigger], scope_Spectrum.toStepping( to ), i === (3 - options.dir) ) === false ) {
-					fireEvent('update', scope_Values, trigger); // NO TODO this doesnt take rtl
+					fireEvent('update', trigger);
 				}
 			}
 		}
@@ -186,6 +186,13 @@
 	function bindEvent ( namespacedEvent, callback ) {
 		scope_Events[namespacedEvent] = scope_Events[namespacedEvent] || [];
 		scope_Events[namespacedEvent].push(callback);
+
+		// If the event bound is 'update,' fire it immediately for all handles.
+		if ( namespacedEvent.split('.')[0] === 'update' ) {
+			scope_Handles.forEach(function(a, index){
+				fireEvent('update', index);
+			});
+		}
 	}
 
 	// Undo attachment of event

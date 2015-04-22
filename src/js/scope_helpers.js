@@ -6,7 +6,11 @@
 	}
 
 	// External event handling
-	function fireEvent ( event, values, handle ) {
+	function fireEvent ( event, trigger ) {
+
+		if ( trigger !== undefined ) {
+			trigger = Math.abs(trigger - options.dir);
+		}
 
 		Object.keys(scope_Events).forEach(function( targetEvent ) {
 
@@ -14,7 +18,7 @@
 
 			if ( event === eventType ) {
 				scope_Events[targetEvent].forEach(function( callback ) {
-					callback( values, handle, targetEvent );
+					callback( valueGet(), trigger, targetEvent );
 				});
 			}
 		});

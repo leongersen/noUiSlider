@@ -21,6 +21,7 @@
 
 			// Call the event handler with the event [ and additional data ].
 			callback ( e, data );
+
 		}, methods = [];
 
 		// Bind a closure on the target for every event type.
@@ -50,7 +51,7 @@
 
 		// Fire the 'slide' event if any handle moved.
 		if ( state ) {
-			fireEvent('slide');
+			fireEvent('slide', h); // TODO fire for both handles!
 		}
 	}
 
