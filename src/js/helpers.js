@@ -11,6 +11,15 @@
 		return Math.round(value / to) * to;
 	}
 
+	// TODO
+	function offset ( element ) {
+		var box = element.getBoundingClientRect();
+		return {
+			top: box.top + document.body.scrollTop,
+			left: box.left + document.body.scrollLeft
+		};
+	}
+
 	// Checks whether a value is numerical.
 	function isNumeric ( a ) {
 		return typeof a === 'number' && !isNaN( a ) && isFinite( a );

@@ -1,8 +1,9 @@
-	function getGroup ( $Spectrum, mode, values, stepped ) {
+
+	function getGroup ( mode, values, stepped ) {
 
 		// Use the range.
 		if ( mode === 'range' || mode === 'steps' ) {
-			return $Spectrum.xVal;
+			return scope_Spectrum.xVal;
 		}
 
 		if ( mode === 'count' ) {
@@ -22,8 +23,8 @@
 		if ( mode === 'positions' ) {
 
 			// Map all percentages to on-range values.
-			return $.map(values, function( value ){
-				return $Spectrum.fromStepping( stepped ? $Spectrum.getStep( value ) : value );
+			return values.map(function( value ){
+				return scope_Spectrum.fromStepping( stepped ? scope_Spectrum.getStep( value ) : value );
 			});
 		}
 
@@ -32,10 +33,10 @@
 			// If the value must be stepped, it needs to be converted to a percentage first.
 			if ( stepped ) {
 
-				return $.map(values, function( value ){
+				return values.map(function( value ){
 
 					// Convert to percentage, apply step, return to value.
-					return $Spectrum.fromStepping( $Spectrum.getStep( $Spectrum.toStepping( value ) ) );
+					return scope_Spectrum.fromStepping( scope_Spectrum.getStep( scope_Spectrum.toStepping( value ) ) );
 				});
 
 			}
@@ -45,12 +46,12 @@
 		}
 	}
 
-	function generateSpread ( $Spectrum, density, mode, group ) {
+	function generateSpread ( density, mode, group ) {
 
-		var originalSpectrumDirection = $Spectrum.direction,
+		var originalSpectrumDirection = scope_Spectrum.direction,
 			indexes = {},
-			firstInRange = $Spectrum.xVal[0],
-			lastInRange = $Spectrum.xVal[$Spectrum.xVal.length-1],
+			firstInRange = scope_Spectrum.xVal[0],
+			lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length-1],
 			ignoreFirst = false,
 			ignoreLast = false,
 			prevPct = 0;
@@ -58,7 +59,7 @@
 		// This function loops the spectrum in an ltr linear fashion,
 		// while the toStepping method is direction aware. Trick it into
 		// believing it is ltr.
-		$Spectrum.direction = 0;
+		scope_Spectrum.direction = 0;
 
 		// Create a copy of the group, sort it and filter away all duplicates.
 		group = unique(group.slice().sort(function(a, b){ return a - b; }));
@@ -75,7 +76,7 @@
 			ignoreLast = true;
 		}
 
-		$.each(group, function ( index ) {
+		group.forEach(function ( index ) {
 
 			// Get the current step and the lower + upper positions.
 			var step, i, q,
@@ -87,7 +88,7 @@
 			// When using 'steps' mode, use the provided steps.
 			// Otherwise, we'll step on to the next subrange.
 			if ( mode === 'steps' ) {
-				step = $Spectrum.xNumSteps[ index ];
+				step = scope_Spectrum.xNumSteps[ index ];
 			}
 
 			// Default to a 'full' step.
@@ -106,7 +107,7 @@
 
 				// Get the percentage value for the current step,
 				// calculate the size for the subrange.
-				newPct = $Spectrum.toStepping( i );
+				newPct = scope_Spectrum.toStepping( i );
 				pctDifference = newPct - prevPct;
 
 				steps = pctDifference / density;
@@ -131,7 +132,7 @@
 				}
 
 				// Determine the point type.
-				type = ($.inArray(i, group) > -1) ? 1 : ( mode === 'steps' ? 2 : 0 );
+				type = (group.indexOf(i) > -1) ? 1 : ( mode === 'steps' ? 2 : 0 );
 
 				// Enforce the 'ignoreFirst' option by overwriting the type for 0.
 				if ( !index && ignoreFirst ) {
@@ -149,17 +150,18 @@
 		});
 
 		// Reset the spectrum.
-		$Spectrum.direction = originalSpectrumDirection;
+		scope_Spectrum.direction = originalSpectrumDirection;
 
 		return indexes;
 	}
 
-	function addMarking ( CSSstyle, orientation, direction, spread, filterFunc, formatter ) {
+	function addMarking ( spread, filterFunc, formatter ) {
 
-		var style = ['horizontal', 'vertical'][orientation],
-			element = $('<div/>');
+		var style = ['horizontal', 'vertical'][options.ort],
+			element = document.createElement('div');
 
-		element.addClass('noUi-pips noUi-pips-'+style);
+		element.classList.add('noUi-pips');
+		element.classList.add('noUi-pips-' + style);
 
 		function getSize( type, value ){
 			return [ '-normal', '-large', '-sub' ][type];
@@ -169,12 +171,12 @@
 			return 'class="' + source + ' ' +
 				source + '-' + style + ' ' +
 				source + getSize(values[1], values[0]) +
-				'" style="' + CSSstyle + ': ' + offset + '%"';
+				'" style="' + options.style + ': ' + offset + '%"';
 		}
 
 		function addSpread ( offset, values ){
 
-			if ( direction ) {
+			if ( scope_Spectrum.direction ) {
 				offset = 100 - offset;
 			}
 
@@ -182,44 +184,38 @@
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
 
 			// Add a marker for every point
-			element.append('<div ' + getTags(offset, 'noUi-marker', values) + '></div>');
+			element.innerHTML += '<div ' + getTags(offset, 'noUi-marker', values) + '></div>';
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				element.append('<div '+getTags(offset, 'noUi-value', values)+'>' + formatter.to(values[0]) + '</div>');
+				element.innerHTML += '<div '+getTags(offset, 'noUi-value', values)+'>' + formatter.to(values[0]) + '</div>';
 			}
 		}
 
 		// Append all points.
-		$.each(spread, addSpread);
+		Object.keys(spread).forEach(function(a){
+			addSpread(a, spread[a]);
+		});
 
 		return element;
 	}
 
-	$.fn.noUiSlider_pips = function ( grid ) {
+	function pips ( grid ) {
 
 	var mode = grid.mode,
 		density = grid.density || 1,
 		filter = grid.filter || false,
 		values = grid.values || false,
+		stepped = grid.stepped || false,
+		group = getGroup( mode, values, stepped ),
+		spread = generateSpread( density, mode, group ),
 		format = grid.format || {
 			to: Math.round
-		},
-		stepped = grid.stepped || false;
+		};
 
-		return this.each(function(){
-
-		var info = this.getInfo(),
-			group = getGroup( info[0], mode, values, stepped ),
-			spread = generateSpread( info[0], density, mode, group );
-
-			return $(this).append(addMarking(
-				info[1],
-				info[2],
-				info[0].direction,
-				spread,
-				filter,
-				format
-			));
-		});
-	};
+		return scope_Target.appendChild(addMarking(
+			spread,
+			filter,
+			format
+		));
+	}

@@ -2,21 +2,22 @@
 
 	// Shorthand for base dimensions.
 	function baseSize ( ) {
-		return $Base['offset' + ['Width', 'Height'][options.ort]];
+		return scope_Base['offset' + ['Width', 'Height'][options.ort]];
 	}
 
 	// External event handling
-	function fireEvents ( events ) {
-	/* TODO
-		// Use the external api to get the values.
-		// Wrap the values in an array, as .trigger takes
-		// only one additional argument.
-		var index, values = [ $Target.val() ];
+	function fireEvent ( event, values, handle ) {
 
-		for ( index = 0; index < events.length; index += 1 ){
-			$Target.trigger(events[index], values);
-		}
-	*/
+		Object.keys(scope_Events).forEach(function( targetEvent ) {
+
+			var eventType = targetEvent.split('.')[0];
+
+			if ( event === eventType ) {
+				scope_Events[targetEvent].forEach(function( callback ) {
+					callback( values, handle, targetEvent );
+				});
+			}
+		});
 	}
 
 	// Returns the input array, respecting the slider direction configuration.

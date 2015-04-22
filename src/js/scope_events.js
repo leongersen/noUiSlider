@@ -5,16 +5,14 @@
 		// This function can be used to 'filter' events to the slider.
 		// element is a node, not a nodeList
 
-		console.log('Attaching ' + events + ' to: ', element, Object.prototype.toString.call(element));
-
 		var method = function ( e ){
 
-			if ( !!$Target.getAttribute('disabled') ) {
+			if ( !!scope_Target.getAttribute('disabled') ) {
 				return false;
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( $Target.classList.contains( Classes[14] ) ) {
+			if ( scope_Target.classList.contains( Classes[14] ) ) {
 				return false;
 			}
 
@@ -37,9 +35,9 @@
 	// Handle movement on document for handle and range drag.
 	function move ( event, data ) {
 
-		var handles = data.handles || $Handles, positions, state = false,
+		var handles = data.handles || scope_Handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
-			h = handles[0] !== $Handles[0] ? 1 : 0;
+			h = handles[0] !== scope_Handles[0] ? 1 : 0;
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
@@ -52,7 +50,7 @@
 
 		// Fire the 'slide' event if any handle moved.
 		if ( state ) {
-			fireEvents(['slide']);
+			fireEvent('slide');
 		}
 	}
 
@@ -68,7 +66,8 @@
 
 		// Remove cursor styles and text-selection events bound to the body.
 		if ( event.cursor ) {
-		//	$('body').css('cursor', '').off( namespace ); // TODO
+			document.body.style.cursor = '';
+			document.body.removeEventListener('selectstart', document.body.noUiListener);
 		}
 
 		var d = document.documentElement;
@@ -79,10 +78,11 @@
 		});
 
 		// Remove dragging class.
-		$Target.classList.remove(Classes[12]);
+		scope_Target.classList.remove(Classes[12]);
 
 		// Fire the change and set events.
-		fireEvents(['set', 'change']);
+		fireEvent('set');
+		fireEvent('change');
 	}
 
 	// Bind move events on document.
@@ -103,8 +103,8 @@
 			start: event.calcPoint,
 			handles: data.handles,
 			positions: [
-				$Locations[0],
-				$Locations[$Handles.length - 1]
+				scope_Locations[0],
+				scope_Locations[scope_Handles.length - 1]
 			]
 		}), endEvent = attach(actions.end, d, end, null);
 
@@ -115,15 +115,21 @@
 		if ( event.cursor ) {
 
 			// Prevent the 'I' cursor and extend the range-drag cursor.
-		//	$('body').css('cursor', $(event.target).css('cursor')); // TODO
+			document.body.style.cursor = getComputedStyle(event.target).cursor;
 
 			// Mark the target with a dragging state.
-			if ( $Handles.length > 1 ) {
-				$Target.classList.add(Classes[12]);
+			if ( scope_Handles.length > 1 ) {
+				scope_Target.classList.add(Classes[12]);
 			}
 
+			var f = function(){
+				return false;
+			};
+
+			document.body.noUiListener = f;
+
 			// Prevent text selection when dragging the handles.
-		//	$('body').on('selectstart' + namespace, false); // TODO
+			document.body.addEventListener('selectstart', f, false);
 		}
 	}
 
@@ -136,14 +142,14 @@
 		event.stopPropagation();
 
 		// Add up the handle offsets.
-		$.each( $Handles, function(){
-			total += this.offset()[ options.style ];
+		scope_Handles.forEach(function(a){
+			total += offset(a)[ options.style ];
 		});
 
 		// Find the handle closest to the tapped position.
-		total = ( location < total/2 || $Handles.length === 1 ) ? 0 : 1;
+		total = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
 
-		location -= $Base.offset()[ options.style ];
+		location -= offset(scope_Base)[ options.style ];
 
 		// Calculate the new position.
 		to = ( location * 100 ) / baseSize();
@@ -151,17 +157,19 @@
 		if ( !options.events.snap ) {
 			// Flag the slider as it is now in a transitional state.
 			// Transition takes 300 ms, so re-enable the slider afterwards.
-			addClassFor( $Target, Classes[14], 300 );
+			addClassFor( scope_Target, Classes[14], 300 );
 		}
 
 		// Find the closest handle and calculate the tapped point.
 		// The set handle to the new position.
-		setHandle( $Handles[total], to );
+		setHandle( scope_Handles[total], to );
 
-		fireEvents(['slide', 'set', 'change']);
+		fireEvent('slide');
+		fireEvent('set');
+		fireEvent('change');
 
 		if ( options.events.snap ) {
-			start(event, { handles: [$Handles[total]] });
+			start(event, { handles: [scope_Handles[total]] });
 		}
 	}
 
@@ -173,12 +181,12 @@
 		// Attach the standard drag event to the handles.
 		if ( !behaviour.fixed ) {
 
-			for ( i = 0; i < $Handles.length; i += 1 ) {
+			for ( i = 0; i < scope_Handles.length; i += 1 ) {
 
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
-				attach ( actions.start, $Handles[i].children[0], start, {
-					handles: [ $Handles[i] ]
+				attach ( actions.start, scope_Handles[i].children[0], start, {
+					handles: [ scope_Handles[i] ]
 				});
 			}
 		}
@@ -186,26 +194,27 @@
 		// Attach the tap event to the slider base.
 		if ( behaviour.tap ) {
 
-			attach ( actions.start, $Base, tap, {
-				handles: $Handles
+			attach ( actions.start, scope_Base, tap, {
+				handles: scope_Handles
 			});
 		}
 
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			drag = $Base.find( '.' + Classes[7] ).addClass( Classes[10] ); // TODO
+			drag = scope_Base.getElementsByClassName( Classes[7] )[0];
+			drag.classList.add( Classes[10] );
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first
 			// origin will propagate the start event upward,
 			// but it needs to be bound manually on the other.
 			if ( behaviour.fixed ) {
-				drag = drag.add($Base.children().not( drag ).children()); // TODO
+				//drag = drag.add(scope_Base.children().not( drag ).children()); // TODO
 			}
 
 			attach ( actions.start, drag, start, {
-				handles: $Handles
+				handles: scope_Handles
 			});
 		}
 	}

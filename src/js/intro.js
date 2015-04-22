@@ -2,16 +2,23 @@
 /*jslint white: true */
 
 (function (factory) {
-    if (typeof define === 'function' && define.amd) {
+
+    if ( typeof define === 'function' && define.amd ) {
+
         // AMD. Register as an anonymous module.
-        define(['jquery'], factory);
-    } else if (typeof exports === 'object') {
+        define([], factory);
+
+    } else if ( typeof exports === 'object' ) {
+
         // Node/CommonJS
         module.exports = factory(require('jquery'));
+
     } else {
+
         // Browser globals
-        factory(window.jQuery || window.Zepto);
+        window.noUiSlider = factory();
     }
-}(function( $ ){
+
+}(function( ){
 
 	'use strict';

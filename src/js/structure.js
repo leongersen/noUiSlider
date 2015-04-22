@@ -1,5 +1,3 @@
-// Class handling
-
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b, delimit ) {
 
@@ -22,9 +20,6 @@
 
 		return [c,d];
 	}
-
-
-// Event handling
 
 	// Provide a clean event with standardized offset values.
 	function fixEvent ( e ) {
@@ -71,9 +66,6 @@
 
 		return event;
 	}
-
-
-// DOM additions
 
 	// Append a handle to the base.
 	function addHandle ( direction, index ) {

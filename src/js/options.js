@@ -249,6 +249,9 @@
 			test.t( parsed, options[name] );
 		});
 
+		// Forward pips options
+		parsed.pips = options.pips;
+		
 		// Pre-define the styles.
 		parsed.style = parsed.ort ? 'top' : 'left';
 
