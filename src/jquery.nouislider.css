@@ -163,3 +163,14 @@
 [disabled] .noUi-handle {
 	cursor: not-allowed;
 }
+
+
+/* Balle
+ */
+.noUi-tick {
+	width: 2px;
+	margin-left: -1px;
+	height: 100%;
+	position: absolute;
+	background: #CCC;
+}

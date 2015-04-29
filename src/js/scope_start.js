@@ -7,6 +7,7 @@ function closure ( target, options, originalOptions ){
 		$Locations = [-1, -1],
 		$Base,
 		$Handles,
+		$Tick,
 		$Spectrum = options.spectrum,
 		$Values = [],
 	// libLink. For rtl sliders, 'lower' and 'upper' should not be inverted

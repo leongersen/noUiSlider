@@ -133,6 +133,19 @@
 		return handles;
 	}
 
+	function addTicks ( ticks, alignment, base, spectrum) {
+		if(!ticks) {
+			return;
+		}
+
+		return $.map(ticks, function(tick, index) {
+			return $('<div/>')
+						.addClass( Classes[18] )
+						.css(alignment, spectrum.convert(tick) + "%")
+						.appendTo(base);
+		});
+	}
+
 	// Initialize a single slider.
 	function addSlider ( direction, orientation, target ) {
 
