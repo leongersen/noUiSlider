@@ -1,5 +1,5 @@
 {
-  "name": "noUiSlider",
+  "name": "nouislider",
   "version": "7.0.10",
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -11,6 +11,7 @@
     "grunt-contrib-uglify": "^0.5.1",
     "grunt-string-replace": "^0.2.7"
   },
+  "main": "distribute/jquery.nouislider.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/leongersen/noUiSlider.git"
