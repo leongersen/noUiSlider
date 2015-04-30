@@ -44,7 +44,7 @@
 		// Set active class to tick elements
 		if(options.tick) {
 			$.each(options.tick, function(index, tick) {
-				$Tick[index].toggleClass(Classes[19], tick < value);
+				$Tick[index].toggleClass(Classes[19], originalOptions.connect === "upper" ? (tick > value) : (tick < value) );
 			});
 		}
 
