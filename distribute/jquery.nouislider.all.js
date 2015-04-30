@@ -1,4 +1,4 @@
-/*! noUiSlider - 7.0.10 - 2015-04-29 10:00:08 */
+/*! nouislider - 7.0.10 - 2015-04-30 08:48:21 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -104,6 +104,7 @@
 /* 16 */ ,''
 /* 17 */ ,'noUi-stacking'
 /* 18 */ ,'noUi-tick'
+/* 19 */ ,'noUi-tick-passed'
 	];
 
 
@@ -566,10 +567,10 @@
 	}
 
 	function testTick ( parsed, entry ) {
-		parsed.tick = asArray(entry);
+		parsed.tick = asArray(entry).sort();
 
-		$.each(parsed.tick, function() {
-			if(!isNumeric(this)) {
+		$.each(parsed.tick, function(index, tick) {
+			if(!isNumeric(tick)) {
 				throw new Error( "noUiSlider: 'tick' must be a number or an array of numbers.");
 			}
 		});
@@ -579,7 +580,7 @@
 		parsed.tickPadding = entry;
 
 		if(!isNumeric(parsed.tickPadding)) {
-			throw new Error( "noUiSlider: 'tickPadding' must be a number or an array of numbers.");
+			throw new Error( "noUiSlider: 'tickPadding' must be a number.");
 		}
 	}
 
@@ -668,20 +669,6 @@
 		return [c,d];
 	}
 
-
-	function getTickPosition ( position, ticks, padding, spectrum ) {
-		var tickPosition = position,
-		    value = spectrum.fromStepping( position );
-
-		$.each(ticks, function(index, tick) {
-			if(tick-padding < value && value < tick+padding) {
-				tickPosition = spectrum.convert(tick);
-				return false;
-			}
-		});
-
-		return tickPosition;
-	}
 
 // Event handling
 
@@ -800,7 +787,7 @@
 		return $.map(ticks, function(tick, index) {
 			return $('<div/>')
 						.addClass( Classes[18] )
-						.css(alignment, spectrum.convert(ticks) + "%")
+						.css(alignment, spectrum.convert(tick) + "%")
 						.appendTo(base);
 		});
 	}
@@ -974,23 +961,37 @@ function closure ( target, options, originalOptions ){
 	// Handle movement on document for handle and range drag.
 	function move ( event, data ) {
 
-		var handles = data.handles || $Handles, positions, state = false,
+		var value,
+			handles = data.handles || $Handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
 			h = handles[0][0] !== $Handles[0][0] ? 1 : 0;
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
 
-		// Change position to tick
-		if(options.tick) {
+		// Change position to snap to tick
+		if( options.tick ) {
+			var currentValue = $Spectrum.fromStepping( positions[h] );
 			var padding = options.tickPadding || options.singleStep * 4;
-			positions[h] = getTickPosition( positions[h], options.tick, padding, $Spectrum );
+
+			$.each(options.tick, function(index, tick) {
+				if(tick-padding < currentValue && currentValue < tick+padding) {
+					positions[h] = $Spectrum.convert(tick);
+					value = tick;
+					return false;
+				}
+			});
 		}
 
 		state = setHandle ( handles[0], positions[h], handles.length === 1 );
 
 		if ( handles.length > 1 ) {
 			state = setHandle ( handles[1], positions[h?0:1], false ) || state;
+		}
+
+		// Set tick value.
+		if( value ) {
+			$Values[h] = value;
 		}
 
 		// Fire the 'slide' event if any handle moved.
@@ -1184,6 +1185,16 @@ function closure ( target, options, originalOptions ){
 		// Set the handle to the new position.
 		handle.css( options.style, to + '%' );
 
+		// Convert the value to the slider stepping/range.
+		var value = $Spectrum.fromStepping( to );
+
+		// Set active class to tick elements
+		if(options.tick) {
+			$.each(options.tick, function(index, tick) {
+				$Tick[index].toggleClass(Classes[19], originalOptions.connect === "upper" ? (tick > value) : (tick < value) );
+			});
+		}
+
 		// Force proper handle stacking
 		if ( handle.is(':first-child') ) {
 			handle.toggleClass(Classes[17], to > 50 );
@@ -1192,8 +1203,8 @@ function closure ( target, options, originalOptions ){
 		// Update locations.
 		$Locations[trigger] = to;
 
-		// Convert the value to the slider stepping/range.
-		$Values[trigger] = $Spectrum.fromStepping( to );
+		// Update value.
+		$Values[trigger] = value;
 
 		linkUpdate(triggerPos[trigger]);
 

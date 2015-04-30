@@ -1,4 +1,4 @@
-/*! noUiSlider - 7.0.10 - 2015-04-29 11:14:52 */
+/*! nouislider - 7.0.10 - 2015-04-30 08:48:21 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -569,8 +569,8 @@
 	function testTick ( parsed, entry ) {
 		parsed.tick = asArray(entry).sort();
 
-		$.each(parsed.tick, function() {
-			if(!isNumeric(this)) {
+		$.each(parsed.tick, function(index, tick) {
+			if(!isNumeric(tick)) {
 				throw new Error( "noUiSlider: 'tick' must be a number or an array of numbers.");
 			}
 		});
@@ -580,7 +580,7 @@
 		parsed.tickPadding = entry;
 
 		if(!isNumeric(parsed.tickPadding)) {
-			throw new Error( "noUiSlider: 'tickPadding' must be a number or an array of numbers.");
+			throw new Error( "noUiSlider: 'tickPadding' must be a number.");
 		}
 	}
 
@@ -1191,7 +1191,7 @@ function closure ( target, options, originalOptions ){
 		// Set active class to tick elements
 		if(options.tick) {
 			$.each(options.tick, function(index, tick) {
-				$Tick[index].toggleClass(Classes[19], tick < value);
+				$Tick[index].toggleClass(Classes[19], originalOptions.connect === "upper" ? (tick > value) : (tick < value) );
 			});
 		}
 

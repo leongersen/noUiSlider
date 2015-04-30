@@ -192,8 +192,8 @@
 	function testTick ( parsed, entry ) {
 		parsed.tick = asArray(entry).sort();
 
-		$.each(parsed.tick, function() {
-			if(!isNumeric(this)) {
+		$.each(parsed.tick, function(index, tick) {
+			if(!isNumeric(tick)) {
 				throw new Error( "noUiSlider: 'tick' must be a number or an array of numbers.");
 			}
 		});
@@ -203,7 +203,7 @@
 		parsed.tickPadding = entry;
 
 		if(!isNumeric(parsed.tickPadding)) {
-			throw new Error( "noUiSlider: 'tickPadding' must be a number or an array of numbers.");
+			throw new Error( "noUiSlider: 'tickPadding' must be a number.");
 		}
 	}
 
