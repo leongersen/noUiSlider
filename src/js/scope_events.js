@@ -32,17 +32,37 @@
 	// Handle movement on document for handle and range drag.
 	function move ( event, data ) {
 
-		var handles = data.handles || $Handles, positions, state = false,
+		var value,
+			handles = data.handles || $Handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
 			h = handles[0][0] !== $Handles[0][0] ? 1 : 0;
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
 
+		// Change position to snap to tick
+		if( options.tick ) {
+			var currentValue = $Spectrum.fromStepping( positions[h] );
+			var padding = options.tickPadding || options.singleStep * 4;
+
+			$.each(options.tick, function(index, tick) {
+				if(tick-padding < currentValue && currentValue < tick+padding) {
+					positions[h] = $Spectrum.convert(tick);
+					value = tick;
+					return false;
+				}
+			});
+		}
+
 		state = setHandle ( handles[0], positions[h], handles.length === 1 );
 
 		if ( handles.length > 1 ) {
 			state = setHandle ( handles[1], positions[h?0:1], false ) || state;
+		}
+
+		// Set tick value.
+		if( value ) {
+			$Values[h] = value;
 		}
 
 		// Fire the 'slide' event if any handle moved.

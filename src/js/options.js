@@ -189,6 +189,24 @@
 		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
 	}
 
+	function testTick ( parsed, entry ) {
+		parsed.tick = asArray(entry).sort();
+
+		$.each(parsed.tick, function(index, tick) {
+			if(!isNumeric(tick)) {
+				throw new Error( "noUiSlider: 'tick' must be a number or an array of numbers.");
+			}
+		});
+	}
+
+	function testTickPadding ( parsed, entry ) {
+		parsed.tickPadding = entry;
+
+		if(!isNumeric(parsed.tickPadding)) {
+			throw new Error( "noUiSlider: 'tickPadding' must be a number.");
+		}
+	}
+
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
 
@@ -212,7 +230,9 @@
 			'margin': { r: false, t: testMargin },
 			'limit': { r: false, t: testLimit },
 			'behaviour': { r: true, t: testBehaviour },
-			'format': { r: false, t: testFormat }
+			'format': { r: false, t: testFormat },
+			'tick': { r: false, t: testTick },
+			'tickPadding': { r: false, t: testTickPadding }
 		};
 
 		// Set defaults where applicable.

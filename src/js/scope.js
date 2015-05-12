@@ -38,6 +38,16 @@
 		// Set the handle to the new position.
 		handle.css( options.style, to + '%' );
 
+		// Convert the value to the slider stepping/range.
+		var value = $Spectrum.fromStepping( to );
+
+		// Set active class to tick elements
+		if(options.tick) {
+			$.each(options.tick, function(index, tick) {
+				$Tick[index].toggleClass(Classes[19], originalOptions.connect === "upper" ? (tick > value) : (tick < value) );
+			});
+		}
+
 		// Force proper handle stacking
 		if ( handle.is(':first-child') ) {
 			handle.toggleClass(Classes[17], to > 50 );
@@ -46,8 +56,8 @@
 		// Update locations.
 		$Locations[trigger] = to;
 
-		// Convert the value to the slider stepping/range.
-		$Values[trigger] = $Spectrum.fromStepping( to );
+		// Update value.
+		$Values[trigger] = value;
 
 		linkUpdate(triggerPos[trigger]);
 
@@ -222,6 +232,7 @@
 	// Add handles and links.
 	$Base = addSlider( options.dir, options.ort, $Target );
 	$Handles = addHandles( options.handles, options.dir, $Base );
+	$Tick = addTicks( options.tick, options.style, $Base, options.spectrum );
 
 	// Set the connect classes.
 	addConnection ( options.connect, $Target, $Handles );

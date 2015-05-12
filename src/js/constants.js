@@ -46,4 +46,6 @@
 /* 15 */ ,'noUi-active'
 /* 16 */ ,''
 /* 17 */ ,'noUi-stacking'
+/* 18 */ ,'noUi-tick'
+/* 19 */ ,'noUi-tick-passed'
 	];

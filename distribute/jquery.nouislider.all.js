@@ -1,652 +1,4 @@
-/*! noUiSlider - 7.0.10 - 2014-12-27 14:50:46 */
-
-(function(){
-
-	'use strict';
-
-var
-/** @const */ FormatOptions = [
-	'decimals',
-	'thousand',
-	'mark',
-	'prefix',
-	'postfix',
-	'encoder',
-	'decoder',
-	'negativeBefore',
-	'negative',
-	'edit',
-	'undo'
-];
-
-// General
-
-	// Reverse a string
-	function strReverse ( a ) {
-		return a.split('').reverse().join('');
-	}
-
-	// Check if a string starts with a specified prefix.
-	function strStartsWith ( input, match ) {
-		return input.substring(0, match.length) === match;
-	}
-
-	// Check is a string ends in a specified postfix.
-	function strEndsWith ( input, match ) {
-		return input.slice(-1 * match.length) === match;
-	}
-
-	// Throw an error if formatting options are incompatible.
-	function throwEqualError( F, a, b ) {
-		if ( (F[a] || F[b]) && (F[a] === F[b]) ) {
-			throw new Error(a);
-		}
-	}
-
-	// Check if a number is finite and not NaN
-	function isValidNumber ( input ) {
-		return typeof input === 'number' && isFinite( input );
-	}
-
-	// Provide rounding-accurate toFixed method.
-	function toFixed ( value, decimals ) {
-		var scale = Math.pow(10, decimals);
-		return ( Math.round(value * scale) / scale).toFixed( decimals );
-	}
-
-
-// Formatting
-
-	// Accept a number as input, output formatted string.
-	function formatTo ( decimals, thousand, mark, prefix, postfix, encoder, decoder, negativeBefore, negative, edit, undo, input ) {
-
-		var originalInput = input, inputIsNegative, inputPieces, inputBase, inputDecimals = '', output = '';
-
-		// Apply user encoder to the input.
-		// Expected outcome: number.
-		if ( encoder ) {
-			input = encoder(input);
-		}
-
-		// Stop if no valid number was provided, the number is infinite or NaN.
-		if ( !isValidNumber(input) ) {
-			return false;
-		}
-
-		// Rounding away decimals might cause a value of -0
-		// when using very small ranges. Remove those cases.
-		if ( decimals !== false && parseFloat(input.toFixed(decimals)) === 0 ) {
-			input = 0;
-		}
-
-		// Formatting is done on absolute numbers,
-		// decorated by an optional negative symbol.
-		if ( input < 0 ) {
-			inputIsNegative = true;
-			input = Math.abs(input);
-		}
-
-		// Reduce the number of decimals to the specified option.
-		if ( decimals !== false ) {
-			input = toFixed( input, decimals );
-		}
-
-		// Transform the number into a string, so it can be split.
-		input = input.toString();
-
-		// Break the number on the decimal separator.
-		if ( input.indexOf('.') !== -1 ) {
-			inputPieces = input.split('.');
-
-			inputBase = inputPieces[0];
-
-			if ( mark ) {
-				inputDecimals = mark + inputPieces[1];
-			}
-
-		} else {
-
-		// If it isn't split, the entire number will do.
-			inputBase = input;
-		}
-
-		// Group numbers in sets of three.
-		if ( thousand ) {
-			inputBase = strReverse(inputBase).match(/.{1,3}/g);
-			inputBase = strReverse(inputBase.join( strReverse( thousand ) ));
-		}
-
-		// If the number is negative, prefix with negation symbol.
-		if ( inputIsNegative && negativeBefore ) {
-			output += negativeBefore;
-		}
-
-		// Prefix the number
-		if ( prefix ) {
-			output += prefix;
-		}
-
-		// Normal negative option comes after the prefix. Defaults to '-'.
-		if ( inputIsNegative && negative ) {
-			output += negative;
-		}
-
-		// Append the actual number.
-		output += inputBase;
-		output += inputDecimals;
-
-		// Apply the postfix.
-		if ( postfix ) {
-			output += postfix;
-		}
-
-		// Run the output through a user-specified post-formatter.
-		if ( edit ) {
-			output = edit ( output, originalInput );
-		}
-
-		// All done.
-		return output;
-	}
-
-	// Accept a sting as input, output decoded number.
-	function formatFrom ( decimals, thousand, mark, prefix, postfix, encoder, decoder, negativeBefore, negative, edit, undo, input ) {
-
-		var originalInput = input, inputIsNegative, output = '';
-
-		// User defined pre-decoder. Result must be a non empty string.
-		if ( undo ) {
-			input = undo(input);
-		}
-
-		// Test the input. Can't be empty.
-		if ( !input || typeof input !== 'string' ) {
-			return false;
-		}
-
-		// If the string starts with the negativeBefore value: remove it.
-		// Remember is was there, the number is negative.
-		if ( negativeBefore && strStartsWith(input, negativeBefore) ) {
-			input = input.replace(negativeBefore, '');
-			inputIsNegative = true;
-		}
-
-		// Repeat the same procedure for the prefix.
-		if ( prefix && strStartsWith(input, prefix) ) {
-			input = input.replace(prefix, '');
-		}
-
-		// And again for negative.
-		if ( negative && strStartsWith(input, negative) ) {
-			input = input.replace(negative, '');
-			inputIsNegative = true;
-		}
-
-		// Remove the postfix.
-		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice
-		if ( postfix && strEndsWith(input, postfix) ) {
-			input = input.slice(0, -1 * postfix.length);
-		}
-
-		// Remove the thousand grouping.
-		if ( thousand ) {
-			input = input.split(thousand).join('');
-		}
-
-		// Set the decimal separator back to period.
-		if ( mark ) {
-			input = input.replace(mark, '.');
-		}
-
-		// Prepend the negative symbol.
-		if ( inputIsNegative ) {
-			output += '-';
-		}
-
-		// Add the number
-		output += input;
-
-		// Trim all non-numeric characters (allow '.' and '-');
-		output = output.replace(/[^0-9\.\-.]/g, '');
-
-		// The value contains no parse-able number.
-		if ( output === '' ) {
-			return false;
-		}
-
-		// Covert to number.
-		output = Number(output);
-
-		// Run the user-specified post-decoder.
-		if ( decoder ) {
-			output = decoder(output);
-		}
-
-		// Check is the output is valid, otherwise: return false.
-		if ( !isValidNumber(output) ) {
-			return false;
-		}
-
-		return output;
-	}
-
-
-// Framework
-
-	// Validate formatting options
-	function validate ( inputOptions ) {
-
-		var i, optionName, optionValue,
-			filteredOptions = {};
-
-		for ( i = 0; i < FormatOptions.length; i+=1 ) {
-
-			optionName = FormatOptions[i];
-			optionValue = inputOptions[optionName];
-
-			if ( optionValue === undefined ) {
-
-				// Only default if negativeBefore isn't set.
-				if ( optionName === 'negative' && !filteredOptions.negativeBefore ) {
-					filteredOptions[optionName] = '-';
-				// Don't set a default for mark when 'thousand' is set.
-				} else if ( optionName === 'mark' && filteredOptions.thousand !== '.' ) {
-					filteredOptions[optionName] = '.';
-				} else {
-					filteredOptions[optionName] = false;
-				}
-
-			// Floating points in JS are stable up to 7 decimals.
-			} else if ( optionName === 'decimals' ) {
-				if ( optionValue >= 0 && optionValue < 8 ) {
-					filteredOptions[optionName] = optionValue;
-				} else {
-					throw new Error(optionName);
-				}
-
-			// These options, when provided, must be functions.
-			} else if ( optionName === 'encoder' || optionName === 'decoder' || optionName === 'edit' || optionName === 'undo' ) {
-				if ( typeof optionValue === 'function' ) {
-					filteredOptions[optionName] = optionValue;
-				} else {
-					throw new Error(optionName);
-				}
-
-			// Other options are strings.
-			} else {
-
-				if ( typeof optionValue === 'string' ) {
-					filteredOptions[optionName] = optionValue;
-				} else {
-					throw new Error(optionName);
-				}
-			}
-		}
-
-		// Some values can't be extracted from a
-		// string if certain combinations are present.
-		throwEqualError(filteredOptions, 'mark', 'thousand');
-		throwEqualError(filteredOptions, 'prefix', 'negative');
-		throwEqualError(filteredOptions, 'prefix', 'negativeBefore');
-
-		return filteredOptions;
-	}
-
-	// Pass all options as function arguments
-	function passAll ( options, method, input ) {
-		var i, args = [];
-
-		// Add all options in order of FormatOptions
-		for ( i = 0; i < FormatOptions.length; i+=1 ) {
-			args.push(options[FormatOptions[i]]);
-		}
-
-		// Append the input, then call the method, presenting all
-		// options as arguments.
-		args.push(input);
-		return method.apply('', args);
-	}
-
-	/** @constructor */
-	function wNumb ( options ) {
-
-		if ( !(this instanceof wNumb) ) {
-			return new wNumb ( options );
-		}
-
-		if ( typeof options !== "object" ) {
-			return;
-		}
-
-		options = validate(options);
-
-		// Call 'formatTo' with proper arguments.
-		this.to = function ( input ) {
-			return passAll(options, formatTo, input);
-		};
-
-		// Call 'formatFrom' with proper arguments.
-		this.from = function ( input ) {
-			return passAll(options, formatFrom, input);
-		};
-	}
-
-	/** @export */
-	window.wNumb = wNumb;
-
-}());
-
-/*jslint browser: true */
-/*jslint white: true */
-
-(function( $ ){
-
-	'use strict';
-
-// Helpers
-
-	// Test in an object is an instance of jQuery or Zepto.
-	function isInstance ( a ) {
-		return a instanceof $ || ( $.zepto && $.zepto.isZ(a) );
-	}
-
-
-// Link types
-
-	function fromPrefix ( target, method ) {
-
-		// If target is a string, a new hidden input will be created.
-		if ( typeof target === 'string' && target.indexOf('-inline-') === 0 ) {
-
-			// By default, use the 'html' method.
-			this.method = method || 'html';
-
-			// Use jQuery to create the element
-			this.target = this.el = $( target.replace('-inline-', '') || '<div/>' );
-
-			return true;
-		}
-	}
-
-	function fromString ( target ) {
-
-		// If the string doesn't begin with '-', which is reserved, add a new hidden input.
-		if ( typeof target === 'string' && target.indexOf('-') !== 0 ) {
-
-			this.method = 'val';
-
-			var element = document.createElement('input');
-				element.name = target;
-				element.type = 'hidden';
-			this.target = this.el = $(element);
-
-			return true;
-		}
-	}
-
-	function fromFunction ( target ) {
-
-		// The target can also be a function, which will be called.
-		if ( typeof target === 'function' ) {
-			this.target = false;
-			this.method = target;
-
-			return true;
-		}
-	}
-
-	function fromInstance ( target, method ) {
-
-		if ( isInstance( target ) && !method ) {
-
-		// If a jQuery/Zepto input element is provided, but no method is set,
-		// the element can assume it needs to respond to 'change'...
-			if ( target.is('input, select, textarea') ) {
-
-				// Default to .val if this is an input element.
-				this.method = 'val';
-
-				// Fire the API changehandler when the target changes.
-				this.target = target.on('change.liblink', this.changeHandler);
-
-			} else {
-
-				this.target = target;
-
-				// If no method is set, and we are not auto-binding an input, default to 'html'.
-				this.method = 'html';
-			}
-
-			return true;
-		}
-	}
-
-	function fromInstanceMethod ( target, method ) {
-
-		// The method must exist on the element.
-		if ( isInstance( target ) &&
-			(typeof method === 'function' ||
-				(typeof method === 'string' && target[method]))
-		) {
-			this.method = method;
-			this.target = target;
-
-			return true;
-		}
-	}
-
-var
-/** @const */
-	creationFunctions = [fromPrefix, fromString, fromFunction, fromInstance, fromInstanceMethod];
-
-
-// Link Instance
-
-/** @constructor */
-	function Link ( target, method, format ) {
-
-		var that = this, valid = false;
-
-		// Forward calls within scope.
-		this.changeHandler = function ( changeEvent ) {
-			var decodedValue = that.formatInstance.from( $(this).val() );
-
-			// If the value is invalid, stop this event, as well as it's propagation.
-			if ( decodedValue === false || isNaN(decodedValue) ) {
-
-				// Reset the value.
-				$(this).val(that.lastSetValue);
-				return false;
-			}
-
-			that.changeHandlerMethod.call( '', changeEvent, decodedValue );
-		};
-
-		// See if this Link needs individual targets based on its usage.
-		// If so, return the element that needs to be copied by the
-		// implementing interface.
-		// Default the element to false.
-		this.el = false;
-
-		// Store the formatter, or use the default.
-		this.formatInstance = format;
-
-		// Try all Link types.
-		/*jslint unparam: true*/
-		$.each(creationFunctions, function(i, fn){
-			valid = fn.call(that, target, method);
-			return !valid;
-		});
-		/*jslint unparam: false*/
-
-		// Nothing matched, throw error.
-		if ( !valid ) {
-			throw new RangeError("(Link) Invalid Link.");
-		}
-	}
-
-	// Provides external items with the object value.
-	Link.prototype.set = function ( value ) {
-
-		// Ignore the value, so only the passed-on arguments remain.
-		var args = Array.prototype.slice.call( arguments ),
-			additionalArgs = args.slice(1);
-
-		// Store some values. The actual, numerical value,
-		// the formatted value and the parameters for use in 'resetValue'.
-		// Slice additionalArgs to break the relation.
-		this.lastSetValue = this.formatInstance.to( value );
-
-		// Prepend the value to the function arguments.
-		additionalArgs.unshift(
-			this.lastSetValue
-		);
-
-		// When target is undefined, the target was a function.
-		// In that case, provided the object as the calling scope.
-		// Branch between writing to a function or an object.
-		( typeof this.method === 'function' ?
-			this.method :
-			this.target[ this.method ] ).apply( this.target, additionalArgs );
-	};
-
-
-// Developer API
-
-/** @constructor */
-	function LinkAPI ( origin ) {
-		this.items = [];
-		this.elements = [];
-		this.origin = origin;
-	}
-
-	LinkAPI.prototype.push = function( item, element ) {
-		this.items.push(item);
-
-		// Prevent 'false' elements
-		if ( element ) {
-			this.elements.push(element);
-		}
-	};
-
-	LinkAPI.prototype.reconfirm = function ( flag ) {
-		var i;
-		for ( i = 0; i < this.elements.length; i += 1 ) {
-			this.origin.LinkConfirm(flag, this.elements[i]);
-		}
-	};
-
-	LinkAPI.prototype.remove = function ( flag ) {
-		var i;
-		for ( i = 0; i < this.items.length; i += 1 ) {
-			this.items[i].target.off('.liblink');
-		}
-		for ( i = 0; i < this.elements.length; i += 1 ) {
-			this.elements[i].remove();
-		}
-	};
-
-	LinkAPI.prototype.change = function ( value ) {
-
-		if ( this.origin.LinkIsEmitting ) {
-			return false;
-		}
-
-		this.origin.LinkIsEmitting = true;
-
-		var args = Array.prototype.slice.call( arguments, 1 ), i;
-		args.unshift( value );
-
-		// Write values to serialization Links.
-		// Convert the value to the correct relative representation.
-		for ( i = 0; i < this.items.length; i += 1 ) {
-			this.items[i].set.apply(this.items[i], args);
-		}
-
-		this.origin.LinkIsEmitting = false;
-	};
-
-
-// jQuery plugin
-
-	function binder ( flag, target, method, format ){
-
-		if ( flag === 0 ) {
-			flag = this.LinkDefaultFlag;
-		}
-
-		// Create a list of API's (if it didn't exist yet);
-		if ( !this.linkAPI ) {
-			this.linkAPI = {};
-		}
-
-		// Add an API point.
-		if ( !this.linkAPI[flag] ) {
-			this.linkAPI[flag] = new LinkAPI(this);
-		}
-
-		var linkInstance = new Link ( target, method, format || this.LinkDefaultFormatter );
-
-		// Default the calling scope to the linked object.
-		if ( !linkInstance.target ) {
-			linkInstance.target = $(this);
-		}
-
-		// If the Link requires creation of a new element,
-		// Pass the element and request confirmation to get the changehandler.
-		// Set the method to be called when a Link changes.
-		linkInstance.changeHandlerMethod = this.LinkConfirm( flag, linkInstance.el );
-
-		// Store the linkInstance in the flagged list.
-		this.linkAPI[flag].push( linkInstance, linkInstance.el );
-
-		// Now that Link have been connected, request an update.
-		this.LinkUpdate( flag );
-	}
-
-	/** @export */
-	$.fn.Link = function( flag ){
-
-		var that = this;
-
-		// Delete all linkAPI
-		if ( flag === false ) {
-
-			return that.each(function(){
-
-				// .Link(false) can be called on elements without Links.
-				// When that happens, the objects can't be looped.
-				if ( !this.linkAPI ) {
-					return;
-				}
-
-				$.map(this.linkAPI, function(api){
-					api.remove();
-				});
-
-				delete this.linkAPI;
-			});
-		}
-
-		if ( flag === undefined ) {
-
-			flag = 0;
-
-		} else if ( typeof flag !== 'string') {
-
-			throw new Error("Flag must be string.");
-		}
-
-		return {
-			to: function( a, b, c ){
-				return that.each(function(){
-					binder.call(this, flag, a, b, c);
-				});
-			}
-		};
-	};
-
-}( window.jQuery || window.Zepto ));
+/*! nouislider - 7.0.10 - 2015-04-30 08:48:21 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -751,6 +103,8 @@ var
 /* 15 */ ,'noUi-active'
 /* 16 */ ,''
 /* 17 */ ,'noUi-stacking'
+/* 18 */ ,'noUi-tick'
+/* 19 */ ,'noUi-tick-passed'
 	];
 
 
@@ -1212,6 +566,24 @@ var
 		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
 	}
 
+	function testTick ( parsed, entry ) {
+		parsed.tick = asArray(entry).sort();
+
+		$.each(parsed.tick, function(index, tick) {
+			if(!isNumeric(tick)) {
+				throw new Error( "noUiSlider: 'tick' must be a number or an array of numbers.");
+			}
+		});
+	}
+
+	function testTickPadding ( parsed, entry ) {
+		parsed.tickPadding = entry;
+
+		if(!isNumeric(parsed.tickPadding)) {
+			throw new Error( "noUiSlider: 'tickPadding' must be a number.");
+		}
+	}
+
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
 
@@ -1235,7 +607,9 @@ var
 			'margin': { r: false, t: testMargin },
 			'limit': { r: false, t: testLimit },
 			'behaviour': { r: true, t: testBehaviour },
-			'format': { r: false, t: testFormat }
+			'format': { r: false, t: testFormat },
+			'tick': { r: false, t: testTick },
+			'tickPadding': { r: false, t: testTickPadding }
 		};
 
 		// Set defaults where applicable.
@@ -1405,6 +779,19 @@ var
 		return handles;
 	}
 
+	function addTicks ( ticks, alignment, base, spectrum) {
+		if(!ticks) {
+			return;
+		}
+
+		return $.map(ticks, function(tick, index) {
+			return $('<div/>')
+						.addClass( Classes[18] )
+						.css(alignment, spectrum.convert(tick) + "%")
+						.appendTo(base);
+		});
+	}
+
 	// Initialize a single slider.
 	function addSlider ( direction, orientation, target ) {
 
@@ -1427,6 +814,7 @@ function closure ( target, options, originalOptions ){
 		$Locations = [-1, -1],
 		$Base,
 		$Handles,
+		$Tick,
 		$Spectrum = options.spectrum,
 		$Values = [],
 	// libLink. For rtl sliders, 'lower' and 'upper' should not be inverted
@@ -1573,17 +961,37 @@ function closure ( target, options, originalOptions ){
 	// Handle movement on document for handle and range drag.
 	function move ( event, data ) {
 
-		var handles = data.handles || $Handles, positions, state = false,
+		var value,
+			handles = data.handles || $Handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
 			h = handles[0][0] !== $Handles[0][0] ? 1 : 0;
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
 
+		// Change position to snap to tick
+		if( options.tick ) {
+			var currentValue = $Spectrum.fromStepping( positions[h] );
+			var padding = options.tickPadding || options.singleStep * 4;
+
+			$.each(options.tick, function(index, tick) {
+				if(tick-padding < currentValue && currentValue < tick+padding) {
+					positions[h] = $Spectrum.convert(tick);
+					value = tick;
+					return false;
+				}
+			});
+		}
+
 		state = setHandle ( handles[0], positions[h], handles.length === 1 );
 
 		if ( handles.length > 1 ) {
 			state = setHandle ( handles[1], positions[h?0:1], false ) || state;
+		}
+
+		// Set tick value.
+		if( value ) {
+			$Values[h] = value;
 		}
 
 		// Fire the 'slide' event if any handle moved.
@@ -1777,6 +1185,16 @@ function closure ( target, options, originalOptions ){
 		// Set the handle to the new position.
 		handle.css( options.style, to + '%' );
 
+		// Convert the value to the slider stepping/range.
+		var value = $Spectrum.fromStepping( to );
+
+		// Set active class to tick elements
+		if(options.tick) {
+			$.each(options.tick, function(index, tick) {
+				$Tick[index].toggleClass(Classes[19], originalOptions.connect === "upper" ? (tick > value) : (tick < value) );
+			});
+		}
+
 		// Force proper handle stacking
 		if ( handle.is(':first-child') ) {
 			handle.toggleClass(Classes[17], to > 50 );
@@ -1785,8 +1203,8 @@ function closure ( target, options, originalOptions ){
 		// Update locations.
 		$Locations[trigger] = to;
 
-		// Convert the value to the slider stepping/range.
-		$Values[trigger] = $Spectrum.fromStepping( to );
+		// Update value.
+		$Values[trigger] = value;
 
 		linkUpdate(triggerPos[trigger]);
 
@@ -1961,6 +1379,7 @@ function closure ( target, options, originalOptions ){
 	// Add handles and links.
 	$Base = addSlider( options.dir, options.ort, $Target );
 	$Handles = addHandles( options.handles, options.dir, $Base );
+	$Tick = addTicks( options.tick, options.style, $Base, options.spectrum );
 
 	// Set the connect classes.
 	addConnection ( options.connect, $Target, $Handles );
