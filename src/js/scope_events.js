@@ -41,7 +41,7 @@
 
 		// $Handles contains the left and right handles.
 		// Both handles are at the same location.
-		if (data.positions[0] == data.positions[1]) {
+		if ($Handles.length == 2 && data.positions[0] == data.positions[1]) {
 			// proposed position is on the left && current active handle == right handle
 			if (proposal < 0 && handles[0] == $Handles[1]) {
 				// switch target to left handle.
@@ -55,7 +55,6 @@
 
 		// set the positions for the first handle
 		// setHandle(handleToSet, %, false);
-
 		state = setHandle ( handles[0], positions[h], handles.length === 1 );
 
 		if ( handles.length > 1 ) {
