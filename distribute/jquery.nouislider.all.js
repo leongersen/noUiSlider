@@ -1,4 +1,4 @@
-/*! noUiSlider - 7.0.10 - 2015-06-09 21:21:45 */
+/*! noUiSlider - 7.0.10 - 2015-06-09 21:34:08 */
 
 (function(){
 
@@ -646,7 +646,7 @@ var
 		};
 	};
 
-}( window.jQuery || window.Zepto ));
+}( window.jQuery || window.Zepto || jQuery ));
 
 /*jslint browser: true */
 /*jslint white: true */
