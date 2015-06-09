@@ -1,4 +1,4 @@
-/*! noUiSlider - 7.0.10 - 2014-12-27 14:50:46 */
+/*! noUiSlider - 7.0.10 - 2015-06-09 20:52:15 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -1437,4 +1437,4 @@ function closure ( target, options, originalOptions ){
 		return ( rebuildFlag ? rebuild : initialize ).call(this, options);
 	};
 
-}( window.jQuery || window.Zepto ));
+}( window.jQuery || window.Zepto || jQuery));
