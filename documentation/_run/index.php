@@ -60,9 +60,11 @@
 
 	<script>
 
-//	$('.viewer-header').click(function(){
-//		$(this).toggleClass('open');
-//	});
+	Array.prototype.forEach.call(document.getElementsByClassName('viewer-header'), function ( el ) {
+		el.addEventListener('click', function(){
+			this.classList.toggle('open');
+		});
+	});
 
 	<?php $t = $_SERVER['DOCUMENT_ROOT'] . 'track.js'; if ( file_exists($t) ) { include $t; } ?>
 
