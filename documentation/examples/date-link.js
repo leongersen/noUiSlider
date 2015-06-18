@@ -1,3 +1,8 @@
-$("#slider-date").Link('lower').to($("#event-start"), setDate);
+var dateValues = [
+	document.getElementById('event-start'),
+	document.getElementById('event-end')
+];
 
-$("#slider-date").Link('upper').to($("#event-end"), setDate);
+dateSlider.noUiSlider.on('update', function( values, handle ) {
+	dateValues[handle].innerHTML = formatDate(new Date(+values[handle]));
+});
