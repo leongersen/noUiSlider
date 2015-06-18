@@ -76,11 +76,11 @@
 			ignoreLast = true;
 		}
 
-		group.forEach(function ( index ) {
+		group.forEach(function ( current, index ) {
 
 			// Get the current step and the lower + upper positions.
 			var step, i, q,
-				low = group[index],
+				low = current,
 				high = group[index+1],
 				newPct, pctDifference, pctPos, type,
 				steps, realSteps, stepsize;
