@@ -1,25 +1,23 @@
 
-	test( "Testing update method", function(){
+	QUnit.test( "Testing update method", function( assert ){
 
 		Q.innerHTML = '\
 			<div class="slider"></div>\
 			<input class="input">';
 
-		var sliderElement = Q.getElementsByClassName('slider')[0];
+		var slider = Q.getElementsByClassName('slider')[0];
 
-		var slider = noUiSlider.create(sliderElement, {
+		noUiSlider.create(slider, {
 			range: { min: 20, max: 140 },
 			start: 50,
 			format: TEST_ROUND_FORMAT
 		});
 
-		deepEqual(slider.value.get(), '50');
+		assert.deepEqual(slider.noUiSlider.get(), '50');
 
-		slider.destroy();
+		slider.noUiSlider.destroy();
 
-		equal(sliderElement.innerHTML, '', 'Slider was cleared');
-
-		equal ( slider.value.get(), '', 'Slider has no value' );
+		equal(slider.innerHTML, '', 'Slider was cleared');
 
 		var settings = {
 			range: { min: 30, max: 70 },
@@ -27,38 +25,27 @@
 			format: TEST_ROUND_FORMAT
 		};
 
-		slider = noUiSlider.create(sliderElement, settings);
+		noUiSlider.create(slider, settings);
 
-		deepEqual(slider.value.get(), ['30', '60']);
+		assert.deepEqual(slider.noUiSlider.get(), ['30', '60']);
 
-		slider.value.set(70);
-		deepEqual(slider.value.get(), ['60', '60']);
+		slider.noUiSlider.set(70);
+		assert.deepEqual(slider.noUiSlider.get(), ['60', '60']);
 
-		slider.value.set(40);
-		deepEqual(slider.value.get(), ['40', '60']);
+		slider.noUiSlider.set(40);
+		assert.deepEqual(slider.noUiSlider.get(), ['40', '60']);
 
-		equal ( sliderElement.getElementsByClassName('noUi-connect').length, 0, 'Slider uses no connection' );
+		equal ( slider.getElementsByClassName('noUi-connect').length, 0, 'Slider uses no connection' );
 
 		settings.connect = true;
-		slider.destroy();
-		slider = noUiSlider.create(sliderElement, settings);
+		slider.noUiSlider.destroy();
 
-		equal ( sliderElement.getElementsByClassName('noUi-connect').length, 1, 'Slider now connects' );
+		noUiSlider.create(slider, settings);
 
-		deepEqual(slider.value.get(), ['40', '60'], 'Value was unchanged');
+		equal ( slider.getElementsByClassName('noUi-connect').length, 1, 'Slider now connects' );
 
-		slider.value.set([30,50]);
-		deepEqual(slider.value.get(), ['30', '50'], 'Can still set slider');
+		assert.deepEqual(slider.noUiSlider.get(), ['30', '60'], 'Value was unchanged');
 
-	//	slider.destroy();
-
-	//	ok ( !slider.destroy, 'destroy method removed itself');
-
-	//	slider.noUiSlider({
-	//		start: 30,
-	//		range: { min: 80, max: 1000 }
-	//	});
-    //
-	//	equal(slider.value.get(), '80.00', 'Slider was build, ignoring the rebuild flag.');
-
+		slider.noUiSlider.set([30,50]);
+		assert.deepEqual(slider.noUiSlider.get(), ['30', '50'], 'Can still set slider');
 	});

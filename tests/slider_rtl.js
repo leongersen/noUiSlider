@@ -1,28 +1,29 @@
 
-	test( "RTL slider multiple value set.", function(){
+	QUnit.test( "RTL slider multiple value set.", function( assert ){
 
 		Q.innerHTML = '<div class="slider"></div>';
 
-		var sliderElement = Q.getElementsByClassName('slider')[0],
-			slider = noUiSlider.create(sliderElement, {
-				range: {min: 0.201, max: 1},
-				step: 0.01,
-				start: 0.401,
-				direction: "rtl",
-				orientation: "vertical",
-				format: {
-					to: function(x){
-						return x.toFixed(1);
-					},
-					from: Number
-				}
-			});
+		var slider = Q.getElementsByClassName('slider')[0];
 
-		equal(slider.value.get(), 0.4);
+		noUiSlider.create(slider, {
+			range: { min: 0.201, max: 1 },
+			step: 0.01,
+			start: 0.401,
+			direction: "rtl",
+			orientation: "vertical",
+			format: {
+				to: function(x){
+					return x.toFixed(1);
+				},
+				from: Number
+			}
+		});
 
-		slider.value.set(0.201);
-		equal(slider.value.get(), 0.2);
+		equal(slider.noUiSlider.get(), 0.4);
 
-		slider.value.set(0.201);
-		equal(slider.value.get(), 0.2);
+		slider.noUiSlider.set(0.201);
+		equal(slider.noUiSlider.get(), 0.2);
+
+		slider.noUiSlider.set(0.201);
+		equal(slider.noUiSlider.get(), 0.2);
 	});

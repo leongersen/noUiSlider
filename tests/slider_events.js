@@ -1,5 +1,5 @@
 
-	test( "Triggering events", function(){
+	QUnit.test( "Triggering events", function(){
 
 		Q.html('<div class="slider"></div>');
 
@@ -21,10 +21,10 @@
 
 		var handles = slider.find('.noUi-handle');
 
-		ok( !slider.hasClass('noUi-state-tap'), 'No transition on value set' );
+		assert.ok( !slider.hasClass('noUi-state-tap'), 'No transition on value set' );
 
 		slider.on('slide', function( event, values ){
-			deepEqual( values, ['30.00', '100.00'], "Slide event has proper parameters." );
+			assert.deepEqual( values, ['30.00', '100.00'], "Slide event has proper parameters." );
 			slider.off('slide')
 		});
 
@@ -44,7 +44,7 @@
 
 
 		slider.on('set', function( event, values ){
-			deepEqual( values, ['30.00', '249.00']);
+			assert.deepEqual( values, ['30.00', '249.00']);
 			slider.off('set')
 		});
 
@@ -67,28 +67,28 @@
 
 		$(document).trigger('mouseup');
 
-		deepEqual(slider.val(), ['30.00', '249.00'], 'Value has changed.');
+		assert.deepEqual(slider.val(), ['30.00', '249.00'], 'Value has changed.');
 
 
 		slider.val([10, 20]);
 
-		ok( slider.hasClass('noUi-state-tap'), 'Animating class has been applied.' );
+		assert.ok( slider.hasClass('noUi-state-tap'), 'Animating class has been applied.' );
 
 
-		QUnit.asyncTest( "Testing after animation", function(){
+		QUnit.asyncQUnit.test( "Testing after animation", function(){
 
 			setTimeout(function() {
 
 				QUnit.start();
 
-				ok( !slider.hasClass('noUi-state-tap'), 'Animation class is removed properly.' );
+				assert.ok( !slider.hasClass('noUi-state-tap'), 'Animation class is removed properly.' );
 
 				slider.on('change', function( event, values ){
-					deepEqual( values, ['10.00', '10.00'], "Slide event has proper parameters." );
+					assert.deepEqual( values, ['10.00', '10.00'], "Slide event has proper parameters." );
 					slider.off('slide')
 				});
 
-				deepEqual( slider.val(), ['10.00', '20.00'] );
+				assert.deepEqual( slider.val(), ['10.00', '20.00'] );
 
 				handles.last().trigger($.Event('mousedown', {
 					clientX: 1000,
@@ -102,7 +102,7 @@
 
 				$(document).trigger('mouseup');
 
-				deepEqual( slider.val(), ['10.00', '10.00'], "Slider didn't cross." );
+				assert.deepEqual( slider.val(), ['10.00', '10.00'], "Slider didn't cross." );
 
 			}, 350);
 		});
