@@ -5,10 +5,10 @@
 	}
 
 	// External event handling
-	function fireEvent ( event, trigger ) {
+	function fireEvent ( event, handleNumber ) {
 
-		if ( trigger !== undefined ) {
-			trigger = Math.abs(trigger - options.dir);
+		if ( handleNumber !== undefined ) {
+			handleNumber = Math.abs(handleNumber - options.dir);
 		}
 
 		Object.keys(scope_Events).forEach(function( targetEvent ) {
@@ -17,7 +17,9 @@
 
 			if ( event === eventType ) {
 				scope_Events[targetEvent].forEach(function( callback ) {
-					callback( valueGet(), trigger, targetEvent );
+					// .reverse is in place
+					// Return values as array, so arg_1[arg_2] is always valid.
+					callback( asArray(valueGet()), handleNumber, inSliderOrder(Array.prototype.slice.call(scope_Values)) );
 				});
 			}
 		});
