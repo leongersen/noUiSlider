@@ -11,7 +11,6 @@
 	or true when everything is OK. It can also modify the option
 	object, to make sure all values can be correctly looped elsewhere. */
 
-	/** @const */
 	var defaultFormatter = { 'to': function( value ){
 		return value.toFixed(2);
 	}, 'from': Number };
@@ -251,7 +250,7 @@
 
 		// Forward pips options
 		parsed.pips = options.pips;
-		
+
 		// Pre-define the styles.
 		parsed.style = parsed.ort ? 'top' : 'left';
 
