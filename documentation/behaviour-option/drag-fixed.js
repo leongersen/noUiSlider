@@ -1,4 +1,6 @@
-$("#drag-fixed").noUiSlider({
+dragFixedSlider = document.getElementById('drag-fixed');
+
+noUiSlider.create(dragFixedSlider, {
 	start: [ 40, 60 ],
 	behaviour: 'drag-fixed',
 	connect: true,

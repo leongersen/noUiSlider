@@ -1,2 +1,6 @@
-$("#slider-limit").Link('lower').to( $('#slider-limit-value-min') )
-$("#slider-limit").Link('upper').to( $('#slider-limit-value-max') );
+var limitFieldMin = document.getElementById('slider-limit-value-min');
+var limitFieldMax = document.getElementById('slider-limit-value-max');
+
+limitSlider.on('update', function( values, handle ){
+	(handle ? limitFieldMax : limitFieldMin).innerHTML = values[handle];
+});

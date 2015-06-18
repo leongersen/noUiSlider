@@ -4,31 +4,25 @@ module.exports = function(grunt) {
 	'<%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %> */' +
 	'\n\n';
 
-	function getFiles ( append ) {
+	function getFiles ( ) {
 
-		var files = [
-			'src/js/helpers/intro.js',
+		return [
+			'src/js/intro.js',
 			'src/js/helpers.js',
 			'src/js/constants.js',
 			'src/js/range.js',
 			'src/js/options.js',
 			'src/js/structure.js',
 			'src/js/scope_start.js',
+			'src/js/pips.js',
 			'src/js/scope_helpers.js',
-			'src/js/scope_link.js',
+			//'src/js/scope_link.js',
 			'src/js/scope_events.js',
 			'src/js/scope.js',
 			'src/js/scope_end.js',
-			'src/js/interface.js'
+			'src/js/interface.js',
+			'src/js/outro.js'
 		];
-
-		if ( append ) {
-			files = files.concat(append);
-		}
-
-		files.push('src/js/helpers/outro.js');
-
-		return files;
 	}
 
 	var releaseFiles = [
@@ -45,14 +39,9 @@ module.exports = function(grunt) {
 			},
 			basic: {
 				src: getFiles(),
-				dest: 'distribute/jquery.nouislider.js',
+				dest: 'distribute/nouislider.js',
 				nonull: true
-			},
-			all: {
-				src: ['submodules/wNumb/wNumb.js', 'submodules/libLink/jquery.libLink.js'].concat(getFiles('src/js/pips.js')),
-				dest: 'distribute/jquery.nouislider.all.js',
-				nonull: true
-			},
+			}
         },
 		cssmin: {
 			all: {
@@ -60,8 +49,7 @@ module.exports = function(grunt) {
 					banner: VERSION_TEMPLATE
 				},
 				files: {
-					'distribute/jquery.nouislider.min.css': ['src/jquery.nouislider.css'],
-					'distribute/jquery.nouislider.pips.min.css': ['src/jquery.nouislider.pips.css']
+					'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css']
 				}
 			}
 		},
@@ -87,8 +75,7 @@ module.exports = function(grunt) {
 				validthis: true,
 				newcap: false
 			},
-			basic: ['distribute/jquery.nouislider.js'],
-			all: ['distribute/jquery.nouislider.all.js']
+			basic: ['distribute/nouislider.js']
 		},
 		uglify: {
 			all: {
@@ -96,8 +83,7 @@ module.exports = function(grunt) {
 					banner: VERSION_TEMPLATE
 				},
 				files: {
-					'distribute/jquery.nouislider.min.js': 'distribute/jquery.nouislider.js',
-					'distribute/jquery.nouislider.all.min.js': 'distribute/jquery.nouislider.all.js'
+					'distribute/nouislider.min.js': 'distribute/nouislider.js'
 				}
 			}
 		},

@@ -2,20 +2,29 @@
 	test( "Step API", function(){
 
 		function matchStep ( slider, value, steps ) {
-			slider.val(value);
-			deepEqual(slider.noUiSlider('step')[0], steps);
+			slider.value.set(value);
+			deepEqual(slider.steps()[0], steps);
+		}
+		
+		function matchStepBoth ( slider, value, steps ) {
+			slider.value.set(value);
+			deepEqual(slider.steps(), steps);
 		}
 
-		Q.html('\
-			<div class="slider1"></div>\
-			<div class="slider2"></div>\
-			<div class="slider3"></div>\
-		');
+		Q.innerHTML = '\
+			<div id="slider1"></div>\
+			<div id="slider2"></div>\
+			<div id="slider3"></div>\
+			<div id="slider4"></div>\
+		';
 
-		var slider1 = Q.find('.slider1'), slider2 = Q.find('.slider2'), slider3 = Q.find('.slider3');
+		var slider1Element = document.getElementById('slider1'),
+			slider2Element = document.getElementById('slider2'),
+			slider3Element = document.getElementById('slider3'),
+			slider4Element = document.getElementById('slider4');
 
 		// Issue #391
-		slider1.noUiSlider({
+		var slider1 = noUiSlider.create(slider1Element, {
 			range: { min: 1.1, max: 2 },
 			start: [ 1.2 ],
 			step: 0.1
@@ -27,7 +36,7 @@
 		matchStep(slider1, 2, [0.1, null]);
 
 		// Mixed steps
-		slider2.noUiSlider({
+		var slider2 = noUiSlider.create(slider2Element, {
 			start: 40,
 			step: 10,
 			range: {
@@ -51,7 +60,7 @@
 		matchStep(slider2, 1000, [50, null]);
 
 		// Small and 0 step
-		slider3.noUiSlider({
+		var slider3 = noUiSlider.create(slider3Element, {
 			start: 0.3,
 			range: {
 				'min': 0,
@@ -66,4 +75,22 @@
 		matchStep(slider3, 1.0008, [0.0008, 0.0008]);
 		matchStep(slider3, 1.2, [0.0008, 0.0008]);
 		matchStep(slider3, 1.3, [0.0008, null]);
+
+		// two handles
+		var slider4 = noUiSlider.create(slider4Element, {
+			start: [0.3, 0.9],
+			range: {
+				'min': 0,
+				'50%': [ 1, 6 ],
+				'70%': [ 1, 12 ],
+				'max': 18
+			}
+		});
+
+		matchStepBoth(slider4, [0, 18], [[null, false], [false, null]]);
+		matchStepBoth(slider4, [5, 9], [[false, false], [1, 1]]);
+		matchStepBoth(slider4, [1, 16], [[false, false], [false, false]]);
+		matchStepBoth(slider4, [1.0008, 8], [[0.0008, 0.0008], [null, false]]);
+		matchStepBoth(slider4, [1.2, 16.458], [[0.0008, 0.0008], [null, false]]);
+		matchStepBoth(slider4, [1.3, 8], [[0.0008, null], [null, false]]);
 	});

@@ -1,4 +1,6 @@
-$('#slider-non-linear-step').noUiSlider({
+var nonLinearStepSlider = document.getElementById('slider-non-linear-step');
+
+noUiSlider.create(nonLinearStepSlider, {
 	start: [ 500, 4000 ],
 	range: {
 		'min': [     0 ],

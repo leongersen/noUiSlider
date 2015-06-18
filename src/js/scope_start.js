@@ -1,3 +1,4 @@
+
 function closure ( target, options ){
 
 	// All variables local to 'closure' are prefixed with 'scope_'

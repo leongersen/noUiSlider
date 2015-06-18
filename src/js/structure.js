@@ -1,3 +1,4 @@
+
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b, delimit ) {
 

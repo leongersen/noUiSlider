@@ -9,6 +9,49 @@
 
 <section>
 
+	<style>
+
+	#red, #green, #blue {
+		margin: 10px;
+		display: inline-block;
+		height: 200px;
+	}
+
+	#colorpicker {
+		height: 240px;
+		width: 310px;
+		margin: 0 auto;
+		padding: 10px;
+		border: 1px solid #BFBFBF;
+	}
+
+	#result {
+		margin: 60px 26px;
+		height: 100px;
+		width: 100px;
+		display: inline-block;
+		vertical-align: top;
+		color: rgb(127, 127, 127);
+		background: rgb(127, 127, 127);
+		border: 1px solid #fff;
+		box-shadow: 0 0 10px;
+	}
+
+	#red {
+		background: #c0392b;
+	}
+
+	#green {
+		background: #27ae60;
+	}
+
+	#blue {
+		background: #2980b9;
+	}
+
+
+	</style>
+
 	<div class="view">
 
 		<p>We'll initialize all sliders with the same options, and use the <code>slide</code> callback to keep to color in sync with the slider values. This callback fires when the slider is moved by sliding, or when it is clicked or tapped.</p>
@@ -18,7 +61,7 @@
 			<div class="sliders" id="green"></div>
 			<div class="sliders" id="blue"></div>
 
-			<div class="result"></div>
+			<div id="result"></div>
 			<?php run('colorpicker-setcolor'); ?>
 			<?php run('colorpicker-slider'); ?>
 		</div>

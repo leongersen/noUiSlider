@@ -2,12 +2,11 @@
 	// Run the standard initializer
 	function initialize ( target, originalOptions ) {
 
-		if ( !!target.nodeName ) {
-			// todo error
-			//alert('fool!');
+		if ( !target.nodeName ) {
+			throw new Error('noUiSlider.create requires a single element.');
 		}
 
-		// Test the options once, not for every slider. // TODO not true
+		// Test the options and create the slider environment;
 		var options = testOptions( originalOptions, target ),
 			slider = closure( target, options );
 
@@ -17,6 +16,7 @@
 		return slider;
 	}
 
+	// Use an object instead of a function for future expansibility;
 	return {
 		create: initialize
 	};

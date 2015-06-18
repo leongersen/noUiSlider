@@ -1,63 +1,64 @@
 
 	test( "Testing update method", function(){
 
-		Q.html('\
+		Q.innerHTML = '\
 			<div class="slider"></div>\
-			<input class="input">\
-		');
+			<input class="input">';
 
-		var slider = $('.slider');
+		var sliderElement = Q.getElementsByClassName('slider')[0];
 
-		slider.noUiSlider({
+		var slider = noUiSlider.create(sliderElement, {
 			range: { min: 20, max: 140 },
 			start: 50,
 			format: TEST_ROUND_FORMAT
 		});
 
-		deepEqual(slider.val(), '50');
+		deepEqual(slider.value.get(), '50');
 
-		slider[0].destroy();
+		slider.destroy();
 
-		ok(slider.is(':empty'), 'Slider was cleared');
+		equal(sliderElement.innerHTML, '', 'Slider was cleared');
 
-		equal ( slider.val(), '', 'Slider has no value' );
+		equal ( slider.value.get(), '', 'Slider has no value' );
 
-		slider.noUiSlider({
+		var settings = {
 			range: { min: 30, max: 70 },
 			start: [ 30, 60 ],
 			format: TEST_ROUND_FORMAT
-		});
+		};
 
-		deepEqual(slider.val(), ['30', '60']);
+		slider = noUiSlider.create(sliderElement, settings);
 
-		slider.val(70);
-		deepEqual(slider.val(), ['60', '60']);
+		deepEqual(slider.value.get(), ['30', '60']);
 
-		slider.val(40);
-		deepEqual(slider.val(), ['40', '60']);
+		slider.value.set(70);
+		deepEqual(slider.value.get(), ['60', '60']);
 
-		equal ( slider.find('.noUi-connect').length, 0, 'Slider uses no connection' );
+		slider.value.set(40);
+		deepEqual(slider.value.get(), ['40', '60']);
 
-		slider.noUiSlider({
-			connect: true
-		}, true);
+		equal ( sliderElement.getElementsByClassName('noUi-connect').length, 0, 'Slider uses no connection' );
 
-		equal ( slider.find('.noUi-connect').length, 1, 'Slider now connects' );
+		settings.connect = true;
+		slider.destroy();
+		slider = noUiSlider.create(sliderElement, settings);
 
-		deepEqual(slider.val(), ['40', '60'], 'Value was unchanged');
+		equal ( sliderElement.getElementsByClassName('noUi-connect').length, 1, 'Slider now connects' );
 
-		slider.val([30,50]);
-		deepEqual(slider.val(), ['30', '50'], 'Can still set slider');
+		deepEqual(slider.value.get(), ['40', '60'], 'Value was unchanged');
 
-		slider[0].destroy();
+		slider.value.set([30,50]);
+		deepEqual(slider.value.get(), ['30', '50'], 'Can still set slider');
 
-		ok ( !slider[0].destroy, 'destroy method removed itself');
-		
-		slider.noUiSlider({
-			start: 30,
-			range: { min: 80, max: 1000 }
-		}, true);
+	//	slider.destroy();
 
-		equal(slider.val(), '80.00', 'Slider was build, ignoring the rebuild flag.');
+	//	ok ( !slider.destroy, 'destroy method removed itself');
+
+	//	slider.noUiSlider({
+	//		start: 30,
+	//		range: { min: 80, max: 1000 }
+	//	});
+    //
+	//	equal(slider.value.get(), '80.00', 'Slider was build, ignoring the rebuild flag.');
 
 	});

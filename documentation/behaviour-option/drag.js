@@ -1,4 +1,6 @@
-$("#drag").noUiSlider({
+var dragSlider = document.getElementById('drag');
+
+noUiSlider.create(dragSlider, {
 	start: [ 40, 60 ],
 	behaviour: 'drag',
 	connect: true,

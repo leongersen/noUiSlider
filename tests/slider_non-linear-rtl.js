@@ -1,15 +1,15 @@
 
 	test( "Testing ltr and rtl non-linear", function(){
 
-		Q.html('\
+		Q.innerHTML = '\
 			<div class="sliderRTL"></div>\
 			<div class="sliderLTR"></div>\
-		');
+		';
 
-		var sliderRTL = $('.sliderRTL');
-		var sliderLTR = $('.sliderLTR');
+		var sliderRTLElement = Q.getElementsByClassName('sliderRTL')[0];
+		var sliderLTRElement = Q.getElementsByClassName('sliderLTR')[0];
 
-		sliderRTL.noUiSlider({
+		var sliderRTL = noUiSlider.create(sliderRTLElement, {
 			range: {
 				'min': 0,
 				'30%': 5,
@@ -21,7 +21,7 @@
 			format: TEST_ROUND_FORMAT
 		});
 
-		sliderLTR.noUiSlider({
+		var sliderLTR = noUiSlider.create(sliderLTRElement, {
 			range: {
 				'min': 0,
 				'30%': 5,
@@ -32,18 +32,18 @@
 			format: TEST_ROUND_FORMAT
 		});
 
-		equal(sliderRTL.val(), '40', 'Start stepping on rtl works');
-		equal(sliderLTR.val(), '40', 'Start stepping on ltr works');
+		equal(sliderRTL.value.get(), '40', 'Start stepping on rtl works');
+		equal(sliderLTR.value.get(), '40', 'Start stepping on ltr works');
 
-		sliderRTL.val(42);
-		sliderLTR.val(42);
+		sliderRTL.value.set(42);
+		sliderLTR.value.set(42);
 
-		equal(sliderRTL.val(), '40', 'RTL slider stepped by 10 in upper half.');
-		equal(sliderLTR.val(), '40', 'LTR slider stepped by 10 in upper half.');
+		equal(sliderRTL.value.get(), '40', 'RTL slider stepped by 10 in upper half.');
+		equal(sliderLTR.value.get(), '40', 'LTR slider stepped by 10 in upper half.');
 
-		sliderRTL.val(6);
-		sliderLTR.val(6);
+		sliderRTL.value.set(6);
+		sliderLTR.value.set(6);
 
-		equal(sliderRTL.val(), '6', 'RTL slider didn\'t step in lower half.');
-		equal(sliderLTR.val(), '6', 'LTR slider didn\'t step in lower half.');
+		equal(sliderRTL.value.get(), '6', 'RTL slider didn\'t step in lower half.');
+		equal(sliderLTR.value.get(), '6', 'LTR slider didn\'t step in lower half.');
 	});

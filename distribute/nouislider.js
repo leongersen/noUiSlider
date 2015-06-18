@@ -1,4 +1,4 @@
-/*! noUiSlider - 7.0.10 - 2015-03-28 15:32:08 */
+/*! noUiSlider - 7.0.10 - 2015-04-22 22:04:48 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -38,6 +38,7 @@
 		return Math.round(value / to) * to;
 	}
 
+	// TODO
 	function offset ( element ) {
 		var box = element.getBoundingClientRect();
 		return {
@@ -641,13 +642,14 @@
 			test.t( parsed, options[name] );
 		});
 
+		// Forward pips options
+		parsed.pips = options.pips;
+		
 		// Pre-define the styles.
 		parsed.style = parsed.ort ? 'top' : 'left';
 
 		return parsed;
 	}
-
-// Class handling
 
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b, delimit ) {
@@ -671,9 +673,6 @@
 
 		return [c,d];
 	}
-
-
-// Event handling
 
 	// Provide a clean event with standardized offset values.
 	function fixEvent ( e ) {
@@ -720,9 +719,6 @@
 
 		return event;
 	}
-
-
-// DOM additions
 
 	// Append a handle to the base.
 	function addHandle ( direction, index ) {
@@ -793,9 +789,7 @@
 		return div;
 	}
 
-function closure ( target, options, originalOptions ){
-
-// Internal variables
+function closure ( target, options ){
 
 	// All variables local to 'closure' are prefixed with 'scope_'
 	var scope_Target = target,
@@ -804,13 +798,228 @@ function closure ( target, options, originalOptions ){
 		scope_Handles,
 		scope_Spectrum = options.spectrum,
 		scope_Values = [],
-	// libLink. For rtl sliders, 'lower' and 'upper' should not be inverted
-	// for one-handle sliders, so trim 'upper' it that case.
-		triggerPos = ['lower', 'upper'].slice(0, options.handles);
+		scope_Events = {};
 
-	// Invert the libLink connection for rtl sliders.
-	if ( options.dir ) {
-		triggerPos.reverse();
+
+	function getGroup ( mode, values, stepped ) {
+
+		// Use the range.
+		if ( mode === 'range' || mode === 'steps' ) {
+			return scope_Spectrum.xVal;
+		}
+
+		if ( mode === 'count' ) {
+
+			// Divide 0 - 100 in 'count' parts.
+			var spread = ( 100 / (values-1) ), v, i = 0;
+			values = [];
+
+			// List these parts and have them handled as 'positions'.
+			while ((v=i++*spread) <= 100 ) {
+				values.push(v);
+			}
+
+			mode = 'positions';
+		}
+
+		if ( mode === 'positions' ) {
+
+			// Map all percentages to on-range values.
+			return values.map(function( value ){
+				return scope_Spectrum.fromStepping( stepped ? scope_Spectrum.getStep( value ) : value );
+			});
+		}
+
+		if ( mode === 'values' ) {
+
+			// If the value must be stepped, it needs to be converted to a percentage first.
+			if ( stepped ) {
+
+				return values.map(function( value ){
+
+					// Convert to percentage, apply step, return to value.
+					return scope_Spectrum.fromStepping( scope_Spectrum.getStep( scope_Spectrum.toStepping( value ) ) );
+				});
+
+			}
+
+			// Otherwise, we can simply use the values.
+			return values;
+		}
+	}
+
+	function generateSpread ( density, mode, group ) {
+
+		var originalSpectrumDirection = scope_Spectrum.direction,
+			indexes = {},
+			firstInRange = scope_Spectrum.xVal[0],
+			lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length-1],
+			ignoreFirst = false,
+			ignoreLast = false,
+			prevPct = 0;
+
+		// This function loops the spectrum in an ltr linear fashion,
+		// while the toStepping method is direction aware. Trick it into
+		// believing it is ltr.
+		scope_Spectrum.direction = 0;
+
+		// Create a copy of the group, sort it and filter away all duplicates.
+		group = unique(group.slice().sort(function(a, b){ return a - b; }));
+
+		// Make sure the range starts with the first element.
+		if ( group[0] !== firstInRange ) {
+			group.unshift(firstInRange);
+			ignoreFirst = true;
+		}
+
+		// Likewise for the last one.
+		if ( group[group.length - 1] !== lastInRange ) {
+			group.push(lastInRange);
+			ignoreLast = true;
+		}
+
+		group.forEach(function ( index ) {
+
+			// Get the current step and the lower + upper positions.
+			var step, i, q,
+				low = group[index],
+				high = group[index+1],
+				newPct, pctDifference, pctPos, type,
+				steps, realSteps, stepsize;
+
+			// When using 'steps' mode, use the provided steps.
+			// Otherwise, we'll step on to the next subrange.
+			if ( mode === 'steps' ) {
+				step = scope_Spectrum.xNumSteps[ index ];
+			}
+
+			// Default to a 'full' step.
+			if ( !step ) {
+				step = high-low;
+			}
+
+			// Low can be 0, so test for false. If high is undefined,
+			// we are at the last subrange. Index 0 is already handled.
+			if ( low === false || high === undefined ) {
+				return;
+			}
+
+			// Find all steps in the subrange.
+			for ( i = low; i <= high; i += step ) {
+
+				// Get the percentage value for the current step,
+				// calculate the size for the subrange.
+				newPct = scope_Spectrum.toStepping( i );
+				pctDifference = newPct - prevPct;
+
+				steps = pctDifference / density;
+				realSteps = Math.round(steps);
+
+				// This ratio represents the ammount of percentage-space a point indicates.
+				// For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-devided.
+				// Round the percentage offset to an even number, then divide by two
+				// to spread the offset on both sides of the range.
+				stepsize = pctDifference/realSteps;
+
+				// Divide all points evenly, adding the correct number to this subrange.
+				// Run up to <= so that 100% gets a point, event if ignoreLast is set.
+				for ( q = 1; q <= realSteps; q += 1 ) {
+
+					// The ratio between the rounded value and the actual size might be ~1% off.
+					// Correct the percentage offset by the number of points
+					// per subrange. density = 1 will result in 100 points on the
+					// full range, 2 for 50, 4 for 25, etc.
+					pctPos = prevPct + ( q * stepsize );
+					indexes[pctPos.toFixed(5)] = ['x', 0];
+				}
+
+				// Determine the point type.
+				type = (group.indexOf(i) > -1) ? 1 : ( mode === 'steps' ? 2 : 0 );
+
+				// Enforce the 'ignoreFirst' option by overwriting the type for 0.
+				if ( !index && ignoreFirst ) {
+					type = 0;
+				}
+
+				if ( !(i === high && ignoreLast)) {
+					// Mark the 'type' of this point. 0 = plain, 1 = real value, 2 = step value.
+					indexes[newPct.toFixed(5)] = [i, type];
+				}
+
+				// Update the percentage count.
+				prevPct = newPct;
+			}
+		});
+
+		// Reset the spectrum.
+		scope_Spectrum.direction = originalSpectrumDirection;
+
+		return indexes;
+	}
+
+	function addMarking ( spread, filterFunc, formatter ) {
+
+		var style = ['horizontal', 'vertical'][options.ort],
+			element = document.createElement('div');
+
+		element.classList.add('noUi-pips');
+		element.classList.add('noUi-pips-' + style);
+
+		function getSize( type, value ){
+			return [ '-normal', '-large', '-sub' ][type];
+		}
+
+		function getTags( offset, source, values ) {
+			return 'class="' + source + ' ' +
+				source + '-' + style + ' ' +
+				source + getSize(values[1], values[0]) +
+				'" style="' + options.style + ': ' + offset + '%"';
+		}
+
+		function addSpread ( offset, values ){
+
+			if ( scope_Spectrum.direction ) {
+				offset = 100 - offset;
+			}
+
+			// Apply the filter function, if it is set.
+			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
+
+			// Add a marker for every point
+			element.innerHTML += '<div ' + getTags(offset, 'noUi-marker', values) + '></div>';
+
+			// Values are only appended for points marked '1' or '2'.
+			if ( values[1] ) {
+				element.innerHTML += '<div '+getTags(offset, 'noUi-value', values)+'>' + formatter.to(values[0]) + '</div>';
+			}
+		}
+
+		// Append all points.
+		Object.keys(spread).forEach(function(a){
+			addSpread(a, spread[a]);
+		});
+
+		return element;
+	}
+
+	function pips ( grid ) {
+
+	var mode = grid.mode,
+		density = grid.density || 1,
+		filter = grid.filter || false,
+		values = grid.values || false,
+		stepped = grid.stepped || false,
+		group = getGroup( mode, values, stepped ),
+		spread = generateSpread( density, mode, group ),
+		format = grid.format || {
+			to: Math.round
+		};
+
+		return scope_Target.appendChild(addMarking(
+			spread,
+			filter,
+			format
+		));
 	}
 
 // Helpers
@@ -821,15 +1030,22 @@ function closure ( target, options, originalOptions ){
 	}
 
 	// External event handling
-	function fireEvents ( events ) {
-		// Use the external api to get the values.
-		// Wrap the values in an array, as .trigger takes
-		// only one additional argument.
-		var index;//, values = [ scope_Target.val() ]; // TODO
+	function fireEvent ( event, trigger ) {
 
-		for ( index = 0; index < events.length; index += 1 ){
-//			scope_Target.trigger(events[index], values); // TODO
+		if ( trigger !== undefined ) {
+			trigger = Math.abs(trigger - options.dir);
 		}
+
+		Object.keys(scope_Events).forEach(function( targetEvent ) {
+
+			var eventType = targetEvent.split('.')[0];
+
+			if ( event === eventType ) {
+				scope_Events[targetEvent].forEach(function( callback ) {
+					callback( valueGet(), trigger, targetEvent );
+				});
+			}
+		});
 	}
 
 	// Returns the input array, respecting the slider direction configuration.
@@ -846,73 +1062,6 @@ function closure ( target, options, originalOptions ){
 
 		return values;
 	}
-
-// libLink integration
-
-	// Create a new function which calls .val on input change.
-	function createChangeHandler ( trigger ) {
-		return function ( ignore, value ){
-			// Determine which array position to 'null' based on 'trigger'.
-			//scope_Target.val( [ trigger ? null : value, trigger ? value : null ], true ); // TODO
-
-		};
-	}
-
-	// Called by libLink when it wants a set of links updated.
-	function linkUpdate ( flag ) {
-
-		var trigger = triggerPos.indexOf(flag);
-
-		// The API might not have been set yet.
-		if ( scope_Target.linkAPI && scope_Target.linkAPI[flag] ) {
-			scope_Target.linkAPI[flag].change(
-				scope_Values[trigger],
-				scope_Handles[trigger].children,
-				scope_Target
-			);
-		}
-	}
-
-	// Called by libLink to append an element to the slider.
-	function linkConfirm ( flag, element ) {
-
-		// Find the trigger for the passed flag.
-		var trigger = triggerPos.indexOf(flag);
-
-		// If set, append the element to the handle it belongs to.
-		if ( element ) {
-			element.appendTo( scope_Handles[trigger].children() ); // TODO
-		}
-
-		// The public API is reversed for rtl sliders, so the changeHandler
-		// should not be aware of the inverted trigger positions.
-		// On rtl slider with one handle, 'lower' should be used.
-		if ( options.dir && options.handles > 1 ) {
-			trigger = trigger === 1 ? 0 : 1;
-		}
-
-		return createChangeHandler( trigger );
-	}
-
-	// Place elements back on the slider.
-	function reAppendLink ( ) {
-
-		var i, flag;
-
-		// The API keeps a list of elements: we can re-append them on rebuild.
-		for ( i = 0; i < triggerPos.length; i += 1 ) {
-			if ( this.linkAPI && this.linkAPI[(flag = triggerPos[i])] ) {
-				this.linkAPI[flag].reconfirm(flag);
-			}
-		}
-	}
-
-	target.LinkUpdate = linkUpdate;
-	target.LinkConfirm = linkConfirm;
-	target.LinkDefaultFormatter = options.format;
-	target.LinkDefaultFlag = 'lower';
-
-	target.reappend = reAppendLink;
 
 
 	// Handler for attaching events trough a proxy.
@@ -937,6 +1086,7 @@ function closure ( target, options, originalOptions ){
 
 			// Call the event handler with the event [ and additional data ].
 			callback ( e, data );
+
 		}, methods = [];
 
 		// Bind a closure on the target for every event type.
@@ -966,7 +1116,7 @@ function closure ( target, options, originalOptions ){
 
 		// Fire the 'slide' event if any handle moved.
 		if ( state ) {
-			fireEvents(['slide']);
+			fireEvent('slide', h); // TODO fire for both handles!
 		}
 	}
 
@@ -997,7 +1147,8 @@ function closure ( target, options, originalOptions ){
 		scope_Target.classList.remove(Classes[12]);
 
 		// Fire the change and set events.
-		fireEvents(['set', 'change']);
+		fireEvent('set');
+		fireEvent('change');
 	}
 
 	// Bind move events on document.
@@ -1079,7 +1230,9 @@ function closure ( target, options, originalOptions ){
 		// The set handle to the new position.
 		setHandle( scope_Handles[total], to );
 
-		fireEvents(['slide', 'set', 'change']);
+		fireEvent('slide');
+		fireEvent('set');
+		fireEvent('change');
 
 		if ( options.events.snap ) {
 			start(event, { handles: [scope_Handles[total]] });
@@ -1183,7 +1336,7 @@ function closure ( target, options, originalOptions ){
 		// Convert the value to the slider stepping/range.
 		scope_Values[trigger] = scope_Spectrum.fromStepping( to );
 
-		linkUpdate(triggerPos[trigger]);
+		fireEvent('update', trigger);
 
 		return true;
 	}
@@ -1222,8 +1375,7 @@ function closure ( target, options, originalOptions ){
 				// Request an update for all links if the value was invalid.
 				// Do so too if setting the handle fails.
 				if ( to === false || isNaN(to) || setHandle( scope_Handles[trigger], scope_Spectrum.toStepping( to ), i === (3 - options.dir) ) === false ) {
-
-					linkUpdate(triggerPos[trigger]);
+					fireEvent('update', trigger);
 				}
 			}
 		}
@@ -1231,11 +1383,6 @@ function closure ( target, options, originalOptions ){
 
 	// Set the slider value.
 	function valueSet ( input ) {
-
-		// LibLink: don't accept new values when currently emitting changes.
-		if ( scope_Target.LinkIsEmitting ) {
-			return this;
-		}
 
 		var count, values = asArray( input );
 
@@ -1246,8 +1393,7 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Animation is optional.
-		// Make sure the initial values where set before using animated
-		// placement. (no report, unit testing);
+		// Make sure the initial values where set before using animated placement.
 		if ( options.animate && scope_Locations[0] !== -1 ) {
 			addClassFor( scope_Target, Classes[14], 300 );
 		}
@@ -1261,11 +1407,7 @@ function closure ( target, options, originalOptions ){
 
 		setValues ( count, values );
 
-		// Fire the 'set' event. As of noUiSlider 7,
-		// this is no longer optional.
-		fireEvents(['set']);
-
-		return this;
+		fireEvent('set', values);
 	}
 
 	// Get the slider value.
@@ -1281,27 +1423,13 @@ function closure ( target, options, originalOptions ){
 		return inSliderOrder( retour );
 	}
 
-	// Destroy the slider and unbind all events.
-	function destroyTarget ( ) {
-
-		// Unbind events on the slider, remove all classes and child elements.
-		$(this).off(namespace)
-			.removeClass(Classes.join(' '))
-			.empty();
-
-		delete this.LinkUpdate;
-		delete this.LinkConfirm;
-		delete this.LinkDefaultFormatter;
-		delete this.LinkDefaultFlag;
-		delete this.reappend;
-		delete this.vGet;
-		delete this.vSet;
-		delete this.getCurrentStep;
-		delete this.getInfo;
-		delete this.destroy;
-
-		// Return the original options from the closure.
-		return originalOptions;
+	// Removes classes from the root and empties it.
+	function destroy ( ) {
+		Classes.forEach(function(cls){
+			if ( !cls ) { return; } // TODO
+			scope_Target.classList.remove(cls);
+		});
+		scope_Target.innerHTML = '';
 	}
 
 	// Get the current step size for the slider.
@@ -1309,7 +1437,7 @@ function closure ( target, options, originalOptions ){
 
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
-		var retour = $.map(scope_Locations, function( location, index ){
+		var retour = scope_Locations.map(function( location, index ){
 
 			var step = scope_Spectrum.getApplicableStep( location ),
 
@@ -1332,25 +1460,50 @@ function closure ( target, options, originalOptions ){
 				// previous step. Return null if the slider is at its minimum value.
 				decrement = location === 0 ? null : (prev >= step[1]) ? step[2] : (step[0] || false);
 
-			return [[decrement, increment]];
+			return [decrement, increment];
 		});
+
+		console.log(retour);
 
 		// Return values in the proper order.
 		return inSliderOrder( retour );
 	}
 
-	// Get the original set of options.
-	function getOriginalOptions ( ) {
-		return originalOptions;
+	// Attach an event to this slider, possibly including a nacespace
+	function bindEvent ( namespacedEvent, callback ) {
+		scope_Events[namespacedEvent] = scope_Events[namespacedEvent] || [];
+		scope_Events[namespacedEvent].push(callback);
+
+		if ( namespacedEvent.split('.')[0] === 'update' ) {
+			scope_Handles.forEach(function(a, index){
+				fireEvent('update', index);
+			});
+		}
 	}
 
+	// Undo attachment of event
+	function removeEvent ( namespacedEvent ) {
 
-// Initialize slider
+		var event = namespacedEvent.split('.')[0],
+			namespace = namespacedEvent.substring(event.length);
+
+		Object.keys(scope_Events).forEach(function( bind ){
+
+			var tEvent = bind.split('.')[0],
+				tNamespace = bind.substring(tEvent.length);
+
+			if ( (!event || event === tEvent) && (!namespace || namespace === tNamespace) ) {
+				delete scope_Events[bind];
+			}
+		});
+	}
+
 
 	// Throw an error if the slider was already initialized.
 	if ( scope_Target.classList.contains(Classes[0]) ) {
 		throw new Error('Slider was already initialized.');
 	}
+
 
 	// Create the base element, initialise HTML and set classes.
 	// Add handles and links.
@@ -1363,115 +1516,44 @@ function closure ( target, options, originalOptions ){
 	// Attach user events.
 	events( options.events );
 
-// Methods
+	if ( options.pips ) {
+		pips(options.pips);
+	}
 
-	target.vSet = valueSet;
-	target.vGet = valueGet;
-	target.destroy = destroyTarget;
-
-	target.getCurrentStep = getCurrentStep;
-	target.getOriginalOptions = getOriginalOptions;
-
-	target.getInfo = function(){
-		return [
-			scope_Spectrum,
-			options.style,
-			options.ort
-		];
+	return {
+		destroy: destroy,
+		steps: getCurrentStep,
+		on: bindEvent,
+		off: removeEvent,
+		value: {
+			get: valueGet,
+			set: valueSet
+		}
 	};
-
-	// Use the public value method to set the start values.
-	target.vSet(options.start);
 
 }
 
 
 	// Run the standard initializer
-	function initialize ( originalOptions ) {
+	function initialize ( target, originalOptions ) {
 
-		// Test the options once, not for every slider.
-		var options = testOptions( originalOptions, this );
-
-		Array.prototype.forEach.call(this, function( element ){
-			closure(element, options, originalOptions);
-		});
-	}
-
-	// Destroy the slider, then re-enter initialization.
-	function rebuild ( options ) {
-
-		return this.each(function(){
-
-			// The rebuild flag can be used if the slider wasn't initialized yet.
-			if ( !this.destroy ) {
-				$(this).noUiSlider( options );
-				return;
-			}
-
-			// Get the current values from the slider,
-			// including the initialization options.
-			var values = $(this).val(), originalOptions = this.destroy(),
-
-				// Extend the previous options with the newly provided ones.
-				newOptions = $.extend( {}, originalOptions, options );
-
-			// Run the standard initializer.
-			$(this).noUiSlider( newOptions );
-
-			// Place Link elements back.
-			this.reappend();
-
-			// If the start option hasn't changed,
-			// reset the previous values.
-			if ( originalOptions.start === newOptions.start ) {
-				$(this).val(values);
-			}
-		});
-	}
-
-	// Access the internal getting and setting methods based on argument count.
-	function valueArgument ( ) {
-		return this[ !arguments.length ? 'vGet' : 'vSet' ].apply(this, arguments);
-	}
-
-
-
-
-	function value ( arg ) {
-
-		// this = nodeList
-
-		// If no value is passed, this is 'get'.
-		if ( !arguments.length ) {
-			return valueArgument(this[0]).call(this[0]);
+		if ( !!target.nodeName ) {
+			// todo error
+			//alert('fool!');
 		}
 
-		Array.prototype.forEach.call(this, function( node ){
-			valueArgument(node).call(node, arg);
-		});
+		// Test the options once, not for every slider. // TODO not true
+		var options = testOptions( originalOptions, target ),
+			slider = closure( target, options );
+
+		// Use the public value method to set the start values.
+		slider.value.set(options.start);
+
+		return slider;
 	}
 
-	function create ( targets, options, rebuildFlag ) {
-
-		// Accept nodes as well as collections.
-		if ( targets.nodeType > 0 ) {
-			targets = [targets];
-		}
-
-		// Default to the first selected element when requesting options.
-		switch ( options ) {
-			case 'step': return targets[0].getCurrentStep();
-			case 'options': return targets[0].getOriginalOptions();
-		}
-
-		// Switch between standard init or rebuild
-		return ( rebuildFlag ? rebuild : initialize ).call(targets, options);
-	}
-
-	// Export
 	return {
-		create: create,
-		value: value
+		create: initialize
 	};
 
 }));

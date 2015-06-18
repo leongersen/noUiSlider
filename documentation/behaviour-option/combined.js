@@ -1,4 +1,6 @@
-$("#combined").noUiSlider({
+dragTapSlider = document.getElementById('combined');
+
+noUiSlider.create(dragTapSlider, {
 	start: [ 40, 60 ],
 	behaviour: 'drag-tap',
 	connect: true,

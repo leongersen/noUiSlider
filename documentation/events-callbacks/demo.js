@@ -1,20 +1,34 @@
-$.fn.tShow = function(x){
-	var s = $(this).addClass('tShow');
+function addClassFor ( element, className, duration ) {
+	element.classList.add(className);
 	setTimeout(function(){
-		s.removeClass('tShow');
-	},x);
-};
+		element.classList.remove(className);
+	}, duration);
+}
 
-$("#setter1").click(function(){
-	$("#slider-events").val([ 5, 15 ]);
+var element = document.getElementById('slider-events'),
+	setter = document.getElementById('setter1'),
+	slider = noUiSlider.create(element, {
+		start: [ 0, 10 ],
+		range: {
+			'min': [ 0 ],
+			'max': [ 20 ]
+		}
+	});
+
+setter.addEventListener('click', function(){
+	slider.value.set([5, 15]);
 });
 
-$("#slider-events").noUiSlider({
-	start: [ 0, 10 ],
-	range: {
-		'min': [ 0 ],
-		'max': [ 20 ]
+// $("#slider-events").Link('lower').to($("#input-log"));
+
+var inputEvent = document.getElementById('input-log');
+
+slider.on('update', function ( values, handle ) {
+	if ( !handle ) {
+		inputEvent.value = values[handle];
 	}
 });
 
-$("#slider-events").Link('lower').to($("#input-log"));
+inputEvent.addEventListener('change', function ( ) {
+	slider.value.set([null, this.value]);
+});

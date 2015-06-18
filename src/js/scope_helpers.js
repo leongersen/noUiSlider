@@ -1,4 +1,3 @@
-// Helpers
 
 	// Shorthand for base dimensions.
 	function baseSize ( ) {
