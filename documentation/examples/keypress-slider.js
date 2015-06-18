@@ -1,7 +1,7 @@
-var slider = $('#keypress'),
-	input = $('#input-with-keypress');
+var slider = document.getElementById('keypress'),
+	input = document.getElementById('input-with-keypress');
 
-slider.noUiSlider({
+noUiSlider.create(slider, {
 	start: 40,
 	step: 10,
 	range: {
@@ -12,4 +12,10 @@ slider.noUiSlider({
 	}
 });
 
-slider.Link('lower').to(input);
+slider.noUiSlider.on('update', function( values, handle ) {
+	input.value = values[handle];
+});
+
+input.addEventListener('change', function(){
+	slider.noUiSlider.set([null, this.value]);
+});

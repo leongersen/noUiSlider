@@ -1,9 +1,9 @@
 // Listen to keydown events on the input field.
-input.keydown(function( e ) {
+input.addEventListener('keydown', function( e ) {
 
 	// Convert the string to a number.
-	var value = Number( slider.val() ),
-		sliderStep = slider.noUiSlider('step');
+	var value = Number( slider.noUiSlider.get() ),
+		sliderStep = slider.noUiSlider.steps()
 
 	// Select the stepping for the first handle.
 	sliderStep = sliderStep[0];
@@ -13,11 +13,11 @@ input.keydown(function( e ) {
 	// 40 is key down.
 	switch ( e.which ) {
 		case 13:
-			$(this).change();
+			slider.noUiSlider.set(this.value);
 			break;
-		case 38: slider.val( value + sliderStep[1] );
+		case 38: slider.noUiSlider.set( value + sliderStep[1] );
 			break;
-		case 40: slider.val( value - sliderStep[0] );
+		case 40: slider.noUiSlider.set( value - sliderStep[0] );
 			break;
 	}
 });
