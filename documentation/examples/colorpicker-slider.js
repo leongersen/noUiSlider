@@ -1,9 +1,9 @@
-var sliders = [],
-	resultElement = document.getElementById('result');
+var resultElement = document.getElementById('result'),
+	sliders = document.getElementsByClassName('sliders');
 
-Array.prototype.forEach.call(document.getElementsByClassName('sliders'), function ( slider, index ) {
+Array.prototype.forEach.call(sliders, function ( slider, index ) {
 
-	sliders[index] = noUiSlider.create(slider, {
+	noUiSlider.create(slider, {
 		start: 127,
 		connect: "lower",
 		orientation: "vertical",
@@ -18,5 +18,5 @@ Array.prototype.forEach.call(document.getElementsByClassName('sliders'), functio
 
 	// Bind the color changing function
 	// to the slide event.
-	sliders[index].on('slide', setColor);
+	slider.noUiSlider.on('slide', setColor);
 });

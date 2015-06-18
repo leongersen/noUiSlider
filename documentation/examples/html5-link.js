@@ -1,6 +1,6 @@
 var inputNumber = document.getElementById('input-number');
 
-html5Slider.on('update', function( values, handle ) {
+html5Slider.noUiSlider.on('update', function( values, handle ) {
 
 	var value = values[handle];
 
@@ -12,9 +12,9 @@ html5Slider.on('update', function( values, handle ) {
 });
 
 select.addEventListener('change', function(){
-	html5Slider.value.set([this.value, null]);
+	html5Slider.noUiSlider.set([this.value, null]);
 });
 
 inputNumber.addEventListener('change', function(){
-	html5Slider.value.set([null, this.value]);
+	html5Slider.noUiSlider.set([null, this.value]);
 });
