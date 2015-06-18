@@ -23,10 +23,12 @@
 
 			<div class="logger">
 				<input id="input-log">
-				<button id="setter1">.val([ 5, 15 ])</button>
+				<button id="setter">.set([ 5, 15 ])</button>
 			</div>
 
+			<?php run('class'); ?>
 			<?php run('demo'); ?>
+			<?php run('buttoninput'); ?>
 			<?php run('binding-events'); ?>
 		</div>
 
@@ -65,7 +67,7 @@
 					<td class="no"><span>No</span></td>
 				</tr>
 				<tr>
-					<td><span>The <strong><code>.val()</code></strong> method is called</span></td>
+					<td><span>The <strong><code>.set()</code></strong> method is called</span></td>
 					<td class="no"><span>No</span></td>
 					<td class="yes"><span>Yes</span></td>
 					<td class="no"><span>No</span></td>
@@ -76,12 +78,23 @@
 
 	<div class="side">
 
+		<div class="viewer-header">Temporary set a class</div>
 
+		<div class="viewer-content">
+			<?php code('class'); ?>
+		</div>
 
-		<div class="viewer-header">Setting up the slider and buttons</div>
+		<div class="viewer-header">Setting up the slider</div>
 
 		<div class="viewer-content">
 			<?php code('demo'); ?>
+		</div>
+
+
+		<div class="viewer-header">Bind button and input</div>
+
+		<div class="viewer-content">
+			<?php code('buttoninput'); ?>
 		</div>
 
 		<?php code('binding-events'); ?>
