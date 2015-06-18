@@ -54,3 +54,30 @@
 		var pieces = numStr.split(".");
 		return pieces.length > 1 ? pieces[1].length : 0;
 	}
+
+	// http://youmightnotneedjquery.com/#add_class
+	function addClass ( el, className ) {
+		if ( el.classList ) {
+			el.classList.add(className);
+		} else {
+			el.className += ' ' + className;
+		}
+	}
+
+	// http://youmightnotneedjquery.com/#remove_class
+	function removeClass ( el, className ) {
+		if ( el.classList ) {
+			el.classList.remove(className);
+		} else {
+			el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+		}
+	}
+
+	// http://youmightnotneedjquery.com/#has_class
+	function hasClass ( el, className ) {
+		if ( el.classList ) {
+			el.classList.contains(className);
+		} else {
+			new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+		}
+	}

@@ -12,7 +12,7 @@
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( scope_Target.classList.contains( Classes[14] ) ) {
+			if ( hasClass(scope_Target, Classes[14]) ) {
 				return false;
 			}
 
@@ -62,7 +62,7 @@
 		var active = document.getElementsByClassName(Classes[15]); // TODO why on document
 
 		if ( active.length ) {
-			active[0].classList.remove(Classes[15]);
+			removeClass(active[0], Classes[15]);
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -79,7 +79,7 @@
 		});
 
 		// Remove dragging class.
-		scope_Target.classList.remove(Classes[12]);
+		removeClass(scope_Target, Classes[12]);
 
 		// Fire the change and set events.
 		fireEvent('set');
@@ -93,7 +93,7 @@
 
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
-			data.handles[0].children[0].classList.add(Classes[15]);
+			addClass(data.handles[0].children[0], Classes[15]);
 		}
 
 		// A drag should never propagate up to the 'tap' event.
@@ -120,7 +120,7 @@
 
 			// Mark the target with a dragging state.
 			if ( scope_Handles.length > 1 ) {
-				scope_Target.classList.add(Classes[12]);
+				addClass(scope_Target, Classes[12]);
 			}
 
 			var f = function(){
@@ -204,7 +204,7 @@
 		if ( behaviour.drag ){
 
 			drag = scope_Base.getElementsByClassName( Classes[7] )[0];
-			drag.classList.add( Classes[10] );
+			addClass(drag, Classes[10]);
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first

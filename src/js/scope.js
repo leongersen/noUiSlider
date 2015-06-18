@@ -40,7 +40,10 @@
 
 		// Force proper handle stacking
 		if ( !handle.previousSibling ) {
-			handle.classList.toggle(Classes[17], to > 50 );
+			removeClass(handle, Classes[17]);
+			if ( to > 50 ) {
+				addClass(handle, Classes[17]);
+			}
 		}
 
 		// Update locations.
@@ -140,7 +143,7 @@
 	function destroy ( ) {
 		Classes.forEach(function(cls){
 			if ( !cls ) { return; } // TODO
-			scope_Target.classList.remove(cls);
+			removeClass(scope_Target, cls);
 		});
 		scope_Target.innerHTML = '';
 		delete scope_Target.noUiSlider;

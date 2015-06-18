@@ -160,8 +160,8 @@
 		var style = ['horizontal', 'vertical'][options.ort],
 			element = document.createElement('div');
 
-		element.classList.add('noUi-pips');
-		element.classList.add('noUi-pips-' + style);
+		addClass(element, 'noUi-pips');
+		addClass(element, 'noUi-pips-' + style);
 
 		function getSize( type, value ){
 			return [ '-normal', '-large', '-sub' ][type];
