@@ -1,6 +1,8 @@
-var element = document.getElementById('range');
+var slider = document.getElementById('range'),
+	valueInput = document.getElementById('value-input'),
+	valueSpan = document.getElementById('value-span');
 
-var slider = noUiSlider.create(element, {
+noUiSlider.create(slider, {
 	start: [ 20, 80 ],
 	step: 10,
 	margin: 20,
@@ -18,31 +20,11 @@ var slider = noUiSlider.create(element, {
 	}
 });
 
-
-slider.on('slide.handle', function( values, handle ){
-	console.log('Slide on handle ' + handle);
-});
-
-/*
-slider.on('slide.pike_cake', function( myBind ){
-	console.log(myBind + 2);
-});
-*/
-
-
-var valueInput = document.getElementById('value-input'),
-	valueSpan = document.getElementById('value-span');
-
-slider.on('update', function( values, handle, unencoded ) {
-
-	console.log(values, handle);
-
-	var value = values[handle];
-
+slider.noUiSlider.on('update', function( values, handle ) {
 	if ( handle ) {
-		valueInput.value = value;
+		valueInput.value = values[handle];
 	} else {
-		valueSpan.innerHTML = value;
+		valueSpan.innerHTML = values[handle];
 	}
 });
 

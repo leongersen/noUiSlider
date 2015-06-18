@@ -1,8 +1,8 @@
-var eTrue = document.getElementById('slider-animate-true'),
-	eFalse = document.getElementById('slider-animate-false'),
+var trueSlider = document.getElementById('slider-animate-true'),
+	falseSlider = document.getElementById('slider-animate-false'),
 	setButton = document.getElementById('set-sliders');
 
-var sTrue = noUiSlider.create(eTrue, {
+noUiSlider.create(trueSlider, {
 	animate: true,
 	start: 20,
 	range: {
@@ -11,7 +11,7 @@ var sTrue = noUiSlider.create(eTrue, {
 	}
 });
 
-var sFalse = noUiSlider.create(eFalse, {
+noUiSlider.create(falseSlider, {
 	animate: false,
 	start: 20,
 	range: {
@@ -21,6 +21,6 @@ var sFalse = noUiSlider.create(eFalse, {
 });
 
 setButton.addEventListener('click', function(){
-	sTrue.value.set(60);
-	sFalse.value.set(60);
+	trueSlider.noUiSlider.set(60);
+	falseSlider.noUiSlider.set(60);
 });

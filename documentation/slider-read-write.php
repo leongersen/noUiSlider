@@ -16,12 +16,11 @@
 
 	<div class="view">
 
-		<p>noUiSlider has an API which is designed to be compatible with other form elements. That's why you can just use the same method that works on any other input.</p>
-		<p>You can just get the slider value by calling <code>.val()</code>. It is really simple:</p>
+		<p>noUiSlider has an API with two simple methods: <code>.get()</code> and <code>.set()</code>. To get the current slider value:</p>
 
 		<?php code('read'); ?>
 
-		<p>For one-handle sliders, calling <code>.val()</code> will return the value. For two-handle sliders, an <code>array[value, value]</code> will be returned.</p>
+		<p>For one-handle sliders, calling <code>.get()</code> will return the value. For two-handle sliders, an <code>array[value, value]</code> will be returned.</p>
 	</div>
 </section>
 
@@ -35,9 +34,9 @@
 
 		<p>noUiSlider will keep your values within the slider range, which saves you a bunch of validation.</p>
 
-		<p>If you have set the slider to use one handle, simply set it on the slider using the <code>.val()</code> method. If you have two handles, pass an array. One-handled sliders will also accept arrays.</p>
+		<p>If you have configured the slider to use one handle, you can change the current value by passing a number to the <code>.set()</code> method. If you have two handles, pass an array. One-handled sliders will also accept arrays.</p>
 
-		<p>Within an array, you can set a position to <code>null</code> if you want to leave a handle unchanged.</p>
+		<p>Within an array, you can set one position to <code>null</code> if you want to leave a handle unchanged.</p>
 	</div>
 
 	<div class="side">
@@ -96,7 +95,7 @@
 			<div id="slider-format"></div>
 			<input id="input-format">
 			<?php run('wnumb'); ?>
-			<?php run('linkformat'); ?>
+			<?php run('format-link'); ?>
 		</div>
 
 	</div>
@@ -118,7 +117,7 @@
 		<div class="viewer-header">Linking the input field</div>
 
 		<div class="viewer-content">
-			<?php code('linkformat'); ?>
+			<?php code('format-link'); ?>
 		</div>
 	</div>
 

@@ -33,25 +33,6 @@
 
 		<p>The <code>range</code> mode uses the slider range to determine where the pips should be. A pip is generated for every percentage specified.</p>
 
-	</div>
-
-	<div class="side">
-
-		<div class="viewer-header">Initialize the slider</div>
-
-		<div class="viewer-content">
-			<?php code('range-slider'); ?>
-		</div>
-
-		<?php code('range'); ?>
-	</div>
-
-</section>
-
-<section>
-
-	<div class="view">
-
 		<h4 class="before-example">Left-to-Right (default):</h4>
 
 		<div class="example">
@@ -63,27 +44,26 @@
 		<div class="example">
 			<div class="pips-range" id="pips-range-rtl"></div>
 		</div>
-	</div>
-
-	<div class="side">
 
 		<h4 class="before-example">Vertical and vertical, bottom-to-top:</h4>
 
 		<div class="example vertical" style="float: left">
 			<div class="pips-range" id="pips-range-vertical"></div>
 		</div>
+
 		<div class="example vertical">
 			<div class="pips-range" id="pips-range-vertical-rtl"></div>
 		</div>
 
-
-		<?php run('range-slider'); ?>
 		<?php run('range'); ?>
 
 	</div>
 
-</section>
+	<div class="side">
+		<?php code('range'); ?>
+	</div>
 
+</section>
 
 <?php sect('steps'); ?>
 <h2>Steps</h2>
@@ -98,17 +78,10 @@
 		<p>Here, we'll use large values for every step matching a thousand (<code>1000</code>, <code>2000</code>, <code>3000</code>), and small values for every step matching 500 (<code>2500</code>, <code>3500</code>, <code>4500</code>).</p>
 
 		<p>The Pips add-on supports <code>format</code> in the same way the slider itself does.</p>
-		
+
 	</div>
 
 	<div class="side">
-
-		<div class="viewer-header">Initialize the slider</div>
-
-		<div class="viewer-content">
-			<?php code('steps-slider'); ?>
-		</div>
-
 		<?php code('steps'); ?>
 	</div>
 
@@ -120,7 +93,6 @@
 
 	<div class="example">
 		<div id="pips-steps"></div>
-		<?php run('steps-slider'); ?>
 		<?php run('steps'); ?>
 	</div>
 
@@ -138,7 +110,6 @@
 
 		<div class="example">
 			<div id="pips-positions"></div>
-			<?php run('positions-slider'); ?>
 			<?php run('positions'); ?>
 		</div>
 
@@ -146,27 +117,12 @@
 
 		<div class="example">
 			<div id="pips-positions-stepped"></div>
-			<?php run('positions-stepped-slider'); ?>
 			<?php run('positions-stepped'); ?>
 		</div>
 	</div>
 
 	<div class="side">
-
-		<div class="viewer-header">Initialize the slider</div>
-
-		<div class="viewer-content">
-			<?php code('positions-slider'); ?>
-		</div>
-
 		<?php code('positions'); ?>
-
-		<div class="viewer-header">Initialize the slider</div>
-
-		<div class="viewer-content">
-			<?php code('positions-stepped-slider'); ?>
-		</div>
-
 		<?php code('positions-stepped'); ?>
 	</div>
 </section>
@@ -183,7 +139,6 @@
 
 		<div class="example">
 			<div id="pips-count"></div>
-			<?php run('count-slider'); ?>
 			<?php run('count'); ?>
 		</div>
 
@@ -191,27 +146,12 @@
 
 		<div class="example">
 			<div id="pips-count-stepped"></div>
-			<?php run('count-stepped-slider'); ?>
 			<?php run('count-stepped'); ?>
 		</div>
 	</div>
 
 	<div class="side">
-
-		<div class="viewer-header">Initialize the slider</div>
-
-		<div class="viewer-content">
-			<?php code('count-slider'); ?>
-		</div>
-
 		<?php code('count'); ?>
-
-		<div class="viewer-header">Initialize the slider</div>
-
-		<div class="viewer-content">
-			<?php code('count-stepped-slider'); ?>
-		</div>
-
 		<?php code('count-stepped'); ?>
 	</div>
 </section>
@@ -228,7 +168,6 @@
 
 		<div class="example">
 			<div id="pips-values"></div>
-			<?php run('values-slider'); ?>
 			<?php run('values'); ?>
 		</div>
 
@@ -237,27 +176,12 @@
 
 		<div class="example">
 			<div id="pips-values-stepped"></div>
-			<?php run('values-stepped-slider'); ?>
 			<?php run('values-stepped'); ?>
 		</div>
 	</div>
 
 	<div class="side">
-
-		<div class="viewer-header">Initialize the slider</div>
-
-		<div class="viewer-content">
-			<?php code('values-slider'); ?>
-		</div>
-
 		<?php code('values'); ?>
-
-		<div class="viewer-header">Initialize the slider</div>
-
-		<div class="viewer-content">
-			<?php code('values-stepped-slider'); ?>
-		</div>
-
 		<?php code('values-stepped'); ?>
 	</div>
 </section>

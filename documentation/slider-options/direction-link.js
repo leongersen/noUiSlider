@@ -1,5 +1,5 @@
 var directionField = document.getElementById('field');
 
-directionSlider.on('update', function( value ){
-	directionField.innerHTML = value;
+directionSlider.noUiSlider.on('update', function( values, handle ){
+	directionField.innerHTML = values[handle];
 });

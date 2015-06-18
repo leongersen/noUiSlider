@@ -1,10 +1,14 @@
-// Set one value
-$(".slider").val(10);
-$(".slider").val([150]);
+var slider = document.getElementById('slider');
+
+noUiSlider.create(slider, /* { options } */);
+
+// Set one .noUiSlider.setue
+slider.noUiSlider.set(10);
+slider.noUiSlider.set([150]);
 
 // Set the upper handle,
 // don't change the lower one.
-$(".slider").val([null, 14]);
+slider.noUiSlider.set([null, 14]);
 
 // Set both slider handles
-$(".slider").val([13.2, 15.7]);
+slider.noUiSlider.set([13.2, 15.7]);

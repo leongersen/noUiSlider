@@ -30,5 +30,5 @@
 
 	ob_end_clean();
 
-	$distribute = '/nouislider/noUiSlider/distribute';
+	$distribute = '/noUiSlider/distribute';
 	include '_run/index.php';
