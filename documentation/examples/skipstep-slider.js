@@ -1,4 +1,6 @@
-$("#skipstep").noUiSlider({
+var skipSlider = document.getElementById('skipstep');
+
+noUiSlider.create(skipSlider, {
     range: {
         'min': 0,
         '10%': 10,
