@@ -11,9 +11,9 @@
 			slider = closure( target, options );
 
 		// Use the public value method to set the start values.
-		slider.value.set(options.start);
+		slider.set(options.start);
 
-		return slider;
+		target.noUiSlider = slider;
 	}
 
 	// Use an object instead of a function for future expansibility;

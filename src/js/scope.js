@@ -143,6 +143,7 @@
 			scope_Target.classList.remove(cls);
 		});
 		scope_Target.innerHTML = '';
+		delete scope_Target.noUiSlider;
 	}
 
 	// Get the current step size for the slider.
@@ -176,13 +177,11 @@
 			return [decrement, increment];
 		});
 
-		console.log(retour);
-
 		// Return values in the proper order.
 		return inSliderOrder( retour );
 	}
 
-	// Attach an event to this slider, possibly including a nacespace
+	// Attach an event to this slider, possibly including a namespace
 	function bindEvent ( namespacedEvent, callback ) {
 		scope_Events[namespacedEvent] = scope_Events[namespacedEvent] || [];
 		scope_Events[namespacedEvent].push(callback);
@@ -214,7 +213,7 @@
 
 
 	// Throw an error if the slider was already initialized.
-	if ( scope_Target.classList.contains(Classes[0]) ) {
+	if ( scope_Target.noUiSlider ) {
 		throw new Error('Slider was already initialized.');
 	}
 
@@ -239,8 +238,6 @@
 		steps: getCurrentStep,
 		on: bindEvent,
 		off: removeEvent,
-		value: {
-			get: valueGet,
-			set: valueSet
-		}
+		get: valueGet,
+		set: valueSet
 	};
