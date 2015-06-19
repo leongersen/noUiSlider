@@ -1,8 +1,8 @@
-function toggle( value ){
-	$(this).toggleClass('off', value === "1");
-}
+var toggleSlider = document.getElementById('slider-toggle');
 
-$("#slider-toggle").noUiSlider({
+toggleSlider.classList.add('toggle');
+
+noUiSlider.create(toggleSlider, {
 	orientation: "vertical",
 	start: 0,
 	range: {
@@ -14,6 +14,10 @@ $("#slider-toggle").noUiSlider({
 	})
 })
 
-$("#slider-toggle").addClass('toggle');
-
-$("#slider-toggle").Link('lower').to(toggle);
+toggleSlider.noUiSlider.on('update', function( values, handle ){
+	if ( values[handle] === '1' ) {
+		toggleSlider.classList.add('off');
+	} else {
+		toggleSlider.classList.remove('off');
+	}
+});
