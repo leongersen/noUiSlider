@@ -38,28 +38,29 @@
 
 		var handles = data.handles || scope_Handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
-			h = handles[0] !== scope_Handles[0] ? 1 : 0;
+			handleNumber = handles[0] === scope_Handles[0] ? 0 : 1;
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
 
-		state = setHandle ( handles[0], positions[h], handles.length === 1 );
+		state = setHandle ( handles[0], positions[handleNumber], handles.length === 1 );
 
 		if ( handles.length > 1 ) {
-			state = setHandle ( handles[1], positions[h?0:1], false ) || state;
+			state = setHandle ( handles[1], positions[handleNumber?0:1], false ) || state;
 		}
 
 		// Fire the 'slide' event if any handle moved.
 		if ( state ) {
-			fireEvent('slide', h); // TODO fire for both handles!
+			fireEvent('slide', handleNumber); // TODO fire for both handles!
 		}
 	}
 
 	// Unbind move events on document, call callbacks.
-	function end ( event ) {
+	function end ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = document.getElementsByClassName(Classes[15]); // TODO why on document
+		var active = document.getElementsByClassName(Classes[15]), // TODO why on document
+			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1;
 
 		if ( active.length ) {
 			removeClass(active[0], Classes[15]);
@@ -82,8 +83,8 @@
 		removeClass(scope_Target, Classes[12]);
 
 		// Fire the change and set events.
-		fireEvent('set');
-		fireEvent('change');
+		fireEvent('set', handleNumber);
+		fireEvent('change', handleNumber);
 	}
 
 	// Bind move events on document.
@@ -107,7 +108,9 @@
 				scope_Locations[0],
 				scope_Locations[scope_Handles.length - 1]
 			]
-		}), endEvent = attach(actions.end, d, end, null);
+		}), endEvent = attach(actions.end, d, end, {
+			handles: data.handles
+		});
 
 		d.noUiListeners = moveEvent.concat(endEvent);
 
@@ -137,7 +140,7 @@
 	// Move closest handle to tapped location.
 	function tap ( event ) {
 
-		var location = event.calcPoint, total = 0, to;
+		var location = event.calcPoint, total = 0, handleNumber, to;
 
 		// The tap event shouldn't propagate up and cause 'edge' to run.
 		event.stopPropagation();
@@ -148,7 +151,7 @@
 		});
 
 		// Find the handle closest to the tapped position.
-		total = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
+		handleNumber = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
 
 		location -= offset(scope_Base)[ options.style ];
 
@@ -163,11 +166,11 @@
 
 		// Find the closest handle and calculate the tapped point.
 		// The set handle to the new position.
-		setHandle( scope_Handles[total], to );
+		setHandle( scope_Handles[handleNumber], to );
 
-		fireEvent('slide');
-		fireEvent('set');
-		fireEvent('change');
+		fireEvent('slide', handleNumber);
+		fireEvent('set', handleNumber);
+		fireEvent('change', handleNumber);
 
 		if ( options.events.snap ) {
 			start(event, { handles: [scope_Handles[total]] });

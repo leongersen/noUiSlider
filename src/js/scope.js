@@ -100,7 +100,7 @@
 	// Set the slider value.
 	function valueSet ( input ) {
 
-		var count, values = asArray( input );
+		var count, values = asArray( input ), i;
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
@@ -123,7 +123,10 @@
 
 		setValues ( count, values );
 
-		fireEvent('set', values);
+		// Fire the 'set' event for both handles.
+		for ( i = 0; i < scope_Handles.length; i++ ) {
+			fireEvent('set', i);
+		}
 	}
 
 	// Get the slider value.
