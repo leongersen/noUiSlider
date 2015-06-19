@@ -1,0 +1,21 @@
+/* For this slider, disable the 'origin' size. */
+#connect .noUi-origin {
+	right: auto;
+	width: 0;
+}
+
+/* Position the bar and color it. */
+#connect .connect {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	background: #80C9F5;
+	box-shadow: inset 0 0 3px rgba(51,51,51,0.45);
+}
+
+/* When the slider is moved by tap,
+   transition the connect bar like the handle. */
+#connect.noUi-state-tap .connect {
+-webkit-transition: left 300ms, right 300ms;
+	transition: left 300ms, right 300ms;
+}

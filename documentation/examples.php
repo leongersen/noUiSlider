@@ -99,6 +99,51 @@
 </section>
 
 
+<?php sect('custom-connect'); ?>
+<h2>Custom connect</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>When using the <code>connect</code> option, noUiSlider paints the connecting bar in the negative space between handles. This uses one less element and has some nice performance benefits. When you need more control over the connecting option, you can create a custom connecting bar using the <code>update</code> event.</p>
+
+		<p>This custom element can be styled, or special features (like requested in <a href="https://github.com/leongersen/noUiSlider/issues/371">this issue</a>) can be implemented.</p>
+
+		<div class="example">
+			<div id="connect"></div>
+			<?php run('custom-connect-slider'); ?>
+			<?php run('custom-connect'); ?>
+			<style><?php include 'examples/custom-connect.css'; ?></style>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<div class="viewer-header">Create the slider</div>
+
+		<div class="viewer-content">
+			<?php code('custom-connect-slider'); ?>
+		</div>
+
+
+		<div class="viewer-header">Create a connecting bar and bind it</div>
+
+		<div class="viewer-content">
+			<?php code('custom-connect'); ?>
+		</div>
+
+
+		<div class="viewer-header">CSS for the connecting bar</div>
+
+		<div class="viewer-content">
+			<pre><code><?php include 'examples/custom-connect.css'; ?></code></pre>
+		</div>
+	</div>
+
+</section>
+
+
 <?php sect('html5'); ?>
 <h1>Using HTML5 input elements</h1>
 
