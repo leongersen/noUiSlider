@@ -216,19 +216,21 @@
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			drag = scope_Base.getElementsByClassName( Classes[7] )[0];
-			addClass(drag, Classes[10]);
+			drag = [scope_Base.getElementsByClassName( Classes[7] )[0]];
+			addClass(drag[0], Classes[10]);
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first
 			// origin will propagate the start event upward,
 			// but it needs to be bound manually on the other.
 			if ( behaviour.fixed ) {
-				//drag = drag.add(scope_Base.children().not( drag ).children()); // TODO
+				drag.push(scope_Handles[(drag[0] === scope_Handles[0] ? 1 : 0)].children[0]);
 			}
 
-			attach ( actions.start, drag, start, {
-				handles: scope_Handles
+			drag.forEach(function( element ) {
+				attach ( actions.start, element, start, {
+					handles: scope_Handles
+				});
 			});
 		}
 	}
