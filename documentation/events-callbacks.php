@@ -110,6 +110,21 @@
 </section>
 
 
+<?php sect('binding'); ?>
+<h2>Binding</h2>
+
+<section>
+
+	<div class="view">
+		<p>noUiSlider uses a custom binding model with support for namespaces.</p>
+		<p>Event callbacks receive three arguments. <code>values</code> is <strong>always an array</strong>, for both one-handle and two-handle sliders. It contains the current slider values, with formatting applied. <code>handle</code> is <code>0</code> or <code>1</code> and indicates the handle that caused the event. <code>values[handle]</code> gives the value for the current handle. Should you need it, <code>unencodedValues</code> contains the slider values without any formatting.</p>
+	</div>
+
+	<?php code('binding'); ?>
+
+</section>
+
+
 <?php sect('update'); ?>
 <h2>Update</h2>
 
@@ -119,6 +134,7 @@
 		<p>Use this event when synchronising the slider value to another element, such as an <code>&lt;input&gt;</code>. It fires anytime the slider is changed. Additionally, it fires <strong>immediately</strong> when bound.</p>
 	</div>
 </section>
+
 
 <?php sect('slide'); ?>
 <h2>Slide</h2>
@@ -149,28 +165,6 @@
 <section>
 
 	<div class="view">
-		<p>This event is great when you use the slider as 'just-another-input-type'. When your slider is part of a form, you can keep listening to the form <code>change</code> events, without using any events specific to the slider.</p>
-
-		<p><strong>Please note:</strong> The slider does not fire the change event when an input linked by <a href="/liblink/">libLink</a> is changed. Therefore, those fields can be in the same form, without triggering a <code>change</code> event twice.</p>
-	</div>
-</section>
-
-
-<?php sect('functions'); ?>
-<h2>Passing functions as arguments</h2>
-
-<section>
-
-	<div class="view">
-
-		<p>For a full documentation on binding events, have a look at the <a href="http://api.jquery.com/on/">jQuery .on()</a> documentation.</p>
-
-		<p>In JavaScript, there are multiple ways of providing a function as an argument. In any case, the slider that triggered the event will be the scope of the function, so you can use <code>$(this)</code> to access it again.</p>
-
-		<p>If you'd like to know more about function declarations, this <a href="http://stackoverflow.com/questions/336859/var-functionname-function-vs-function-functionname">StackOverflow question</a> is a good starting point.</p>
-	</div>
-
-	<div class="side">
-		<?php code('pass'); ?>
+		<p>This event is similar to the <code>change</code> events on regular <code>&lt;input&gt;</code> elements. It fires when a user <em>stops</em> sliding, or when a slider value is changed by 'tap'.</p>
 	</div>
 </section>
