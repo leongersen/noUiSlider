@@ -9,13 +9,14 @@
 
 	<div class="view-more">
 
-		<p>noUiSlider offers several ways to listen to interaction: <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time.</p>
+		<p>noUiSlider offers several ways to listen to interaction: <code>'update'</code>, <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time.</p>
 
 		<div class="example">
 
 			<div id="slider-events"></div>
 
 			<div class="logger">
+				<div id="l-update">Update</div>
 				<div id="l-slide">Slide</div>
 				<div id="l-set">Set</div>
 				<div id="l-change">Change</div>
@@ -36,14 +37,16 @@
 			<thead>
 				<tr>
 					<th>&nbsp;</th>
-					<th width="90">Slide</th>
-					<th width="90">Set</th>
-					<th width="90">Change</th>
+					<th width="65">Update</th>
+					<th width="65">Slide</th>
+					<th width="65">Set</th>
+					<th width="65">Change</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
 					<td><span>A handle is <strong>released</strong> after dragging</span></td>
+					<td class="yes"><span>Yes</span></td>
 					<td class="no"><span>No</span></td>
 					<td class="yes"><span>Yes</span></td>
 					<td class="yes"><span>Yes</span></td>
@@ -53,23 +56,27 @@
 					<td class="yes"><span>Yes</span></td>
 					<td class="yes"><span>Yes</span></td>
 					<td class="yes"><span>Yes</span></td>
+					<td class="yes"><span>Yes</span></td>
 				</tr>
 				<tr>
 					<td><span>A handle moves while <strong>dragging</strong></span></td>
 					<td class="yes"><span>Yes</span></td>
-					<td class="no"><span>No</span></td>
-					<td class="no"><span>No</span></td>
-				</tr>
-				<tr>
-					<td><span>A linked <strong>input</strong> field changes</span></td>
-					<td class="no"><span>No</span></td>
 					<td class="yes"><span>Yes</span></td>
+					<td class="no"><span>No</span></td>
 					<td class="no"><span>No</span></td>
 				</tr>
 				<tr>
 					<td><span>The <strong><code>.set()</code></strong> method is called</span></td>
+					<td class="yes"><span>Yes</span></td>
 					<td class="no"><span>No</span></td>
 					<td class="yes"><span>Yes</span></td>
+					<td class="no"><span>No</span></td>
+				</tr>
+				<tr>
+					<td><span>When bound using the <strong><code>.on()</code></strong> method</span></td>
+					<td class="yes"><span>Yes</span></td>
+					<td class="no"><span>No</span></td>
+					<td class="no"><span>No</span></td>
 					<td class="no"><span>No</span></td>
 				</tr>
 			</tbody>
@@ -103,6 +110,16 @@
 </section>
 
 
+<?php sect('update'); ?>
+<h2>Update</h2>
+
+<section>
+
+	<div class="view">
+		<p>Use this event when synchronising the slider value to another element, such as an <code>&lt;input&gt;</code>. It fires anytime the slider is changed. Additionally, it fires <strong>immediately</strong> when bound.</p>
+	</div>
+</section>
+
 <?php sect('slide'); ?>
 <h2>Slide</h2>
 
@@ -110,8 +127,6 @@
 
 	<div class="view">
 		<p>This event is useful when you want to update a value or perform an actions every time a handle is dragged. For example, you can use the <code>'slide'</code> event to update graphs. For convenience, this function also fires on a change by 'tap'.</p>
-
-		<p><strong>Alternative available:</strong> noUiSlider has a support for the powerful <code>libLink</code> library, which probably does everything you need <code>slide</code> for, such as displaying numbers in text labels or input fields. Additionally, it can also format the slider output. Read more about <a href="/liblink/">libLink</a>.</p>
 	</div>
 </section>
 
