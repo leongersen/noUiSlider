@@ -232,7 +232,7 @@
 
 	<div class="view">
 
-		<p>Using <code>serialization</code>, cross-updating values will results in an infinite loop of updates. To prevent this, each <code>Link</code> has the option to disable synchronisation.</p>
+		<p>Two cross-updating sliders can be created using a combination of the <code>change</code> and <code>slide</code> events.</p>
 
 		<div class="example">
 			<div class="slider" id="slider1"></div>
@@ -241,13 +241,12 @@
 			<div class="slider" id="slider2"></div>
 			<span class="example-val" id="slider2-span"></span>
 
-			<button style="float:right;margin:20px 0 0">Lock</button>
+			<button id="lockbutton" style="float: right; margin: 20px 0 0;">Lock</button>
 
 			<?php run('locked-setup'); ?>
-			<?php run('locked-crossupdate'); ?>
 			<?php run('locked-sliders'); ?>
-			<?php run('locked-event'); ?>
 			<?php run('locked-link'); ?>
+			<?php run('locked-crossupdate'); ?>
 		</div>
 	</div>
 
@@ -269,12 +268,6 @@
 
 		<div class="viewer-content">
 			<?php code('locked-sliders'); ?>
-		</div>
-
-		<div class="viewer-header">Binding the <code>set</code> event</div>
-
-		<div class="viewer-content">
-			<?php code('locked-event'); ?>
 		</div>
 
 		<div class="viewer-header">Linking the sliders together</div>
