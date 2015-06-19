@@ -1,4 +1,6 @@
-$("#slider-tooltip").noUiSlider({
+var tooltipSlider = document.getElementById('slider-tooltip');
+
+noUiSlider.create(tooltipSlider, {
 	start: [40, 50],
 	range: {
 		'min': 30,

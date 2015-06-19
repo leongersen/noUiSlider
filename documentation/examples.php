@@ -464,16 +464,13 @@
 
 	<div class="view">
 
-		<p>Using the libLink feature, noUiSlider can provided handles with tooltips. These tooltips can be styled and modified on the fly, as demonstrated in this example.</p>
-
-		<p>A basic tooltip implementation is part of the <a href="/liblink/">libLink</a> implementation.</p>
+		<p>Using the <code>update</code> event, noUiSlider can provided handles with tooltips. These tooltips can be styled and modified on the fly, as demonstrated in this example.</p>
 
 		<p>The noUiSlider theme includes no tooltip styling, so by default, the values will resemble the handle on the left.</p>
 
 		<div class="example" style="padding-top: 50px;">
 			<div id="slider-tooltip"></div>
 			<?php run('tooltip'); ?>
-			<?php run('tooltip-simple'); ?>
 			<?php run('tooltip-more'); ?>
 		</div>
 	</div>
@@ -486,13 +483,7 @@
 			<?php code('tooltip'); ?>
 		</div>
 
-		<div class="viewer-header">Basic in-handle value</div>
-
-		<div class="viewer-content">
-			<?php code('tooltip-simple', true); ?>
-		</div>
-
-		<div class="viewer-header">Tooltips with custom HTML</div>
+		<div class="viewer-header">Add tooltips</div>
 
 		<div class="viewer-content">
 			<?php code('tooltip-more', true); ?>
