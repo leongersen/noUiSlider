@@ -84,4 +84,22 @@
 				connect: true
 			});
 		});
+
+		noUiSlider.create(slider, {
+			start: 1,
+			range: {
+				'min': 0,
+				'max': 10
+			}
+		});
+
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: 10,
+				range: {
+					'min': 0,
+					'max': 10
+				}
+			});
+		});
 	});
