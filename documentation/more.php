@@ -21,15 +21,30 @@
 
 		<p>Disabling a slider is identical to disabling a checkbox or textarea; simply set the <code class="language-markup">disabled</code> attribute.</p>
 
-		<p>A disabled slider can't be changed by sliding, click or touching, but you can still change its value using the <code>.val()</code> method. You can use CSS to show the disabled state. The default theme also sets a <code>not-allowed</code> cursor.</p>
+		<p>A disabled slider can't be changed by sliding, click or touching, but you can still change its value using the <code>.set()</code> method. You can use CSS to show the disabled state. The default theme also sets a <code>not-allowed</code> cursor.</p>
 
 		<p>The slider below is disabled when the checkbox gets checked, and re-enabled when it is unchecked.</p>
 
+		<p>Individual handles can also be disabled by setting the <code>disabled</code> attribute on a <code>.noUi-handle</code> element.</p>
+
 		<div class="example">
-			<div id="disable"></div>
+			<div id="disable1"></div>
 			<label>
-				<input type="checkbox" id="checkbox">
-				Disable this slider
+				<input type="checkbox" id="checkbox1">
+				Disable slider
+			</label>
+		</div>
+
+		<div class="example">
+			<div id="disable2"></div>
+			<label>
+				<input type="checkbox" id="checkbox2">
+				Disable handle 1
+			</label>
+			<br>
+			<label>
+				<input type="checkbox" id="checkbox3">
+				Disable handle 2
 			</label>
 			<?php run('disable', false); ?>
 		</div>
