@@ -63,25 +63,6 @@
 
 </section>
 
-
-<?php sect('options'); ?>
-<h2>Reading options back</h2>
-
-<section>
-
-	<div class="view">
-
-		<p>noUiSlider can return the options that where used to initialize a slider by passing <code>'options'</code>. Note that the returned object is indentical to the input: values are not sanitized or parsed.</p>
-
-	</div>
-
-	<div class="side">
-		<?php code('options'); ?>
-	</div>
-
-</section>
-
-
 <?php sect('update'); ?>
 <h2>Updating slider options</h2>
 
@@ -89,22 +70,18 @@
 
 	<div class="view">
 
-		<p>Sometimes, you'll want to update your setup of noUiSlider after you initialized it. Maybe you've gotten new data from an Ajax request, or you want to reflect changes in other filters in the slider. In any case, you want to rebuild a slider using some of its current settings, but overwrite some others.</p>
-
-		<p>With this flag set, the current configuration will be extended by any new options provided. If the slider wasn't initialised yet, it will be initialised normally.</p>
-
-		<p>When the <code>start</code> option isn't changed, the slider will set itself back to the current values. Otherwise, the slider will be set to the values provided in <code>start</code>.</p>
-
+		<p>Sometimes, you'll want to update your setup of noUiSlider after you initialized it. Maybe you've gotten new data from an Ajax request, or you want to reflect changes in other filters in the slider. noUiSlider has a <code>destroy</code> method, so you can remove a slider. By storing the initial settings in a variable, they can easily be modified.</p>
+	
 		<p>For this example, we'll use a slider, and two buttons to change the <code>range</code> option. We'll show the value in a <code>&lt;span&gt;</code>, so you can always see the value.</p>
 
-		<p>When a button is clicked, we'll read the data-range attribute it has, and update the slider with the new value.</p>
+		<p>When a button is clicked, we'll read the data-range attribute it has, and rebuild the slider with the new value.</p>
 
 		<div class="example">
 			<div id="slider-update"></div>
 			<span class="example-val" id="slider-update-value"></span>
 
-			<button data-range="20,50">Set range [20, 50]</button>
-			<button data-range="10,40">Set range [10, 40]</button>
+			<button class="update-button" data-range="20,50">Set range [20, 50]</button>
+			<button class="update-button" data-range="10,40">Set range [10, 40]</button>
 
 			<?php run('update-setup'); ?>
 			<?php run('update'); ?>
@@ -113,10 +90,6 @@
 
 	<div class="side">
 
-		<p>noUiSlider offers a <code>rebuild</code> flag for this. You can use it by following your options by <code>true</code>, like so:</p>
-
-		<pre><code>$('.slider').noUiSlider({ /* ... */ }, true);</code></pre>
-
 		<div class="viewer-header">The HTML for this example</div>
 
 		<div class="viewer-content">
@@ -124,11 +97,11 @@
 <pre class="language-markup"><code>&lt;div id="update"&gt;&lt;/div&gt;
 &lt;span id="value"&gt;&lt;/span&gt;
 
-&lt;button data-range="20,50"&gt;
+&lt;button class="update-button" data-range="20,50"&gt;
 	Set range [20, 50]
 &lt;/button&gt;
 
-&lt;button data-range="10,40"&gt;
+&lt;button class="update-button" data-range="10,40"&gt;
 	Set range [10, 40]
 &lt;/button&gt;</code></pre>
 
