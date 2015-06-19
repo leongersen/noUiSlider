@@ -100,7 +100,7 @@
 
 
 <?php sect('custom-connect'); ?>
-<h2>Custom connect</h2>
+<h1>Custom connect</h1>
 
 <section>
 
