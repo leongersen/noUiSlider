@@ -369,7 +369,7 @@
 
 	<div class="view">
 
-		<p>As all dates in JavaScript can be represented as time, noUiSlider can handle them, too. This example will show you how to convert dates to numerical ranges, and then use the <code>serialization</code> feature to display them in a pretty format.</p>
+		<p>As all dates in JavaScript can be represented as time, noUiSlider can handle them, too. This example will show you how to convert dates to numerical ranges, and then use the <code>update</code> event to display them in a pretty format.</p>
 
 		<p>We'll be creating timestamps from strings. In order to do this easily, we'll define a new helper function. This function accepts a string, creates a <code>new Date</code> and then returns it as a timestamp.</p>
 
