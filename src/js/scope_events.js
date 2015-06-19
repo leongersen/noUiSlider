@@ -7,7 +7,7 @@
 
 		var method = function ( e ){
 
-			if ( !!scope_Target.getAttribute('disabled') ) {
+			if ( scope_Target.hasAttribute('disabled') ) {
 				return false;
 			}
 
@@ -95,6 +95,11 @@
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
 			addClass(data.handles[0].children[0], Classes[15]);
+
+			// Support 'disabled' handles
+			if ( data.handles[0].hasAttribute('disabled') ) {
+				return false;
+			}
 		}
 
 		// A drag should never propagate up to the 'tap' event.
@@ -162,6 +167,11 @@
 			// Flag the slider as it is now in a transitional state.
 			// Transition takes 300 ms, so re-enable the slider afterwards.
 			addClassFor( scope_Target, Classes[14], 300 );
+		}
+
+		// Support 'disabled' handles
+		if ( scope_Handles[handleNumber].hasAttribute('disabled') ) {
+			return false;
 		}
 
 		// Find the closest handle and calculate the tapped point.
