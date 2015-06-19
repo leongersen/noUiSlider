@@ -11,7 +11,6 @@
 
 	<link href="/assets/base.css" rel="stylesheet">
 	<link href="/assets/prism.css" rel="stylesheet">
-	<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script src="/assets/wNumb.js"></script>
 
 	<link href="<?php echo $distribute; ?>/nouislider.min.css" rel="stylesheet">
