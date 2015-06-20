@@ -6,7 +6,6 @@
 	<a class="bar-link" href="/nouislider/behaviour-option/">Tapping, dragging &amp; fixed ranges</a>
 	<a class="bar-link" href="/nouislider/examples/">Examples</a>
 	<a class="bar-link" href="/nouislider/events-callbacks/">Events</a>
-	<a class="bar-link" href="/nouislider/linking-input-fields/">Linking input fields</a>
 	<a class="bar-link" href="/nouislider/pips/">Pips add-on</a>
 	<a class="bar-link" href="/nouislider/more/">More...</a>
 	<a class="bar-link download" href="/nouislider/download/">Download noUiSlider</a>
