@@ -3,13 +3,13 @@
 	$description = "";
 ?>
 
-<h1>Pips Add-On</h1>
+<h1>Adding a scale/pips to a slider</h1>
 
 <section>
 
 	<div class="view">
 
-		<p>This optional extention to noUiSlider allows you to generate points along the slider.</p>
+		<p>This feature allows you to generate points along the slider.</p>
 		<p>Five options can be set: <code>mode</code> to determine where to place pips, <code>values</code> as additional options for <code>mode</code>, <code>stepped</code> to round pip values to the slider stepping, <code>density</code> to pre-scale the number of pips, and <code>filter</code> to manually modify pip size.</p>
 
 		<p>All sliders on the page use the same range, as displayed to the right.</p>
