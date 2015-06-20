@@ -3,6 +3,22 @@
 	$description = "noUiSlider has a selection of examples you can use to implement a slider easily. Take a look!";
 ?>
 
+<section>
+	<ul>
+		<li><a href="#colorpicker">Colorpicker</a></li>
+		<li><a href="#custom-connect">Using a custom connecting bar</a></li>
+		<li><a href="#html5">Working with HTML5 input types</a></li>
+		<li><a href="#non-linear">Using non linear ranges</a></li>
+		<li><a href="#lock">Locking two sliders together</a></li>
+		<li><a href="#keypress">Changing the slider value by keypress</a></li>
+		<li><a href="#skipping">Skipping values on a slider</a></li>
+		<li><a href="#dates">Using dates</a></li>
+		<li><a href="#toggle">Create a toggle</a></li>
+		<li><a href="#tooltips">Add tooltips to the slider handles</a></li>
+		<li><a href="#soft-limits">Block the edges of a slider</a></li>
+	</ul>
+</section>
+
 
 <?php sect('colorpicker'); ?>
 <h1>Colorpicker</h1>
