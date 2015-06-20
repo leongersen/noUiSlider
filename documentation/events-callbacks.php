@@ -116,7 +116,10 @@
 <section>
 
 	<div class="view">
-		<p>noUiSlider uses a custom binding model with support for namespaces.</p>
+		<p>noUiSlider uses a custom binding model with support for namespaces. The event system looks similar to jQuery's. There are two methods, <code>.on( eventName, callback )</code> and <code>.off( eventName )</code>. Events can be namespaced by appending a period ('.') and an identifier to the event name.</p>
+
+		<p>Nested namespaces ('slide.something.else') are not supported, and are threated as a single namespace (so '.a.b' isn't related to '.a').</p>
+
 		<p>Event callbacks receive three arguments. <code>values</code> is <strong>always an array</strong>, for both one-handle and two-handle sliders. It contains the current slider values, with formatting applied. <code>handle</code> is <code>0</code> or <code>1</code> and indicates the handle that caused the event. <code>values[handle]</code> gives the value for the current handle. Should you need it, <code>unencodedValues</code> contains the slider values without any formatting.</p>
 	</div>
 
