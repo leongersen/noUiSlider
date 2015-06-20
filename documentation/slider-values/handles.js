@@ -7,5 +7,3 @@ noUiSlider.create(handlesSlider, {
 		'max': [ 10000 ]
 	}
 });
-
-handlesSlider.getElementsByClassName('noUi-origin')[0].setAttribute('disabled', true);
