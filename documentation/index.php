@@ -27,12 +27,10 @@
 
 		<ul class="pro-list">
 			<li>Responsive design friendly</li>
-			<li>Linking input fields</li>
 			<li>Touch support for iOS, Android &amp; Windows (phone)</li>
 			<li>Dragable range</li>
-			<li>Works with jQuery (1.7+) or Zepto</li>
-			<li>No jQueryUI dependencies</li>
-			<li>Tested in IE7 - IE11, Chrome, Opera, Firefox &amp; Safari</li>
+			<li><strong>No jQuery, jQueryUI or other dependencies</strong></li>
+			<li>Tested in IE9 - IE11, Chrome, Opera, Firefox &amp; Safari</li>
 		</ul>
 	</div>
 
@@ -55,31 +53,24 @@
 
 <h1>Let's get started!</h1>
 
-<h2>Required scripts</h2>
-
 <section>
 
 	<div class="view">
 
-		<p>noUiSlider requires jQuery 1.7.x or newer, or Zepto 1.0. Zepto's <code>data</code> module is no longer required.</p>
+		<p>noUiSlider 8 has no dependancies!</p>
 
-		<p>To create a slider, call <code>.noUiSlider()</code> with your options on a jQuery element. If you'd like to see a minimal example, you can have a look at this <a href="view-source:http://refreshless.com/nouislider/minimal-sample.html">minimal setup document</a>.</p>
+		<p>To create a slider, call <code>noUiSlider.create()</code> with an element and your options. If you'd like to see a minimal example, you can have a look at this <a href="view-source:http://refreshless.com/nouislider/minimal-sample.html">minimal setup document</a>.</p>
 
-		<p>Putting all your scripts in the page <code>&lt;head&gt;</code> will likely slow down your site. If you'd like to know why, consider reading <a href="http://developer.yahoo.com/performance/rules.html#js_bottom">this article by Yahoo!</a>.</p>
+		<p>Putting all your scripts in the page <code>&lt;head&gt;</code> will likely slow down your site. If you'd like to know why, consider reading <a href="http://developer.yahoo.com/performance/rules.html#js_bottom">this article by Yahoo!</a>. Use the files with *.min.* for the minified versions.</p>
 	</div>
 
 	<div class="side">
 
-<pre class="language-markup"><code>&lt;!-- jQuery or Zepto --&gt;
-&lt;script src="jquery / zepto.js"&gt;&lt;/script&gt;
+<pre class="language-markup"><code>&lt;!-- In &lt;head&gt; --&gt;
+&lt;link href="nouislider.min.css" rel="stylesheet"&gt;
 
-&lt;!-- The noUiSlider script and stylesheet --&gt;
-&lt;!-- Use the files with *.min.* for the minified versions. --&gt;
-&lt;link href="jquery.nouislider.min.css" rel="stylesheet"&gt;
-
-&lt;!-- Use the 'all' version to get all documented features. --&gt;
-&lt;!-- Includes wNumb, libLink and the pips add-on --&gt;
-&lt;script src="jquery.nouislider.all.min.js"&gt;&lt;/script&gt;</code></pre>
+&lt;!-- In &lt;body&gt; --&gt;
+&lt;script src="nouislider.min.js"&gt;&lt;/script&gt;</code></pre>
 
 	</div>
 </section>
