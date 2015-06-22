@@ -155,16 +155,18 @@
 			.removeClass(Classes.join(' '))
 			.empty();
 
-		delete this.LinkUpdate;
-		delete this.LinkConfirm;
-		delete this.LinkDefaultFormatter;
-		delete this.LinkDefaultFlag;
-		delete this.reappend;
-		delete this.vGet;
-		delete this.vSet;
-		delete this.getCurrentStep;
-		delete this.getInfo;
-		delete this.destroy;
+		try {
+			delete this.LinkUpdate;
+			delete this.LinkConfirm;
+			delete this.LinkDefaultFormatter;
+			delete this.LinkDefaultFlag;
+			delete this.reappend;
+			delete this.vGet;
+			delete this.vSet;
+			delete this.getCurrentStep;
+			delete this.getInfo;
+			delete this.destroy;
+		} catch (e) {}
 
 		// Return the original options from the closure.
 		return originalOptions;
