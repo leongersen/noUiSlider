@@ -1,12 +1,9 @@
 <?php
 	$title = "noUiSlider - jQuery Range Slider";
-	$description = "noUiSlider is a free and lightweight jQuery range slider plugin with full touch support (iOS, Android, Windows 8). Great for responsive designs!";
-
-	$title = "noUiSlider - Getting Started";
-	$description = "It is really easy to use noUiSlider, simply include the files and call the plugin. Find out more!";
+	$description = "noUiSlider is a free and lightweight JavaScript range slider with full touch support (iOS, Android, Windows 8). Great for responsive designs, and no dependencies!";
 ?>
 
-<h5>noUiSlider: lightweight JavaScript range slider</h5>
+<h3>noUiSlider: lightweight JavaScript range slider</h3>
 
 <section>
 
@@ -41,6 +38,7 @@
 	</div>
 </section>
 
+
 <section>
 
 	<div class="view">
@@ -54,5 +52,47 @@
 			<li><strong>No jQuery, jQueryUI or other dependencies</strong></li>
 			<li>Tested in IE9 - IE11, Chrome, Opera, Firefox &amp; Safari</li>
 		</ul>
+
+		<p>noUiSlider works with pretty much any device, mouse, touchscreen or both, and it'll work beautifully in <strong>responsive designs</strong>. Have you tried this documentation on your phone?</p>
+	</div>
+</section>
+
+
+<?php sect('getting-started'); ?>
+<h2>Getting started</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>noUiSlider 8 has no dependancies, so you don't need jQuery, jQuery UI, Zepto, etc. to use it.</p>
+
+		<p>Putting all your scripts in the page <code>&lt;head&gt;</code> will slow down your site. If you'd like to know why, consider reading <a href="http://developer.yahoo.com/performance/rules.html#js_bottom">this article by Yahoo!</a>. Put the slider CSS in your <code>&lt;head&gt;</code>, and the script at the end of the <code>&lt;body&gt;</code>.</p>
+
+		<p>To create a slider, call <code>noUiSlider.create()</code> with an element and your options.</p>
+	</div>
+
+	<div class="side">
+
+<pre class="language-markup"><code>&lt;!-- In &lt;head&gt; --&gt;
+&lt;link href="nouislider.min.css" rel="stylesheet"&gt;
+
+&lt;!-- In &lt;body&gt; --&gt;
+&lt;script src="nouislider.min.js"&gt;&lt;/script&gt;</code></pre>
+
+	</div>
+</section>
+
+
+<?php sect('browser-support'); ?>
+<h2>Browser support</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>noUiSlider supports <strong>IE7 and up</strong>, and of course the latest versions of the <em>'evergreen'</em> browsers: <strong>Chrome</strong>, <strong>Safari</strong>, <strong>Firefox</strong> and <strong>Opera</strong>.</p>
+
+		<img src="/assets/main-desktop.png" alt="Browser support">
 	</div>
 </section>
