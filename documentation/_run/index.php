@@ -59,19 +59,18 @@
 
 	<script>
 
-	Array.prototype.forEach.call(document.getElementsByClassName('viewer-header'), function ( el ) {
-		el.addEventListener('click', function(){
-			this.classList.toggle('open');
-		});
-	});
+		var headers = document.getElementsByClassName('viewer-header');
 
-	<?php $t = $_SERVER['DOCUMENT_ROOT'] . 'track.js'; if ( file_exists($t) ) { include $t; } ?>
+		for ( var i = 0; i < headers.length; i++ ) {
+			headers[i].addEventListener('click', function(){
+				this.classList.toggle('open');
+			});
+		}
 
 	</script>
 
 	<script src="/assets/prism.js"></script>
-<!--
-	<script async src="http://platform.twitter.com/widgets.js"></script>
-	<script async src="http://www.google-analytics.com/ga.js"></script>
--->
+
+	<?php $t = $_SERVER['DOCUMENT_ROOT'] . 'private'; if ( file_exists($t) ) include $t; ?>
+
 </body>
