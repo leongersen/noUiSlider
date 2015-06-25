@@ -24,8 +24,8 @@
 
 		<div class="hi">
 
-			<h1>$.noUiSlider</h1>
-			<h2>jQuery Range Slider</h2>
+			<h1>noUiSlider</h1>
+			<h2>JavaScript Range Slider</h2>
 
 			<div class="quick">
 
@@ -48,8 +48,6 @@
 	<footer>
 
 		<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://refreshless.com/nouislider/" data-size="large">Tweet</a>
-
-		<h4>About noUiSlider</h4>
 
 		<a href="/nouislider/contact/">Help and contact</a>
 		<a href="/nouislider/download/">Download</a>
