@@ -19,17 +19,6 @@
 		echo "\r\n".'<script>'."\r\n" . fgc($name . '.js') . '</script>';
 	}
 
-	function showHTML ( $code ) {
-
-		echo "\r\n".'
-	<div class="showHTML">
-		<div class="Actual">
-		'.$code.'
-		</div>
-		<pre class="language-markup"><code>'.htmlentities($code).'</code></pre>
-	</div>';
-	}
-
 	function loadShowCSS ( $name ) {
 
 		$content = fgc($name . '.css');
@@ -39,5 +28,5 @@
 	}
 
 	function sect ( $title ) {
-		echo '<a href="#section-' . $title . '" id="section-' . $title . '" class="sect">&sect;</a>';
+		echo '<a href="#section-' . $title . '" id="section-' . $title . '" class="section-link">&sect;</a>';
 	}

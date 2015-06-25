@@ -1,6 +1,4 @@
-var slider = document.getElementById('range'),
-	valueInput = document.getElementById('value-input'),
-	valueSpan = document.getElementById('value-span');
+var slider = document.getElementById('range');
 
 noUiSlider.create(slider, {
 	start: [ 20, 80 ], // Handle start position
@@ -18,18 +16,4 @@ noUiSlider.create(slider, {
 		mode: 'steps',
 		density: 2
 	}
-});
-
-// When the slider value changes, update the input and span
-slider.noUiSlider.on('update', function( values, handle ) {
-	if ( handle ) {
-		valueInput.value = values[handle];
-	} else {
-		valueSpan.innerHTML = values[handle];
-	}
-});
-
-// When the input changes, set the slider value
-valueInput.addEventListener('change', function(){
-	slider.noUiSlider.set([null, this.value]);
 });

@@ -1,7 +1,5 @@
 var toggleSlider = document.getElementById('slider-toggle');
 
-toggleSlider.classList.add('toggle');
-
 noUiSlider.create(toggleSlider, {
 	orientation: "vertical",
 	start: 0,

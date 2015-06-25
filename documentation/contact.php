@@ -17,7 +17,6 @@
 
 		<p>If you need more general help, you'll usually get you answer by posting a question on <a data-category="outlink" data-action="stackoverflow-questions" href="http://stackoverflow.com/questions/tagged/nouislider">StackOverflow.</a> I'll keep an eye on the questions there, as well.</p>
 	</div>
-
 </section>
 
 

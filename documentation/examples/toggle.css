@@ -1,6 +1,6 @@
-.toggle {
+#slider-toggle {
 	height: 50px;
 }
-.toggle.off .noUi-handle {
+#slider-toggle.off .noUi-handle {
 	border-color: red;
 }

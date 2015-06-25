@@ -46,38 +46,38 @@
 			<tbody>
 				<tr>
 					<td><span>A handle is <strong>released</strong> after dragging</span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="no"><span>No</span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="yes"><span>Yes</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-no"><span>No</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-yes"><span>Yes</span></td>
 				</tr>
 				<tr>
 					<td><span>A slider is moved by <strong>tapping</strong> it</span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="yes"><span>Yes</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-yes"><span>Yes</span></td>
 				</tr>
 				<tr>
 					<td><span>A handle moves while <strong>dragging</strong></span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="no"><span>No</span></td>
-					<td class="no"><span>No</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-no"><span>No</span></td>
+					<td class="events-no"><span>No</span></td>
 				</tr>
 				<tr>
 					<td><span>The <strong><code>.set()</code></strong> method is called</span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="no"><span>No</span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="no"><span>No</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-no"><span>No</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-no"><span>No</span></td>
 				</tr>
 				<tr>
 					<td><span>When bound using the <strong><code>.on()</code></strong> method</span></td>
-					<td class="yes"><span>Yes</span></td>
-					<td class="no"><span>No</span></td>
-					<td class="no"><span>No</span></td>
-					<td class="no"><span>No</span></td>
+					<td class="events-yes"><span>Yes</span></td>
+					<td class="events-no"><span>No</span></td>
+					<td class="events-no"><span>No</span></td>
+					<td class="events-no"><span>No</span></td>
 				</tr>
 			</tbody>
 		</table>

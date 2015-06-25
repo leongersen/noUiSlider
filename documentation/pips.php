@@ -65,6 +65,7 @@
 
 </section>
 
+
 <?php sect('steps'); ?>
 <h2>Steps</h2>
 

@@ -118,7 +118,6 @@
 			<?php loadShowCSS('custom-connect'); ?>
 		</div>
 	</div>
-
 </section>
 
 
@@ -161,6 +160,12 @@
 
 		<div class="viewer-content">
 			<?php code('html5-link'); ?>
+		</div>
+
+		<div class="viewer-header">Example CSS</div>
+
+		<div class="viewer-content">
+			<?php loadShowCSS('html5'); ?>
 		</div>
 	</div>
 </section>
