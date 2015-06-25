@@ -25,49 +25,6 @@
 
 <section>
 
-	<style>
-
-	#red, #green, #blue {
-		margin: 10px;
-		display: inline-block;
-		height: 200px;
-	}
-
-	#colorpicker {
-		height: 240px;
-		width: 310px;
-		margin: 0 auto;
-		padding: 10px;
-		border: 1px solid #BFBFBF;
-	}
-
-	#result {
-		margin: 60px 26px;
-		height: 100px;
-		width: 100px;
-		display: inline-block;
-		vertical-align: top;
-		color: rgb(127, 127, 127);
-		background: rgb(127, 127, 127);
-		border: 1px solid #fff;
-		box-shadow: 0 0 10px;
-	}
-
-	#red {
-		background: #c0392b;
-	}
-
-	#green {
-		background: #27ae60;
-	}
-
-	#blue {
-		background: #2980b9;
-	}
-
-
-	</style>
-
 	<div class="view">
 
 		<p>We'll initialize all sliders with the same options, and use the <code>slide</code> callback to keep to color in sync with the slider values. This callback fires when the slider is moved by sliding, or when it is clicked or tapped.</p>
@@ -111,6 +68,12 @@
 			<?php code('colorpicker-slider'); ?>
 		</div>
 
+		<div class="viewer-header">CSS</div>
+
+		<div class="viewer-content">
+			<?php loadShowCSS('colorpicker'); ?>
+		</div>
+
 	</div>
 </section>
 
@@ -130,7 +93,6 @@
 			<div id="connect"></div>
 			<?php run('custom-connect-slider'); ?>
 			<?php run('custom-connect'); ?>
-			<style><?php include 'examples/custom-connect.css'; ?></style>
 		</div>
 	</div>
 
@@ -153,7 +115,7 @@
 		<div class="viewer-header">CSS for the connecting bar</div>
 
 		<div class="viewer-content">
-			<pre><code><?php include 'examples/custom-connect.css'; ?></code></pre>
+			<?php loadShowCSS('custom-connect'); ?>
 		</div>
 	</div>
 
@@ -453,13 +415,7 @@
 		<div class="viewer-header">CSS</div>
 
 		<div class="viewer-content">
-<pre><code class="language-css">.toggle {
-	height: 50px;
-}
-.toggle.off .noUi-handle {
-	border-color: red;
-}
-</code></pre>
+			<?php loadShowCSS('toggle'); ?>
 		</div>
 
 	</div>
@@ -501,24 +457,7 @@
 		<div class="viewer-header">Example tooltip styling</div>
 
 		<div class="viewer-content">
-<pre><code class="language-css">.tooltip {
-	display: block;
-	position: absolute;
-	border: 1px solid #D9D9D9;
-	font: 400 12px/12px Arial;
-	border-radius: 3px;
-	background: #fff;
-	top: -43px;
-	padding: 5px;
-	left: -9px;
-	text-align: center;
-	width: 50px;
-}
-.tooltip strong {
-	display: block;
-	padding: 2px;
-}
-</code></pre>
+			<?php loadShowCSS('tooltip'); ?>
 		</div>
 	</div>
 </section>

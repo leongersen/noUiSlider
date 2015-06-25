@@ -30,6 +30,14 @@
 	</div>';
 	}
 
+	function loadShowCSS ( $name ) {
+
+		$content = fgc($name . '.css');
+
+		echo "\r\n".'<style>' . $content . '</style>' .
+		'<pre class="language-css"><code>' . $content . '</code></pre>';
+	}
+
 	function sect ( $title ) {
 		echo '<a href="#section-' . $title . '" id="section-' . $title . '" class="sect">&sect;</a>';
 	}

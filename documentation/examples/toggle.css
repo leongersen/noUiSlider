@@ -1,0 +1,6 @@
+.toggle {
+	height: 50px;
+}
+.toggle.off .noUi-handle {
+	border-color: red;
+}
