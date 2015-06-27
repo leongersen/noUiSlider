@@ -46,12 +46,18 @@
 		state = setHandle ( handles[0], positions[handleNumber], handles.length === 1 );
 
 		if ( handles.length > 1 ) {
-			state = setHandle ( handles[1], positions[handleNumber?0:1], false ) || state;
-		}
 
-		// Fire the 'slide' event if any handle moved.
-		if ( state ) {
-			fireEvent('slide', handleNumber); // TODO fire for both handles!
+			state = setHandle ( handles[1], positions[handleNumber?0:1], false ) || state;
+
+			if ( state ) {
+				// fire for both handles
+				for ( i = 0; i < data.handles.length; i++ ) {
+					fireEvent('slide', i);
+				}
+			}
+		} else if ( state ) {
+			// Fire for a single handle
+			fireEvent('slide', handleNumber);
 		}
 	}
 
@@ -59,7 +65,7 @@
 	function end ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = document.getElementsByClassName(Classes[15]), // TODO why on document
+		var active = scope_Base.getElementsByClassName(Classes[15]),
 			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1;
 
 		if ( active.length ) {
