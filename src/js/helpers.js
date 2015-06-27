@@ -11,7 +11,7 @@
 		return Math.round(value / to) * to;
 	}
 
-	// TODO
+	// Current position of an element relative to the document.
 	function offset ( element ) {
 		var box = element.getBoundingClientRect();
 		return {

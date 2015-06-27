@@ -145,7 +145,7 @@
 	// Removes classes from the root and empties it.
 	function destroy ( ) {
 		Classes.forEach(function(cls){
-			if ( !cls ) { return; } // TODO
+			if ( !cls ) { return; } // Ignore empty classes
 			removeClass(scope_Target, cls);
 		});
 		scope_Target.innerHTML = '';
