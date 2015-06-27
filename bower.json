@@ -2,7 +2,6 @@
 	"name": "nouislider",
 	"description": "A lightweight, highly customizable range slider without bloat. Touch support on all modern devices and responsive design ready!",
 	"keywords": [
-		"jquery",
 		"slider",
 		"form",
 		"range",
@@ -12,13 +11,9 @@
 		"slide"
 	],
 	"main": [
-		"distribute/jquery.nouislider.all.min.js",
-		"distribute/jquery.nouislider.min.css",
-		"distribute/jquery.nouislider.pips.min.css"
+		"distribute/nouislider.js",
+		"distribute/nouislider.min.css",
 	],
-	"dependencies": {
-		"jquery": ">= 1.7.0"
-	},
 	"ignore": [
 		"**/.*",
 		"**/*.json"
