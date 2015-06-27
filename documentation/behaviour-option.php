@@ -87,7 +87,7 @@
 <section>
 
 	<div class="view">
-		<p>Makes the range dragable. Requires two handles.</p>
+		<p>Makes the range dragable. Requires two handles. The <code>slide</code> event fires for both handles.</p>
 		<div class="example">
 			<div id="drag"></div>
 			<?php run('drag'); ?>
