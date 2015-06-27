@@ -50,20 +50,12 @@
 		}
 
 		if ( mouse || pointer ) {
-
-			// Polyfill the pageXOffset and pageYOffset
-			// variables for IE7 and IE8;
-			if( !pointer && window.pageXOffset === undefined ){
-				window.pageXOffset = document.documentElement.scrollLeft;
-				window.pageYOffset = document.documentElement.scrollTop;
-			}
-
 			x = e.clientX + window.pageXOffset;
 			y = e.clientY + window.pageYOffset;
 		}
 
 		event.points = [x, y];
-		event.cursor = mouse;
+		event.cursor = mouse || pointer; // Fix #435
 
 		return event;
 	}

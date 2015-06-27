@@ -17,6 +17,12 @@
 			}
 
 			e = fixEvent(e);
+
+			// Ignore right or middle clicks on start #454
+			if ( events === actions.start && e.buttons !== undefined && e.buttons !== 1 ) {
+				return false;
+			}
+
 			e.calcPoint = e.points[ options.ort ];
 
 			// Call the event handler with the event [ and additional data ].
