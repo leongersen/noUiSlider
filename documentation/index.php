@@ -92,7 +92,5 @@
 	<div class="view">
 
 		<p>noUiSlider supports <strong>IE7 and up</strong>, and of course the latest versions of the <em>'evergreen'</em> browsers: <strong>Chrome</strong>, <strong>Safari</strong>, <strong>Firefox</strong> and <strong>Opera</strong>.</p>
-
-		<img src="/assets/main-desktop.png" alt="Browser support">
 	</div>
 </section>

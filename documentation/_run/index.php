@@ -7,11 +7,11 @@
 
 	<title><?php echo $title; ?> | Refreshless.com</title>
 
-	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
 
-	<link href="/assets/base.css" rel="stylesheet">
-	<link href="/assets/prism.css" rel="stylesheet">
-	<script src="/assets/wNumb.js"></script>
+	<link href="/nouislider/documentation/assets/base.css" rel="stylesheet">
+	<link href="/nouislider/documentation/assets/prism.css" rel="stylesheet">
+	<script src="/nouislider/documentation/assets/wNumb.js"></script>
 
 	<link href="<?php echo $distribute; ?>/nouislider.min.css" rel="stylesheet">
 	<script src="<?php echo $distribute; ?>/nouislider.js"></script>
@@ -22,7 +22,7 @@
 
 	<?php if ( $page == 'index' ): ?>
 
-		<div class="hi">
+		<div class="index-demo">
 
 			<h1>noUiSlider</h1>
 			<h2>JavaScript Range Slider</h2>
@@ -30,10 +30,10 @@
 			<div class="quick">
 
 				<div id="slider"></div>
-				<?php run('minimal', false); ?>
+				<?php run('minimal'); ?>
 				<?php code('minimal'); ?>
 
-				<a href="/nouislider/download/" class="hi-dl">Download noUiSlider</a>
+				<a href="/nouislider/download/" class="index-demo-dl">Download noUiSlider</a>
 			</div>
 		</div>
 
@@ -44,16 +44,6 @@
 	<div class="content">
 		<?php echo $content; ?>
 	</div>
-
-	<footer>
-
-		<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://refreshless.com/nouislider/" data-size="large">Tweet</a>
-
-		<a href="/nouislider/contact/">Help and contact</a>
-		<a href="/nouislider/download/">Download</a>
-		<a href="/nouislider/new-version/">New Version</a>
-
-	</footer>
 
 	<script>
 
@@ -67,7 +57,7 @@
 
 	</script>
 
-	<script src="/assets/prism.js"></script>
+	<script src="/nouislider/documentation/assets/prism.js"></script>
 
 	<?php $t = $_SERVER['DOCUMENT_ROOT'] . 'private'; if ( file_exists($t) ) include $t; ?>
 
