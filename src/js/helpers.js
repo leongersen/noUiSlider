@@ -17,11 +17,19 @@
 	var rect = elem.getBoundingClientRect(),
 		doc = elem.ownerDocument,
 		win = doc.defaultView || doc.parentWindow,
-		docElem = doc.documentElement;
+		docElem = doc.documentElement,
+		xOff = win.pageXOffset;
+
+		// getBoundingClientRect contains left scroll in Chrome on Android.
+		// I haven't found a feature detection that proves this. Worst case
+		// scenario on mis-match: the 'tap' feature on horizontal sliders breaks.
+		if ( /webkit.*Chrome.*Mobile/i.test(navigator.userAgent) ) {
+			xOff = 0;
+		}
 
 		return {
 			top: rect.top + win.pageYOffset - docElem.clientTop,
-			left: rect.left + win.pageXOffset - docElem.clientLeft
+			left: rect.left + xOff - docElem.clientLeft
 		};
 	}
 
