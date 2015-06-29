@@ -1,5 +1,5 @@
 {
-  "name": "noUiSlider",
+  "name": "nouislider",
   "version": "8.0.1",
   "main": "distribute/jquery.nouislider",
   "devDependencies": {
