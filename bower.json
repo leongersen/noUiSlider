@@ -12,7 +12,7 @@
 	],
 	"main": [
 		"distribute/nouislider.js",
-		"distribute/nouislider.min.css",
+		"distribute/nouislider.min.css"
 	],
 	"ignore": [
 		"**/.*",
