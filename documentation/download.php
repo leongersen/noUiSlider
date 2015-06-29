@@ -27,6 +27,8 @@
 	<a href="/nouislider/contact/">Help and contact</a>
 	<br>
 	<a href="/nouislider/new-version/">Release information about the latest Version</a>
+	<br>
+	Run the unit tests: <a href="/nouislider/tests/range.html">range</a> and <a href="/nouislider/tests/slider.html">slider</a>.
 </section>
 
 
