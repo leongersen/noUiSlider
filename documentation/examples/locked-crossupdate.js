@@ -1,4 +1,4 @@
-function crossUpdate ( value, handle, slider ) {
+function crossUpdate ( value, slider ) {
 
 	// If the sliders aren't interlocked, don't
 	// cross-update.
@@ -6,12 +6,11 @@ function crossUpdate ( value, handle, slider ) {
 
 	// Select whether to increase or decrease
 	// the other slider value.
-	var lValue = slider1.is(slider) ? 1 : 0,
-		hValue = lValue ? 0 : 1;
+	var a = slider1 === slider ? 0 : 1, b = a ? 0 : 1;
 
-	// Modify the slider value.
-	value -= ( values[hValue] - values[lValue] );
+	// Offset the slider value.
+	value -= lockedValues[b] - lockedValues[a];
 
 	// Set the value
-	$(this).val( value );
+	slider.noUiSlider.set(value);
 }

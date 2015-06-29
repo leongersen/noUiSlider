@@ -1,1 +1,1 @@
-$("#slider").val();
+slider.noUiSlider.get();

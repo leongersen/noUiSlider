@@ -1,13 +1,12 @@
 
-	test( "RTL slider multiple value set.", function(){
+	QUnit.test( "RTL slider multiple value set.", function( assert ){
 
-		Q.html('\
-			<div id="slider"></div>\
-			<div id="slider2"></div>\
-		');
+		Q.innerHTML = '<div class="slider"></div>';
 
-		var slider = $("#slider").noUiSlider({
-			range: {min: 0.201, max: 1},
+		var slider = Q.getElementsByClassName('slider')[0];
+
+		noUiSlider.create(slider, {
+			range: { min: 0.201, max: 1 },
 			step: 0.01,
 			start: 0.401,
 			direction: "rtl",
@@ -20,35 +19,11 @@
 			}
 		});
 
-		equal(slider.val(), 0.4);
+		equal(slider.noUiSlider.get(), 0.4);
 
-		slider.val(0.201, true);
-		equal(slider.val(), 0.2);
+		slider.noUiSlider.set(0.201);
+		equal(slider.noUiSlider.get(), 0.2);
 
-		slider.val(0.201, true);
-		equal(slider.val(), 0.2);
-		
-
-		var slider2 = $("#slider2").noUiSlider({
-			range: {
-				'min': 0,
-				'max': 50
-			},
-			start: [10, 40],
-			behaviour: 'tap',
-			connect: true,
-			direction : 'rtl'
-		});
-
-		deepEqual(slider2.val(), ["10.00", "40.00"], "Proper start handling in RTL.");
-
-		slider2.val([20,30]);
-		deepEqual(slider2.val(), ["20.00", "30.00"]);
-
-		slider2.val([40,45]);
-		deepEqual(slider2.val(), ["40.00", "45.00"], "RTL slider overstepped properly.");
-
-		slider2.val([30,35]);
-		deepEqual(slider2.val(), ["30.00", "35.00"], "RTL slider understepped properly.");
-
+		slider.noUiSlider.set(0.201);
+		equal(slider.noUiSlider.get(), 0.2);
 	});

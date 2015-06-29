@@ -15,13 +15,12 @@
 	</style>
 
 	<link href="../distribute/jquery.nouislider.min.css" rel="stylesheet">
-	<link href="http://code.jquery.com/qunit/qunit-1.12.0.css" rel="stylesheet">
+	<link href="http://code.jquery.com/qunit/qunit-1.18.0.css" rel="stylesheet">
 
-	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
-	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/blanket.js/1.1.4/blanket.min.js"></script>
+	<script src="http://code.jquery.com/qunit/qunit-1.18.0.js"></script>
+	<script src="../distribute/nouislider.js" data-cover></script>
 
-	<script src="../distribute/jquery.nouislider.all.js" data-cover></script>
+
 
 </head>
 
@@ -31,7 +30,8 @@
 	<div id="qunit-fixture"></div>
 
 	<script>
-		var Q = $("#qunit-fixture");
+
+		var Q = document.getElementById('qunit-fixture');
 
 		var TEST_ROUND_FORMAT = {
 			to: function(x){
@@ -42,30 +42,21 @@
 
 	</script>
 
-	<script src="general_val.js"></script>
-
 	<script src="slider_values.js"></script>
 	<script src="slider_limit.js"></script>
 	<script src="slider_step.js"></script>
 	<script src="slider_rtl.js"></script>
+	<script src="slider_rtl2.js"></script>
 	<script src="slider_non-linear-rtl.js"></script>
 	<script src="slider_setting-getting.js"></script>
 	<script src="slider_update.js"></script>
-	<script src="slider_events.js"></script>
 	<script src="slider_get-step.js"></script>
 	<script src="slider_unordered.js"></script>
-	<script src="slider_none.js"></script>
-
-	<script src="link_basic.js"></script>
-	<script src="link_multiple.js"></script>
-	<script src="link_update.js"></script>
-	<script src="link_select.js"></script>
-	<script src="link_rtl.js"></script>
-
-	<script src="wnumb_basic.js"></script>
+	<script src="slider_errors.js"></script>
+	<script src="slider_binding.js"></script>
 
 	<script src="addon_pips.js"></script>
 
-
+	<script src="blanket.min.js"></script>
 
 </body>

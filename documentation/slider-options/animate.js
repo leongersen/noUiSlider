@@ -1,4 +1,8 @@
-$('#slider-animate-true').noUiSlider({
+var trueSlider = document.getElementById('slider-animate-true'),
+	falseSlider = document.getElementById('slider-animate-false'),
+	setButton = document.getElementById('set-sliders');
+
+noUiSlider.create(trueSlider, {
 	animate: true,
 	start: 20,
 	range: {
@@ -7,7 +11,7 @@ $('#slider-animate-true').noUiSlider({
 	}
 });
 
-$('#slider-animate-false').noUiSlider({
+noUiSlider.create(falseSlider, {
 	animate: false,
 	start: 20,
 	range: {
@@ -16,6 +20,7 @@ $('#slider-animate-false').noUiSlider({
 	}
 });
 
-$('#set-sliders').click(function(){
-	$('.sliders').val(60);
+setButton.addEventListener('click', function(){
+	trueSlider.noUiSlider.set(60);
+	falseSlider.noUiSlider.set(60);
 });

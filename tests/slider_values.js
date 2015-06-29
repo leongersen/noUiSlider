@@ -1,26 +1,24 @@
 
-	test( "Values", function(){
+	QUnit.test( "Values", function( assert ){
 
-		Q.html('\
-			<div class="slider"></div>\
-		');
+		Q.innerHTML = '<div class="slider"></div>';
 
-		var slider = $('.slider');
+		var slider = Q.getElementsByClassName('slider')[0];
 
-		slider.noUiSlider({
+		noUiSlider.create(slider, {
 			start: [ 50, 100 ],
 			connect: true,
+			format: TEST_ROUND_FORMAT,
 			range: {
 				'min': 30,
 				'max': 986
-			},
-			format: TEST_ROUND_FORMAT
+			}
 		});
 
-		deepEqual( slider.val(), ['50', '100'], 'Values where set' );
+		assert.deepEqual( slider.noUiSlider.get(), ['50', '100'], 'Values where set' );
 
-		slider.val( [ 150, 600 ] );
+		slider.noUiSlider.set( [ 150, 600 ] );
 
-		deepEqual( slider.val(), ['150', '600'], 'Slider correctly overstepped limits.' );
+		assert.deepEqual( slider.noUiSlider.get(), ['150', '600'], 'Slider correctly overstepped limits.' );
 
 	});

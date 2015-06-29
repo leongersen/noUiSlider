@@ -1,21 +1,28 @@
-// Helpers
 
 	// Shorthand for base dimensions.
 	function baseSize ( ) {
-		return $Base[['width', 'height'][options.ort]]();
+		return scope_Base['offset' + ['Width', 'Height'][options.ort]];
 	}
 
 	// External event handling
-	function fireEvents ( events ) {
+	function fireEvent ( event, handleNumber ) {
 
-		// Use the external api to get the values.
-		// Wrap the values in an array, as .trigger takes
-		// only one additional argument.
-		var index, values = [ $Target.val() ];
-
-		for ( index = 0; index < events.length; index += 1 ){
-			$Target.trigger(events[index], values);
+		if ( handleNumber !== undefined ) {
+			handleNumber = Math.abs(handleNumber - options.dir);
 		}
+
+		Object.keys(scope_Events).forEach(function( targetEvent ) {
+
+			var eventType = targetEvent.split('.')[0];
+
+			if ( event === eventType ) {
+				scope_Events[targetEvent].forEach(function( callback ) {
+					// .reverse is in place
+					// Return values as array, so arg_1[arg_2] is always valid.
+					callback( asArray(valueGet()), handleNumber, inSliderOrder(Array.prototype.slice.call(scope_Values)) );
+				});
+			}
+		});
 	}
 
 	// Returns the input array, respecting the slider direction configuration.

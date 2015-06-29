@@ -1,11 +1,11 @@
 
-	test( "Value setting/getting", function(){
+	QUnit.test( "Value setting/getting", function( assert ){
 
-		Q.html('\
-			<div class="slider" id="slider"></div>\
-		');
+		Q.innerHTML = '<div class="slider"></div>';
 
-		var slider = $('#slider').noUiSlider({
+		var slider = Q.getElementsByClassName('slider')[0];
+
+		noUiSlider.create(slider, {
 			range: { min: -30, max: 1080 },
 			start: [ 0, 10 ],
 			behaviour: 'drag',
@@ -18,35 +18,35 @@
 			}
 		});
 
-		deepEqual(slider.val(), ["0.0", "10.0"]);
+		assert.deepEqual(slider.noUiSlider.get(), ["0.0", "10.0"]);
 
-		slider.val([-10, 80]);
-		deepEqual(slider.val(), ["-10.0", "80.0"]);
+		slider.noUiSlider.set([-10, 80]);
+		assert.deepEqual(slider.noUiSlider.get(), ["-10.0", "80.0"]);
 
-		slider.val(5);
-		deepEqual(slider.val(), ["5.0", "80.0"]);
+		slider.noUiSlider.set(5);
+		assert.deepEqual(slider.noUiSlider.get(), ["5.0", "80.0"]);
 
-		slider.val([10, 980.51]);
-		deepEqual(slider.val(), ["10.0", "980.5"]);
+		slider.noUiSlider.set([10, 980.51]);
+		assert.deepEqual(slider.noUiSlider.get(), ["10.0", "980.5"]);
 
-		slider.val([null]);
-		deepEqual(slider.val(), ["10.0", "980.5"]);
+		slider.noUiSlider.set([null]);
+		assert.deepEqual(slider.noUiSlider.get(), ["10.0", "980.5"]);
 
-		slider.val([null, 80]);
+		slider.noUiSlider.set([null, 80]);
 
-		slider.val([10.6]);
-		deepEqual(slider.val(), ["10.6", "80.0"]);
+		slider.noUiSlider.set([10.6]);
+		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "80.0"]);
 
-		slider.val([null, 10.6]);
-		deepEqual(slider.val(), ["10.6", "10.6"]);
+		slider.noUiSlider.set([null, 10.6]);
+		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "10.6"]);
 
-		slider.val([30, null]);
-		deepEqual(slider.val(), ["10.6", "10.6"]);
+		slider.noUiSlider.set([30, null]);
+		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "10.6"]);
 
-		slider.val(null);
-		deepEqual(slider.val(), ["10.6", "10.6"]);
+		slider.noUiSlider.set(null);
+		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "10.6"]);
 
-		slider.val(false);
-		deepEqual(slider.val(), ["10.6", "10.6"]);
+		slider.noUiSlider.set(false);
+		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "10.6"]);
 
 	});

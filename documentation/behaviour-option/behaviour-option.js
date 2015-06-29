@@ -1,4 +1,6 @@
-$("#behaviour").noUiSlider({
+behaviourSlider = document.getElementById('behaviour');
+
+noUiSlider.create(behaviourSlider, {
 	start: [ 20, 40 ],
 	step: 10,
 	behaviour: 'drag',

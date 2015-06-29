@@ -1,4 +1,6 @@
-$("#slider-format").noUiSlider({
+var sliderFormat = document.getElementById('slider-format');
+
+noUiSlider.create(sliderFormat, {
 	start: [ 20000 ],
 	step: 1000,
 	range: {

@@ -1,4 +1,6 @@
-$('#html5').noUiSlider({
+var html5Slider = document.getElementById('html5');
+
+noUiSlider.create(html5Slider, {
 	start: [ 10, 30 ],
 	connect: true,
 	range: {

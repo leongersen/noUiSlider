@@ -31,8 +31,3 @@ function formatDate ( date ) {
         months[date.getMonth()] + " " +
         date.getFullYear();
 }
-
-// Write a date as a pretty value.
-function setDate( value ){
-    $(this).html(formatDate(new Date(+value)));   
-}

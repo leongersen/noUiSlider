@@ -1,16 +1,20 @@
 // Write the CSS 'left' value to a span.
-function leftValue ( value, handle, slider ) {
-	$(this).text( handle.parent()[0].style.left );
+function leftValue ( handle ) {
+	return handle.parentElement.style.left;
 }
 
-// Bind two elements to the lower handle.
-// The first item will display the slider value, 
-// the second shows how far the handle moved
+var lowerValue = document.getElementById('lower-value'),
+	lowerOffset = document.getElementById('lower-offset'),
+	upperValue = document.getElementById('upper-value'),
+	upperOffset = document.getElementById('upper-offset'),
+	handles = nonLinearSlider.getElementsByClassName('noUi-handle');
+
+// Display the slider value and how far the handle moved
 // from the left edge of the slider.
-$("#nonlinear").Link('lower').to($('#lower-value'));
-$("#nonlinear").Link('lower').to($('#lower-offset'), leftValue);
-
-
-// Do the same for the upper handle.
-$("#nonlinear").Link('upper').to($('#upper-value'));
-$("#nonlinear").Link('upper').to($('#upper-offset'), leftValue);
+nonLinearSlider.noUiSlider.on('update', function ( values, handle ) {
+	if ( !handle ) {
+		lowerValue.innerHTML = values[handle] + ', ' + leftValue(handles[handle]);
+	} else {
+		upperValue.innerHTML = values[handle] + ', ' + leftValue(handles[handle]);
+	}
+});

@@ -1,33 +1,37 @@
 
-	test( "Limit option", function(){
+	QUnit.test( "Limit option", function( assert ){
 
-		Q.html('\
-			<div class="slider"></div>\
-		');
+		Q.innerHTML = '<div class="slider"></div>';
 
-		var slider = Q.find('.slider');
-
-		slider.noUiSlider({
+		var settings = {
 			start: [ 50, 100 ],
 			limit: 30,
 			range: {
 				'min': 30,
 				'max': 986
 			}
-		});
+		};
 
-		deepEqual( slider.val(), ['50.00', '80.00'], 'Limit applied on init.' );
+		var slider = Q.getElementsByClassName('slider')[0];
 
-		slider.val( [ null, 600 ] );
-		deepEqual( slider.val(), ['50.00', '80.00'], 'Handle can\'t leave limit.' );
-		
-		slider.val( [ 150, 600 ] );
-		deepEqual( slider.val(), ['150.00', '180.00'], 'Multiple set limit.' );
+		noUiSlider.create(slider, settings);
 
-		slider.noUiSlider({ direction: 'rtl' }, true);
-		
-		deepEqual( slider.val(), ['150.00', '180.00'], 'Re-init rtl keeps value.' );
+		assert.deepEqual( slider.noUiSlider.get(), ['50.00', '80.00'], 'Limit applied on init.' );
 
-		slider.val( [ 120, 240 ] );
-		deepEqual( slider.val(), ['120.00', '150.00'], 'RTL set.' );
+		slider.noUiSlider.set( [ null, 600 ] );
+		assert.deepEqual( slider.noUiSlider.get(), ['50.00', '80.00'], 'Handle can\'t leave limit.' );
+
+		slider.noUiSlider.set( [ 150, 600 ] );
+		assert.deepEqual( slider.noUiSlider.get(), ['150.00', '180.00'], 'Multiple set limit.' );
+
+		// Rebuild with new settings;
+		settings.direction = 'rtl';
+		slider.noUiSlider.destroy();
+
+		noUiSlider.create(slider, settings);
+
+		assert.deepEqual( slider.noUiSlider.get(), ['50.00', '80.00'], 'RTL correct value.' );
+
+		slider.noUiSlider.set( [ 120, 240 ] );
+		assert.deepEqual( slider.noUiSlider.get(), ['120.00', '150.00'], 'RTL set.' );
 	});

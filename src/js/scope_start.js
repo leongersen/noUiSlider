@@ -1,19 +1,11 @@
-function closure ( target, options, originalOptions ){
 
-// Internal variables
+function closure ( target, options ){
 
-	// All variables local to 'closure' are marked $.
-	var $Target = $(target),
-		$Locations = [-1, -1],
-		$Base,
-		$Handles,
-		$Spectrum = options.spectrum,
-		$Values = [],
-	// libLink. For rtl sliders, 'lower' and 'upper' should not be inverted
-	// for one-handle sliders, so trim 'upper' it that case.
-		triggerPos = ['lower', 'upper'].slice(0, options.handles);
-
-	// Invert the libLink connection for rtl sliders.
-	if ( options.dir ) {
-		triggerPos.reverse();
-	}
+	// All variables local to 'closure' are prefixed with 'scope_'
+	var scope_Target = target,
+		scope_Locations = [-1, -1],
+		scope_Base,
+		scope_Handles,
+		scope_Spectrum = options.spectrum,
+		scope_Values = [],
+		scope_Events = {};

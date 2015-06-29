@@ -22,7 +22,6 @@
 	<div class="side">
 		<?php code('behaviour-option'); ?>
 	</div>
-
 </section>
 
 
@@ -67,6 +66,7 @@
 <h2>Tap</h2>
 
 <section>
+
 	<div class="view">
 		<p>A handle snaps to a clicked location. A smooth transition is used. This option is <strong>default</strong>.</p>
 		<div class="example">
@@ -74,6 +74,7 @@
 			<?php run('tap'); ?>
 		</div>
 	</div>
+
 	<div class="side">
 		<?php code('tap'); ?>
 	</div>
@@ -84,13 +85,15 @@
 <h2>Drag</h2>
 
 <section>
+
 	<div class="view">
-		<p>Makes the range dragable. Requires two handles.</p>
+		<p>Makes the range dragable. Requires two handles. The <code>slide</code> event fires for both handles.</p>
 		<div class="example">
 			<div id="drag"></div>
 			<?php run('drag'); ?>
 		</div>
 	</div>
+
 	<div class="side">
 		<?php code('drag'); ?>
 	</div>
@@ -101,6 +104,7 @@
 <h2>Fixed dragging</h2>
 
 <section>
+
 	<div class="view">
 		<p>Keeps the distance between handles fixed when the <code>'drag'</code> flag is set.</p>
 		<div class="example">
@@ -108,6 +112,7 @@
 			<?php run('drag-fixed'); ?>
 		</div>
 	</div>
+
 	<div class="side">
 		<?php code('drag-fixed'); ?>
 	</div>
@@ -118,6 +123,7 @@
 <h2>Snap</h2>
 
 <section>
+
 	<div class="view">
 		<p>A handle snaps to a clicked location. It can immediatly be moved, without a <code>mouseup</code> + <code>mousedown</code>.</p>
 		<div class="example">
@@ -125,6 +131,7 @@
 			<?php run('snap'); ?>
 		</div>
 	</div>
+
 	<div class="side">
 		<?php code('snap'); ?>
 	</div>
@@ -135,6 +142,7 @@
 <h2>Combined options</h2>
 
 <section>
+
 	<div class="view">
 		<p>Most <code>'behaviour'</code> flags can be combined.</p>
 		<div class="example">
@@ -142,6 +150,7 @@
 			<?php run('combined'); ?>
 		</div>
 	</div>
+
 	<div class="side">
 		<?php code('combined'); ?>
 	</div>

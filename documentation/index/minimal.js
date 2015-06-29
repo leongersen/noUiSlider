@@ -1,4 +1,6 @@
-$("#slider").noUiSlider({
+var slider = document.getElementById('slider');
+
+noUiSlider.create(slider, {
 	start: [20, 80],
 	connect: true,
 	range: {

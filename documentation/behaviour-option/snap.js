@@ -1,4 +1,6 @@
-$("#snap").noUiSlider({
+snapSlider = document.getElementById('snap');
+
+noUiSlider.create(snapSlider, {
 	start: 40,
 	behaviour: 'snap',
 	connect: 'lower',

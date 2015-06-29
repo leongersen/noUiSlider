@@ -1,14 +1,5 @@
 
 	var
-	// Cache the document selector;
-	/** @const */
-	doc = $(document),
-	// Make a backup of the original jQuery/Zepto .val() method.
-	/** @const */
-	$val = $.fn.val,
-	// Namespace for binding and unbinding slider events;
-	/** @const */
-	namespace = '.nui',
 	// Determine the events to bind. IE11 implements pointerEvents without
 	// a prefix, which breaks compatibility with the IE10 implementation.
 	/** @const */

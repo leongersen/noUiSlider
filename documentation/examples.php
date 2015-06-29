@@ -3,6 +3,22 @@
 	$description = "noUiSlider has a selection of examples you can use to implement a slider easily. Take a look!";
 ?>
 
+<section>
+	<ul>
+		<li><a href="#section-colorpicker">Colorpicker</a></li>
+		<li><a href="#section-custom-connect">Using a custom connecting bar</a></li>
+		<li><a href="#section-html5">Working with HTML5 input types</a></li>
+		<li><a href="#section-non-linear">Using non linear ranges</a></li>
+		<li><a href="#section-lock">Locking two sliders together</a></li>
+		<li><a href="#section-keypress">Changing the slider value by keypress</a></li>
+		<li><a href="#section-skipping">Skipping values on a slider</a></li>
+		<li><a href="#section-dates">Using dates</a></li>
+		<li><a href="#section-toggle">Create a toggle</a></li>
+		<li><a href="#section-tooltips">Add tooltips to the slider handles</a></li>
+		<li><a href="#section-soft-limits">Block the edges of a slider</a></li>
+	</ul>
+</section>
+
 
 <?php sect('colorpicker'); ?>
 <h1>Colorpicker</h1>
@@ -18,7 +34,7 @@
 			<div class="sliders" id="green"></div>
 			<div class="sliders" id="blue"></div>
 
-			<div class="result"></div>
+			<div id="result"></div>
 			<?php run('colorpicker-setcolor'); ?>
 			<?php run('colorpicker-slider'); ?>
 		</div>
@@ -52,6 +68,55 @@
 			<?php code('colorpicker-slider'); ?>
 		</div>
 
+		<div class="viewer-header">CSS</div>
+
+		<div class="viewer-content">
+			<?php loadShowCSS('colorpicker'); ?>
+		</div>
+
+	</div>
+</section>
+
+
+<?php sect('custom-connect'); ?>
+<h1>Custom connect</h1>
+
+<section>
+
+	<div class="view">
+
+		<p>When using the <code>connect</code> option, noUiSlider paints the connecting bar in the negative space between handles. This uses one less element and has some nice performance benefits. When you need more control over the connecting option, you can create a custom connecting bar using the <code>update</code> event.</p>
+
+		<p>This custom element can be styled, or special features (like requested in <a href="https://github.com/leongersen/noUiSlider/issues/371">this issue</a>) can be implemented.</p>
+
+		<div class="example">
+			<div id="connect"></div>
+			<?php run('custom-connect-slider'); ?>
+			<?php run('custom-connect'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<div class="viewer-header">Create the slider</div>
+
+		<div class="viewer-content">
+			<?php code('custom-connect-slider'); ?>
+		</div>
+
+
+		<div class="viewer-header">Create a connecting bar and bind it</div>
+
+		<div class="viewer-content">
+			<?php code('custom-connect'); ?>
+		</div>
+
+
+		<div class="viewer-header">CSS for the connecting bar</div>
+
+		<div class="viewer-content">
+			<?php loadShowCSS('custom-connect'); ?>
+		</div>
 	</div>
 </section>
 
@@ -95,6 +160,12 @@
 
 		<div class="viewer-content">
 			<?php code('html5-link'); ?>
+		</div>
+
+		<div class="viewer-header">Example CSS</div>
+
+		<div class="viewer-content">
+			<?php loadShowCSS('html5'); ?>
 		</div>
 	</div>
 </section>
@@ -144,7 +215,7 @@
 
 	<div class="view">
 
-		<p>Using <code>serialization</code>, cross-updating values will results in an infinite loop of updates. To prevent this, each <code>Link</code> has the option to disable synchronisation.</p>
+		<p>Two cross-updating sliders can be created using a combination of the <code>change</code> and <code>slide</code> events.</p>
 
 		<div class="example">
 			<div class="slider" id="slider1"></div>
@@ -153,13 +224,12 @@
 			<div class="slider" id="slider2"></div>
 			<span class="example-val" id="slider2-span"></span>
 
-			<button style="float:right;margin:20px 0 0">Lock</button>
+			<button id="lockbutton" style="float: right; margin: 20px 0 0;">Lock</button>
 
 			<?php run('locked-setup'); ?>
-			<?php run('locked-crossupdate'); ?>
 			<?php run('locked-sliders'); ?>
-			<?php run('locked-event'); ?>
 			<?php run('locked-link'); ?>
+			<?php run('locked-crossupdate'); ?>
 		</div>
 	</div>
 
@@ -183,12 +253,6 @@
 			<?php code('locked-sliders'); ?>
 		</div>
 
-		<div class="viewer-header">Binding the <code>set</code> event</div>
-
-		<div class="viewer-content">
-			<?php code('locked-event'); ?>
-		</div>
-
 		<div class="viewer-header">Linking the sliders together</div>
 
 		<div class="viewer-content">
@@ -205,11 +269,11 @@
 
 	<div class="view">
 
-		<p>To keep the plugin small, features like keyboard interaction haven't been included. However, adding custom features to the input fields linked to the plugin is easy. noUiSlider provides <strong>API's</strong> to help you. In this example, pressing the keyboard arrow keys will increase/decrease the slider by one step.</p>
+		<p>To keep the library small, features like keyboard interaction haven't been included. However, adding features to input fields linked to a slider is easy. noUiSlider provides API's to help you. In this example, pressing the keyboard arrow keys will increase/decrease the slider by one step.</p>
 
 		<p>This example uses the <code>'step'</code> API to determine by how much the slider should be changed. You don't need this function if your slider is linear. In that case, increase/decrease the value with the ammount of your <code>step</code>.</p>
 
-		<p>We'll listen to keydown on the <code>$('#input-with-keypress')</code> element, and pass the event to a function so we can read the code that identifies the key.</p>
+		<p>We'll listen to keydown on the <code>'#input-with-keypress'</code> element, and pass the event to a function so we can read the code that identifies the key.</p>
 
 		<p>Note that the slider value will be a <code>string</code>, so we'll need to parse it to an integer.</p>
 
@@ -281,7 +345,7 @@
 
 	<div class="view">
 
-		<p>As all dates in JavaScript can be represented as time, noUiSlider can handle them, too. This example will show you how to convert dates to numerical ranges, and then use the <code>serialization</code> feature to display them in a pretty format.</p>
+		<p>As all dates in JavaScript can be represented as time, noUiSlider can handle them, too. This example will show you how to convert dates to numerical ranges, and then use the <code>update</code> event to display them in a pretty format.</p>
 
 		<p>We'll be creating timestamps from strings. In order to do this easily, we'll define a new helper function. This function accepts a string, creates a <code>new Date</code> and then returns it as a timestamp.</p>
 
@@ -337,7 +401,7 @@
 
 		<p>Many application interfaces have options that can be turned on or off using switches. noUiSlider is well suited for this, especially because of the wide touch support.</p>
 
-		<p>The serialization option can be used to keep track of changes to the handle. We'll set the range to <code>[0, 1]</code>, which leaves one step of <code>1</code>.</p>
+		<p>The <code>update</code> event can be used to keep track of changes to the handle. We'll set the range to <code>[0, 1]</code>, which leaves one step of <code>1</code>.</p>
 
 		<div class="example vertical">
 			<div id="slider-toggle"></div>
@@ -356,13 +420,7 @@
 		<div class="viewer-header">CSS</div>
 
 		<div class="viewer-content">
-<pre><code class="language-css">.toggle {
-	height: 50px;
-}
-.toggle.off .noUi-handle {
-	border-color: red;
-}
-</code></pre>
+			<?php loadShowCSS('toggle'); ?>
 		</div>
 
 	</div>
@@ -376,16 +434,13 @@
 
 	<div class="view">
 
-		<p>Using the libLink feature, noUiSlider can provided handles with tooltips. These tooltips can be styled and modified on the fly, as demonstrated in this example.</p>
-
-		<p>A basic tooltip implementation is part of the <a href="/liblink/">libLink</a> implementation.</p>
+		<p>Using the <code>update</code> event, noUiSlider can provided handles with tooltips. These tooltips can be styled and modified on the fly, as demonstrated in this example.</p>
 
 		<p>The noUiSlider theme includes no tooltip styling, so by default, the values will resemble the handle on the left.</p>
 
 		<div class="example" style="padding-top: 50px;">
 			<div id="slider-tooltip"></div>
 			<?php run('tooltip'); ?>
-			<?php run('tooltip-simple'); ?>
 			<?php run('tooltip-more'); ?>
 		</div>
 	</div>
@@ -398,13 +453,7 @@
 			<?php code('tooltip'); ?>
 		</div>
 
-		<div class="viewer-header">Basic in-handle value</div>
-
-		<div class="viewer-content">
-			<?php code('tooltip-simple', true); ?>
-		</div>
-
-		<div class="viewer-header">Tooltips with custom HTML</div>
+		<div class="viewer-header">Add tooltips</div>
 
 		<div class="viewer-content">
 			<?php code('tooltip-more', true); ?>
@@ -413,24 +462,7 @@
 		<div class="viewer-header">Example tooltip styling</div>
 
 		<div class="viewer-content">
-<pre><code class="language-css">.tooltip {
-	display: block;
-	position: absolute;
-	border: 1px solid #D9D9D9;
-	font: 400 12px/12px Arial;
-	border-radius: 3px;
-	background: #fff;
-	top: -43px;
-	padding: 5px;
-	left: -9px;
-	text-align: center;
-	width: 50px;
-}
-.tooltip strong {
-	display: block;
-	padding: 2px;
-}
-</code></pre>
+			<?php loadShowCSS('tooltip'); ?>
 		</div>
 	</div>
 </section>

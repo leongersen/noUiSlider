@@ -1,4 +1,3 @@
-// Class handling
 
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b, delimit ) {
@@ -23,9 +22,6 @@
 		return [c,d];
 	}
 
-
-// Event handling
-
 	// Provide a clean event with standardized offset values.
 	function fixEvent ( e ) {
 
@@ -36,20 +32,14 @@
 		// Filter the event to register the type, which can be
 		// touch, mouse or pointer. Offset changes need to be
 		// made on an event specific basis.
-		var  touch = e.type.indexOf('touch') === 0
-			,mouse = e.type.indexOf('mouse') === 0
-			,pointer = e.type.indexOf('pointer') === 0
-			,x,y, event = e;
+		var touch = e.type.indexOf('touch') === 0,
+			mouse = e.type.indexOf('mouse') === 0,
+			pointer = e.type.indexOf('pointer') === 0,
+			x,y, event = e;
 
 		// IE10 implemented pointer events with a prefix;
 		if ( e.type.indexOf('MSPointer') === 0 ) {
 			pointer = true;
-		}
-
-		// Get the originalEvent, if the event has been wrapped
-		// by jQuery. Zepto doesn't wrap the event.
-		if ( e.originalEvent ) {
-			e = e.originalEvent;
 		}
 
 		if ( touch ) {
@@ -60,42 +50,34 @@
 		}
 
 		if ( mouse || pointer ) {
-
-			// Polyfill the pageXOffset and pageYOffset
-			// variables for IE7 and IE8;
-			if( !pointer && window.pageXOffset === undefined ){
-				window.pageXOffset = document.documentElement.scrollLeft;
-				window.pageYOffset = document.documentElement.scrollTop;
-			}
-
 			x = e.clientX + window.pageXOffset;
 			y = e.clientY + window.pageYOffset;
 		}
 
 		event.points = [x, y];
-		event.cursor = mouse;
+		event.cursor = mouse || pointer; // Fix #435
 
 		return event;
 	}
 
-
-// DOM additions
-
 	// Append a handle to the base.
 	function addHandle ( direction, index ) {
 
-		var handle = $('<div><div/></div>').addClass( Classes[2] ),
+		var origin = document.createElement('div'),
+			handle = document.createElement('div'),
 			additions = [ '-lower', '-upper' ];
 
 		if ( direction ) {
 			additions.reverse();
 		}
 
-		handle.children().addClass(
-			Classes[3] + " " + Classes[3]+additions[index]
-		);
+		addClass(handle, Classes[3]);
+		addClass(handle, Classes[3] + additions[index]);
 
-		return handle;
+		addClass(origin, Classes[2]);
+		origin.appendChild(handle);
+
+		return origin;
 	}
 
 	// Add the proper connection classes.
@@ -106,14 +88,14 @@
 		// segments listed in the class list, to allow easy
 		// renaming and provide a minor compression benefit.
 		switch ( connect ) {
-			case 1:	target.addClass( Classes[7] );
-					handles[0].addClass( Classes[6] );
+			case 1:	addClass(target, Classes[7]);
+					addClass(handles[0], Classes[6]);
 					break;
-			case 3: handles[1].addClass( Classes[6] );
+			case 3: addClass(handles[1], Classes[6]);
 					/* falls through */
-			case 2: handles[0].addClass( Classes[7] );
+			case 2: addClass(handles[0], Classes[7]);
 					/* falls through */
-			case 0: target.addClass(Classes[6]);
+			case 0: addClass(target, Classes[6]);
 					break;
 		}
 	}
@@ -127,7 +109,7 @@
 		for ( index = 0; index < nrHandles; index += 1 ) {
 
 			// Keep a list of all added handles.
-			handles.push( addHandle( direction, index ).appendTo(base) );
+			handles.push( base.appendChild(addHandle( direction, index )) );
 		}
 
 		return handles;
@@ -137,11 +119,12 @@
 	function addSlider ( direction, orientation, target ) {
 
 		// Apply classes and data to the target.
-		target.addClass([
-			Classes[0],
-			Classes[8 + direction],
-			Classes[4 + orientation]
-		].join(' '));
+		addClass(target, Classes[0]);
+		addClass(target, Classes[8 + direction]);
+		addClass(target, Classes[4 + orientation]);
 
-		return $('<div/>').appendTo(target).addClass( Classes[1] );
+		var div = document.createElement('div');
+		addClass(div, Classes[1]);
+		target.appendChild(div);
+		return div;
 	}

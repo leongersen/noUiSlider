@@ -1,27 +1,25 @@
 
-	test( "Testing handling of odd-numbered steps", function(){
+	QUnit.test( "Testing handling of odd-numbered steps", function( assert ){
 
-		Q.html('\
-			<div class="slider"></div>\
-		');
+		Q.innerHTML = '<div class="slider"></div>';
 
-		var slider = $('.slider');
+		var slider = Q.getElementsByClassName('slider')[0];
 
-		slider.noUiSlider({
+		noUiSlider.create(slider, {
 			range: { min: 3, max: 106 },
 			start: [ 20, 50 ],
 			step: 10,
 			format: TEST_ROUND_FORMAT
 		});
 
-		deepEqual( slider.val(), ['23', '53'] );
+		assert.deepEqual( slider.noUiSlider.get(), ['23', '53'] );
 
-		slider.val([50, 106]);
-		deepEqual( slider.val(), ['53', '106'], 'Slider reached edge outside from step.' );
+		slider.noUiSlider.set([50, 106]);
+		assert.deepEqual( slider.noUiSlider.get(), ['53', '106'], 'Slider reached edge outside from step.' );
 
-		slider.val([71, 105]);
-		deepEqual( slider.val(), ['73', '103'], 'Slider steps back into stepping with lower points as origin.' );
+		slider.noUiSlider.set([71, 105]);
+		assert.deepEqual( slider.noUiSlider.get(), ['73', '103'], 'Slider steps back into stepping with lower points as origin.' );
 
-		slider.val([71, 101]);
-		deepEqual( slider.val(), ['73', '103'] );
+		slider.noUiSlider.set([71, 101]);
+		assert.deepEqual( slider.noUiSlider.get(), ['73', '103'] );
 	});

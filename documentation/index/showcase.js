@@ -1,35 +1,19 @@
-$('#range').noUiSlider({
-	start: [ 20, 80 ],
-	step: 10,
-	margin: 20,
-	connect: true,
-	direction: 'rtl',
-	orientation: 'vertical',
-	
-	// Configure tapping, or make the selected range dragable.
-	behaviour: 'tap-drag',
-	
-	// Full number format support.
-	format: wNumb({
-		mark: ',',
-		decimals: 1
-	}),
-	
-	// Support for non-linear ranges by adding intervals.
-	range: {
+var slider = document.getElementById('range');
+
+noUiSlider.create(slider, {
+	start: [ 20, 80 ], // Handle start position
+	step: 10, // Slider moves in increments of '10'
+	margin: 20, // Handles must be more than '20' apart
+	connect: true, // Display a colored bar between the handles
+	direction: 'rtl', // Put '0' at the bottom of the slider
+	orientation: 'vertical', // Orient the slider vertically
+	behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+	range: { // Slider can select '0' to '100'
 		'min': 0,
 		'max': 100
+	},
+	pips: { // Show a scale with the slider
+		mode: 'steps',
+		density: 2
 	}
-});
-
-// Reading/writing + validation from an input? One line.
-$('#range').Link('lower').to($('#value-input'));
-
-// Write to a span? One line.
-$('#range').Link('upper').to($('#value-span'), 'html');
-
-// Optional addon: creating Pips (Percentage In Point);
-$('#range').noUiSlider_pips({
-	mode: 'steps',
-	density: 2
 });

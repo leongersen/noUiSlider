@@ -2,16 +2,16 @@
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to, noLimitOption ) {
 
-		var trigger = handle[0] !== $Handles[0][0] ? 1 : 0,
-			lowerMargin = $Locations[0] + options.margin,
-			upperMargin = $Locations[1] - options.margin,
-			lowerLimit = $Locations[0] + options.limit,
-			upperLimit = $Locations[1] - options.limit;
+		var trigger = handle !== scope_Handles[0] ? 1 : 0,
+			lowerMargin = scope_Locations[0] + options.margin,
+			upperMargin = scope_Locations[1] - options.margin,
+			lowerLimit = scope_Locations[0] + options.limit,
+			upperLimit = scope_Locations[1] - options.limit;
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
-		if ( $Handles.length > 1 ) {
+		if ( scope_Handles.length > 1 ) {
 			to = trigger ? Math.max( to, lowerMargin ) : Math.min( to, upperMargin );
 		}
 
@@ -19,37 +19,40 @@
 		// maximum distance from another. Limit must be > 0, as otherwise
 		// handles would be unmoveable. 'noLimitOption' is set to 'false'
 		// for the .val() method, except for pass 4/4.
-		if ( noLimitOption !== false && options.limit && $Handles.length > 1 ) {
+		if ( noLimitOption !== false && options.limit && scope_Handles.length > 1 ) {
 			to = trigger ? Math.min ( to, lowerLimit ) : Math.max( to, upperLimit );
 		}
 
 		// Handle the step option.
-		to = $Spectrum.getStep( to );
+		to = scope_Spectrum.getStep( to );
 
 		// Limit to 0/100 for .val input, trim anything beyond 7 digits, as
 		// JavaScript has some issues in its floating point implementation.
 		to = limit(parseFloat(to.toFixed(7)));
 
 		// Return false if handle can't move.
-		if ( to === $Locations[trigger] ) {
+		if ( to === scope_Locations[trigger] ) {
 			return false;
 		}
 
 		// Set the handle to the new position.
-		handle.css( options.style, to + '%' );
+		handle.style[options.style] = to + '%';
 
 		// Force proper handle stacking
-		if ( handle.is(':first-child') ) {
-			handle.toggleClass(Classes[17], to > 50 );
+		if ( !handle.previousSibling ) {
+			removeClass(handle, Classes[17]);
+			if ( to > 50 ) {
+				addClass(handle, Classes[17]);
+			}
 		}
 
 		// Update locations.
-		$Locations[trigger] = to;
+		scope_Locations[trigger] = to;
 
 		// Convert the value to the slider stepping/range.
-		$Values[trigger] = $Spectrum.fromStepping( to );
+		scope_Values[trigger] = scope_Spectrum.fromStepping( to );
 
-		linkUpdate(triggerPos[trigger]);
+		fireEvent('update', trigger);
 
 		return true;
 	}
@@ -87,9 +90,8 @@
 
 				// Request an update for all links if the value was invalid.
 				// Do so too if setting the handle fails.
-				if ( to === false || isNaN(to) || setHandle( $Handles[trigger], $Spectrum.toStepping( to ), i === (3 - options.dir) ) === false ) {
-
-					linkUpdate(triggerPos[trigger]);
+				if ( to === false || isNaN(to) || setHandle( scope_Handles[trigger], scope_Spectrum.toStepping( to ), i === (3 - options.dir) ) === false ) {
+					fireEvent('update', trigger);
 				}
 			}
 		}
@@ -98,12 +100,7 @@
 	// Set the slider value.
 	function valueSet ( input ) {
 
-		// LibLink: don't accept new values when currently emitting changes.
-		if ( $Target[0].LinkIsEmitting ) {
-			return this;
-		}
-
-		var count, values = asArray( input );
+		var count, values = asArray( input ), i;
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
@@ -112,14 +109,13 @@
 		}
 
 		// Animation is optional.
-		// Make sure the initial values where set before using animated
-		// placement. (no report, unit testing);
-		if ( options.animate && $Locations[0] !== -1 ) {
-			addClassFor( $Target, Classes[14], 300 );
+		// Make sure the initial values where set before using animated placement.
+		if ( options.animate && scope_Locations[0] !== -1 ) {
+			addClassFor( scope_Target, Classes[14], 300 );
 		}
 
 		// Determine how often to set the handles.
-		count = $Handles.length > 1 ? 3 : 1;
+		count = scope_Handles.length > 1 ? 3 : 1;
 
 		if ( values.length === 1 ) {
 			count = 1;
@@ -127,11 +123,10 @@
 
 		setValues ( count, values );
 
-		// Fire the 'set' event. As of noUiSlider 7,
-		// this is no longer optional.
-		fireEvents(['set']);
-
-		return this;
+		// Fire the 'set' event for both handles.
+		for ( i = 0; i < scope_Handles.length; i++ ) {
+			fireEvent('set', i);
+		}
 	}
 
 	// Get the slider value.
@@ -141,33 +136,20 @@
 
 		// Get the value from all handles.
 		for ( i = 0; i < options.handles; i += 1 ){
-			retour[i] = options.format.to( $Values[i] );
+			retour[i] = options.format.to( scope_Values[i] );
 		}
 
 		return inSliderOrder( retour );
 	}
 
-	// Destroy the slider and unbind all events.
-	function destroyTarget ( ) {
-
-		// Unbind events on the slider, remove all classes and child elements.
-		$(this).off(namespace)
-			.removeClass(Classes.join(' '))
-			.empty();
-
-		delete this.LinkUpdate;
-		delete this.LinkConfirm;
-		delete this.LinkDefaultFormatter;
-		delete this.LinkDefaultFlag;
-		delete this.reappend;
-		delete this.vGet;
-		delete this.vSet;
-		delete this.getCurrentStep;
-		delete this.getInfo;
-		delete this.destroy;
-
-		// Return the original options from the closure.
-		return originalOptions;
+	// Removes classes from the root and empties it.
+	function destroy ( ) {
+		Classes.forEach(function(cls){
+			if ( !cls ) { return; } // Ignore empty classes
+			removeClass(scope_Target, cls);
+		});
+		scope_Target.innerHTML = '';
+		delete scope_Target.noUiSlider;
 	}
 
 	// Get the current step size for the slider.
@@ -175,16 +157,16 @@
 
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
-		var retour = $.map($Locations, function( location, index ){
+		var retour = scope_Locations.map(function( location, index ){
 
-			var step = $Spectrum.getApplicableStep( location ),
+			var step = scope_Spectrum.getApplicableStep( location ),
 
 				// As per #391, the comparison for the decrement step can have some rounding issues.
 				// Round the value to the precision used in the step.
 				stepDecimals = countDecimals(String(step[2])),
 
 				// Get the current numeric value
-				value = $Values[index],
+				value = scope_Values[index],
 
 				// To move the slider 'one step up', the current step value needs to be added.
 				// Use null if we are at the maximum slider value.
@@ -198,53 +180,70 @@
 				// previous step. Return null if the slider is at its minimum value.
 				decrement = location === 0 ? null : (prev >= step[1]) ? step[2] : (step[0] || false);
 
-			return [[decrement, increment]];
+			return [decrement, increment];
 		});
 
 		// Return values in the proper order.
 		return inSliderOrder( retour );
 	}
 
-	// Get the original set of options.
-	function getOriginalOptions ( ) {
-		return originalOptions;
+	// Attach an event to this slider, possibly including a namespace
+	function bindEvent ( namespacedEvent, callback ) {
+		scope_Events[namespacedEvent] = scope_Events[namespacedEvent] || [];
+		scope_Events[namespacedEvent].push(callback);
+
+		// If the event bound is 'update,' fire it immediately for all handles.
+		if ( namespacedEvent.split('.')[0] === 'update' ) {
+			scope_Handles.forEach(function(a, index){
+				fireEvent('update', index);
+			});
+		}
+	}
+
+	// Undo attachment of event
+	function removeEvent ( namespacedEvent ) {
+
+		var event = namespacedEvent.split('.')[0],
+			namespace = namespacedEvent.substring(event.length);
+
+		Object.keys(scope_Events).forEach(function( bind ){
+
+			var tEvent = bind.split('.')[0],
+				tNamespace = bind.substring(tEvent.length);
+
+			if ( (!event || event === tEvent) && (!namespace || namespace === tNamespace) ) {
+				delete scope_Events[bind];
+			}
+		});
 	}
 
 
-// Initialize slider
-
 	// Throw an error if the slider was already initialized.
-	if ( $Target.hasClass(Classes[0]) ) {
+	if ( scope_Target.noUiSlider ) {
 		throw new Error('Slider was already initialized.');
 	}
 
+
 	// Create the base element, initialise HTML and set classes.
 	// Add handles and links.
-	$Base = addSlider( options.dir, options.ort, $Target );
-	$Handles = addHandles( options.handles, options.dir, $Base );
+	scope_Base = addSlider( options.dir, options.ort, scope_Target );
+	scope_Handles = addHandles( options.handles, options.dir, scope_Base );
 
 	// Set the connect classes.
-	addConnection ( options.connect, $Target, $Handles );
+	addConnection ( options.connect, scope_Target, scope_Handles );
 
 	// Attach user events.
 	events( options.events );
 
-// Methods
+	if ( options.pips ) {
+		pips(options.pips);
+	}
 
-	target.vSet = valueSet;
-	target.vGet = valueGet;
-	target.destroy = destroyTarget;
-
-	target.getCurrentStep = getCurrentStep;
-	target.getOriginalOptions = getOriginalOptions;
-
-	target.getInfo = function(){
-		return [
-			$Spectrum,
-			options.style,
-			options.ort
-		];
+	return {
+		destroy: destroy,
+		steps: getCurrentStep,
+		on: bindEvent,
+		off: removeEvent,
+		get: valueGet,
+		set: valueSet
 	};
-
-	// Use the public value method to set the start values.
-	$Target.val( options.start );

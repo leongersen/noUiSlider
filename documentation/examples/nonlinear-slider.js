@@ -1,4 +1,6 @@
-$("#nonlinear").noUiSlider({
+var nonLinearSlider = document.getElementById('nonlinear');
+
+noUiSlider.create(nonLinearSlider, {
 	connect: true,
 	behaviour: 'tap',
 	start: [ 500, 4000 ],

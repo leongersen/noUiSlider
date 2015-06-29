@@ -1,5 +1,9 @@
 // To disable
-$('.slider').attr('disabled', 'disabled');
+slider.setAttribute('disabled', true);
 
 // To re-enable
-$('.slider').removeAttr('disabled');
+slider.removeAttribute('disabled');
+
+// To disable one handle
+var origins = slider.getElementsByClassName('noUi-origin');
+origins[0].setAttribute('disabled', true);
