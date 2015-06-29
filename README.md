@@ -16,6 +16,9 @@ Bower users can install all compiled and minified files easily using `bower inst
 
 Changelog
 ---------
+###8.0.1
+Fixed an issue with IE11 on touch devices.
+
 ###8.0.0
 Removed jQuery dependency! For more info and other changes, see [the release information](http://refreshless.com/nouislider/new-version).
 
