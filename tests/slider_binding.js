@@ -40,15 +40,6 @@
 		// Run set again, 'set' shouldn't fire now.
 		slider.noUiSlider.set([1,9]);
 
-
-		function offset ( el ) {
-			var rect = el.getBoundingClientRect()
-			return {
-				top: rect.top + document.body.scrollTop,
-				left: rect.left + document.body.scrollLeft
-			};
-		}
-
 		count = 0;
 
 		// Fires once on click (1)
@@ -61,14 +52,29 @@
 			assert.ok(true);
 		});
 
-		var origin = slider.getElementsByClassName('noUi-origin')[1], clickEvent = document.createEvent('MouseEvents');
+		document.body.addEventListener('mousedown', function(e){
+			console.log(e.clientX, e.clientY);
+		});
 
-		clickEvent.initMouseEvent(
-			'mousedown', true, true, window, 0, 0, 0,
-			offset(slider).left + 150,
-			offset(slider).top + 6,
-			false, false, false, false, 0, null);
+		function offset ( el ) {
+			var rect = el.getBoundingClientRect()
+			return {
+				top: rect.top + document.body.scrollTop,
+				left: rect.left + document.body.scrollLeft
+			};
+		}
 
+		var origin = slider.getElementsByClassName('noUi-origin')[1],
+			clickEvent = new MouseEvent('mousedown', {
+				bubbles: true,
+				cancelable: true,
+				view: window,
+				buttons: 1,
+				clientX: offset(slider).left + 100,
+				clientY: offset(slider).top + 8
+			});
+
+		console.log(offset(slider));
 		origin.dispatchEvent(clickEvent);
 
 		slider.noUiSlider.off('.namespace');
