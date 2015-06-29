@@ -19,7 +19,7 @@
 			e = fixEvent(e);
 
 			// Ignore right or middle clicks on start #454
-			if ( events === actions.start && e.buttons !== undefined && e.buttons !== 1 ) {
+			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
 				return false;
 			}
 

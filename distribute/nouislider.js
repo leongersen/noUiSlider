@@ -1,4 +1,4 @@
-/*! noUiSlider - 8.0.0 - 2015-06-29 17:25:17 */
+/*! noUiSlider - 8.0.1 - 2015-06-29 19:11:22 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -1118,7 +1118,7 @@ function closure ( target, options ){
 			e = fixEvent(e);
 
 			// Ignore right or middle clicks on start #454
-			if ( events === actions.start && e.buttons !== undefined && e.buttons !== 1 ) {
+			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
 				return false;
 			}
 
