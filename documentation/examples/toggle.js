@@ -14,8 +14,8 @@ noUiSlider.create(toggleSlider, {
 
 toggleSlider.noUiSlider.on('update', function( values, handle ){
 	if ( values[handle] === '1' ) {
-		toggleSlider.classList.add('off');
+		toggleSlider.className += ' off';
 	} else {
-		toggleSlider.classList.remove('off');
+		toggleSlider.className = toggleSlider.className.slice(0, -4);
 	}
 });

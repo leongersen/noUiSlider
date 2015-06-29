@@ -3,7 +3,7 @@ var connectBar = document.createElement('div'),
 	connectHandles = connectSlider.getElementsByClassName('noUi-origin');
 
 // Give the bar a class for styling and add it to the slider.
-connectBar.classList.add('connect');
+connectBar.className += 'connect';
 connectBase.appendChild(connectBar);
 
 connectSlider.noUiSlider.on('update', function( values, handle ) {

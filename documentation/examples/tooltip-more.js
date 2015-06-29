@@ -8,7 +8,7 @@ for ( var i = 0; i < tipHandles.length; i++ ){
 }
 
 // Add a class for styling
-tooltips[1].classList.add('tooltip');
+tooltips[1].className += 'tooltip';
 // Add additional markup
 tooltips[1].innerHTML = '<strong>Value: </strong><span></span>';
 // Replace the tooltip reference with the span we just added
