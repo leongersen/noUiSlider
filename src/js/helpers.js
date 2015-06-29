@@ -12,11 +12,16 @@
 	}
 
 	// Current position of an element relative to the document.
-	function offset ( element ) {
-		var box = element.getBoundingClientRect();
+	function offset ( elem ) {
+
+	var rect = elem.getBoundingClientRect(),
+		doc = elem.ownerDocument,
+		win = doc.defaultView || doc.parentWindow,
+		docElem = doc.documentElement;
+
 		return {
-			top: box.top + document.body.scrollTop,
-			left: box.left + document.body.scrollLeft
+			top: rect.top + win.pageYOffset - docElem.clientTop,
+			left: rect.left + win.pageXOffset - docElem.clientLeft
 		};
 	}
 
@@ -33,9 +38,9 @@
 
 	// Sets a class and removes it after [duration] ms.
 	function addClassFor ( element, className, duration ) {
-		element.classList.add(className);
+		addClass(element, className);
 		setTimeout(function(){
-			element.classList.remove(className);
+			removeClass(element, className);
 		}, duration);
 	}
 
