@@ -43,7 +43,7 @@
 
 	<div class="view">
 
-		<h3 class="quotable">"Lightweight javascript range slider that works with jQuery or Zepto."</h3>
+		<h3 class="quotable">"Lightweight JavaScript range slider with full touch support."</h3>
 
 		<ul class="pro-list">
 			<li>Responsive design friendly</li>

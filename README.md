@@ -17,7 +17,7 @@ Bower users can install all compiled and minified files easily using `bower inst
 Changelog
 ---------
 ###8.0.0
-Remove jQuery dependency! For more info and other changes, see [the release information](http://refreshless.com/nouislider/new-version).
+Removed jQuery dependency! For more info and other changes, see [the release information](http://refreshless.com/nouislider/new-version).
 
 Browserify
 ----------
