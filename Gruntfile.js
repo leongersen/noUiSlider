@@ -26,8 +26,7 @@ module.exports = function(grunt) {
 
 	var releaseFiles = [
 		{ src: ['**/*'], dest: '', cwd: 'distribute/', expand: true },
-		{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true },
-		{ src: ['**/archive.md'], rename: function(){ return 'README.md'; }, dest: '', cwd: 'src/', expand: true }
+		{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true }
 	];
 
     grunt.initConfig({
@@ -49,19 +48,6 @@ module.exports = function(grunt) {
 				},
 				files: {
 					'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css']
-				}
-			}
-		},
-		'string-replace': {
-			version: {
-				files: {
-					'nouislider.jquery.json': 'src/jquery.json'
-				},
-				options: {
-					replacements: [{
-						pattern: /{{VERSION}}/g,
-						replacement: '<%= pkg.version %>'
-					}]
 				}
 			}
 		},
@@ -105,9 +91,6 @@ module.exports = function(grunt) {
 	// https://github.com/gruntjs/grunt-contrib-jshint
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 
-	// https://github.com/erickrdch/grunt-string-replace
-	grunt.loadNpmTasks('grunt-string-replace');
-
 	// https://github.com/gruntjs/grunt-contrib-cssmin
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 
@@ -116,5 +99,5 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['concat', 'jshint']);
     grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'cssmin']);
-	grunt.registerTask('release', ['string-replace', 'compress']);
+	grunt.registerTask('release', ['compress']);
 };
