@@ -1,14 +1,7 @@
 <?php
-	$title = "noUiSlider - Slider design and styling";
-	$description = "noUiSlider comes with a beautiful theme. Find out everything about styling and design.";
-
-	$title = "noUiSlider - Disabling a slider";
-	$description = "Like any other form element, you can temporarily disable a slider element.";
-
-	$title = "noUiSlider - Updating slider options";
-	$description = "Extending noUiSlider is simple. Lets have a look at adding an updating feature to the slider.";
+	$title = "noUiSlider - Disabling, Updating and Styling";
+	$description = "noUiSlider comes with a beautiful theme. You can temporarily disable a slider element.";
 ?>
-
 
 <h1>More...</h1>
 
@@ -25,7 +18,7 @@
 
 		<p>The slider below is disabled when the checkbox gets checked, and re-enabled when it is unchecked.</p>
 
-		<p>Individual handles can also be disabled by setting the <code>disabled</code> attribute on a <code>.noUi-handle</code> element.</p>
+		<p>Individual handles can also be disabled by setting the <code>disabled</code> attribute on a <code>.noUi-origin</code> element.</p>
 
 		<div class="example">
 			<div id="disable1"></div>
