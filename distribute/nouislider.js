@@ -1,4 +1,4 @@
-/*! nouislider - 8.0.1 - 2015-07-01 13:32:17 */
+/*! nouislider - 8.0.1 - 2015-07-03 09:58:06 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -11,9 +11,12 @@
         define([], factory);
 
     } else if ( typeof exports === 'object' ) {
-
+        var fs = require('fs');
         // Node/CommonJS
         module.exports = factory();
+        module.exports.css = function () {
+            return fs.readFileSync(__dirname + '/nouislider.min.css', 'utf8');
+        };
 
     } else {
 
