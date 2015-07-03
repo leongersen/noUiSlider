@@ -27,7 +27,7 @@ Browserify
 This library is [UMD](https://github.com/umdjs/umd) compatible, so you can use it in this way:
 
 ```javascript
-require('nouislider');
+var noUiSlider = require('nouislider');
 
 var slider = document.getElementById('slider');
 
