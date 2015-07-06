@@ -10,10 +10,6 @@ Documentation
 -------
 An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](http://refreshless.com/nouislider/).
 
-Bower
------
-Bower users can install all compiled and minified files easily using `bower install nouislider --save`. Supporting bower unfortunately means keeping all compiled and minified versions in the repository.
-
 Changelog
 ---------
 ###8.0.1
@@ -21,6 +17,15 @@ Fixed an issue with IE11 on touch devices.
 
 ###8.0.0
 Removed jQuery dependency! For more info and other changes, see [the release information](http://refreshless.com/nouislider/new-version).
+
+Bower
+-----
+Bower users can install all compiled and minified files easily using `bower install nouislider --save`. Supporting bower unfortunately means keeping all compiled and minified versions in the repository.
+
+NPM
+---
+Install noUiSlider using the [GitHub syntax](https://github.com/leongersen/noUiSlider/issues/433#issuecomment-118330780):
+```npm install leongersen/noUiSlider```
 
 Browserify
 ----------
