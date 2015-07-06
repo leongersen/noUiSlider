@@ -12,6 +12,9 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
+###8.0.2
+Fix #464, added NPM information;
+
 ###8.0.1
 Fixed an issue with IE11 on touch devices.
 
