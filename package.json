@@ -15,5 +15,10 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/leongersen/noUiSlider.git"
+  },
+  "browserify": {
+    "transform": [
+      "brfs"
+    ]
   }
 }
