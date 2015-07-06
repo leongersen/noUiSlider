@@ -53,8 +53,3 @@ Version numbering
 ------------------------------
 Version numbering follows the 'Semantic versioning' style.
 You'll find an excellent documentation at [Semver.org](http://semver.org/).
-
-Contributing
-------------------------------
-The plugin code can be managed using a Grunt-based task runner.
-Use `npm install` to fetch all dependancies, then `grunt concat` to merge all files.
