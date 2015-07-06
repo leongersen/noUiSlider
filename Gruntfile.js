@@ -62,7 +62,7 @@ module.exports = function(grunt) {
 				latedef: true,
 				undef: true,
 				unused: true,
-				globals: { module: true, define: true }
+				globals: { module: true, define: true, __dirname: true, require: true }
 			},
 			basic: ['distribute/nouislider.js']
 		},

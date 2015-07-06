@@ -1,4 +1,4 @@
-/*! nouislider - 8.0.1 - 2015-07-03 09:58:06 */
+/*! nouislider - 8.0.2 - 2015-07-06 13:22:09 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -11,7 +11,9 @@
         define([], factory);
 
     } else if ( typeof exports === 'object' ) {
+
         var fs = require('fs');
+
         // Node/CommonJS
         module.exports = factory();
         module.exports.css = function () {
@@ -1001,14 +1003,14 @@ function closure ( target, options ){
 		addClass(element, 'noUi-pips');
 		addClass(element, 'noUi-pips-' + style);
 
-		function getSize( type, value ){
+		function getSize( type ){
 			return [ '-normal', '-large', '-sub' ][type];
 		}
 
 		function getTags( offset, source, values ) {
 			return 'class="' + source + ' ' +
 				source + '-' + style + ' ' +
-				source + getSize(values[1], values[0]) +
+				source + getSize(values[1]) +
 				'" style="' + options.style + ': ' + offset + '%"';
 		}
 
@@ -1146,7 +1148,7 @@ function closure ( target, options ){
 
 		var handles = data.handles || scope_Handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
-			handleNumber = handles[0] === scope_Handles[0] ? 0 : 1;
+			handleNumber = handles[0] === scope_Handles[0] ? 0 : 1, i;
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
