@@ -163,14 +163,14 @@
 		addClass(element, 'noUi-pips');
 		addClass(element, 'noUi-pips-' + style);
 
-		function getSize( type, value ){
+		function getSize( type ){
 			return [ '-normal', '-large', '-sub' ][type];
 		}
 
 		function getTags( offset, source, values ) {
 			return 'class="' + source + ' ' +
 				source + '-' + style + ' ' +
-				source + getSize(values[1], values[0]) +
+				source + getSize(values[1]) +
 				'" style="' + options.style + ': ' + offset + '%"';
 		}
 

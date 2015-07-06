@@ -58,7 +58,11 @@ module.exports = function(grunt) {
 				laxbreak: true,
 				laxcomma: true,
 				validthis: true,
-				newcap: false
+				curly: true,
+				latedef: true,
+				undef: true,
+				unused: true,
+				globals: { module: true, define: true }
 			},
 			basic: ['distribute/nouislider.js']
 		},
