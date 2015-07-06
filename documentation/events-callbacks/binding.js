@@ -5,7 +5,7 @@ function doSomething ( values, handle, unencoded ) {
 }
 
 // Binding signature
-slider.noUiSlider.on(eventName, soSomething);
+slider.noUiSlider.on(eventName, doSomething);
 
 // Binding namespaced events
 slider.noUiSlider.on('set.one', function(){});
