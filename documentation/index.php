@@ -65,7 +65,7 @@
 
 	<div class="view">
 
-		<p>noUiSlider 8 has no dependancies, so you don't need jQuery, jQuery UI, Zepto, etc. to use it.</p>
+		<p>noUiSlider 8 has no dependencies, so you don't need jQuery, jQuery UI, Zepto, etc. to use it.</p>
 
 		<p>Putting all your scripts in the page <code>&lt;head&gt;</code> will slow down your site. If you'd like to know why, consider reading <a href="http://developer.yahoo.com/performance/rules.html#js_bottom">this article by Yahoo!</a>. Put the slider CSS in your <code>&lt;head&gt;</code>, and the script at the end of the <code>&lt;body&gt;</code>.</p>
 
