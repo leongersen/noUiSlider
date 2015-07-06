@@ -1,4 +1,4 @@
-/*! noUiSlider - 8.0.1 - 2015-06-29 19:11:22 */
+/*! nouislider - 8.0.1 - 2015-07-01 13:32:17 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -13,7 +13,7 @@
     } else if ( typeof exports === 'object' ) {
 
         // Node/CommonJS
-        module.exports = factory(require('jquery'));
+        module.exports = factory();
 
     } else {
 

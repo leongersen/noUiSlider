@@ -1,7 +1,8 @@
 {
   "name": "nouislider",
   "version": "8.0.1",
-  "main": "distribute/jquery.nouislider",
+  "main": "distribute/nouislider",
+  "license": "WTFPL",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-compress": "^0.11.0",
