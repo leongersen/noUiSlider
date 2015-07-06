@@ -1,11 +1,11 @@
+function doSomething ( values, handle, unencoded ) {
+	// values: Current slider values;
+	// handle: Handle that caused the event;
+	// unencoded: Slider values without formatting;
+}
+
 // Binding signature
-slider.noUiSlider.on(eventName, function (
-	values, // Current slider values
-	handle, // Handle that caused the event
-	unencodedValues // Slider values without formatting.
-	){
-		// code
-	});
+slider.noUiSlider.on(eventName, soSomething);
 
 // Binding namespaced events
 slider.noUiSlider.on('set.one', function(){});
