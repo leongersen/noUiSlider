@@ -8,7 +8,7 @@ Oh, and the licensing terms are simple: [just do what you want](http://www.wtfpl
 
 -------------------------------------
 
-**Quick note (July 10, 2015):** I'll be on vacantion for the next three months, so support on this library will be very limited. I'm sorry for any inconvenience caused. I'll get back to you *asap*.
+**Quick note (July 10, 2015):** I'll be on vacation for the next three months, so support on this library will be very limited. I'm sorry for any inconvenience caused. I'll get back to you *asap*.
 
 -------------------------------------
 
