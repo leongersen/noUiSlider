@@ -6,6 +6,12 @@ The best part? noUiSlider has no dependencies! As of version 8, **Query is no lo
 
 Oh, and the licensing terms are simple: [just do what you want](http://www.wtfpl.net/about/).
 
+-------------------------------------
+
+**Quick note (July 10, 2015):** I'll be on vacantion for the next three months, so support on this library will be very limited. I'm sorry for any inconvenience caused. I'll get back to you *asap*.
+
+-------------------------------------
+
 Documentation
 -------
 An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](http://refreshless.com/nouislider/).
