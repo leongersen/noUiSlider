@@ -54,7 +54,7 @@
 
 	<div class="view">
 
-		<p>The connect setting can be used to control the bar between the handles, or the edges of the slider. Use <code>"lower"</code> to connect to the lower side, or <code>"upper"</code> to connect to the upper side. Setting <code>true</code> sets the bar between the handles.</p>
+		<p>The connect setting can be used to control the (green) bar between the handles, or the edges of the slider. Use <code>"lower"</code> to connect to the lower side, or <code>"upper"</code> to connect to the upper side. Setting <code>true</code> sets the bar between the handles.</p>
 
 		<div class="example">
 			<div id="slider-connect"></div>

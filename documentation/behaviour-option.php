@@ -33,13 +33,13 @@
 	<div class="double">
 
 		<pre><code>behaviour: "drag"</code></pre>
-		<p>Make the range dragable.</p>
+		<p>Make the <strong>range</strong> draggable. <strong>Handles</strong> are <em>always</em> draggable.</p>
 	</div>
 
 	<div class="double">
 
 		<pre><code>behaviour: "drag-fixed"</code></pre>
-		<p>The range is dragable. The range width can't be changed.</p>
+		<p>The range is draggable. The range width can't be changed, so dragging one handle will move the other, too.</p>
 	</div>
 
 	<div class="double">
@@ -51,7 +51,7 @@
 	<div class="double">
 
 		<pre><code>behaviour: "tap-drag"</code></pre>
-		<p>Make the closest handle jump when the slider bar is tapped, make the range dragable.</p>
+		<p>Make the closest handle jump when the slider bar is tapped, make the range draggable.</p>
 	</div>
 
 	<div class="double">
@@ -87,7 +87,7 @@
 <section>
 
 	<div class="view">
-		<p>Makes the range dragable. Requires two handles. The <code>slide</code> event fires for both handles.</p>
+		<p>Makes the range (the green connecting bar between handles) dragable. Requires two handles. The <code>connect</code> option <strong>must</strong> be set to <code>true</code>. The <code>slide</code> event fires for both handles when dragging the range.</p>
 		<div class="example">
 			<div id="drag"></div>
 			<?php run('drag'); ?>
