@@ -5,7 +5,7 @@
 	}
 
 	// External event handling
-	function fireEvent ( event, handleNumber ) {
+	function fireEvent ( event, handleNumber, type ) {
 
 		if ( handleNumber !== undefined ) {
 			handleNumber = Math.abs(handleNumber - options.dir);
@@ -19,7 +19,7 @@
 				scope_Events[targetEvent].forEach(function( callback ) {
 					// .reverse is in place
 					// Return values as array, so arg_1[arg_2] is always valid.
-					callback( asArray(valueGet()), handleNumber, inSliderOrder(Array.prototype.slice.call(scope_Values)) );
+					callback( asArray(valueGet()), handleNumber, inSliderOrder(Array.prototype.slice.call(scope_Values)), type );
 				});
 			}
 		});

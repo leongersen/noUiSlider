@@ -96,7 +96,7 @@
 
 		// Fire the change and set events.
 		fireEvent('set', handleNumber);
-		fireEvent('change', handleNumber);
+		fireEvent('change', handleNumber, 'drag');
 	}
 
 	// Bind move events on document.
@@ -192,7 +192,7 @@
 
 		fireEvent('slide', handleNumber);
 		fireEvent('set', handleNumber);
-		fireEvent('change', handleNumber);
+		fireEvent('change', handleNumber, 'tap');
 
 		if ( options.events.snap ) {
 			start(event, { handles: [scope_Handles[total]] });

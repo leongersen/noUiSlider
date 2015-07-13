@@ -1,4 +1,4 @@
-/*! nouislider - 8.0.2 - 2015-07-06 13:22:09 */
+/*! nouislider - 8.0.2 - 2015-07-13 15:10:12 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -1067,7 +1067,7 @@ function closure ( target, options ){
 	}
 
 	// External event handling
-	function fireEvent ( event, handleNumber ) {
+	function fireEvent ( event, handleNumber, type ) {
 
 		if ( handleNumber !== undefined ) {
 			handleNumber = Math.abs(handleNumber - options.dir);
@@ -1081,7 +1081,7 @@ function closure ( target, options ){
 				scope_Events[targetEvent].forEach(function( callback ) {
 					// .reverse is in place
 					// Return values as array, so arg_1[arg_2] is always valid.
-					callback( asArray(valueGet()), handleNumber, inSliderOrder(Array.prototype.slice.call(scope_Values)) );
+					callback( asArray(valueGet()), handleNumber, inSliderOrder(Array.prototype.slice.call(scope_Values)), type );
 				});
 			}
 		});
@@ -1200,7 +1200,7 @@ function closure ( target, options ){
 
 		// Fire the change and set events.
 		fireEvent('set', handleNumber);
-		fireEvent('change', handleNumber);
+		fireEvent('change', handleNumber, 'drag');
 	}
 
 	// Bind move events on document.
@@ -1296,7 +1296,7 @@ function closure ( target, options ){
 
 		fireEvent('slide', handleNumber);
 		fireEvent('set', handleNumber);
-		fireEvent('change', handleNumber);
+		fireEvent('change', handleNumber, 'tap');
 
 		if ( options.events.snap ) {
 			start(event, { handles: [scope_Handles[total]] });
