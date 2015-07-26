@@ -30,60 +30,67 @@ module.exports = function(grunt) {
 	];
 
     grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
-		concat: {
-			options: {
-				banner: VERSION_TEMPLATE
-			},
-			basic: {
-				src: getFiles(),
-				dest: 'distribute/nouislider.js',
-				nonull: true
-			}
+      pkg: grunt.file.readJSON('package.json'),
+      concat: {
+        options: {
+          banner: VERSION_TEMPLATE
         },
-		cssmin: {
-			all: {
-				options: {
-					banner: VERSION_TEMPLATE
-				},
-				files: {
-					'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css']
-				}
-			}
-		},
-		jshint: {
-			options: {
-				browser: true,
-				indent: false,
-				laxbreak: true,
-				laxcomma: true,
-				validthis: true,
-				curly: true,
-				latedef: true,
-				undef: true,
-				unused: true,
-				globals: { module: true, define: true, __dirname: true, require: true }
-			},
-			basic: ['distribute/nouislider.js']
-		},
-		uglify: {
-			all: {
-				options: {
-					banner: VERSION_TEMPLATE
-				},
-				files: {
-					'distribute/nouislider.min.js': 'distribute/nouislider.js'
-				}
-			}
-		},
-		compress: {
-			all: {
-				options: {
-					archive: 'noUiSlider.<%= pkg.version %>.zip'
-				},
-				files: releaseFiles
-			}
-		}
+        basic: {
+          src: getFiles(),
+          dest: 'distribute/nouislider.js',
+          nonull: true
+        }
+          },
+      cssmin: {
+        all: {
+          options: {
+            banner: VERSION_TEMPLATE
+          },
+          files: {
+            'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css']
+          }
+        }
+      },
+      jshint: {
+        options: {
+          browser: true,
+          indent: false,
+          laxbreak: true,
+          laxcomma: true,
+          validthis: true,
+          curly: true,
+          latedef: true,
+          undef: true,
+          unused: true,
+          globals: { module: true, define: true, __dirname: true, require: true }
+        },
+        basic: ['distribute/nouislider.js']
+      },
+      uglify: {
+        all: {
+          options: {
+            banner: VERSION_TEMPLATE
+          },
+          files: {
+            'distribute/nouislider.min.js': 'distribute/nouislider.js'
+          }
+        }
+      },
+      compress: {
+        all: {
+          options: {
+            archive: 'noUiSlider.<%= pkg.version %>.zip'
+          },
+          files: releaseFiles
+        }
+      },
+      compass: {
+        dist: {
+          options: {
+            config: 'config.rb'
+          }
+        }
+      }
     });
 
 	// https://github.com/gruntjs/grunt-contrib-concat
@@ -100,8 +107,11 @@ module.exports = function(grunt) {
 
 	// https://github.com/gruntjs/grunt-contrib-compress
 	grunt.loadNpmTasks('grunt-contrib-compress');
+  
+  // https://github.com/gruntjs/grunt-contrib-compass
+  grunt.loadNpmTasks('grunt-contrib-compass');
 
-    grunt.registerTask('default', ['concat', 'jshint']);
-    grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'cssmin']);
+  grunt.registerTask('default', ['concat', 'jshint']);
+  grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'cssmin']);
 	grunt.registerTask('release', ['compress']);
 };
