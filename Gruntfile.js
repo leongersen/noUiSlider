@@ -5,7 +5,6 @@ module.exports = function(grunt) {
 	'\n\n';
 
 	function getFiles ( ) {
-
 		return [
 			'src/js/intro.js',
 			'src/js/helpers.js',
@@ -39,16 +38,6 @@ module.exports = function(grunt) {
           src: getFiles(),
           dest: 'distribute/nouislider.js',
           nonull: true
-        }
-          },
-      cssmin: {
-        all: {
-          options: {
-            banner: VERSION_TEMPLATE
-          },
-          files: {
-            'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css']
-          }
         }
       },
       jshint: {
@@ -102,9 +91,6 @@ module.exports = function(grunt) {
 	// https://github.com/gruntjs/grunt-contrib-jshint
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 
-	// https://github.com/gruntjs/grunt-contrib-cssmin
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-
 	// https://github.com/gruntjs/grunt-contrib-compress
 	grunt.loadNpmTasks('grunt-contrib-compress');
   
@@ -112,6 +98,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-compass');
 
   grunt.registerTask('default', ['concat', 'jshint']);
-  grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'cssmin']);
+  grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'compass']);
 	grunt.registerTask('release', ['compress']);
 };
