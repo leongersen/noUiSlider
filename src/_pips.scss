@@ -53,21 +53,26 @@
 .noUi-value-horizontal {
 	margin-left: -20px;
 	padding-top: 20px;
-}
-.noUi-value-horizontal.noUi-value-sub {
-	padding-top: 15px;
+  
+  .noUi-value-sub {
+    padding-top: 15px;
+  }
 }
 
-.noUi-marker-horizontal.noUi-marker {
-	margin-left: -1px;
-	width: 2px;
-	height: 5px;
-}
-.noUi-marker-horizontal.noUi-marker-sub {
-	height: 10px;
-}
-.noUi-marker-horizontal.noUi-marker-large {
-	height: 15px;
+.noUi-marker-horizontal{
+  &.noUi-marker {
+    margin-left: -1px;
+    width: 2px;
+    height: 5px;
+  }
+  
+  &.noUi-marker-sub {
+    height: 10px;
+  }
+  
+  &.noUi-marker-large {
+    height: 15px;
+  }
 }
 
 /* Vertical layout;
@@ -85,14 +90,18 @@
 	margin-top: -5px;
 }
 
-.noUi-marker-vertical.noUi-marker {
-	width: 5px;
-	height: 2px;
-	margin-top: -1px;
-}
-.noUi-marker-vertical.noUi-marker-sub {
-	width: 10px;
-}
-.noUi-marker-vertical.noUi-marker-large {
-	width: 15px;
+.noUi-marker-vertical{
+  .noUi-marker {
+    width: 5px;
+    height: 2px;
+    margin-top: -1px;
+  }
+  
+  &.noUi-marker-sub {
+    width: 10px;
+  }
+  
+  &.noUi-marker-large {
+    width: 15px;
+  }
 }

@@ -34,10 +34,12 @@
 	position: relative;
 	z-index: 1;
 }
-.noUi-stacking .noUi-handle {
-/* This class is applied to the lower origin when
+.noUi-stacking {
+  /* This class is applied to the lower origin when
    its values is > 50%. */
-	z-index: 10;
+  .noUi-handle{
+    z-index: 10;
+  }
 }
 .noUi-state-tap .noUi-origin {
 -webkit-transition: left 0.3s, top 0.3s;
@@ -68,12 +70,13 @@
 }
 .noUi-vertical {
 	width: 18px;
-}
-.noUi-vertical .noUi-handle {
-	width: 28px;
-	height: 34px;
-	left: -6px;
-	top: -17px;
+  
+  .noUi-handle {
+    width: 28px;
+    height: 34px;
+    left: -6px;
+    top: -17px;
+  }
 }
 
 /* Styling;
@@ -95,9 +98,10 @@
 	border-radius: 4px;
 	border: 1px solid #D3D3D3;
 	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
-}
-.noUi-target.noUi-connect {
-	box-shadow: inset 0 0 3px rgba(51,51,51,0.45), 0 3px 6px -5px #BBB;
+  
+  &.noUi-connect {
+    box-shadow: inset 0 0 3px rgba(51,51,51,0.45), 0 3px 6px -5px #BBB;
+  }
 }
 
 /* Handles and cursors;
@@ -125,20 +129,25 @@
 
 /* Handle stripes;
  */
-.noUi-handle:before,
-.noUi-handle:after {
-	content: "";
-	display: block;
-	position: absolute;
-	height: 14px;
-	width: 1px;
-	background: #E8E7E6;
-	left: 14px;
-	top: 6px;
+.noUi-handle,
+.noUi-handle{
+  &:before,
+  &:after{
+    content: "";
+    display: block;
+    position: absolute;
+    height: 14px;
+    width: 1px;
+    background: #E8E7E6;
+    left: 14px;
+    top: 6px;
+  }
+  
+  &:after{
+    left: 17px;
+  }
 }
-.noUi-handle:after {
-	left: 17px;
-}
+
 .noUi-vertical .noUi-handle:before,
 .noUi-vertical .noUi-handle:after {
 	width: 14px;
