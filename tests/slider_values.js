@@ -22,3 +22,43 @@
 		assert.deepEqual( slider.noUiSlider.get(), ['150', '600'], 'Slider correctly overstepped limits.' );
 
 	});
+
+	QUnit.test( "Values, Accuracy With Large Numbers 1", function( assert ){
+
+		Q.innerHTML = '<div class="slider"></div>';
+
+		var slider = Q.getElementsByClassName('slider')[0];
+
+		noUiSlider.create(slider, {
+			start: [ 1, 8301034833169290000 ],
+			connect: true,
+			format: TEST_ROUND_FORMAT,
+			range: {
+				'min': 1,
+				'max': 8301034833169290000
+			}
+		});
+
+		assert.deepEqual( slider.noUiSlider.get(), ['1', '8301034833169290000'], 'Values where accurate' );
+
+	});
+
+	QUnit.test( "Values, Accuracy With Large Numbers 2", function( assert ){
+
+		Q.innerHTML = '<div class="slider"></div>';
+
+		var slider = Q.getElementsByClassName('slider')[0];
+
+		noUiSlider.create(slider, {
+			start: [ 1, 10000000000000005 ],
+			connect: true,
+			format: TEST_ROUND_FORMAT,
+			range: {
+				'min': 1,
+				'max': 10000000000000005
+			}
+		});
+
+		assert.deepEqual( slider.noUiSlider.get(), ['1', '10000000000000005'], 'Values where accurate' );
+
+	});
