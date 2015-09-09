@@ -71,11 +71,11 @@
 	function end ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = scope_Base.getElementsByClassName(Classes[15]),
+		var active = scope_Base.querySelector( '.' + Classes[15] ),
 			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1;
 
-		if ( active.length ) {
-			removeClass(active[0], Classes[15]);
+		if ( active !== null ) {
+			removeClass(active, Classes[15]);
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -228,7 +228,7 @@
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			drag = [scope_Base.getElementsByClassName( Classes[7] )[0]];
+			drag = [scope_Base.querySelector( '.' + Classes[7] )];
 			addClass(drag[0], Classes[10]);
 
 			// When the range is fixed, the entire range can

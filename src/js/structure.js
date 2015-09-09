@@ -49,9 +49,11 @@
 			y = e.changedTouches[0].pageY;
 		}
 
+		var pageOffset = getPageOffset();
+
 		if ( mouse || pointer ) {
-			x = e.clientX + window.pageXOffset;
-			y = e.clientY + window.pageYOffset;
+			x = e.clientX + pageOffset.x;
+			y = e.clientY + pageOffset.y;
 		}
 
 		event.points = [x, y];
