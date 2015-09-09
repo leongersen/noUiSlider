@@ -55,6 +55,13 @@ noUiSlider.create(slider, {
 });
 ```
 
+Building
+--------
+
+```sh
+npm run build
+```
+
 Version numbering
 ------------------------------
 Version numbering follows the 'Semantic versioning' style.
