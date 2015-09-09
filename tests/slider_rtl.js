@@ -3,7 +3,7 @@
 
 		Q.innerHTML = '<div class="slider"></div>';
 
-		var slider = Q.getElementsByClassName('slider')[0];
+		var slider = Q.querySelector('.slider');
 
 		noUiSlider.create(slider, {
 			range: { min: 0.201, max: 1 },

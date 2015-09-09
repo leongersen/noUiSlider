@@ -5,7 +5,7 @@
 
 		Q.innerHTML = '<div class="slider"></div>';
 
-		var sliders = Q.getElementsByClassName('slider'),
+		var sliders = Q.querySelectorAll('.slider'),
 			slider = sliders[0];
 
 		noUiSlider.create(slider, {
@@ -64,18 +64,11 @@
 			};
 		}
 
-		var origin = slider.getElementsByClassName('noUi-origin')[1],
-			clickEvent = new MouseEvent('mousedown', {
-				bubbles: true,
-				cancelable: true,
-				view: window,
-				buttons: 1,
-				clientX: offset(slider).left + 100,
-				clientY: offset(slider).top + 8
-			});
-
-		console.log(offset(slider));
-		origin.dispatchEvent(clickEvent);
+		simulant.fire( slider.querySelectorAll('.noUi-origin')[1], 'mousedown', {
+			button: 1, // middle-click
+			clientX: offset(slider).left + 100,
+			clientY: offset(slider).top + 8
+		});
 
 		slider.noUiSlider.off('.namespace');
 

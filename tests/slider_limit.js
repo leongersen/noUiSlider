@@ -12,7 +12,7 @@
 			}
 		};
 
-		var slider = Q.getElementsByClassName('slider')[0];
+		var slider = Q.querySelector('.slider');
 
 		noUiSlider.create(slider, settings);
 

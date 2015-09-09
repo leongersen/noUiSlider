@@ -62,6 +62,13 @@ Building
 npm run build
 ```
 
+Testing
+-------
+
+```sh
+npm run dev
+```
+
 Version numbering
 ------------------------------
 Version numbering follows the 'Semantic versioning' style.

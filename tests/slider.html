@@ -15,9 +15,11 @@
 	</style>
 
 	<link href="../distribute/jquery.nouislider.min.css" rel="stylesheet">
+	<link href="../distribute/nouislider.min.css" rel="stylesheet">
 	<link href="http://code.jquery.com/qunit/qunit-1.18.0.css" rel="stylesheet">
 
 	<script src="http://code.jquery.com/qunit/qunit-1.18.0.js"></script>
+	<script src="../node_modules/simulant/dist/simulant.js"></script>
 	<script src="../distribute/nouislider.js" data-cover></script>
 
 
@@ -57,6 +59,8 @@
 
 	<script src="addon_pips.js"></script>
 
-	<script src="blanket.min.js"></script>
-
+	<!-- No blanket.js support in IE < 9 -->
+	<!--[if gt IE 8]><!-->
+	<script src="../node_modules/blanket/dist/qunit/blanket.min.js"></script>
+	<!--<![endif]-->
 </body>
