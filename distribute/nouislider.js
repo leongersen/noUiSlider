@@ -1,4 +1,4 @@
-/*! nouislider - 8.0.2 - 2015-07-06 13:22:09 */
+/*! nouislider - 8.0.2 - 2015-09-11 23:18:30 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -12,13 +12,8 @@
 
     } else if ( typeof exports === 'object' ) {
 
-        var fs = require('fs');
-
         // Node/CommonJS
         module.exports = factory();
-        module.exports.css = function () {
-            return fs.readFileSync(__dirname + '/nouislider.min.css', 'utf8');
-        };
 
     } else {
 
@@ -48,20 +43,19 @@
 
 	var rect = elem.getBoundingClientRect(),
 		doc = elem.ownerDocument,
-		win = doc.defaultView || doc.parentWindow,
 		docElem = doc.documentElement,
-		xOff = win.pageXOffset;
+		pageOffset = getPageOffset();
 
 		// getBoundingClientRect contains left scroll in Chrome on Android.
 		// I haven't found a feature detection that proves this. Worst case
 		// scenario on mis-match: the 'tap' feature on horizontal sliders breaks.
 		if ( /webkit.*Chrome.*Mobile/i.test(navigator.userAgent) ) {
-			xOff = 0;
+			pageOffset.x = 0;
 		}
 
 		return {
-			top: rect.top + win.pageYOffset - docElem.clientTop,
-			left: rect.left + xOff - docElem.clientLeft
+			top: rect.top + pageOffset.y - docElem.clientTop,
+			left: rect.left + pageOffset.x - docElem.clientLeft
 		};
 	}
 
@@ -125,6 +119,20 @@
 		} else {
 			new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
 		}
+	}
+
+	// https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
+	function getPageOffset ( ) {
+	  var supportPageOffset = window.pageXOffset !== undefined;
+	  var isCSS1Compat = ((document.compatMode || "") === "CSS1Compat");
+
+	  var x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? document.documentElement.scrollLeft : document.body.scrollLeft;
+	  var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
+
+	  return {
+	    x: x,
+	    y: y
+	  };
 	}
 
 
@@ -746,9 +754,11 @@
 			y = e.changedTouches[0].pageY;
 		}
 
+		var pageOffset = getPageOffset();
+
 		if ( mouse || pointer ) {
-			x = e.clientX + window.pageXOffset;
-			y = e.clientY + window.pageYOffset;
+			x = e.clientX + pageOffset.x;
+			y = e.clientY + pageOffset.y;
 		}
 
 		event.points = [x, y];
@@ -1175,11 +1185,11 @@ function closure ( target, options ){
 	function end ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = scope_Base.getElementsByClassName(Classes[15]),
+		var active = scope_Base.querySelector( '.' + Classes[15] ),
 			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1;
 
-		if ( active.length ) {
-			removeClass(active[0], Classes[15]);
+		if ( active !== null ) {
+			removeClass(active, Classes[15]);
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -1332,7 +1342,7 @@ function closure ( target, options ){
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			drag = [scope_Base.getElementsByClassName( Classes[7] )[0]];
+			drag = [scope_Base.querySelector( '.' + Classes[7] )];
 			addClass(drag[0], Classes[10]);
 
 			// When the range is fixed, the entire range can
@@ -1359,7 +1369,8 @@ function closure ( target, options ){
 			lowerMargin = scope_Locations[0] + options.margin,
 			upperMargin = scope_Locations[1] - options.margin,
 			lowerLimit = scope_Locations[0] + options.limit,
-			upperLimit = scope_Locations[1] - options.limit;
+			upperLimit = scope_Locations[1] - options.limit,
+			newScopeValue = scope_Spectrum.fromStepping( to );
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
@@ -1383,8 +1394,8 @@ function closure ( target, options ){
 		// JavaScript has some issues in its floating point implementation.
 		to = limit(parseFloat(to.toFixed(7)));
 
-		// Return false if handle can't move.
-		if ( to === scope_Locations[trigger] ) {
+		// Return false if handle can't move and ranges were not updated
+		if ( to === scope_Locations[trigger] && newScopeValue === scope_Values[trigger]) {
 			return false;
 		}
 
@@ -1592,13 +1603,40 @@ function closure ( target, options ){
 		pips(options.pips);
 	}
 
+	// can be updated:
+	// margin
+	// limit
+	// step
+	// range
+	// animate
+	function updateOptions(optionsToUpdate) {
+		var tempOptions = {
+			start: [0, 0],
+			margin: optionsToUpdate.margin,
+			limit: optionsToUpdate.limit,
+			step: optionsToUpdate.step,
+			range: optionsToUpdate.range,
+			animate: optionsToUpdate.animate
+		};
+
+		var newOptions = testOptions(tempOptions);
+
+		options.margin = newOptions.margin;
+		options.limit = newOptions.limit;
+		options.step = newOptions.step;
+		options.range = newOptions.range;
+		options.animate = newOptions.animate;
+		scope_Spectrum = newOptions.spectrum;
+	}
+
 	return {
 		destroy: destroy,
 		steps: getCurrentStep,
 		on: bindEvent,
 		off: removeEvent,
 		get: valueGet,
-		set: valueSet
+		set: valueSet,
+		updateOptions: updateOptions
 	};
 
 }
@@ -1619,6 +1657,7 @@ function closure ( target, options ){
 		slider.set(options.start);
 
 		target.noUiSlider = slider;
+		return slider;
 	}
 
 	// Use an object instead of a function for future expansibility;
