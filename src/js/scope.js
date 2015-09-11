@@ -6,7 +6,8 @@
 			lowerMargin = scope_Locations[0] + options.margin,
 			upperMargin = scope_Locations[1] - options.margin,
 			lowerLimit = scope_Locations[0] + options.limit,
-			upperLimit = scope_Locations[1] - options.limit;
+			upperLimit = scope_Locations[1] - options.limit,
+			newScopeValue = scope_Spectrum.fromStepping( to );
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
@@ -30,8 +31,8 @@
 		// JavaScript has some issues in its floating point implementation.
 		to = limit(parseFloat(to.toFixed(7)));
 
-		// Return false if handle can't move.
-		if ( to === scope_Locations[trigger] ) {
+		// Return false if handle can't move and ranges were not updated
+		if ( to === scope_Locations[trigger] && newScopeValue === scope_Values[trigger]) {
 			return false;
 		}
 
@@ -239,11 +240,38 @@
 		pips(options.pips);
 	}
 
+	// can be updated:
+	// margin
+	// limit
+	// step
+	// range
+	// animate
+	function updateOptions(optionsToUpdate) {
+		var tempOptions = {
+			start: [0, 0],
+			margin: optionsToUpdate.margin,
+			limit: optionsToUpdate.limit,
+			step: optionsToUpdate.step,
+			range: optionsToUpdate.range,
+			animate: optionsToUpdate.animate
+		};
+
+		var newOptions = testOptions(tempOptions);
+
+		options.margin = newOptions.margin;
+		options.limit = newOptions.limit;
+		options.step = newOptions.step;
+		options.range = newOptions.range;
+		options.animate = newOptions.animate;
+		scope_Spectrum = newOptions.spectrum;
+	}
+
 	return {
 		destroy: destroy,
 		steps: getCurrentStep,
 		on: bindEvent,
 		off: removeEvent,
 		get: valueGet,
-		set: valueSet
+		set: valueSet,
+		updateOptions: updateOptions
 	};
