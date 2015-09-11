@@ -1,3 +1,9 @@
+** THIS IS A FORK FOR ALGOLIA USAGE **
+
+** USE AT YOUR OWN RISK! **
+
+** WE WILL TRY TO MERGE EVERYTHING IN THE MAIN PROJECT **
+
 # noUiSlider
 
 noUiSlider is lightweight JavaScript range slider, originally developed to be a jQuery UI alternative.
