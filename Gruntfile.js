@@ -101,7 +101,8 @@ module.exports = function(grunt) {
 	// https://github.com/gruntjs/grunt-contrib-compress
 	grunt.loadNpmTasks('grunt-contrib-compress');
 
-    grunt.registerTask('default', ['concat', 'jshint']);
-    grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'cssmin']);
-	grunt.registerTask('release', ['compress']);
+	grunt.registerTask('default', ['concat', 'jshint']);
+	grunt.registerTask('create', ['concat', 'uglify', 'cssmin']);
+	grunt.registerTask('lint', ['jshint']);
+	grunt.registerTask('release', ['jshint', 'compress']);
 };

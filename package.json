@@ -7,6 +7,7 @@
     "build": "grunt create",
     "watch:js": "npm run build && onchange 'src/js/*.js' 'src/*.css' -- npm run build",
     "serve-tests": "browser-sync start --server . --startPath tests/slider.html --files 'distribute/, tests/*.js'",
+    "test": "grunt lint",
     "dev": "./scripts/dev.sh"
   },
   "devDependencies": {
