@@ -14,6 +14,7 @@ module.exports = function(grunt) {
 			'src/js/options.js',
 			'src/js/structure.js',
 			'src/js/scope_start.js',
+			'src/js/tooltips.js',
 			'src/js/pips.js',
 			'src/js/scope_helpers.js',
 			'src/js/scope_events.js',
@@ -47,7 +48,7 @@ module.exports = function(grunt) {
 					banner: VERSION_TEMPLATE
 				},
 				files: {
-					'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css']
+					'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css', 'src/nouislider.tooltips.css']
 				}
 			}
 		},

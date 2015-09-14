@@ -12,7 +12,7 @@
 	object, to make sure all values can be correctly looped elsewhere. */
 
 	var defaultFormatter = { 'to': function( value ){
-		return value.toFixed(2);
+		return value && value.toFixed(2);
 	}, 'from': Number };
 
 	function testStep ( parsed, entry ) {
@@ -176,6 +176,22 @@
 		};
 	}
 
+	function testTooltips ( parsed, entry ) {
+		if ( entry === true ) {
+			parsed.tooltips = true;
+		}
+
+		if ( entry && entry.format ) {
+			if (typeof entry.format !== 'function') {
+				throw new error("noUiSlider: 'tooltips.format' must be a function.")
+			}
+
+			parsed.tooltips = {
+				format: entry.format
+			}
+		}
+	}
+
 	function testFormat ( parsed, entry ) {
 
 		parsed.format = entry;
@@ -211,7 +227,8 @@
 			'margin': { r: false, t: testMargin },
 			'limit': { r: false, t: testLimit },
 			'behaviour': { r: true, t: testBehaviour },
-			'format': { r: false, t: testFormat }
+			'format': { r: false, t: testFormat },
+			'tooltips': { r: false, t: testTooltips }
 		};
 
 		var defaults = {

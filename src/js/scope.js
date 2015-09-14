@@ -240,6 +240,10 @@
 		pips(options.pips);
 	}
 
+	if ( options.tooltips ) {
+		tooltips(options.tooltips);
+	}
+
 	// can be updated:
 	// margin
 	// limit
