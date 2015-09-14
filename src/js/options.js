@@ -12,7 +12,7 @@
 	object, to make sure all values can be correctly looped elsewhere. */
 
 	var defaultFormatter = { 'to': function( value ){
-		return value && value.toFixed(2);
+		return value !== undefined && value.toFixed(2);
 	}, 'from': Number };
 
 	function testStep ( parsed, entry ) {
