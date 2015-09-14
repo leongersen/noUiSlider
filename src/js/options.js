@@ -204,6 +204,14 @@
 		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
 	}
 
+	function testCssPrefix ( parsed, entry ) {
+		if (entry !== undefined && typeof entry !== 'string') {
+			throw new Error( "noUiSlider: 'cssPrefix' must be a string.");
+		}
+
+		parsed.cssPrefix = entry;
+	}
+
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
 
@@ -228,7 +236,8 @@
 			'limit': { r: false, t: testLimit },
 			'behaviour': { r: true, t: testBehaviour },
 			'format': { r: false, t: testFormat },
-			'tooltips': { r: false, t: testTooltips }
+			'tooltips': { r: false, t: testTooltips },
+			'cssPrefix': { r: false, t: testCssPrefix }
 		};
 
 		var defaults = {

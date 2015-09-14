@@ -107,3 +107,9 @@
 	    y: y
 	  };
 	}
+
+	function addCssPrefix(cssPrefix) {
+		return function(className) {
+			return cssPrefix + className;
+		}
+	}

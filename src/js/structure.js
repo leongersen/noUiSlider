@@ -73,10 +73,10 @@
 			additions.reverse();
 		}
 
-		addClass(handle, Classes[3]);
-		addClass(handle, Classes[3] + additions[index]);
+		addClass(handle, cssClasses[3]);
+		addClass(handle, cssClasses[3] + additions[index]);
 
-		addClass(origin, Classes[2]);
+		addClass(origin, cssClasses[2]);
 		origin.appendChild(handle);
 
 		return origin;
@@ -90,14 +90,14 @@
 		// segments listed in the class list, to allow easy
 		// renaming and provide a minor compression benefit.
 		switch ( connect ) {
-			case 1:	addClass(target, Classes[7]);
-					addClass(handles[0], Classes[6]);
+			case 1:	addClass(target, cssClasses[7]);
+					addClass(handles[0], cssClasses[6]);
 					break;
-			case 3: addClass(handles[1], Classes[6]);
+			case 3: addClass(handles[1], cssClasses[6]);
 					/* falls through */
-			case 2: addClass(handles[0], Classes[7]);
+			case 2: addClass(handles[0], cssClasses[7]);
 					/* falls through */
-			case 0: addClass(target, Classes[6]);
+			case 0: addClass(target, cssClasses[6]);
 					break;
 		}
 	}
@@ -121,12 +121,12 @@
 	function addSlider ( direction, orientation, target ) {
 
 		// Apply classes and data to the target.
-		addClass(target, Classes[0]);
-		addClass(target, Classes[8 + direction]);
-		addClass(target, Classes[4 + orientation]);
+		addClass(target, cssClasses[0]);
+		addClass(target, cssClasses[8 + direction]);
+		addClass(target, cssClasses[4 + orientation]);
 
 		var div = document.createElement('div');
-		addClass(div, Classes[1]);
+		addClass(div, cssClasses[1]);
 		target.appendChild(div);
 		return div;
 	}
