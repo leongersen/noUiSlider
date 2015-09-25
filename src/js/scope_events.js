@@ -195,7 +195,7 @@
 		fireEvent('change', handleNumber);
 
 		if ( options.events.snap ) {
-			start(event, { handles: [scope_Handles[total]] });
+			start(event, { handles: [scope_Handles[handleNumber]] });
 		}
 	}
 
