@@ -1,14 +1,14 @@
-function defaultFormatTooltipValue(formattedValue) {
+function defaultFormatTooltipValue ( formattedValue ) {
 	return formattedValue;
 }
 
-function addTooltip( handle ) {
+function addTooltip ( handle ) {
 	var element = document.createElement('div');
 	element.className = cssClasses[18];
 	return handle.firstChild.appendChild(element);
 }
 
-function tooltips( tooltipsOptions ) {
+function tooltips ( tooltipsOptions ) {
 
 	var formatTooltipValue = tooltipsOptions.format ? tooltipsOptions.format : defaultFormatTooltipValue,
 		tips = scope_Handles.map(addTooltip);
