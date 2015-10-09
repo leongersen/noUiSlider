@@ -1,4 +1,4 @@
-/*! nouislider - 8.0.2 - 2015-07-06 13:22:09 */
+/*! nouislider - 8.0.2 - 2015-09-15 00:37:19 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -12,13 +12,8 @@
 
     } else if ( typeof exports === 'object' ) {
 
-        var fs = require('fs');
-
         // Node/CommonJS
         module.exports = factory();
-        module.exports.css = function () {
-            return fs.readFileSync(__dirname + '/nouislider.min.css', 'utf8');
-        };
 
     } else {
 
@@ -48,20 +43,19 @@
 
 	var rect = elem.getBoundingClientRect(),
 		doc = elem.ownerDocument,
-		win = doc.defaultView || doc.parentWindow,
 		docElem = doc.documentElement,
-		xOff = win.pageXOffset;
+		pageOffset = getPageOffset();
 
 		// getBoundingClientRect contains left scroll in Chrome on Android.
 		// I haven't found a feature detection that proves this. Worst case
 		// scenario on mis-match: the 'tap' feature on horizontal sliders breaks.
 		if ( /webkit.*Chrome.*Mobile/i.test(navigator.userAgent) ) {
-			xOff = 0;
+			pageOffset.x = 0;
 		}
 
 		return {
-			top: rect.top + win.pageYOffset - docElem.clientTop,
-			left: rect.left + xOff - docElem.clientLeft
+			top: rect.top + pageOffset.y - docElem.clientTop,
+			left: rect.left + pageOffset.x - docElem.clientLeft
 		};
 	}
 
@@ -127,6 +121,26 @@
 		}
 	}
 
+	// https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
+	function getPageOffset ( ) {
+	  var supportPageOffset = window.pageXOffset !== undefined;
+	  var isCSS1Compat = ((document.compatMode || "") === "CSS1Compat");
+
+	  var x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? document.documentElement.scrollLeft : document.body.scrollLeft;
+	  var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
+
+	  return {
+	    x: x,
+	    y: y
+	  };
+	}
+
+	function addCssPrefix(cssPrefix) {
+		return function(className) {
+			return cssPrefix + className;
+		}
+	}
+
 
 	var
 	// Determine the events to bind. IE11 implements pointerEvents without
@@ -145,28 +159,7 @@
 		move: 'mousemove touchmove',
 		end: 'mouseup touchend'
 	},
-	// Re-usable list of classes;
-	/** @const */
-	Classes = [
-/*  0 */  'noUi-target'
-/*  1 */ ,'noUi-base'
-/*  2 */ ,'noUi-origin'
-/*  3 */ ,'noUi-handle'
-/*  4 */ ,'noUi-horizontal'
-/*  5 */ ,'noUi-vertical'
-/*  6 */ ,'noUi-background'
-/*  7 */ ,'noUi-connect'
-/*  8 */ ,'noUi-ltr'
-/*  9 */ ,'noUi-rtl'
-/* 10 */ ,'noUi-dragable'
-/* 11 */ ,''
-/* 12 */ ,'noUi-state-drag'
-/* 13 */ ,''
-/* 14 */ ,'noUi-state-tap'
-/* 15 */ ,'noUi-active'
-/* 16 */ ,''
-/* 17 */ ,'noUi-stacking'
-	];
+	defaultCssPrefix = 'noUi-';
 
 
 // Value calculation
@@ -450,7 +443,7 @@
 	object, to make sure all values can be correctly looped elsewhere. */
 
 	var defaultFormatter = { 'to': function( value ){
-		return value.toFixed(2);
+		return value !== undefined && value.toFixed(2);
 	}, 'from': Number };
 
 	function testStep ( parsed, entry ) {
@@ -614,6 +607,22 @@
 		};
 	}
 
+	function testTooltips ( parsed, entry ) {
+		if ( entry === true ) {
+			parsed.tooltips = true;
+		}
+
+		if ( entry && entry.format ) {
+			if (typeof entry.format !== 'function') {
+				throw new error("noUiSlider: 'tooltips.format' must be a function.")
+			}
+
+			parsed.tooltips = {
+				format: entry.format
+			}
+		}
+	}
+
 	function testFormat ( parsed, entry ) {
 
 		parsed.format = entry;
@@ -624,6 +633,14 @@
 		}
 
 		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
+	}
+
+	function testCssPrefix ( parsed, entry ) {
+		if (entry !== undefined && typeof entry !== 'string') {
+			throw new Error( "noUiSlider: 'cssPrefix' must be a string.");
+		}
+
+		parsed.cssPrefix = entry;
 	}
 
 	// Test all developer settings and parse to assumption-safe values.
@@ -649,7 +666,9 @@
 			'margin': { r: false, t: testMargin },
 			'limit': { r: false, t: testLimit },
 			'behaviour': { r: true, t: testBehaviour },
-			'format': { r: false, t: testFormat }
+			'format': { r: false, t: testFormat },
+			'tooltips': { r: false, t: testTooltips },
+			'cssPrefix': { r: false, t: testCssPrefix }
 		};
 
 		var defaults = {
@@ -694,6 +713,40 @@
 
 		return parsed;
 	}
+
+
+function closure ( target, options ){
+
+	// All variables local to 'closure' are prefixed with 'scope_'
+	var scope_Target = target,
+		scope_Locations = [-1, -1],
+		scope_Base,
+		scope_Handles,
+		scope_Spectrum = options.spectrum,
+		scope_Values = [],
+		scope_Events = {};
+
+  var cssClasses = [
+    /*  0 */  'target'
+    /*  1 */ ,'base'
+    /*  2 */ ,'origin'
+    /*  3 */ ,'handle'
+    /*  4 */ ,'horizontal'
+    /*  5 */ ,'vertical'
+    /*  6 */ ,'background'
+    /*  7 */ ,'connect'
+    /*  8 */ ,'ltr'
+    /*  9 */ ,'rtl'
+    /* 10 */ ,'dragable'
+    /* 11 */ ,''
+    /* 12 */ ,'state-drag'
+    /* 13 */ ,''
+    /* 14 */ ,'state-tap'
+    /* 15 */ ,'active'
+    /* 16 */ ,''
+    /* 17 */ ,'stacking'
+    /* 18 */ ,'tooltip'
+  ].map(addCssPrefix(options.cssPrefix || defaultCssPrefix));
 
 
 	// Delimit proposed values for handle positions.
@@ -746,9 +799,11 @@
 			y = e.changedTouches[0].pageY;
 		}
 
+		var pageOffset = getPageOffset();
+
 		if ( mouse || pointer ) {
-			x = e.clientX + window.pageXOffset;
-			y = e.clientY + window.pageYOffset;
+			x = e.clientX + pageOffset.x;
+			y = e.clientY + pageOffset.y;
 		}
 
 		event.points = [x, y];
@@ -768,10 +823,10 @@
 			additions.reverse();
 		}
 
-		addClass(handle, Classes[3]);
-		addClass(handle, Classes[3] + additions[index]);
+		addClass(handle, cssClasses[3]);
+		addClass(handle, cssClasses[3] + additions[index]);
 
-		addClass(origin, Classes[2]);
+		addClass(origin, cssClasses[2]);
 		origin.appendChild(handle);
 
 		return origin;
@@ -785,14 +840,14 @@
 		// segments listed in the class list, to allow easy
 		// renaming and provide a minor compression benefit.
 		switch ( connect ) {
-			case 1:	addClass(target, Classes[7]);
-					addClass(handles[0], Classes[6]);
+			case 1:	addClass(target, cssClasses[7]);
+					addClass(handles[0], cssClasses[6]);
 					break;
-			case 3: addClass(handles[1], Classes[6]);
+			case 3: addClass(handles[1], cssClasses[6]);
 					/* falls through */
-			case 2: addClass(handles[0], Classes[7]);
+			case 2: addClass(handles[0], cssClasses[7]);
 					/* falls through */
-			case 0: addClass(target, Classes[6]);
+			case 0: addClass(target, cssClasses[6]);
 					break;
 		}
 	}
@@ -816,27 +871,34 @@
 	function addSlider ( direction, orientation, target ) {
 
 		// Apply classes and data to the target.
-		addClass(target, Classes[0]);
-		addClass(target, Classes[8 + direction]);
-		addClass(target, Classes[4 + orientation]);
+		addClass(target, cssClasses[0]);
+		addClass(target, cssClasses[8 + direction]);
+		addClass(target, cssClasses[4 + orientation]);
 
 		var div = document.createElement('div');
-		addClass(div, Classes[1]);
+		addClass(div, cssClasses[1]);
 		target.appendChild(div);
 		return div;
 	}
 
+function tooltips( tooltipsOptions ) {
+  var positionClasses = [cssClasses[19], cssClasses[20]];
+  var formatTooltipValue = tooltipsOptions.format ? tooltipsOptions.format : defaultFormatTooltipValue;
 
-function closure ( target, options ){
+  var tooltips = scope_Handles.map(function addTooltip(handle, handleId) {
+    var element = document.createElement('div');
+    element.className = cssClasses[18];
+    return handle.firstChild.appendChild(element);
+  });
 
-	// All variables local to 'closure' are prefixed with 'scope_'
-	var scope_Target = target,
-		scope_Locations = [-1, -1],
-		scope_Base,
-		scope_Handles,
-		scope_Spectrum = options.spectrum,
-		scope_Values = [],
-		scope_Events = {};
+  bindEvent('update', function updateTooltip(formattedValues, handleId, rawValues) {
+    tooltips[handleId].innerHTML = formatTooltipValue(formattedValues[handleId], rawValues[handleId]);
+  });
+
+  function defaultFormatTooltipValue(formattedValue, rawValue) {
+    return formattedValue;
+  }
+}
 
 
 	function getGroup ( mode, values, stepped ) {
@@ -1116,7 +1178,7 @@ function closure ( target, options ){
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( hasClass(scope_Target, Classes[14]) ) {
+			if ( hasClass(scope_Target, cssClasses[14]) ) {
 				return false;
 			}
 
@@ -1175,11 +1237,11 @@ function closure ( target, options ){
 	function end ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = scope_Base.getElementsByClassName(Classes[15]),
+		var active = scope_Base.querySelector( '.' + cssClasses[15] ),
 			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1;
 
-		if ( active.length ) {
-			removeClass(active[0], Classes[15]);
+		if ( active !== null ) {
+			removeClass(active, cssClasses[15]);
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -1196,7 +1258,7 @@ function closure ( target, options ){
 		});
 
 		// Remove dragging class.
-		removeClass(scope_Target, Classes[12]);
+		removeClass(scope_Target, cssClasses[12]);
 
 		// Fire the change and set events.
 		fireEvent('set', handleNumber);
@@ -1210,7 +1272,7 @@ function closure ( target, options ){
 
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
-			addClass(data.handles[0].children[0], Classes[15]);
+			addClass(data.handles[0].children[0], cssClasses[15]);
 
 			// Support 'disabled' handles
 			if ( data.handles[0].hasAttribute('disabled') ) {
@@ -1244,7 +1306,7 @@ function closure ( target, options ){
 
 			// Mark the target with a dragging state.
 			if ( scope_Handles.length > 1 ) {
-				addClass(scope_Target, Classes[12]);
+				addClass(scope_Target, cssClasses[12]);
 			}
 
 			var f = function(){
@@ -1282,7 +1344,7 @@ function closure ( target, options ){
 		if ( !options.events.snap ) {
 			// Flag the slider as it is now in a transitional state.
 			// Transition takes 300 ms, so re-enable the slider afterwards.
-			addClassFor( scope_Target, Classes[14], 300 );
+			addClassFor( scope_Target, cssClasses[14], 300 );
 		}
 
 		// Support 'disabled' handles
@@ -1332,8 +1394,8 @@ function closure ( target, options ){
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			drag = [scope_Base.getElementsByClassName( Classes[7] )[0]];
-			addClass(drag[0], Classes[10]);
+			drag = [scope_Base.querySelector( '.' + cssClasses[7] )];
+			addClass(drag[0], cssClasses[10]);
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first
@@ -1359,7 +1421,8 @@ function closure ( target, options ){
 			lowerMargin = scope_Locations[0] + options.margin,
 			upperMargin = scope_Locations[1] - options.margin,
 			lowerLimit = scope_Locations[0] + options.limit,
-			upperLimit = scope_Locations[1] - options.limit;
+			upperLimit = scope_Locations[1] - options.limit,
+			newScopeValue = scope_Spectrum.fromStepping( to );
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
@@ -1383,8 +1446,8 @@ function closure ( target, options ){
 		// JavaScript has some issues in its floating point implementation.
 		to = limit(parseFloat(to.toFixed(7)));
 
-		// Return false if handle can't move.
-		if ( to === scope_Locations[trigger] ) {
+		// Return false if handle can't move and ranges were not updated
+		if ( to === scope_Locations[trigger] && newScopeValue === scope_Values[trigger]) {
 			return false;
 		}
 
@@ -1393,9 +1456,9 @@ function closure ( target, options ){
 
 		// Force proper handle stacking
 		if ( !handle.previousSibling ) {
-			removeClass(handle, Classes[17]);
+			removeClass(handle, cssClasses[17]);
 			if ( to > 50 ) {
-				addClass(handle, Classes[17]);
+				addClass(handle, cssClasses[17]);
 			}
 		}
 
@@ -1464,7 +1527,7 @@ function closure ( target, options ){
 		// Animation is optional.
 		// Make sure the initial values where set before using animated placement.
 		if ( options.animate && scope_Locations[0] !== -1 ) {
-			addClassFor( scope_Target, Classes[14], 300 );
+			addClassFor( scope_Target, cssClasses[14], 300 );
 		}
 
 		// Determine how often to set the handles.
@@ -1497,7 +1560,7 @@ function closure ( target, options ){
 
 	// Removes classes from the root and empties it.
 	function destroy ( ) {
-		Classes.forEach(function(cls){
+		cssClasses.forEach(function(cls){
 			if ( !cls ) { return; } // Ignore empty classes
 			removeClass(scope_Target, cls);
 		});
@@ -1592,13 +1655,44 @@ function closure ( target, options ){
 		pips(options.pips);
 	}
 
+	if ( options.tooltips ) {
+		tooltips(options.tooltips);
+	}
+
+	// can be updated:
+	// margin
+	// limit
+	// step
+	// range
+	// animate
+	function updateOptions(optionsToUpdate) {
+		var tempOptions = {
+			start: [0, 0],
+			margin: optionsToUpdate.margin,
+			limit: optionsToUpdate.limit,
+			step: optionsToUpdate.step,
+			range: optionsToUpdate.range,
+			animate: optionsToUpdate.animate
+		};
+
+		var newOptions = testOptions(tempOptions);
+
+		options.margin = newOptions.margin;
+		options.limit = newOptions.limit;
+		options.step = newOptions.step;
+		options.range = newOptions.range;
+		options.animate = newOptions.animate;
+		scope_Spectrum = newOptions.spectrum;
+	}
+
 	return {
 		destroy: destroy,
 		steps: getCurrentStep,
 		on: bindEvent,
 		off: removeEvent,
 		get: valueGet,
-		set: valueSet
+		set: valueSet,
+		updateOptions: updateOptions
 	};
 
 }
@@ -1619,6 +1713,7 @@ function closure ( target, options ){
 		slider.set(options.start);
 
 		target.noUiSlider = slider;
+		return slider;
 	}
 
 	// Use an object instead of a function for future expansibility;

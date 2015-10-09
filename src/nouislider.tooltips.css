@@ -1,0 +1,23 @@
+.noUi-tooltip {
+  position: absolute;
+  color: #3FB8AF;
+  border: 1px solid #D9D9D9;
+  background: #FFF;
+  padding: 2px 3px;
+  border-radius: 3px;
+}
+
+.noUi-active .noUi-tooltip, .noUi-handle:hover .noUi-tooltip {
+  background: #3FB8AF;
+  color: #000;
+  border-color: #000;
+}
+
+.noUi-handle-lower .noUi-tooltip {
+  top: -32px;
+}
+
+.noUi-handle-upper .noUi-tooltip {
+  bottom: -32px;
+  right: 0;
+}
