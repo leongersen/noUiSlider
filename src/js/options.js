@@ -177,18 +177,20 @@
 	}
 
 	function testTooltips ( parsed, entry ) {
+
 		if ( entry === true ) {
 			parsed.tooltips = true;
 		}
 
 		if ( entry && entry.format ) {
-			if (typeof entry.format !== 'function') {
-				throw new error("noUiSlider: 'tooltips.format' must be a function.")
+
+			if ( typeof entry.format !== 'function' ) {
+				throw new Error("noUiSlider: 'tooltips.format' must be an object.");
 			}
 
 			parsed.tooltips = {
 				format: entry.format
-			}
+			};
 		}
 	}
 
@@ -205,7 +207,8 @@
 	}
 
 	function testCssPrefix ( parsed, entry ) {
-		if (entry !== undefined && typeof entry !== 'string') {
+
+		if ( entry !== undefined && typeof entry !== 'string' ) {
 			throw new Error( "noUiSlider: 'cssPrefix' must be a string.");
 		}
 

@@ -96,20 +96,21 @@
 
 	// https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
 	function getPageOffset ( ) {
-	  var supportPageOffset = window.pageXOffset !== undefined;
-	  var isCSS1Compat = ((document.compatMode || "") === "CSS1Compat");
 
-	  var x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? document.documentElement.scrollLeft : document.body.scrollLeft;
-	  var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
+		var supportPageOffset = window.pageXOffset !== undefined,
+			isCSS1Compat = ((document.compatMode || "") === "CSS1Compat"),
+			x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? document.documentElement.scrollLeft : document.body.scrollLeft,
+			y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
 
-	  return {
-	    x: x,
-	    y: y
-	  };
+		return {
+			x: x,
+			y: y
+		};
 	}
 
+	// todo
 	function addCssPrefix(cssPrefix) {
 		return function(className) {
 			return cssPrefix + className;
-		}
+		};
 	}

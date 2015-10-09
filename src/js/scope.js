@@ -250,23 +250,23 @@
 	// step
 	// range
 	// animate
-	function updateOptions(optionsToUpdate) {
-		var tempOptions = {
+	function updateOptions ( optionsToUpdate ) {
+
+		var newOptions = testOptions({
 			start: [0, 0],
 			margin: optionsToUpdate.margin,
 			limit: optionsToUpdate.limit,
 			step: optionsToUpdate.step,
 			range: optionsToUpdate.range,
 			animate: optionsToUpdate.animate
-		};
-
-		var newOptions = testOptions(tempOptions);
+		});
 
 		options.margin = newOptions.margin;
 		options.limit = newOptions.limit;
 		options.step = newOptions.step;
 		options.range = newOptions.range;
 		options.animate = newOptions.animate;
+
 		scope_Spectrum = newOptions.spectrum;
 	}
 
