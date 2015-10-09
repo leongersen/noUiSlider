@@ -3,7 +3,7 @@
 
 		Q.innerHTML = '<div class="slider"></div>';
 
-		var sliders = Q.getElementsByClassName('slider'),
+		var sliders = Q.querySelectorAll('.slider'),
 			slider = sliders[0];
 
 		assert.throws(function(){

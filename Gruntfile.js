@@ -12,8 +12,9 @@ module.exports = function(grunt) {
 			'src/js/constants.js',
 			'src/js/range.js',
 			'src/js/options.js',
-			'src/js/structure.js',
 			'src/js/scope_start.js',
+			'src/js/structure.js',
+			'src/js/tooltips.js',
 			'src/js/pips.js',
 			'src/js/scope_helpers.js',
 			'src/js/scope_events.js',
@@ -47,7 +48,7 @@ module.exports = function(grunt) {
 					banner: VERSION_TEMPLATE
 				},
 				files: {
-					'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css']
+					'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css', 'src/nouislider.tooltips.css']
 				}
 			}
 		},
@@ -101,7 +102,8 @@ module.exports = function(grunt) {
 	// https://github.com/gruntjs/grunt-contrib-compress
 	grunt.loadNpmTasks('grunt-contrib-compress');
 
-    grunt.registerTask('default', ['concat', 'jshint']);
-    grunt.registerTask('create', ['concat', 'jshint', 'uglify', 'cssmin']);
-	grunt.registerTask('release', ['compress']);
+	grunt.registerTask('default', ['concat', 'jshint']);
+	grunt.registerTask('create', ['concat', 'uglify', 'cssmin']);
+	grunt.registerTask('lint', ['jshint']);
+	grunt.registerTask('release', ['jshint', 'compress']);
 };

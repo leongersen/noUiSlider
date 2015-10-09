@@ -12,7 +12,7 @@
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( hasClass(scope_Target, Classes[14]) ) {
+			if ( hasClass(scope_Target, cssClasses[14]) ) {
 				return false;
 			}
 
@@ -71,11 +71,11 @@
 	function end ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = scope_Base.getElementsByClassName(Classes[15]),
+		var active = scope_Base.querySelector( '.' + cssClasses[15] ),
 			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1;
 
-		if ( active.length ) {
-			removeClass(active[0], Classes[15]);
+		if ( active !== null ) {
+			removeClass(active, cssClasses[15]);
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -92,7 +92,7 @@
 		});
 
 		// Remove dragging class.
-		removeClass(scope_Target, Classes[12]);
+		removeClass(scope_Target, cssClasses[12]);
 
 		// Fire the change and set events.
 		fireEvent('set', handleNumber);
@@ -106,7 +106,7 @@
 
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
-			addClass(data.handles[0].children[0], Classes[15]);
+			addClass(data.handles[0].children[0], cssClasses[15]);
 
 			// Support 'disabled' handles
 			if ( data.handles[0].hasAttribute('disabled') ) {
@@ -140,7 +140,7 @@
 
 			// Mark the target with a dragging state.
 			if ( scope_Handles.length > 1 ) {
-				addClass(scope_Target, Classes[12]);
+				addClass(scope_Target, cssClasses[12]);
 			}
 
 			var f = function(){
@@ -178,7 +178,7 @@
 		if ( !options.events.snap ) {
 			// Flag the slider as it is now in a transitional state.
 			// Transition takes 300 ms, so re-enable the slider afterwards.
-			addClassFor( scope_Target, Classes[14], 300 );
+			addClassFor( scope_Target, cssClasses[14], 300 );
 		}
 
 		// Support 'disabled' handles
@@ -228,8 +228,8 @@
 		// Make the range dragable.
 		if ( behaviour.drag ){
 
-			drag = [scope_Base.getElementsByClassName( Classes[7] )[0]];
-			addClass(drag[0], Classes[10]);
+			drag = [scope_Base.querySelector( '.' + cssClasses[7] )];
+			addClass(drag[0], cssClasses[10]);
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first
