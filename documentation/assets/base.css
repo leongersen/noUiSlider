@@ -137,6 +137,9 @@
 		margin: 20px 0;
 		overflow: hidden;
 	}
+	.example.overflow {
+		overflow: visible;
+	}
 	.example-val {
 		font: 400 12px Arial;
 		color: #888;

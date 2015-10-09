@@ -14,7 +14,6 @@
 		<li><a href="#section-skipping">Skipping values on a slider</a></li>
 		<li><a href="#section-dates">Using dates</a></li>
 		<li><a href="#section-toggle">Create a toggle</a></li>
-		<li><a href="#section-tooltips">Add tooltips to the slider handles</a></li>
 		<li><a href="#section-soft-limits">Block the edges of a slider</a></li>
 	</ul>
 </section>
@@ -423,47 +422,6 @@
 			<?php loadShowCSS('toggle'); ?>
 		</div>
 
-	</div>
-</section>
-
-
-<?php sect('tooltips'); ?>
-<h1>Slider with Tooltips</h1>
-
-<section>
-
-	<div class="view">
-
-		<p>Using the <code>update</code> event, noUiSlider can provided handles with tooltips. These tooltips can be styled and modified on the fly, as demonstrated in this example.</p>
-
-		<p>The noUiSlider theme includes no tooltip styling, so by default, the values will resemble the handle on the left.</p>
-
-		<div class="example" style="padding-top: 50px;">
-			<div id="slider-tooltip"></div>
-			<?php run('tooltip'); ?>
-			<?php run('tooltip-more'); ?>
-		</div>
-	</div>
-
-	<div class="side">
-
-		<div class="viewer-header">Slider setup</div>
-
-		<div class="viewer-content">
-			<?php code('tooltip'); ?>
-		</div>
-
-		<div class="viewer-header">Add tooltips</div>
-
-		<div class="viewer-content">
-			<?php code('tooltip-more', true); ?>
-		</div>
-
-		<div class="viewer-header">Example tooltip styling</div>
-
-		<div class="viewer-content">
-			<?php loadShowCSS('tooltip'); ?>
-		</div>
 	</div>
 </section>
 
