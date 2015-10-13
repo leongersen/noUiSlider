@@ -1,4 +1,4 @@
-/*! nouislider - 8.0.2 - 2015-07-06 13:22:09 */
+/*! nouislider - 8.0.2 - 2015-10-13 21:58:17 */
 
 /*jslint browser: true */
 /*jslint white: true */
@@ -888,6 +888,11 @@ function closure ( target, options ){
 
 	function generateSpread ( density, mode, group ) {
 
+		function safeIncrement(value, increment) {
+			// Avoid floating point variance by dropping the smallest decimal places.
+			return (value + increment).toFixed(7) / 1;
+		}
+
 		var originalSpectrumDirection = scope_Spectrum.direction,
 			indexes = {},
 			firstInRange = scope_Spectrum.xVal[0],
@@ -943,7 +948,7 @@ function closure ( target, options ){
 			}
 
 			// Find all steps in the subrange.
-			for ( i = low; i <= high; i += step ) {
+			for ( i = low; i <= high; i = safeIncrement(i, step) ) {
 
 				// Get the percentage value for the current step,
 				// calculate the size for the subrange.
