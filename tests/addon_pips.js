@@ -150,3 +150,27 @@
 
 		assert.equal( Q.querySelectorAll('.noUi-value').length, 6, 'Removed duplicate in step' );
 	});
+
+
+	// #528, #532
+	QUnit.test( "Values, stepped", function( assert ){
+
+		Q.innerHTML = '<div class="slider"></div>';
+		var slider = Q.querySelector('.slider');
+
+		noUiSlider.create(slider, {
+			start: -12,
+			range: {
+				min: -15,
+				max: 0.23
+			},
+			pips: {
+				mode: 'positions',
+				values: [0, 50, 100]
+			}
+		});
+
+		var pips = Q.querySelectorAll('.noUi-value');
+
+		assert.ok( pips[pips.length - 1].getAttribute('style').indexOf('left: 100.') === 0, 'Last pip is on the right.' );
+	});
