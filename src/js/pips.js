@@ -48,6 +48,11 @@
 
 	function generateSpread ( density, mode, group ) {
 
+		function safeIncrement(value, increment) {
+			// Avoid floating point variance by dropping the smallest decimal places.
+			return (value + increment).toFixed(7) / 1;
+		}
+
 		var originalSpectrumDirection = scope_Spectrum.direction,
 			indexes = {},
 			firstInRange = scope_Spectrum.xVal[0],
@@ -103,7 +108,7 @@
 			}
 
 			// Find all steps in the subrange.
-			for ( i = low; i <= high; i += step ) {
+			for ( i = low; i <= high; i = safeIncrement(i, step) ) {
 
 				// Get the percentage value for the current step,
 				// calculate the size for the subrange.
