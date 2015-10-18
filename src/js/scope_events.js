@@ -41,8 +41,12 @@
 
 	// Handle movement on document for handle and range drag.
 	function move ( event, data ) {
-		
-		if(event.which==0) return end(event,data); //fix #498
+
+		// Fix #498
+		if ( event.buttons === 0 ) {
+			return end(event, data);
+		}
+
 		var handles = data.handles || scope_Handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
 			handleNumber = handles[0] === scope_Handles[0] ? 0 : 1, i;
