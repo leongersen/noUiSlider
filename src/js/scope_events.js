@@ -16,7 +16,7 @@
 				return false;
 			}
 
-			e = fixEvent(e);
+			e = fixEvent(e, data.pageOffset);
 
 			// Ignore right or middle clicks on start #454
 			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
@@ -48,7 +48,7 @@
 		}
 
 		var handles = data.handles || scope_Handles, positions, state = false,
-			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
+			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize,
 			handleNumber = handles[0] === scope_Handles[0] ? 0 : 1, i;
 
 		// Calculate relative positions for the handles.
@@ -125,6 +125,8 @@
 		// Attach the move and end events.
 		var moveEvent = attach(actions.move, d, move, {
 			start: event.calcPoint,
+			baseSize: baseSize(),
+			pageOffset: event.pageOffset,
 			handles: data.handles,
 			positions: [
 				scope_Locations[0],

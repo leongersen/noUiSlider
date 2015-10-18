@@ -23,7 +23,7 @@
 	}
 
 	// Provide a clean event with standardized offset values.
-	function fixEvent ( e ) {
+	function fixEvent ( e, pageOffset ) {
 
 		// Prevent scrolling and panning on touch events, while
 		// attempting to slide. The tap event also depends on this.
@@ -49,13 +49,14 @@
 			y = e.changedTouches[0].pageY;
 		}
 
-		var pageOffset = getPageOffset();
+		pageOffset = pageOffset || getPageOffset();
 
 		if ( mouse || pointer ) {
 			x = e.clientX + pageOffset.x;
 			y = e.clientY + pageOffset.y;
 		}
 
+		event.pageOffset = pageOffset;
 		event.points = [x, y];
 		event.cursor = mouse || pointer; // Fix #435
 
