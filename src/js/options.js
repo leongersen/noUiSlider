@@ -168,6 +168,11 @@
 			fixed = entry.indexOf('fixed') >= 0,
 			snap = entry.indexOf('snap') >= 0;
 
+		// Fix #472
+		if ( drag && !parsed.connect ) {
+			throw new Error("noUiSlider: 'drag' behaviour must be used with 'connect': true.");
+		}
+
 		parsed.events = {
 			tap: tap || snap,
 			drag: drag,

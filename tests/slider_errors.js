@@ -85,6 +85,18 @@
 			});
 		});
 
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: 10,
+				connect: false,
+				behaviour: 'drag',
+				range: {
+					'min': 0,
+					'max': 10
+				}
+			});
+		});
+
 		noUiSlider.create(slider, {
 			start: 1,
 			range: {
