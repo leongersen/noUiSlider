@@ -13,6 +13,7 @@
 		<li><a href="#section-keypress">Changing the slider value by keypress</a></li>
 		<li><a href="#section-skipping">Skipping values on a slider</a></li>
 		<li><a href="#section-huge-numbers">Working with huge numbers</a></li>
+		<li><a href="#section-keyboard">Adding keyboard support</a></li>
 		<li><a href="#section-dates">Using dates</a></li>
 		<li><a href="#section-toggle">Create a toggle</a></li>
 		<li><a href="#section-soft-limits">Block the edges of a slider</a></li>
@@ -372,6 +373,47 @@
 		</div>
 
 		<?php code('huge-numbers'); ?>
+
+	</div>
+</section>
+
+
+<?php sect('keyboard'); ?>
+<h1>Adding keyboard support</h1>
+
+<section>
+
+	<div class="view">
+
+		<p>Much like the keypress example, handles can be made keyboard-focusable.</p>
+
+		<div class="example">
+			<input placeholder="Hit tab to focus on the handle." style="width: 100%">
+			<div id="keyboard"></div>
+			<?php run('keyboard-slider'); ?>
+			<?php run('keyboard'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<div class="viewer-header">Initializing the slider</div>
+
+		<div class="viewer-content">
+			<?php code('keyboard-slider'); ?>
+		</div>
+
+		<div class="viewer-header">Listen to <code>keypress</code> on the handle</div>
+
+		<div class="viewer-content">
+			<?php code('keyboard'); ?>
+		</div>
+
+		<div class="viewer-header">CSS</div>
+
+		<div class="viewer-content">
+			<?php loadShowCSS('keyboard'); ?>
+		</div>
 
 	</div>
 </section>
