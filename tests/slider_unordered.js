@@ -18,13 +18,10 @@
 
 		slider.noUiSlider.set(11);
 		equal(slider.noUiSlider.get(), 11);
-		equal(slider.querySelector('.noUi-origin').style.left, '0%');
 
 		slider.noUiSlider.set(12);
 		equal(slider.noUiSlider.get(), 12);
-		equal(slider.querySelector('.noUi-origin').style.left, '10%');
 
 		slider.noUiSlider.set(16);
 		equal(slider.noUiSlider.get(), 16);
-		equal(slider.querySelector('.noUi-origin').style.left, '50%');
 	});
