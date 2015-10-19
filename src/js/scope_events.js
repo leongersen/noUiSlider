@@ -232,7 +232,7 @@
 			});
 		}
 
-		// Make the range dragable.
+		// Make the range draggable.
 		if ( behaviour.drag ){
 
 			drag = [scope_Base.querySelector( '.' + cssClasses[7] )];

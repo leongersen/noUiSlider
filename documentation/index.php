@@ -48,7 +48,7 @@
 		<ul class="pro-list">
 			<li>Responsive design friendly</li>
 			<li>Touch support for iOS, Android &amp; Windows (phone)</li>
-			<li>Dragable range</li>
+			<li>Draggable range</li>
 			<li><strong>No jQuery, jQueryUI or other dependencies</strong></li>
 			<li>Tested in IE9 - IE11, Chrome, Opera, Firefox &amp; Safari</li>
 		</ul>

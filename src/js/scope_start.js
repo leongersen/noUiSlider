@@ -21,7 +21,7 @@ function closure ( target, options ){
     /*  7 */ ,'connect'
     /*  8 */ ,'ltr'
     /*  9 */ ,'rtl'
-    /* 10 */ ,'dragable'
+    /* 10 */ ,'draggable'
     /* 11 */ ,''
     /* 12 */ ,'state-drag'
     /* 13 */ ,''

@@ -103,10 +103,10 @@
 
 /* Handles and cursors;
  */
-.noUi-dragable {
+.noUi-draggable {
 	cursor: w-resize;
 }
-.noUi-vertical .noUi-dragable {
+.noUi-vertical .noUi-draggable {
 	cursor: n-resize;
 }
 .noUi-handle {
