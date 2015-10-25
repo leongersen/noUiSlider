@@ -1,6 +1,3 @@
-/*jslint browser: true */
-/*jslint white: true */
-
 (function (factory) {
 
     if ( typeof define === 'function' && define.amd ) {
