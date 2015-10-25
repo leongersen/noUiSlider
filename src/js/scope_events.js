@@ -45,7 +45,8 @@
 		// Fix #498
 		// Check value of .buttons in 'start' to work around a bug in IE10 mobile.
 		// https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
-		if ( event.buttons === 0 && data.buttonsProperty !== 0 ) {
+		// IE9 has .buttons zero on mousemove.
+		if ( event.buttons === 0 && event.which === 0 && data.buttonsProperty !== 0 ) {
 			return end(event, data);
 		}
 
