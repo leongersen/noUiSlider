@@ -172,5 +172,5 @@
 
 		var pips = Q.querySelectorAll('.noUi-value');
 
-		assert.ok( pips[pips.length - 1].getAttribute('style').indexOf('left: 100.') === 0, 'Last pip is on the right.' );
+		assert.ok( pips[pips.length - 1].getAttribute('style').indexOf('left: 100') === 0, 'Last pip is on the right.' );
 	});
