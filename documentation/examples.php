@@ -12,9 +12,10 @@
 		<li><a href="#section-lock">Locking two sliders together</a></li>
 		<li><a href="#section-keypress">Changing the slider value by keypress</a></li>
 		<li><a href="#section-skipping">Skipping values on a slider</a></li>
+		<li><a href="#section-huge-numbers">Working with huge numbers</a></li>
+		<li><a href="#section-keyboard">Adding keyboard support</a></li>
 		<li><a href="#section-dates">Using dates</a></li>
 		<li><a href="#section-toggle">Create a toggle</a></li>
-		<li><a href="#section-tooltips">Add tooltips to the slider handles</a></li>
 		<li><a href="#section-soft-limits">Block the edges of a slider</a></li>
 	</ul>
 </section>
@@ -338,6 +339,86 @@
 </section>
 
 
+<?php sect('huge-numbers'); ?>
+<h1>Using the slider with huge numbers</h1>
+
+<section>
+
+	<div class="view">
+
+		<p>If you are working with arbitrarily large numbers, you should <strong>not use these directly in noUiSlider</strong>, as you'll run into some JavaScript limitations. Instead, you should <strong>map</strong> your values to an <code>array</code>.</p>
+
+		<p>Numbers is JavaScript are <a href="">Double Precision Floats</a>, which can store numbers up to 2^53 <em>(9007199254740992)</em> precisely. For reference, see <a href="http://stackoverflow.com/questions/15529337/prevent-javascript-number-function-from-rounding-big-numbers">this StackOverflow question</a>, or <a href="https://github.com/leongersen/noUiSlider/issues/427">issue #427 filed on GitHub</a>.</p>
+
+		<p>As an example, see the <code>'range'</code> option for a RAM selector offering 14 steps from 512MB to 8GB. The <code>'step'</code> are ommited for clarity. The values are provided as bytes. A better solution would be to abstract the byte values away from the slider, looking up the byte values in an array. This keeps the slider configuration simple and prevents issues with floating point precision.</p>
+
+		<p><em>(These values fit within the limit just fine, but demonstrate the point really well!)</em></p>
+
+		<div class="example">
+			<div id="slider-huge"></div>
+			<span class="example-val" id="huge-value"></span>
+			<?php run('huge-numbers-setup'); ?>
+			<?php run('huge-numbers'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<?php code('huge-numbers-direct'); ?>
+
+		<div class="viewer-header">Setup</div>
+
+		<div class="viewer-content">
+			<?php code('huge-numbers-setup'); ?>
+		</div>
+
+		<?php code('huge-numbers'); ?>
+
+	</div>
+</section>
+
+
+<?php sect('keyboard'); ?>
+<h1>Adding keyboard support</h1>
+
+<section>
+
+	<div class="view">
+
+		<p>Much like the keypress example, handles can be made keyboard-focusable.</p>
+
+		<div class="example">
+			<input placeholder="Hit tab to focus on the handle." style="width: 100%">
+			<div id="keyboard"></div>
+			<?php run('keyboard-slider'); ?>
+			<?php run('keyboard'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<div class="viewer-header">Initializing the slider</div>
+
+		<div class="viewer-content">
+			<?php code('keyboard-slider'); ?>
+		</div>
+
+		<div class="viewer-header">Listen to <code>keypress</code> on the handle</div>
+
+		<div class="viewer-content">
+			<?php code('keyboard'); ?>
+		</div>
+
+		<div class="viewer-header">CSS</div>
+
+		<div class="viewer-content">
+			<?php loadShowCSS('keyboard'); ?>
+		</div>
+
+	</div>
+</section>
+
+
 <?php sect('dates'); ?>
 <h1>Working with dates</h1>
 
@@ -423,47 +504,6 @@
 			<?php loadShowCSS('toggle'); ?>
 		</div>
 
-	</div>
-</section>
-
-
-<?php sect('tooltips'); ?>
-<h1>Slider with Tooltips</h1>
-
-<section>
-
-	<div class="view">
-
-		<p>Using the <code>update</code> event, noUiSlider can provided handles with tooltips. These tooltips can be styled and modified on the fly, as demonstrated in this example.</p>
-
-		<p>The noUiSlider theme includes no tooltip styling, so by default, the values will resemble the handle on the left.</p>
-
-		<div class="example" style="padding-top: 50px;">
-			<div id="slider-tooltip"></div>
-			<?php run('tooltip'); ?>
-			<?php run('tooltip-more'); ?>
-		</div>
-	</div>
-
-	<div class="side">
-
-		<div class="viewer-header">Slider setup</div>
-
-		<div class="viewer-content">
-			<?php code('tooltip'); ?>
-		</div>
-
-		<div class="viewer-header">Add tooltips</div>
-
-		<div class="viewer-content">
-			<?php code('tooltip-more', true); ?>
-		</div>
-
-		<div class="viewer-header">Example tooltip styling</div>
-
-		<div class="viewer-content">
-			<?php loadShowCSS('tooltip'); ?>
-		</div>
 	</div>
 </section>
 

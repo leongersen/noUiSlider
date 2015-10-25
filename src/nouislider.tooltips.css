@@ -1,17 +1,19 @@
-.tooltip {
+.noUi-tooltip {
 	display: block;
 	position: absolute;
 	border: 1px solid #D9D9D9;
-	font: 400 12px/12px Arial;
 	border-radius: 3px;
 	background: #fff;
-	top: -43px;
 	padding: 5px;
 	left: -9px;
 	text-align: center;
 	width: 50px;
 }
-.tooltip strong {
-	display: block;
-	padding: 2px;
+
+.noUi-handle-lower .noUi-tooltip {
+	top: -32px;
+}
+
+.noUi-handle-upper .noUi-tooltip {
+	bottom: -32px;
 }

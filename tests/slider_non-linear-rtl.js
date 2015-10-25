@@ -6,8 +6,8 @@
 			<div class="sliderLTR"></div>\
 		';
 
-		var sliderRTL = Q.getElementsByClassName('sliderRTL')[0];
-		var sliderLTR = Q.getElementsByClassName('sliderLTR')[0];
+		var sliderRTL = Q.querySelector('.sliderRTL');
+		var sliderLTR = Q.querySelector('.sliderLTR');
 
 		noUiSlider.create(sliderRTL, {
 			range: {

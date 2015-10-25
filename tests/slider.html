@@ -3,6 +3,8 @@
 <head>
 	<title>Testing</title>
 
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
 	<style>
 
 		.noUi-horizontal {
@@ -14,10 +16,15 @@
 
 	</style>
 
-	<link href="../distribute/jquery.nouislider.min.css" rel="stylesheet">
+	<!--[if lte IE 8]>
+	  <script src="https://cdnjs.cloudflare.com/ajax/libs/aight/1.2.2/aight.min.js"></script>
+	<![endif]-->
+
+	<link href="../distribute/nouislider.min.css" rel="stylesheet">
 	<link href="http://code.jquery.com/qunit/qunit-1.18.0.css" rel="stylesheet">
 
 	<script src="http://code.jquery.com/qunit/qunit-1.18.0.js"></script>
+	<script src="../node_modules/simulant/dist/simulant.js"></script>
 	<script src="../distribute/nouislider.js" data-cover></script>
 
 
@@ -54,9 +61,12 @@
 	<script src="slider_unordered.js"></script>
 	<script src="slider_errors.js"></script>
 	<script src="slider_binding.js"></script>
+	<script src="slider_update-numbers.js"></script>
 
 	<script src="addon_pips.js"></script>
 
-	<script src="blanket.min.js"></script>
-
+	<!-- No blanket.js support in IE < 9 -->
+	<!--[if gt IE 8]><!-->
+	<script src="../node_modules/blanket/dist/qunit/blanket.min.js"></script>
+	<!--<![endif]-->
 </body>

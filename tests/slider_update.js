@@ -5,7 +5,7 @@
 			<div class="slider"></div>\
 			<input class="input">';
 
-		var slider = Q.getElementsByClassName('slider')[0];
+		var slider = Q.querySelector('.slider');
 
 		noUiSlider.create(slider, {
 			range: { min: 20, max: 140 },
@@ -35,14 +35,14 @@
 		slider.noUiSlider.set(40);
 		assert.deepEqual(slider.noUiSlider.get(), ['40', '60']);
 
-		equal ( slider.getElementsByClassName('noUi-connect').length, 0, 'Slider uses no connection' );
+		equal ( slider.querySelectorAll('.noUi-connect').length, 0, 'Slider uses no connection' );
 
 		settings.connect = true;
 		slider.noUiSlider.destroy();
 
 		noUiSlider.create(slider, settings);
 
-		equal ( slider.getElementsByClassName('noUi-connect').length, 1, 'Slider now connects' );
+		equal ( slider.querySelectorAll('.noUi-connect').length, 1, 'Slider now connects' );
 
 		assert.deepEqual(slider.noUiSlider.get(), ['30', '60'], 'Value was unchanged');
 

@@ -12,7 +12,7 @@
 	object, to make sure all values can be correctly looped elsewhere. */
 
 	var defaultFormatter = { 'to': function( value ){
-		return value.toFixed(2);
+		return value !== undefined && value.toFixed(2);
 	}, 'from': Number };
 
 	function testStep ( parsed, entry ) {
@@ -168,12 +168,35 @@
 			fixed = entry.indexOf('fixed') >= 0,
 			snap = entry.indexOf('snap') >= 0;
 
+		// Fix #472
+		if ( drag && !parsed.connect ) {
+			throw new Error("noUiSlider: 'drag' behaviour must be used with 'connect': true.");
+		}
+
 		parsed.events = {
 			tap: tap || snap,
 			drag: drag,
 			fixed: fixed,
 			snap: snap
 		};
+	}
+
+	function testTooltips ( parsed, entry ) {
+
+		if ( entry === true ) {
+			parsed.tooltips = true;
+		}
+
+		if ( entry && entry.format ) {
+
+			if ( typeof entry.format !== 'function' ) {
+				throw new Error("noUiSlider: 'tooltips.format' must be an object.");
+			}
+
+			parsed.tooltips = {
+				format: entry.format
+			};
+		}
 	}
 
 	function testFormat ( parsed, entry ) {
@@ -186,6 +209,15 @@
 		}
 
 		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
+	}
+
+	function testCssPrefix ( parsed, entry ) {
+
+		if ( entry !== undefined && typeof entry !== 'string' ) {
+			throw new Error( "noUiSlider: 'cssPrefix' must be a string.");
+		}
+
+		parsed.cssPrefix = entry;
 	}
 
 	// Test all developer settings and parse to assumption-safe values.
@@ -211,7 +243,9 @@
 			'margin': { r: false, t: testMargin },
 			'limit': { r: false, t: testLimit },
 			'behaviour': { r: true, t: testBehaviour },
-			'format': { r: false, t: testFormat }
+			'format': { r: false, t: testFormat },
+			'tooltips': { r: false, t: testTooltips },
+			'cssPrefix': { r: false, t: testCssPrefix }
 		};
 
 		var defaults = {

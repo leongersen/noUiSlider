@@ -8,6 +8,7 @@
 -webkit-touch-callout: none;
 -webkit-user-select: none;
 -ms-touch-action: none;
+	touch-action: none;	
 -ms-user-select: none;
 -moz-user-select: none;
 -moz-box-sizing: border-box;
@@ -102,10 +103,10 @@
 
 /* Handles and cursors;
  */
-.noUi-dragable {
+.noUi-draggable {
 	cursor: w-resize;
 }
-.noUi-vertical .noUi-dragable {
+.noUi-vertical .noUi-draggable {
 	cursor: n-resize;
 }
 .noUi-handle {

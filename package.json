@@ -2,23 +2,31 @@
   "name": "nouislider",
   "version": "8.0.2",
   "main": "distribute/nouislider",
+  "style": "distribute/nouislider.min.css",
   "license": "WTFPL",
+  "scripts": {
+    "build": "grunt create",
+    "watch:js": "npm run build && onchange 'src/js/*.js' 'src/*.css' -- npm run build",
+    "serve-tests": "browser-sync start --server . --startPath tests/slider.html --files 'distribute/, tests/*.js'",
+    "test": "grunt lint",
+    "dev": "./scripts/dev.sh"
+  },
   "devDependencies": {
+    "blanket": "1.1.7",
+    "browser-sync": "2.9.3",
     "grunt": "~0.4.1",
+    "grunt-cli": "0.1.13",
     "grunt-contrib-compress": "^0.11.0",
     "grunt-contrib-concat": "^0.5.0",
     "grunt-contrib-copy": "^0.5.0",
     "grunt-contrib-cssmin": "^0.10.0",
     "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "^0.5.1"
+    "grunt-contrib-uglify": "^0.5.1",
+    "onchange": "2.0.0",
+    "simulant": "0.1.5"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/leongersen/noUiSlider.git"
-  },
-  "browserify": {
-    "transform": [
-      "brfs"
-    ]
   }
 }

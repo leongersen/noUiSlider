@@ -3,7 +3,7 @@
 
 		Q.innerHTML = '<div class="slider"></div>';
 
-		var sliders = Q.getElementsByClassName('slider'),
+		var sliders = Q.querySelectorAll('.slider'),
 			slider = sliders[0];
 
 		assert.throws(function(){
@@ -82,6 +82,18 @@
 					'max': 10
 				},
 				connect: true
+			});
+		});
+
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: 10,
+				connect: false,
+				behaviour: 'drag',
+				range: {
+					'min': 0,
+					'max': 10
+				}
 			});
 		});
 

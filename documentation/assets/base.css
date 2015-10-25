@@ -137,6 +137,9 @@
 		margin: 20px 0;
 		overflow: hidden;
 	}
+	.example.overflow {
+		overflow: visible;
+	}
 	.example-val {
 		font: 400 12px Arial;
 		color: #888;
@@ -332,6 +335,10 @@
 		box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 	}
 
+	.noUi-tooltip {
+		font: 700 12px/12px Arial;
+	}
+	
 @media ( min-width: 800px ) {
 
 	.index-demo {

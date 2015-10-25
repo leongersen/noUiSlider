@@ -6,7 +6,7 @@
 	function test_slider( pips, first ){
 
 		Q.innerHTML = '<div class="slider"></div>';
-		var slider = Q.getElementsByClassName('slider')[0];
+		var slider = Q.querySelector('.slider');
 
 		noUiSlider.create(slider, {
 			range: {
@@ -36,13 +36,13 @@
 			}
 		});
 
-		assert.ok( Q.getElementsByClassName('noUi-pips').length, 'Pips where created' );
+		assert.ok( Q.querySelectorAll('.noUi-pips').length, 'Pips where created' );
 
-		var markers = Q.getElementsByClassName('noUi-marker');
+		var markers = Q.querySelectorAll('.noUi-marker');
 		assert.ok( markers.length >= 32 && markers.length <= 34, 'Density of 1/3 was applied' );
 
 		// Test formatter
-		assert.equal( Q.getElementsByClassName('noUi-value')[0].innerHTML, '0.00' );
+		assert.equal( Q.querySelector('.noUi-value').innerHTML, '0.00' );
 	});
 
 	QUnit.test( "Steps", function( assert ){
@@ -55,7 +55,7 @@
 
 	// STEPS
 
-		var markers = Q.getElementsByClassName('noUi-marker').length;
+		var markers = Q.querySelectorAll('.noUi-marker').length;
 		assert.ok( markers >= 49 && markers <= 51, 'Density of 1/2 was applied' );
 
 	});
@@ -69,11 +69,11 @@
 
 	// POSITIONS
 
-		assert.equal( Q.getElementsByClassName('noUi-marker-large').length, 5, 'Large markers added for all values' );
-		assert.equal( Q.getElementsByClassName('noUi-value').length, 5 );
+		assert.equal( Q.querySelectorAll('.noUi-marker-large').length, 5, 'Large markers added for all values' );
+		assert.equal( Q.querySelectorAll('.noUi-value').length, 5 );
 
 		var pos = [];
-		Array.prototype.forEach.call(Q.getElementsByClassName('noUi-value'), function( el ){
+		Array.prototype.forEach.call(Q.querySelectorAll('.noUi-value'), function( el ){
 			pos.push(parseInt(el.style.left));
 		});
 
@@ -103,10 +103,10 @@
 
 	// COUNT
 
-		assert.equal( Q.getElementsByClassName('noUi-value').length, 8, 'Placed requested number of values' );
+		assert.equal( Q.querySelectorAll('.noUi-value').length, 8, 'Placed requested number of values' );
 
 		var pos2 = [];
-		Array.prototype.forEach.call(Q.getElementsByClassName('noUi-value'), function( el ){
+		Array.prototype.forEach.call(Q.querySelectorAll('.noUi-value'), function( el ){
 			pos2.push(parseInt(el.style.left));
 		});
 
@@ -135,7 +135,7 @@
 			values: [50, 552, 750, 940, 5000, 6080, 9000]
 		}, 1 );
 
-		assert.equal( Q.getElementsByClassName('noUi-value').length, 7, 'Placed requested number of values' );
+		assert.equal( Q.querySelectorAll('.noUi-value').length, 7, 'Placed requested number of values' );
 	});
 
 	// VALUES (STEPPED)
@@ -148,5 +148,29 @@
 			stepped: true
 		});
 
-		assert.equal( Q.getElementsByClassName('noUi-value').length, 6, 'Removed duplicate in step' );
+		assert.equal( Q.querySelectorAll('.noUi-value').length, 6, 'Removed duplicate in step' );
+	});
+
+
+	// #528, #532
+	QUnit.test( "Values, stepped", function( assert ){
+
+		Q.innerHTML = '<div class="slider"></div>';
+		var slider = Q.querySelector('.slider');
+
+		noUiSlider.create(slider, {
+			start: -12,
+			range: {
+				min: -15,
+				max: 0.23
+			},
+			pips: {
+				mode: 'positions',
+				values: [0, 50, 100]
+			}
+		});
+
+		var pips = Q.querySelectorAll('.noUi-value');
+
+		assert.ok( pips[pips.length - 1].getAttribute('style').indexOf('left: 100') === 0, 'Last pip is on the right.' );
 	});

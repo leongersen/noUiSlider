@@ -87,7 +87,7 @@
 <section>
 
 	<div class="view">
-		<p>Makes the range (the green connecting bar between handles) dragable. Requires two handles. The <code>connect</code> option <strong>must</strong> be set to <code>true</code>. The <code>slide</code> event fires for both handles when dragging the range.</p>
+		<p>Makes the range (the green connecting bar between handles) draggable. Requires two handles. The <code>connect</code> option <strong>must</strong> be set to <code>true</code>. The <code>slide</code> event fires for both handles when dragging the range.</p>
 		<div class="example">
 			<div id="drag"></div>
 			<?php run('drag'); ?>

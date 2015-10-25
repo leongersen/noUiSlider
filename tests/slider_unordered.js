@@ -3,7 +3,7 @@
 
 		Q.innerHTML = '<div class="slider"></div>';
 
-		var slider = Q.getElementsByClassName('slider')[0];
+		var slider = Q.querySelector('.slider');
 
 		noUiSlider.create(slider, {
 			start: [ 12 ],
@@ -18,13 +18,10 @@
 
 		slider.noUiSlider.set(11);
 		equal(slider.noUiSlider.get(), 11);
-		equal(slider.getElementsByClassName('noUi-origin')[0].style.left, '0%');
 
 		slider.noUiSlider.set(12);
 		equal(slider.noUiSlider.get(), 12);
-		equal(slider.getElementsByClassName('noUi-origin')[0].style.left, '10%');
 
 		slider.noUiSlider.set(16);
 		equal(slider.noUiSlider.get(), 16);
-		equal(slider.getElementsByClassName('noUi-origin')[0].style.left, '50%');
 	});

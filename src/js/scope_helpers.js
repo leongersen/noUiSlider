@@ -7,7 +7,7 @@
 	// External event handling
 	function fireEvent ( event, handleNumber ) {
 
-		if ( handleNumber !== undefined ) {
+		if ( handleNumber !== undefined && options.handles !== 1 ) {
 			handleNumber = Math.abs(handleNumber - options.dir);
 		}
 
