@@ -43,7 +43,9 @@
 	function move ( event, data ) {
 
 		// Fix #498
-		if ( event.buttons === 0 ) {
+		// Check value of .buttons in 'start' to work around a bug in IE10 mobile.
+		// https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
+		if ( event.buttons === 0 && data.buttonsProperty !== 0 ) {
 			return end(event, data);
 		}
 
@@ -128,6 +130,7 @@
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
 			handles: data.handles,
+			buttonsProperty: event.buttons,
 			positions: [
 				scope_Locations[0],
 				scope_Locations[scope_Handles.length - 1]
