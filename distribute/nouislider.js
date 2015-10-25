@@ -1,7 +1,4 @@
-/*! nouislider - 8.0.2 - 2015-09-11 23:18:30 */
-
-/*jslint browser: true */
-/*jslint white: true */
+/*! nouislider - 8.1.0 - 2015-10-25 16:05:43 */
 
 (function (factory) {
 
@@ -123,16 +120,23 @@
 
 	// https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
 	function getPageOffset ( ) {
-	  var supportPageOffset = window.pageXOffset !== undefined;
-	  var isCSS1Compat = ((document.compatMode || "") === "CSS1Compat");
 
-	  var x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? document.documentElement.scrollLeft : document.body.scrollLeft;
-	  var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
+		var supportPageOffset = window.pageXOffset !== undefined,
+			isCSS1Compat = ((document.compatMode || "") === "CSS1Compat"),
+			x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? document.documentElement.scrollLeft : document.body.scrollLeft,
+			y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
 
-	  return {
-	    x: x,
-	    y: y
-	  };
+		return {
+			x: x,
+			y: y
+		};
+	}
+
+	// todo
+	function addCssPrefix(cssPrefix) {
+		return function(className) {
+			return cssPrefix + className;
+		};
 	}
 
 
@@ -153,28 +157,7 @@
 		move: 'mousemove touchmove',
 		end: 'mouseup touchend'
 	},
-	// Re-usable list of classes;
-	/** @const */
-	Classes = [
-/*  0 */  'noUi-target'
-/*  1 */ ,'noUi-base'
-/*  2 */ ,'noUi-origin'
-/*  3 */ ,'noUi-handle'
-/*  4 */ ,'noUi-horizontal'
-/*  5 */ ,'noUi-vertical'
-/*  6 */ ,'noUi-background'
-/*  7 */ ,'noUi-connect'
-/*  8 */ ,'noUi-ltr'
-/*  9 */ ,'noUi-rtl'
-/* 10 */ ,'noUi-dragable'
-/* 11 */ ,''
-/* 12 */ ,'noUi-state-drag'
-/* 13 */ ,''
-/* 14 */ ,'noUi-state-tap'
-/* 15 */ ,'noUi-active'
-/* 16 */ ,''
-/* 17 */ ,'noUi-stacking'
-	];
+	defaultCssPrefix = 'noUi-';
 
 
 // Value calculation
@@ -372,7 +355,12 @@
 		}
 
 		// Sort all entries by value (numeric sort).
-		ordered.sort(function(a, b) { return a[0] - b[0]; });
+		if ( ordered.length && typeof ordered[0][0] === "object" ) {
+			ordered.sort(function(a, b) { return a[0][0] - b[0][0]; });
+		} else {
+			ordered.sort(function(a, b) { return a[0] - b[0]; });
+		}
+
 
 		// Convert all entries to subranges.
 		for ( index = 0; index < ordered.length; index++ ) {
@@ -458,7 +446,7 @@
 	object, to make sure all values can be correctly looped elsewhere. */
 
 	var defaultFormatter = { 'to': function( value ){
-		return value.toFixed(2);
+		return value !== undefined && value.toFixed(2);
 	}, 'from': Number };
 
 	function testStep ( parsed, entry ) {
@@ -614,12 +602,35 @@
 			fixed = entry.indexOf('fixed') >= 0,
 			snap = entry.indexOf('snap') >= 0;
 
+		// Fix #472
+		if ( drag && !parsed.connect ) {
+			throw new Error("noUiSlider: 'drag' behaviour must be used with 'connect': true.");
+		}
+
 		parsed.events = {
 			tap: tap || snap,
 			drag: drag,
 			fixed: fixed,
 			snap: snap
 		};
+	}
+
+	function testTooltips ( parsed, entry ) {
+
+		if ( entry === true ) {
+			parsed.tooltips = true;
+		}
+
+		if ( entry && entry.format ) {
+
+			if ( typeof entry.format !== 'function' ) {
+				throw new Error("noUiSlider: 'tooltips.format' must be an object.");
+			}
+
+			parsed.tooltips = {
+				format: entry.format
+			};
+		}
 	}
 
 	function testFormat ( parsed, entry ) {
@@ -632,6 +643,15 @@
 		}
 
 		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
+	}
+
+	function testCssPrefix ( parsed, entry ) {
+
+		if ( entry !== undefined && typeof entry !== 'string' ) {
+			throw new Error( "noUiSlider: 'cssPrefix' must be a string.");
+		}
+
+		parsed.cssPrefix = entry;
 	}
 
 	// Test all developer settings and parse to assumption-safe values.
@@ -657,7 +677,9 @@
 			'margin': { r: false, t: testMargin },
 			'limit': { r: false, t: testLimit },
 			'behaviour': { r: true, t: testBehaviour },
-			'format': { r: false, t: testFormat }
+			'format': { r: false, t: testFormat },
+			'tooltips': { r: false, t: testTooltips },
+			'cssPrefix': { r: false, t: testCssPrefix }
 		};
 
 		var defaults = {
@@ -704,6 +726,40 @@
 	}
 
 
+function closure ( target, options ){
+
+	// All variables local to 'closure' are prefixed with 'scope_'
+	var scope_Target = target,
+		scope_Locations = [-1, -1],
+		scope_Base,
+		scope_Handles,
+		scope_Spectrum = options.spectrum,
+		scope_Values = [],
+		scope_Events = {};
+
+  var cssClasses = [
+    /*  0 */  'target'
+    /*  1 */ ,'base'
+    /*  2 */ ,'origin'
+    /*  3 */ ,'handle'
+    /*  4 */ ,'horizontal'
+    /*  5 */ ,'vertical'
+    /*  6 */ ,'background'
+    /*  7 */ ,'connect'
+    /*  8 */ ,'ltr'
+    /*  9 */ ,'rtl'
+    /* 10 */ ,'draggable'
+    /* 11 */ ,''
+    /* 12 */ ,'state-drag'
+    /* 13 */ ,''
+    /* 14 */ ,'state-tap'
+    /* 15 */ ,'active'
+    /* 16 */ ,''
+    /* 17 */ ,'stacking'
+    /* 18 */ ,'tooltip'
+  ].map(addCssPrefix(options.cssPrefix || defaultCssPrefix));
+
+
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b, delimit ) {
 
@@ -728,7 +784,7 @@
 	}
 
 	// Provide a clean event with standardized offset values.
-	function fixEvent ( e ) {
+	function fixEvent ( e, pageOffset ) {
 
 		// Prevent scrolling and panning on touch events, while
 		// attempting to slide. The tap event also depends on this.
@@ -754,13 +810,14 @@
 			y = e.changedTouches[0].pageY;
 		}
 
-		var pageOffset = getPageOffset();
+		pageOffset = pageOffset || getPageOffset();
 
 		if ( mouse || pointer ) {
 			x = e.clientX + pageOffset.x;
 			y = e.clientY + pageOffset.y;
 		}
 
+		event.pageOffset = pageOffset;
 		event.points = [x, y];
 		event.cursor = mouse || pointer; // Fix #435
 
@@ -778,10 +835,10 @@
 			additions.reverse();
 		}
 
-		addClass(handle, Classes[3]);
-		addClass(handle, Classes[3] + additions[index]);
+		addClass(handle, cssClasses[3]);
+		addClass(handle, cssClasses[3] + additions[index]);
 
-		addClass(origin, Classes[2]);
+		addClass(origin, cssClasses[2]);
 		origin.appendChild(handle);
 
 		return origin;
@@ -795,14 +852,14 @@
 		// segments listed in the class list, to allow easy
 		// renaming and provide a minor compression benefit.
 		switch ( connect ) {
-			case 1:	addClass(target, Classes[7]);
-					addClass(handles[0], Classes[6]);
+			case 1:	addClass(target, cssClasses[7]);
+					addClass(handles[0], cssClasses[6]);
 					break;
-			case 3: addClass(handles[1], Classes[6]);
+			case 3: addClass(handles[1], cssClasses[6]);
 					/* falls through */
-			case 2: addClass(handles[0], Classes[7]);
+			case 2: addClass(handles[0], cssClasses[7]);
 					/* falls through */
-			case 0: addClass(target, Classes[6]);
+			case 0: addClass(target, cssClasses[6]);
 					break;
 		}
 	}
@@ -826,27 +883,37 @@
 	function addSlider ( direction, orientation, target ) {
 
 		// Apply classes and data to the target.
-		addClass(target, Classes[0]);
-		addClass(target, Classes[8 + direction]);
-		addClass(target, Classes[4 + orientation]);
+		addClass(target, cssClasses[0]);
+		addClass(target, cssClasses[8 + direction]);
+		addClass(target, cssClasses[4 + orientation]);
 
 		var div = document.createElement('div');
-		addClass(div, Classes[1]);
+		addClass(div, cssClasses[1]);
 		target.appendChild(div);
 		return div;
 	}
 
 
-function closure ( target, options ){
+	function defaultFormatTooltipValue ( formattedValue ) {
+		return formattedValue;
+	}
 
-	// All variables local to 'closure' are prefixed with 'scope_'
-	var scope_Target = target,
-		scope_Locations = [-1, -1],
-		scope_Base,
-		scope_Handles,
-		scope_Spectrum = options.spectrum,
-		scope_Values = [],
-		scope_Events = {};
+	function addTooltip ( handle ) {
+		var element = document.createElement('div');
+		element.className = cssClasses[18];
+		return handle.firstChild.appendChild(element);
+	}
+
+	// The tooltips option is a shorthand for using the 'update' event.
+	function tooltips ( tooltipsOptions ) {
+
+		var formatTooltipValue = tooltipsOptions.format ? tooltipsOptions.format : defaultFormatTooltipValue,
+			tips = scope_Handles.map(addTooltip);
+
+		bindEvent('update', function(formattedValues, handleId, rawValues) {
+			tips[handleId].innerHTML = formatTooltipValue(formattedValues[handleId], rawValues[handleId]);
+		});
+	}
 
 
 	function getGroup ( mode, values, stepped ) {
@@ -897,6 +964,11 @@ function closure ( target, options ){
 	}
 
 	function generateSpread ( density, mode, group ) {
+
+		function safeIncrement(value, increment) {
+			// Avoid floating point variance by dropping the smallest decimal places.
+			return (value + increment).toFixed(7) / 1;
+		}
 
 		var originalSpectrumDirection = scope_Spectrum.direction,
 			indexes = {},
@@ -953,7 +1025,7 @@ function closure ( target, options ){
 			}
 
 			// Find all steps in the subrange.
-			for ( i = low; i <= high; i += step ) {
+			for ( i = low; i <= high; i = safeIncrement(i, step) ) {
 
 				// Get the percentage value for the current step,
 				// calculate the size for the subrange.
@@ -1079,7 +1151,7 @@ function closure ( target, options ){
 	// External event handling
 	function fireEvent ( event, handleNumber ) {
 
-		if ( handleNumber !== undefined ) {
+		if ( handleNumber !== undefined && options.handles !== 1 ) {
 			handleNumber = Math.abs(handleNumber - options.dir);
 		}
 
@@ -1126,11 +1198,11 @@ function closure ( target, options ){
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( hasClass(scope_Target, Classes[14]) ) {
+			if ( hasClass(scope_Target, cssClasses[14]) ) {
 				return false;
 			}
 
-			e = fixEvent(e);
+			e = fixEvent(e, data.pageOffset);
 
 			// Ignore right or middle clicks on start #454
 			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
@@ -1156,8 +1228,16 @@ function closure ( target, options ){
 	// Handle movement on document for handle and range drag.
 	function move ( event, data ) {
 
+		// Fix #498
+		// Check value of .buttons in 'start' to work around a bug in IE10 mobile.
+		// https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
+		// IE9 has .buttons zero on mousemove.
+		if ( event.buttons === 0 && event.which === 0 && data.buttonsProperty !== 0 ) {
+			return end(event, data);
+		}
+
 		var handles = data.handles || scope_Handles, positions, state = false,
-			proposal = ((event.calcPoint - data.start) * 100) / baseSize(),
+			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize,
 			handleNumber = handles[0] === scope_Handles[0] ? 0 : 1, i;
 
 		// Calculate relative positions for the handles.
@@ -1185,11 +1265,11 @@ function closure ( target, options ){
 	function end ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = scope_Base.querySelector( '.' + Classes[15] ),
+		var active = scope_Base.querySelector( '.' + cssClasses[15] ),
 			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1;
 
 		if ( active !== null ) {
-			removeClass(active, Classes[15]);
+			removeClass(active, cssClasses[15]);
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -1206,7 +1286,7 @@ function closure ( target, options ){
 		});
 
 		// Remove dragging class.
-		removeClass(scope_Target, Classes[12]);
+		removeClass(scope_Target, cssClasses[12]);
 
 		// Fire the change and set events.
 		fireEvent('set', handleNumber);
@@ -1220,7 +1300,7 @@ function closure ( target, options ){
 
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
-			addClass(data.handles[0].children[0], Classes[15]);
+			addClass(data.handles[0].children[0], cssClasses[15]);
 
 			// Support 'disabled' handles
 			if ( data.handles[0].hasAttribute('disabled') ) {
@@ -1234,7 +1314,10 @@ function closure ( target, options ){
 		// Attach the move and end events.
 		var moveEvent = attach(actions.move, d, move, {
 			start: event.calcPoint,
+			baseSize: baseSize(),
+			pageOffset: event.pageOffset,
 			handles: data.handles,
+			buttonsProperty: event.buttons,
 			positions: [
 				scope_Locations[0],
 				scope_Locations[scope_Handles.length - 1]
@@ -1254,7 +1337,7 @@ function closure ( target, options ){
 
 			// Mark the target with a dragging state.
 			if ( scope_Handles.length > 1 ) {
-				addClass(scope_Target, Classes[12]);
+				addClass(scope_Target, cssClasses[12]);
 			}
 
 			var f = function(){
@@ -1292,7 +1375,7 @@ function closure ( target, options ){
 		if ( !options.events.snap ) {
 			// Flag the slider as it is now in a transitional state.
 			// Transition takes 300 ms, so re-enable the slider afterwards.
-			addClassFor( scope_Target, Classes[14], 300 );
+			addClassFor( scope_Target, cssClasses[14], 300 );
 		}
 
 		// Support 'disabled' handles
@@ -1309,7 +1392,7 @@ function closure ( target, options ){
 		fireEvent('change', handleNumber);
 
 		if ( options.events.snap ) {
-			start(event, { handles: [scope_Handles[total]] });
+			start(event, { handles: [scope_Handles[handleNumber]] });
 		}
 	}
 
@@ -1339,11 +1422,11 @@ function closure ( target, options ){
 			});
 		}
 
-		// Make the range dragable.
+		// Make the range draggable.
 		if ( behaviour.drag ){
 
-			drag = [scope_Base.querySelector( '.' + Classes[7] )];
-			addClass(drag[0], Classes[10]);
+			drag = [scope_Base.querySelector( '.' + cssClasses[7] )];
+			addClass(drag[0], cssClasses[10]);
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first
@@ -1400,13 +1483,22 @@ function closure ( target, options ){
 		}
 
 		// Set the handle to the new position.
-		handle.style[options.style] = to + '%';
+		// Use requestAnimationFrame for efficient painting.
+		// No significant effect in Chrome, Edge sees dramatic
+		// performace improvements.
+		if ( window.requestAnimationFrame ) {
+			window.requestAnimationFrame(function(){
+				handle.style[options.style] = to + '%';
+			});
+		} else {
+			handle.style[options.style] = to + '%';
+		}
 
 		// Force proper handle stacking
 		if ( !handle.previousSibling ) {
-			removeClass(handle, Classes[17]);
+			removeClass(handle, cssClasses[17]);
 			if ( to > 50 ) {
-				addClass(handle, Classes[17]);
+				addClass(handle, cssClasses[17]);
 			}
 		}
 
@@ -1475,7 +1567,7 @@ function closure ( target, options ){
 		// Animation is optional.
 		// Make sure the initial values where set before using animated placement.
 		if ( options.animate && scope_Locations[0] !== -1 ) {
-			addClassFor( scope_Target, Classes[14], 300 );
+			addClassFor( scope_Target, cssClasses[14], 300 );
 		}
 
 		// Determine how often to set the handles.
@@ -1508,7 +1600,7 @@ function closure ( target, options ){
 
 	// Removes classes from the root and empties it.
 	function destroy ( ) {
-		Classes.forEach(function(cls){
+		cssClasses.forEach(function(cls){
 			if ( !cls ) { return; } // Ignore empty classes
 			removeClass(scope_Target, cls);
 		});
@@ -1603,29 +1695,33 @@ function closure ( target, options ){
 		pips(options.pips);
 	}
 
+	if ( options.tooltips ) {
+		tooltips(options.tooltips);
+	}
+
 	// can be updated:
 	// margin
 	// limit
 	// step
 	// range
 	// animate
-	function updateOptions(optionsToUpdate) {
-		var tempOptions = {
+	function updateOptions ( optionsToUpdate ) {
+
+		var newOptions = testOptions({
 			start: [0, 0],
 			margin: optionsToUpdate.margin,
 			limit: optionsToUpdate.limit,
 			step: optionsToUpdate.step,
 			range: optionsToUpdate.range,
 			animate: optionsToUpdate.animate
-		};
-
-		var newOptions = testOptions(tempOptions);
+		});
 
 		options.margin = newOptions.margin;
 		options.limit = newOptions.limit;
 		options.step = newOptions.step;
 		options.range = newOptions.range;
 		options.animate = newOptions.animate;
+
 		scope_Spectrum = newOptions.spectrum;
 	}
 
