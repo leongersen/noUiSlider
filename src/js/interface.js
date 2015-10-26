@@ -7,7 +7,7 @@
 		}
 
 		// Test the options and create the slider environment;
-		var options = testOptions( originalOptions, target ),
+		var options = testOptions( clone( originalOptions ), target ),
 			slider = closure( target, options );
 
 		// Use the public value method to set the start values.
