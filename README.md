@@ -34,6 +34,7 @@ Devices/browsers tested:
 - iPad Air 2 (iOS 9.0)
 - iPad 3 (iOS 8.4)
 - Moto E (Android 5.1, Chrome)
+- Lumia 930 (WP10 mobile)
 - Asus S400C (Windows 10, Touch + mouse)
 	+ Chrome
 	+ Firefox
