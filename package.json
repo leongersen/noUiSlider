@@ -1,5 +1,5 @@
 {
-  "name": "nouislider",
+  "name": "nouislider-algolia-fork",
   "version": "8.1.0",
   "main": "distribute/nouislider",
   "style": "distribute/nouislider.min.css",
