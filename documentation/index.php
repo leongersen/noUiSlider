@@ -1,5 +1,5 @@
 <?php
-	$title = "noUiSlider - jQuery Range Slider";
+	$title = "noUiSlider - JavaScript Range Slider";
 	$description = "noUiSlider is a free and lightweight JavaScript range slider with full touch support (iOS, Android, Windows 8). Great for responsive designs, and no dependencies!";
 ?>
 
