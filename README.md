@@ -1,3 +1,6 @@
+WARNING! This is Algolia fork of [leongersen/noUiSlider](https://github.com/leongersen/noUiSlider),
+we use it as a way to easily build our features before they are merged back.
+
 # noUiSlider
 
 noUiSlider is lightweight JavaScript range slider, originally developed to be a jQuery UI alternative.
