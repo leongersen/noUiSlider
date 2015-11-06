@@ -1,4 +1,4 @@
-/*! nouislider - 8.1.0 - 2015-10-25 16:05:43 */
+/*! nouislider - 8.1.0 - 2015-11-06 12:14:15 */
 
 (function (factory) {
 
@@ -1203,12 +1203,17 @@ function closure ( target, options ){
 			}
 
 			e = fixEvent(e, data.pageOffset);
-
 			// Ignore right or middle clicks on start #454
 			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
 				return false;
 			}
 
+            if(e.type == "mouseout"){
+                if(e.target.nodeName == "HTML" && e.relatedTarget == null){
+                    callback ( e, data );
+                }
+                return false;
+            }
 			e.calcPoint = e.points[ options.ort ];
 
 			// Call the event handler with the event [ and additional data ].
@@ -1323,6 +1328,9 @@ function closure ( target, options ){
 				scope_Locations[scope_Handles.length - 1]
 			]
 		}), endEvent = attach(actions.end, d, end, {
+			handles: data.handles
+		});
+        var outEvent = attach("mouseout", document, end, {
 			handles: data.handles
 		});
 
