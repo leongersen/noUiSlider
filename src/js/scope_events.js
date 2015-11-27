@@ -22,6 +22,11 @@
 			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
 				return false;
 			}
+			
+			// Ignore right or middle clicks on start #454
+			if ( data.hover && e.buttons ) {
+				return false;
+			}
 
 			e.calcPoint = e.points[ options.ort ];
 
@@ -43,10 +48,11 @@
 	function move ( event, data ) {
 
 		// Fix #498
-		// Check value of .buttons in 'start' to work around a bug in IE10 mobile.
+		// Check value of .buttons in 'start' to work around a bug in IE10 mobile (data.buttonsProperty).
 		// https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
-		// IE9 has .buttons zero on mousemove.
-		if ( event.buttons === 0 && event.which === 0 && data.buttonsProperty !== 0 ) {
+		// IE9 has .buttons and .which zero on mousemove.
+		// Firefox breaks the spec MDN defines.
+		if ( navigator.appVersion.indexOf("MSIE 9") === -1 && event.buttons === 0 && data.buttonsProperty !== 0 ) {
 			return end(event, data);
 		}
 
@@ -106,6 +112,15 @@
 		fireEvent('set', handleNumber);
 		fireEvent('change', handleNumber);
 	}
+	
+	function documentLeave ( event, data ) {
+		if ( event.type == "mouseout" && event.target.nodeName == "HTML" && event.relatedTarget == null ){
+		
+			console.log('ending');
+		
+			end ( event, data );
+		}
+	}
 
 	// Bind move events on document.
 	function start ( event, data ) {
@@ -140,7 +155,9 @@
 			handles: data.handles
 		});
 
-		d.noUiListeners = moveEvent.concat(endEvent);
+		var outEvent = attach("mouseout", d, documentLeave, { handles: data.handles });
+		
+		d.noUiListeners = moveEvent.concat(endEvent, outEvent);
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
@@ -210,6 +227,22 @@
 		}
 	}
 
+	// Fires a 'hover' event for a hovered mouse/pen position.
+	function hover ( ) {
+
+		var location = event.calcPoint - offset(scope_Base)[ options.style ],
+			to = scope_Spectrum.getStep(( location * 100 ) / baseSize()),
+			value = scope_Spectrum.fromStepping( to );
+
+		Object.keys(scope_Events).forEach(function( targetEvent ) {
+			if ( 'hover' === targetEvent.split('.')[0] ) {
+				scope_Events[targetEvent].forEach(function( callback ) {
+					callback( value );
+				});
+			}
+		});
+	}
+
 	// Attach events to several slider parts.
 	function events ( behaviour ) {
 
@@ -234,6 +267,16 @@
 			attach ( actions.start, scope_Base, tap, {
 				handles: scope_Handles
 			});
+		}
+
+		// Fire hover events
+		if ( behaviour.hover ) {
+			attach ( actions.move, scope_Base, hover, { hover: true } );
+			for ( i = 0; i < scope_Handles.length; i += 1 ) {
+				actions.move.split(' ').forEach(function( eventName ){
+					scope_Handles[i].children[0].addEventListener(eventName, stopPropagation, false);
+				});
+			}
 		}
 
 		// Make the range draggable.

@@ -166,7 +166,8 @@
 		var tap = entry.indexOf('tap') >= 0,
 			drag = entry.indexOf('drag') >= 0,
 			fixed = entry.indexOf('fixed') >= 0,
-			snap = entry.indexOf('snap') >= 0;
+			snap = entry.indexOf('snap') >= 0,
+			hover = entry.indexOf('hover') >= 0;
 
 		// Fix #472
 		if ( drag && !parsed.connect ) {
@@ -177,7 +178,8 @@
 			tap: tap || snap,
 			drag: drag,
 			fixed: fixed,
-			snap: snap
+			snap: snap,
+			hover: hover
 		};
 	}
 
@@ -189,7 +191,7 @@
 
 		if ( entry && entry.format ) {
 
-			if ( typeof entry.format !== 'function' ) {
+			if ( typeof entry.format !== 'function' ) { // TODO BROKEN
 				throw new Error("noUiSlider: 'tooltips.format' must be an object.");
 			}
 
