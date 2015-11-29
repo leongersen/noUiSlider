@@ -34,6 +34,7 @@ Devices/browsers tested:
 - iPad Air 2 (iOS 9.0)
 - iPad 3 (iOS 8.4)
 - Moto E (Android 5.1, Chrome)
+- Lumia 930 (WP10 mobile)
 - Asus S400C (Windows 10, Touch + mouse)
 	+ Chrome
 	+ Firefox
@@ -74,12 +75,13 @@ Browser support
 ---------------
 
 All major browsers are supported. **To support IE8** you'll need to shim several ES5 features. 
-[shawnbot/aight](https://github.com/shawnbot/aight) is a project aiming at providing the necessary missing features of ES5/DOM to IE8.
+
+You can use [polyfill.io](https://cdn.polyfill.io/v2/docs/) to easily do so:
 
 ```html
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <!--[if lte IE 8]>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aight/1.2.2/aight.min.js"></script>
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
 <![endif]-->
 ```
 
