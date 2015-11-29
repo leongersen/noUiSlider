@@ -97,6 +97,16 @@
 			});
 		});
 
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: 10,
+				range: {
+					'min': 10,
+					'max': 10
+				}
+			});
+		});
+
 		noUiSlider.create(slider, {
 			start: 1,
 			range: {
