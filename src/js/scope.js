@@ -6,8 +6,7 @@
 			lowerMargin = scope_Locations[0] + options.margin,
 			upperMargin = scope_Locations[1] - options.margin,
 			lowerLimit = scope_Locations[0] + options.limit,
-			upperLimit = scope_Locations[1] - options.limit,
-			newScopeValue = scope_Spectrum.fromStepping( to );
+			upperLimit = scope_Locations[1] - options.limit;
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
@@ -31,8 +30,8 @@
 		// JavaScript has some issues in its floating point implementation.
 		to = limit(parseFloat(to.toFixed(7)));
 
-		// Return false if handle can't move and ranges were not updated
-		if ( to === scope_Locations[trigger] && newScopeValue === scope_Values[trigger]) {
+		// Return false if handle can't move
+		if ( to === scope_Locations[trigger] ) {
 			return false;
 		}
 
