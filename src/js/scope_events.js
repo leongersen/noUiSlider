@@ -111,6 +111,11 @@
 		// Fire the change and set events.
 		fireEvent('set', handleNumber);
 		fireEvent('change', handleNumber);
+
+		// If this is a standard handle movement, fire the end event.
+		if ( data.handleNumber !== undefined ) {
+			fireEvent('end', data.handleNumber);
+		}
 	}
 
 	// Fire 'end' when a mouse or pen leaves the document.
@@ -147,16 +152,21 @@
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
 			handles: data.handles,
+			handleNumber: data.handleNumber,
 			buttonsProperty: event.buttons,
 			positions: [
 				scope_Locations[0],
 				scope_Locations[scope_Handles.length - 1]
 			]
 		}), endEvent = attach(actions.end, d, end, {
-			handles: data.handles
+			handles: data.handles,
+			handleNumber: data.handleNumber
 		});
 
-		var outEvent = attach("mouseout", d, documentLeave, { handles: data.handles });
+		var outEvent = attach("mouseout", d, documentLeave, {
+			handles: data.handles,
+			handleNumber: data.handleNumber
+		});
 
 		d.noUiListeners = moveEvent.concat(endEvent, outEvent);
 
@@ -180,6 +190,10 @@
 
 			// Prevent text selection when dragging the handles.
 			document.body.addEventListener('selectstart', f, false);
+		}
+
+		if ( data.handleNumber !== undefined ) {
+			fireEvent('start', data.handleNumber);
 		}
 	}
 
@@ -257,7 +271,8 @@
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
 				attach ( actions.start, scope_Handles[i].children[0], start, {
-					handles: [ scope_Handles[i] ]
+					handles: [ scope_Handles[i] ],
+					handleNumber: i
 				});
 			}
 		}

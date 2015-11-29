@@ -9,7 +9,7 @@
 
 	<div class="view-more">
 
-		<p>noUiSlider offers several ways to listen to interaction: <code>'update'</code>, <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time.</p>
+		<p>noUiSlider offers several ways to listen to interaction: <code>'update'</code>, <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time. There are also the <code>'start'</code> and <code>'end'</code> events, that fire when a drag is started or ended.</p>
 
 		<div class="example">
 
@@ -20,6 +20,8 @@
 				<div id="l-slide">Slide</div>
 				<div id="l-set">Set</div>
 				<div id="l-change">Change</div>
+				<div id="l-start">Start</div>
+				<div id="l-end">End</div>
 			</div>
 
 			<div class="logger">
