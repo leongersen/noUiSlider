@@ -37,7 +37,7 @@
 		if ( entry.min === undefined || entry.max === undefined ) {
 			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
 		}
-		
+
 		// Catch equal start or end.
 		if ( entry.min === entry.max ) {
 			throw new Error("noUiSlider: 'range' 'min' and 'max' cannot be equal.");
@@ -190,19 +190,33 @@
 
 	function testTooltips ( parsed, entry ) {
 
+		var i;
+
 		if ( entry === true ) {
-			parsed.tooltips = true;
-		}
 
-		if ( entry && entry.format ) {
+			parsed.tooltips = [];
 
-			if ( typeof entry.format !== 'function' ) { // TODO BROKEN
-				throw new Error("noUiSlider: 'tooltips.format' must be an object.");
+			for ( i = 0; i < parsed.handles; i++ ) {
+				parsed.tooltips.push(false);
 			}
 
-			parsed.tooltips = {
-				format: entry.format
-			};
+		} else {
+
+			parsed.tooltips = asArray(entry);
+
+			if ( parsed.dir ) {
+				parsed.tooltips.reverse();
+			}
+
+			if ( parsed.tooltips.length !== parsed.handles ) {
+				throw new Error("noUiSlider: must pass a formatter for all handles.");
+			}
+
+			parsed.tooltips.forEach(function(formatter){
+				if ( formatter !== false && (typeof formatter !== 'object' || typeof formatter.to !== 'function') ) {
+					throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
+				}
+			});
 		}
 	}
 
@@ -233,7 +247,7 @@
 		// To prove a fix for #537, freeze options here.
 		// If the object is modified, an error will be thrown.
 		// Object.freeze(options);
-	
+
 		var parsed = {
 			margin: 0,
 			limit: 0,

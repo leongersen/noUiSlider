@@ -275,7 +275,7 @@
 	}
 
 	if ( options.tooltips ) {
-		tooltips(options.tooltips);
+		tooltips();
 	}
 
 	scope_Self = {

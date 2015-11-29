@@ -1,8 +1,4 @@
 
-	function defaultFormatTooltipValue ( formattedValue ) {
-		return formattedValue;
-	}
-
 	function addTooltip ( handle ) {
 		var element = document.createElement('div');
 		element.className = cssClasses[18];
@@ -10,12 +6,15 @@
 	}
 
 	// The tooltips option is a shorthand for using the 'update' event.
-	function tooltips ( tooltipsOptions ) {
+	function tooltips ( ) {
 
-		var formatTooltipValue = tooltipsOptions.format ? tooltipsOptions.format : defaultFormatTooltipValue,
-			tips = scope_Handles.map(addTooltip);
+		var tips = scope_Handles.map(addTooltip);
+		
+		if ( options.dir ) {
+			tips.reverse();
+		}
 
-		bindEvent('update', function(formattedValues, handleId, rawValues) {
-			tips[handleId].innerHTML = formatTooltipValue(formattedValues[handleId], rawValues[handleId]);
+		bindEvent('update', function(f, o, r) {
+			tips[o].innerHTML = options.tooltips[o] ? options.tooltips[o].to(r[o]) : f[o];
 		});
 	}
