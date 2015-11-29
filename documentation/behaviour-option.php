@@ -56,6 +56,12 @@
 
 	<div class="double">
 
+		<pre><code>behaviour: "hover"</code></pre>
+		<p>Fire <code>hover</code> events when a user with a mouse or pen hovers over the slider.</p>
+	</div>
+
+	<div class="double">
+
 		<pre><code>behaviour: "none"</code></pre>
 		<p>Turn off all behaviour, except for standard moving.</p>
 	</div>
@@ -134,6 +140,27 @@
 
 	<div class="side">
 		<?php code('snap'); ?>
+	</div>
+</section>
+
+
+<?php sect('hover'); ?>
+<h2>Hover</h2>
+
+<section>
+
+	<div class="view">
+		<p>With this option set, the slider fires <code>hover</code> events when a mouse or pen user hovers over the slider. The event is provided with the slider value at the hovered position. It <strong>does not</strong> fire while the slider is being dragged by mouse or pen, but it <strong>does</strong> for touch events.</p>
+		<div class="example">
+			<div id="hover"></div>
+			<span class="example-val" id="hover-val"></span>
+			<style>#hover-val:before { content: "Hovered value: " }</style>
+			<?php run('hover'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('hover'); ?>
 	</div>
 </section>
 

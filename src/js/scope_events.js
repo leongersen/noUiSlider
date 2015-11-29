@@ -23,6 +23,11 @@
 				return false;
 			}
 
+			// Ignore right or middle clicks on start #454
+			if ( data.hover && e.buttons ) {
+				return false;
+			}
+
 			e.calcPoint = e.points[ options.ort ];
 
 			// Call the event handler with the event [ and additional data ].
@@ -43,10 +48,11 @@
 	function move ( event, data ) {
 
 		// Fix #498
-		// Check value of .buttons in 'start' to work around a bug in IE10 mobile.
+		// Check value of .buttons in 'start' to work around a bug in IE10 mobile (data.buttonsProperty).
 		// https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
-		// IE9 has .buttons zero on mousemove.
-		if ( event.buttons === 0 && event.which === 0 && data.buttonsProperty !== 0 ) {
+		// IE9 has .buttons and .which zero on mousemove.
+		// Firefox breaks the spec MDN defines.
+		if ( navigator.appVersion.indexOf("MSIE 9") === -1 && event.buttons === 0 && data.buttonsProperty !== 0 ) {
 			return end(event, data);
 		}
 
@@ -105,6 +111,18 @@
 		// Fire the change and set events.
 		fireEvent('set', handleNumber);
 		fireEvent('change', handleNumber);
+
+		// If this is a standard handle movement, fire the end event.
+		if ( data.handleNumber !== undefined ) {
+			fireEvent('end', data.handleNumber);
+		}
+	}
+
+	// Fire 'end' when a mouse or pen leaves the document.
+	function documentLeave ( event, data ) {
+		if ( event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null ){
+			end ( event, data );
+		}
 	}
 
 	// Bind move events on document.
@@ -122,6 +140,9 @@
 			}
 		}
 
+		// Fix #551, where a handle gets selected instead of dragged.
+		event.preventDefault();
+
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
 
@@ -131,16 +152,23 @@
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
 			handles: data.handles,
+			handleNumber: data.handleNumber,
 			buttonsProperty: event.buttons,
 			positions: [
 				scope_Locations[0],
 				scope_Locations[scope_Handles.length - 1]
 			]
 		}), endEvent = attach(actions.end, d, end, {
-			handles: data.handles
+			handles: data.handles,
+			handleNumber: data.handleNumber
 		});
 
-		d.noUiListeners = moveEvent.concat(endEvent);
+		var outEvent = attach("mouseout", d, documentLeave, {
+			handles: data.handles,
+			handleNumber: data.handleNumber
+		});
+
+		d.noUiListeners = moveEvent.concat(endEvent, outEvent);
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
@@ -162,6 +190,10 @@
 
 			// Prevent text selection when dragging the handles.
 			document.body.addEventListener('selectstart', f, false);
+		}
+
+		if ( data.handleNumber !== undefined ) {
+			fireEvent('start', data.handleNumber);
 		}
 	}
 
@@ -201,13 +233,29 @@
 		// The set handle to the new position.
 		setHandle( scope_Handles[handleNumber], to );
 
-		fireEvent('slide', handleNumber);
-		fireEvent('set', handleNumber);
-		fireEvent('change', handleNumber);
+		fireEvent('slide', handleNumber, true);
+		fireEvent('set', handleNumber, true);
+		fireEvent('change', handleNumber, true);
 
 		if ( options.events.snap ) {
 			start(event, { handles: [scope_Handles[handleNumber]] });
 		}
+	}
+
+	// Fires a 'hover' event for a hovered mouse/pen position.
+	function hover ( event ) {
+
+		var location = event.calcPoint - offset(scope_Base)[ options.style ],
+			to = scope_Spectrum.getStep(( location * 100 ) / baseSize()),
+			value = scope_Spectrum.fromStepping( to );
+
+		Object.keys(scope_Events).forEach(function( targetEvent ) {
+			if ( 'hover' === targetEvent.split('.')[0] ) {
+				scope_Events[targetEvent].forEach(function( callback ) {
+					callback.call( scope_Self, value );
+				});
+			}
+		});
 	}
 
 	// Attach events to several slider parts.
@@ -223,7 +271,8 @@
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
 				attach ( actions.start, scope_Handles[i].children[0], start, {
-					handles: [ scope_Handles[i] ]
+					handles: [ scope_Handles[i] ],
+					handleNumber: i
 				});
 			}
 		}
@@ -234,6 +283,16 @@
 			attach ( actions.start, scope_Base, tap, {
 				handles: scope_Handles
 			});
+		}
+
+		// Fire hover events
+		if ( behaviour.hover ) {
+			attach ( actions.move, scope_Base, hover, { hover: true } );
+			for ( i = 0; i < scope_Handles.length; i += 1 ) {
+				['mousemove MSPointerMove pointermove'].forEach(function( eventName ){
+					scope_Handles[i].children[0].addEventListener(eventName, stopPropagation, false);
+				});
+			}
 		}
 
 		// Make the range draggable.

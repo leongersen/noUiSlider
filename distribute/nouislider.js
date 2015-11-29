@@ -1,4 +1,4 @@
-/*! nouislider - 8.1.0 - 2015-10-25 16:05:43 */
+/*! nouislider - 8.2.0 - 2015-11-29 15:32:31 */
 
 (function (factory) {
 
@@ -130,6 +130,11 @@
 			x: x,
 			y: y
 		};
+	}
+
+	// Shorthand for stopPropagation so we don't have to create a dynamic method
+	function stopPropagation ( e ) {
+		e.stopPropagation();
 	}
 
 	// todo
@@ -472,6 +477,11 @@
 			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
 		}
 
+		// Catch equal start or end.
+		if ( entry.min === entry.max ) {
+			throw new Error("noUiSlider: 'range' 'min' and 'max' cannot be equal.");
+		}
+
 		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
 	}
 
@@ -600,7 +610,8 @@
 		var tap = entry.indexOf('tap') >= 0,
 			drag = entry.indexOf('drag') >= 0,
 			fixed = entry.indexOf('fixed') >= 0,
-			snap = entry.indexOf('snap') >= 0;
+			snap = entry.indexOf('snap') >= 0,
+			hover = entry.indexOf('hover') >= 0;
 
 		// Fix #472
 		if ( drag && !parsed.connect ) {
@@ -611,25 +622,40 @@
 			tap: tap || snap,
 			drag: drag,
 			fixed: fixed,
-			snap: snap
+			snap: snap,
+			hover: hover
 		};
 	}
 
 	function testTooltips ( parsed, entry ) {
 
+		var i;
+
 		if ( entry === true ) {
-			parsed.tooltips = true;
-		}
 
-		if ( entry && entry.format ) {
+			parsed.tooltips = [];
 
-			if ( typeof entry.format !== 'function' ) {
-				throw new Error("noUiSlider: 'tooltips.format' must be an object.");
+			for ( i = 0; i < parsed.handles; i++ ) {
+				parsed.tooltips.push(false);
 			}
 
-			parsed.tooltips = {
-				format: entry.format
-			};
+		} else {
+
+			parsed.tooltips = asArray(entry);
+
+			if ( parsed.dir ) {
+				parsed.tooltips.reverse();
+			}
+
+			if ( parsed.tooltips.length !== parsed.handles ) {
+				throw new Error("noUiSlider: must pass a formatter for all handles.");
+			}
+
+			parsed.tooltips.forEach(function(formatter){
+				if ( formatter !== false && (typeof formatter !== 'object' || typeof formatter.to !== 'function') ) {
+					throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
+				}
+			});
 		}
 	}
 
@@ -656,6 +682,10 @@
 
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
+
+		// To prove a fix for #537, freeze options here.
+		// If the object is modified, an error will be thrown.
+		// Object.freeze(options);
 
 		var parsed = {
 			margin: 0,
@@ -689,31 +719,22 @@
 			'orientation': 'horizontal'
 		};
 
-		// Set defaults where applicable.
-		Object.keys(defaults).forEach(function ( name ) {
-			if ( options[name] === undefined ) {
-				options[name] = defaults[name];
-			}
-		});
-
 		// Run all options through a testing mechanism to ensure correct
 		// input. It should be noted that options might get modified to
 		// be handled properly. E.g. wrapping integers in arrays.
 		Object.keys(tests).forEach(function( name ){
 
-			var test = tests[name];
-
 			// If the option isn't set, but it is required, throw an error.
-			if ( options[name] === undefined ) {
+			if ( options[name] === undefined && defaults[name] === undefined ) {
 
-				if ( test.r ) {
+				if ( tests[name].r ) {
 					throw new Error("noUiSlider: '" + name + "' is required.");
 				}
 
 				return true;
 			}
 
-			test.t( parsed, options[name] );
+			tests[name].t( parsed, options[name] === undefined ? defaults[name] : options[name] );
 		});
 
 		// Forward pips options
@@ -735,7 +756,8 @@ function closure ( target, options ){
 		scope_Handles,
 		scope_Spectrum = options.spectrum,
 		scope_Values = [],
-		scope_Events = {};
+		scope_Events = {},
+		scope_Self;
 
   var cssClasses = [
     /*  0 */  'target'
@@ -757,6 +779,10 @@ function closure ( target, options ){
     /* 16 */ ,''
     /* 17 */ ,'stacking'
     /* 18 */ ,'tooltip'
+    /* 19 */ ,''
+    /* 20 */ ,'pips'
+    /* 21 */ ,'marker'
+    /* 22 */ ,'value'
   ].map(addCssPrefix(options.cssPrefix || defaultCssPrefix));
 
 
@@ -894,10 +920,6 @@ function closure ( target, options ){
 	}
 
 
-	function defaultFormatTooltipValue ( formattedValue ) {
-		return formattedValue;
-	}
-
 	function addTooltip ( handle ) {
 		var element = document.createElement('div');
 		element.className = cssClasses[18];
@@ -905,13 +927,16 @@ function closure ( target, options ){
 	}
 
 	// The tooltips option is a shorthand for using the 'update' event.
-	function tooltips ( tooltipsOptions ) {
+	function tooltips ( ) {
 
-		var formatTooltipValue = tooltipsOptions.format ? tooltipsOptions.format : defaultFormatTooltipValue,
-			tips = scope_Handles.map(addTooltip);
+		var tips = scope_Handles.map(addTooltip);
+		
+		if ( options.dir ) {
+			tips.reverse();
+		}
 
-		bindEvent('update', function(formattedValues, handleId, rawValues) {
-			tips[handleId].innerHTML = formatTooltipValue(formattedValues[handleId], rawValues[handleId]);
+		bindEvent('update', function(f, o, r) {
+			tips[o].innerHTML = options.tooltips[o] ? options.tooltips[o].to(r[o]) : f[o];
 		});
 	}
 
@@ -1082,8 +1107,8 @@ function closure ( target, options ){
 		var style = ['horizontal', 'vertical'][options.ort],
 			element = document.createElement('div');
 
-		addClass(element, 'noUi-pips');
-		addClass(element, 'noUi-pips-' + style);
+		addClass(element, cssClasses[20]);
+		addClass(element, cssClasses[20] + '-' + style);
 
 		function getSize( type ){
 			return [ '-normal', '-large', '-sub' ][type];
@@ -1106,11 +1131,11 @@ function closure ( target, options ){
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
 
 			// Add a marker for every point
-			element.innerHTML += '<div ' + getTags(offset, 'noUi-marker', values) + '></div>';
+			element.innerHTML += '<div ' + getTags(offset, cssClasses[21], values) + '></div>';
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				element.innerHTML += '<div '+getTags(offset, 'noUi-value', values)+'>' + formatter.to(values[0]) + '</div>';
+				element.innerHTML += '<div '+getTags(offset, cssClasses[22], values)+'>' + formatter.to(values[0]) + '</div>';
 			}
 		}
 
@@ -1149,7 +1174,7 @@ function closure ( target, options ){
 	}
 
 	// External event handling
-	function fireEvent ( event, handleNumber ) {
+	function fireEvent ( event, handleNumber, tap ) {
 
 		if ( handleNumber !== undefined && options.handles !== 1 ) {
 			handleNumber = Math.abs(handleNumber - options.dir);
@@ -1163,7 +1188,7 @@ function closure ( target, options ){
 				scope_Events[targetEvent].forEach(function( callback ) {
 					// .reverse is in place
 					// Return values as array, so arg_1[arg_2] is always valid.
-					callback( asArray(valueGet()), handleNumber, inSliderOrder(Array.prototype.slice.call(scope_Values)) );
+					callback.call(scope_Self, asArray(valueGet()), handleNumber, asArray(inSliderOrder(Array.prototype.slice.call(scope_Values))), tap || false);
 				});
 			}
 		});
@@ -1209,6 +1234,11 @@ function closure ( target, options ){
 				return false;
 			}
 
+			// Ignore right or middle clicks on start #454
+			if ( data.hover && e.buttons ) {
+				return false;
+			}
+
 			e.calcPoint = e.points[ options.ort ];
 
 			// Call the event handler with the event [ and additional data ].
@@ -1229,10 +1259,11 @@ function closure ( target, options ){
 	function move ( event, data ) {
 
 		// Fix #498
-		// Check value of .buttons in 'start' to work around a bug in IE10 mobile.
+		// Check value of .buttons in 'start' to work around a bug in IE10 mobile (data.buttonsProperty).
 		// https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
-		// IE9 has .buttons zero on mousemove.
-		if ( event.buttons === 0 && event.which === 0 && data.buttonsProperty !== 0 ) {
+		// IE9 has .buttons and .which zero on mousemove.
+		// Firefox breaks the spec MDN defines.
+		if ( navigator.appVersion.indexOf("MSIE 9") === -1 && event.buttons === 0 && data.buttonsProperty !== 0 ) {
 			return end(event, data);
 		}
 
@@ -1291,6 +1322,18 @@ function closure ( target, options ){
 		// Fire the change and set events.
 		fireEvent('set', handleNumber);
 		fireEvent('change', handleNumber);
+
+		// If this is a standard handle movement, fire the end event.
+		if ( data.handleNumber !== undefined ) {
+			fireEvent('end', data.handleNumber);
+		}
+	}
+
+	// Fire 'end' when a mouse or pen leaves the document.
+	function documentLeave ( event, data ) {
+		if ( event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null ){
+			end ( event, data );
+		}
 	}
 
 	// Bind move events on document.
@@ -1308,6 +1351,9 @@ function closure ( target, options ){
 			}
 		}
 
+		// Fix #551, where a handle gets selected instead of dragged.
+		event.preventDefault();
+
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
 
@@ -1317,16 +1363,23 @@ function closure ( target, options ){
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
 			handles: data.handles,
+			handleNumber: data.handleNumber,
 			buttonsProperty: event.buttons,
 			positions: [
 				scope_Locations[0],
 				scope_Locations[scope_Handles.length - 1]
 			]
 		}), endEvent = attach(actions.end, d, end, {
-			handles: data.handles
+			handles: data.handles,
+			handleNumber: data.handleNumber
 		});
 
-		d.noUiListeners = moveEvent.concat(endEvent);
+		var outEvent = attach("mouseout", d, documentLeave, {
+			handles: data.handles,
+			handleNumber: data.handleNumber
+		});
+
+		d.noUiListeners = moveEvent.concat(endEvent, outEvent);
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
@@ -1348,6 +1401,10 @@ function closure ( target, options ){
 
 			// Prevent text selection when dragging the handles.
 			document.body.addEventListener('selectstart', f, false);
+		}
+
+		if ( data.handleNumber !== undefined ) {
+			fireEvent('start', data.handleNumber);
 		}
 	}
 
@@ -1387,13 +1444,29 @@ function closure ( target, options ){
 		// The set handle to the new position.
 		setHandle( scope_Handles[handleNumber], to );
 
-		fireEvent('slide', handleNumber);
-		fireEvent('set', handleNumber);
-		fireEvent('change', handleNumber);
+		fireEvent('slide', handleNumber, true);
+		fireEvent('set', handleNumber, true);
+		fireEvent('change', handleNumber, true);
 
 		if ( options.events.snap ) {
 			start(event, { handles: [scope_Handles[handleNumber]] });
 		}
+	}
+
+	// Fires a 'hover' event for a hovered mouse/pen position.
+	function hover ( event ) {
+
+		var location = event.calcPoint - offset(scope_Base)[ options.style ],
+			to = scope_Spectrum.getStep(( location * 100 ) / baseSize()),
+			value = scope_Spectrum.fromStepping( to );
+
+		Object.keys(scope_Events).forEach(function( targetEvent ) {
+			if ( 'hover' === targetEvent.split('.')[0] ) {
+				scope_Events[targetEvent].forEach(function( callback ) {
+					callback.call( scope_Self, value );
+				});
+			}
+		});
 	}
 
 	// Attach events to several slider parts.
@@ -1409,7 +1482,8 @@ function closure ( target, options ){
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
 				attach ( actions.start, scope_Handles[i].children[0], start, {
-					handles: [ scope_Handles[i] ]
+					handles: [ scope_Handles[i] ],
+					handleNumber: i
 				});
 			}
 		}
@@ -1420,6 +1494,16 @@ function closure ( target, options ){
 			attach ( actions.start, scope_Base, tap, {
 				handles: scope_Handles
 			});
+		}
+
+		// Fire hover events
+		if ( behaviour.hover ) {
+			attach ( actions.move, scope_Base, hover, { hover: true } );
+			for ( i = 0; i < scope_Handles.length; i += 1 ) {
+				['mousemove MSPointerMove pointermove'].forEach(function( eventName ){
+					scope_Handles[i].children[0].addEventListener(eventName, stopPropagation, false);
+				});
+			}
 		}
 
 		// Make the range draggable.
@@ -1452,8 +1536,7 @@ function closure ( target, options ){
 			lowerMargin = scope_Locations[0] + options.margin,
 			upperMargin = scope_Locations[1] - options.margin,
 			lowerLimit = scope_Locations[0] + options.limit,
-			upperLimit = scope_Locations[1] - options.limit,
-			newScopeValue = scope_Spectrum.fromStepping( to );
+			upperLimit = scope_Locations[1] - options.limit;
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
@@ -1477,8 +1560,8 @@ function closure ( target, options ){
 		// JavaScript has some issues in its floating point implementation.
 		to = limit(parseFloat(to.toFixed(7)));
 
-		// Return false if handle can't move and ranges were not updated
-		if ( to === scope_Locations[trigger] && newScopeValue === scope_Values[trigger]) {
+		// Return false if handle can't move
+		if ( to === scope_Locations[trigger] ) {
 			return false;
 		}
 
@@ -1673,12 +1756,41 @@ function closure ( target, options ){
 		});
 	}
 
+	// Updateable: margin, limit, step, range, animate, snap
+	function updateOptions ( optionsToUpdate ) {
+
+		var v = valueGet(), i, newOptions = testOptions({
+			start: [0, 0],
+			margin: optionsToUpdate.margin,
+			limit: optionsToUpdate.limit,
+			step: optionsToUpdate.step,
+			range: optionsToUpdate.range,
+			animate: optionsToUpdate.animate,
+			snap: optionsToUpdate.snap === undefined ? options.snap : optionsToUpdate.snap
+		});
+
+		['margin', 'limit', 'step', 'range', 'animate'].forEach(function(name){
+			if ( optionsToUpdate[name] !== undefined ) {
+				options[name] = optionsToUpdate[name];
+			}
+		});
+
+		scope_Spectrum = newOptions.spectrum;
+
+		// Invalidate the current positioning so valueSet forces an update.
+		scope_Locations = [-1, -1];
+		valueSet(v);
+
+		for ( i = 0; i < scope_Handles.length; i++ ) {
+			fireEvent('update', i);
+		}
+	}
+
 
 	// Throw an error if the slider was already initialized.
 	if ( scope_Target.noUiSlider ) {
 		throw new Error('Slider was already initialized.');
 	}
-
 
 	// Create the base element, initialise HTML and set classes.
 	// Add handles and links.
@@ -1688,44 +1800,15 @@ function closure ( target, options ){
 	// Set the connect classes.
 	addConnection ( options.connect, scope_Target, scope_Handles );
 
-	// Attach user events.
-	events( options.events );
-
 	if ( options.pips ) {
 		pips(options.pips);
 	}
 
 	if ( options.tooltips ) {
-		tooltips(options.tooltips);
+		tooltips();
 	}
 
-	// can be updated:
-	// margin
-	// limit
-	// step
-	// range
-	// animate
-	function updateOptions ( optionsToUpdate ) {
-
-		var newOptions = testOptions({
-			start: [0, 0],
-			margin: optionsToUpdate.margin,
-			limit: optionsToUpdate.limit,
-			step: optionsToUpdate.step,
-			range: optionsToUpdate.range,
-			animate: optionsToUpdate.animate
-		});
-
-		options.margin = newOptions.margin;
-		options.limit = newOptions.limit;
-		options.step = newOptions.step;
-		options.range = newOptions.range;
-		options.animate = newOptions.animate;
-
-		scope_Spectrum = newOptions.spectrum;
-	}
-
-	return {
+	scope_Self = {
 		destroy: destroy,
 		steps: getCurrentStep,
 		on: bindEvent,
@@ -1734,6 +1817,11 @@ function closure ( target, options ){
 		set: valueSet,
 		updateOptions: updateOptions
 	};
+
+	// Attach user events.
+	events( options.events );
+
+	return scope_Self;
 
 }
 

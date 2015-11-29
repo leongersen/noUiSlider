@@ -9,7 +9,7 @@
 
 	<div class="view-more">
 
-		<p>noUiSlider offers several ways to listen to interaction: <code>'update'</code>, <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time.</p>
+		<p>noUiSlider offers several ways to listen to interaction: <code>'update'</code>, <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time. There are also the <code>'start'</code> and <code>'end'</code> events, that fire when a drag is started or ended.</p>
 
 		<div class="example">
 
@@ -20,6 +20,8 @@
 				<div id="l-slide">Slide</div>
 				<div id="l-set">Set</div>
 				<div id="l-change">Change</div>
+				<div id="l-start">Start</div>
+				<div id="l-end">End</div>
 			</div>
 
 			<div class="logger">
@@ -121,6 +123,8 @@
 		<p>Nested namespaces ('slide.something.else') are not supported, and are threated as a single namespace (so '.a.b' isn't related to '.a').</p>
 
 		<p>Event callbacks receive three arguments. <code>values</code> is <strong>always an array</strong>, for both one-handle and two-handle sliders. It contains the current slider values, with formatting applied. <code>handle</code> is <code>0</code> or <code>1</code> and indicates the handle that caused the event. <code>values[handle]</code> gives the value for the current handle. Should you need it, <code>unencodedValues</code> contains the slider values without any formatting.</p>
+		
+		<p>For all events, <code>this</code> is set to the current slider's public API, containing (among others) the <code>'get'</code> and <code>'set'</code> methods.</p>
 	</div>
 
 	<?php code('binding'); ?>

@@ -38,6 +38,11 @@
 			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
 		}
 
+		// Catch equal start or end.
+		if ( entry.min === entry.max ) {
+			throw new Error("noUiSlider: 'range' 'min' and 'max' cannot be equal.");
+		}
+
 		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
 	}
 
@@ -166,7 +171,8 @@
 		var tap = entry.indexOf('tap') >= 0,
 			drag = entry.indexOf('drag') >= 0,
 			fixed = entry.indexOf('fixed') >= 0,
-			snap = entry.indexOf('snap') >= 0;
+			snap = entry.indexOf('snap') >= 0,
+			hover = entry.indexOf('hover') >= 0;
 
 		// Fix #472
 		if ( drag && !parsed.connect ) {
@@ -177,25 +183,40 @@
 			tap: tap || snap,
 			drag: drag,
 			fixed: fixed,
-			snap: snap
+			snap: snap,
+			hover: hover
 		};
 	}
 
 	function testTooltips ( parsed, entry ) {
 
+		var i;
+
 		if ( entry === true ) {
-			parsed.tooltips = true;
-		}
 
-		if ( entry && entry.format ) {
+			parsed.tooltips = [];
 
-			if ( typeof entry.format !== 'function' ) {
-				throw new Error("noUiSlider: 'tooltips.format' must be an object.");
+			for ( i = 0; i < parsed.handles; i++ ) {
+				parsed.tooltips.push(false);
 			}
 
-			parsed.tooltips = {
-				format: entry.format
-			};
+		} else {
+
+			parsed.tooltips = asArray(entry);
+
+			if ( parsed.dir ) {
+				parsed.tooltips.reverse();
+			}
+
+			if ( parsed.tooltips.length !== parsed.handles ) {
+				throw new Error("noUiSlider: must pass a formatter for all handles.");
+			}
+
+			parsed.tooltips.forEach(function(formatter){
+				if ( formatter !== false && (typeof formatter !== 'object' || typeof formatter.to !== 'function') ) {
+					throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
+				}
+			});
 		}
 	}
 
@@ -222,6 +243,10 @@
 
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
+
+		// To prove a fix for #537, freeze options here.
+		// If the object is modified, an error will be thrown.
+		// Object.freeze(options);
 
 		var parsed = {
 			margin: 0,
@@ -255,31 +280,22 @@
 			'orientation': 'horizontal'
 		};
 
-		// Set defaults where applicable.
-		Object.keys(defaults).forEach(function ( name ) {
-			if ( options[name] === undefined ) {
-				options[name] = defaults[name];
-			}
-		});
-
 		// Run all options through a testing mechanism to ensure correct
 		// input. It should be noted that options might get modified to
 		// be handled properly. E.g. wrapping integers in arrays.
 		Object.keys(tests).forEach(function( name ){
 
-			var test = tests[name];
-
 			// If the option isn't set, but it is required, throw an error.
-			if ( options[name] === undefined ) {
+			if ( options[name] === undefined && defaults[name] === undefined ) {
 
-				if ( test.r ) {
+				if ( tests[name].r ) {
 					throw new Error("noUiSlider: '" + name + "' is required.");
 				}
 
 				return true;
 			}
 
-			test.t( parsed, options[name] );
+			tests[name].t( parsed, options[name] === undefined ? defaults[name] : options[name] );
 		});
 
 		// Forward pips options

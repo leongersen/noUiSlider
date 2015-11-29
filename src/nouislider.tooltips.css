@@ -5,15 +5,18 @@
 	border-radius: 3px;
 	background: #fff;
 	padding: 5px;
-	left: -9px;
 	text-align: center;
-	width: 50px;
 }
 
-.noUi-handle-lower .noUi-tooltip {
+.noUi-horizontal .noUi-handle-lower .noUi-tooltip {
 	top: -32px;
 }
-
-.noUi-handle-upper .noUi-tooltip {
+.noUi-horizontal .noUi-handle-upper .noUi-tooltip {
 	bottom: -32px;
+}
+.noUi-vertical .noUi-handle-lower .noUi-tooltip {
+	left: 120%;
+}
+.noUi-vertical .noUi-handle-upper .noUi-tooltip {
+	right: 120%;
 }

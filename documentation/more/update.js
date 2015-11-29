@@ -1,22 +1,19 @@
-var buttons = document.getElementsByClassName('update-button');
+var button1 = document.getElementById('update-1'),
+	button2 = document.getElementById('update-2');
 
-function rebuildSlider ( ) {
-
-	// Get the new values from the button.
-	var range = this.getAttribute('data-range').split(','),
-		val = updateSlider.noUiSlider.get();
-
-	updateSlider.noUiSlider.destroy();
-
-	// Create a slider with the new options.
-	settings.range.min = Number(range[0]);
-	settings.range.max = Number(range[1]);
-	settings.start = Number(val);
-
-	noUiSlider.create(updateSlider, settings);
-
-	bindValue();
+function updateSliderRange ( min, max ) {
+	updateSlider.noUiSlider.updateOptions({
+		range: {
+			'min': min,
+			'max': max
+		}
+	});
 }
+	
+button1.addEventListener('click', function(){
+	updateSliderRange(20, 50);
+});
 
-buttons[0].addEventListener('click', rebuildSlider);
-buttons[1].addEventListener('click', rebuildSlider);
+button2.addEventListener('click', function(){
+	updateSliderRange(10, 40);
+});

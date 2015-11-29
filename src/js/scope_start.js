@@ -8,7 +8,8 @@ function closure ( target, options ){
 		scope_Handles,
 		scope_Spectrum = options.spectrum,
 		scope_Values = [],
-		scope_Events = {};
+		scope_Events = {},
+		scope_Self;
 
   var cssClasses = [
     /*  0 */  'target'
@@ -30,4 +31,8 @@ function closure ( target, options ){
     /* 16 */ ,''
     /* 17 */ ,'stacking'
     /* 18 */ ,'tooltip'
+    /* 19 */ ,''
+    /* 20 */ ,'pips'
+    /* 21 */ ,'marker'
+    /* 22 */ ,'value'
   ].map(addCssPrefix(options.cssPrefix || defaultCssPrefix));
