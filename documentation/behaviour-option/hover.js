@@ -11,5 +11,5 @@ noUiSlider.create(hoverSlider, {
 });
 
 hoverSlider.noUiSlider.on('hover', function( value ){
-	field.innerText = value;
+	field.innerHTML = value;
 });

@@ -243,7 +243,7 @@
 	}
 
 	// Fires a 'hover' event for a hovered mouse/pen position.
-	function hover ( ) {
+	function hover ( event ) {
 
 		var location = event.calcPoint - offset(scope_Base)[ options.style ],
 			to = scope_Spectrum.getStep(( location * 100 ) / baseSize()),
@@ -289,7 +289,7 @@
 		if ( behaviour.hover ) {
 			attach ( actions.move, scope_Base, hover, { hover: true } );
 			for ( i = 0; i < scope_Handles.length; i += 1 ) {
-				actions.move.split(' ').forEach(function( eventName ){
+				['mousemove MSPointerMove pointermove'].forEach(function( eventName ){
 					scope_Handles[i].children[0].addEventListener(eventName, stopPropagation, false);
 				});
 			}

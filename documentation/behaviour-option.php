@@ -150,7 +150,7 @@
 <section>
 
 	<div class="view">
-		<p>With this option set, the slider fires <code>hover</code> events when a mouse or pen user hovers over the slider. The event is provided with the slider value at the hovered position. It does not fire while the slider is being dragged.</p>
+		<p>With this option set, the slider fires <code>hover</code> events when a mouse or pen user hovers over the slider. The event is provided with the slider value at the hovered position. It <strong>does not</strong> fire while the slider is being dragged by mouse or pen, but it <strong>does</strong> for touch events.</p>
 		<div class="example">
 			<div id="hover"></div>
 			<span class="example-val" id="hover-val"></span>
