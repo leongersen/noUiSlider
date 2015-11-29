@@ -8,7 +8,8 @@ function closure ( target, options ){
 		scope_Handles,
 		scope_Spectrum = options.spectrum,
 		scope_Values = [],
-		scope_Events = {};
+		scope_Events = {},
+		scope_Self;
 
   var cssClasses = [
     /*  0 */  'target'

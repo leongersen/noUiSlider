@@ -226,39 +226,7 @@
 		});
 	}
 
-
-	// Throw an error if the slider was already initialized.
-	if ( scope_Target.noUiSlider ) {
-		throw new Error('Slider was already initialized.');
-	}
-
-
-	// Create the base element, initialise HTML and set classes.
-	// Add handles and links.
-	scope_Base = addSlider( options.dir, options.ort, scope_Target );
-	scope_Handles = addHandles( options.handles, options.dir, scope_Base );
-
-	// Set the connect classes.
-	addConnection ( options.connect, scope_Target, scope_Handles );
-
-	// Attach user events.
-	events( options.events );
-
-	if ( options.pips ) {
-		pips(options.pips);
-	}
-
-	if ( options.tooltips ) {
-		tooltips(options.tooltips);
-	}
-
-	// can be updated:
-	// margin
-	// limit
-	// step
-	// range
-	// animate
-	// snap
+	// Updateable: margin, limit, step, range, animate, snap
 	function updateOptions ( optionsToUpdate ) {
 
 		var v = valueGet(), i, newOptions = testOptions({
@@ -288,7 +256,29 @@
 		}
 	}
 
-	return {
+
+	// Throw an error if the slider was already initialized.
+	if ( scope_Target.noUiSlider ) {
+		throw new Error('Slider was already initialized.');
+	}
+
+	// Create the base element, initialise HTML and set classes.
+	// Add handles and links.
+	scope_Base = addSlider( options.dir, options.ort, scope_Target );
+	scope_Handles = addHandles( options.handles, options.dir, scope_Base );
+
+	// Set the connect classes.
+	addConnection ( options.connect, scope_Target, scope_Handles );
+
+	if ( options.pips ) {
+		pips(options.pips);
+	}
+
+	if ( options.tooltips ) {
+		tooltips(options.tooltips);
+	}
+
+	scope_Self = {
 		destroy: destroy,
 		steps: getCurrentStep,
 		on: bindEvent,
@@ -297,3 +287,8 @@
 		set: valueSet,
 		updateOptions: updateOptions
 	};
+
+	// Attach user events.
+	events( options.events );
+
+	return scope_Self;

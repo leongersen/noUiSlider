@@ -19,7 +19,7 @@
 				scope_Events[targetEvent].forEach(function( callback ) {
 					// .reverse is in place
 					// Return values as array, so arg_1[arg_2] is always valid.
-					callback( asArray(valueGet()), handleNumber, inSliderOrder(Array.prototype.slice.call(scope_Values)) );
+					callback.call(scope_Self, asArray(valueGet()), handleNumber, asArray(inSliderOrder(Array.prototype.slice.call(scope_Values))) );
 				});
 			}
 		});

@@ -22,7 +22,7 @@
 			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
 				return false;
 			}
-			
+
 			// Ignore right or middle clicks on start #454
 			if ( data.hover && e.buttons ) {
 				return false;
@@ -112,7 +112,7 @@
 		fireEvent('set', handleNumber);
 		fireEvent('change', handleNumber);
 	}
-	
+
 	// Fire 'end' when a mouse or pen leaves the document.
 	function documentLeave ( event, data ) {
 		if ( event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null ){
@@ -134,7 +134,7 @@
 				return false;
 			}
 		}
-		
+
 		// Fix #551, where a handle gets selected instead of dragged.
 		event.preventDefault();
 
@@ -157,7 +157,7 @@
 		});
 
 		var outEvent = attach("mouseout", d, documentLeave, { handles: data.handles });
-		
+
 		d.noUiListeners = moveEvent.concat(endEvent, outEvent);
 
 		// Text selection isn't an issue on touch devices,
@@ -238,7 +238,7 @@
 		Object.keys(scope_Events).forEach(function( targetEvent ) {
 			if ( 'hover' === targetEvent.split('.')[0] ) {
 				scope_Events[targetEvent].forEach(function( callback ) {
-					callback( value );
+					callback.call( scope_Self, value );
 				});
 			}
 		});
