@@ -136,6 +136,9 @@
 				return false;
 			}
 		}
+		
+		// Fix #551, where a handle gets selected instead of dragged.
+		event.preventDefault();
 
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
