@@ -113,11 +113,9 @@
 		fireEvent('change', handleNumber);
 	}
 	
+	// Fire 'end' when a mouse or pen leaves the document.
 	function documentLeave ( event, data ) {
-		if ( event.type == "mouseout" && event.target.nodeName == "HTML" && event.relatedTarget == null ){
-		
-			console.log('ending');
-		
+		if ( event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null ){
 			end ( event, data );
 		}
 	}

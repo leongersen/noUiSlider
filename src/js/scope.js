@@ -259,24 +259,34 @@
 	// step
 	// range
 	// animate
+	// snap
 	function updateOptions ( optionsToUpdate ) {
 
-		var newOptions = testOptions({
+		var v = valueGet(), i, newOptions = testOptions({
 			start: [0, 0],
 			margin: optionsToUpdate.margin,
 			limit: optionsToUpdate.limit,
 			step: optionsToUpdate.step,
 			range: optionsToUpdate.range,
-			animate: optionsToUpdate.animate
+			animate: optionsToUpdate.animate,
+			snap: optionsToUpdate.snap === undefined ? options.snap : optionsToUpdate.snap
 		});
 
-		options.margin = newOptions.margin;
-		options.limit = newOptions.limit;
-		options.step = newOptions.step;
-		options.range = newOptions.range;
-		options.animate = newOptions.animate;
+		['margin', 'limit', 'step', 'range', 'animate'].forEach(function(name){
+			if ( optionsToUpdate[name] !== undefined ) {
+				options[name] = optionsToUpdate[name];
+			}
+		});
 
 		scope_Spectrum = newOptions.spectrum;
+
+		// Invalidate the current positioning so valueSet forces an update.
+		scope_Locations = [-1, -1];
+		valueSet(v);
+
+		for ( i = 0; i < scope_Handles.length; i++ ) {
+			fireEvent('update', i);
+		}
 	}
 
 	return {
