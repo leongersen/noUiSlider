@@ -16,7 +16,12 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
-### 8.1.0 (latest)
+### 8.2.0 (latest)
+- Added 'start', 'end' and 'hover' events
+- Added better tooltip formatting options
+- Bugfixes, including an issues where a mouseup would be missed
+
+### 8.1.0
 - Fixed Microsoft Edge support
 - Merged several pull requests containing bug fixes
 - Fixed an issue where a slider handle could get 'stuck' to a mouse cursor after moving out of a window.
