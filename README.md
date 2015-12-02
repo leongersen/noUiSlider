@@ -16,7 +16,10 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
-### 8.2.0 (latest)
+### 8.2.1 (latest)
+- Fixed #568 and #569
+
+### 8.2.0
 - Added 'start', 'end' and 'hover' events
 - Added better tooltip formatting options
 - Bugfixes, including an issues where a mouseup would be missed

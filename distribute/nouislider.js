@@ -1,4 +1,4 @@
-/*! nouislider - 8.2.0 - 2015-11-29 15:32:31 */
+/*! nouislider - 8.2.1 - 2015-12-02 21:43:14 */
 
 (function (factory) {
 
@@ -631,28 +631,26 @@
 
 		var i;
 
-		if ( entry === true ) {
+		if ( entry === false ) {
+			return;
+		} else if ( entry === true ) {
 
 			parsed.tooltips = [];
 
 			for ( i = 0; i < parsed.handles; i++ ) {
-				parsed.tooltips.push(false);
+				parsed.tooltips.push(true);
 			}
 
 		} else {
 
 			parsed.tooltips = asArray(entry);
 
-			if ( parsed.dir ) {
-				parsed.tooltips.reverse();
-			}
-
 			if ( parsed.tooltips.length !== parsed.handles ) {
 				throw new Error("noUiSlider: must pass a formatter for all handles.");
 			}
 
 			parsed.tooltips.forEach(function(formatter){
-				if ( formatter !== false && (typeof formatter !== 'object' || typeof formatter.to !== 'function') ) {
+				if ( typeof formatter !== 'boolean' && (typeof formatter !== 'object' || typeof formatter.to !== 'function') ) {
 					throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
 				}
 			});
@@ -920,7 +918,12 @@ function closure ( target, options ){
 	}
 
 
-	function addTooltip ( handle ) {
+	function addTooltip ( handle, index ) {
+
+		if ( !options.tooltips[index] ) {
+			return false;
+		}
+
 		var element = document.createElement('div');
 		element.className = cssClasses[18];
 		return handle.firstChild.appendChild(element);
@@ -929,14 +932,22 @@ function closure ( target, options ){
 	// The tooltips option is a shorthand for using the 'update' event.
 	function tooltips ( ) {
 
+		if ( options.dir ) {
+			options.tooltips.reverse();
+		}
+
+		// Tooltips are added with options.tooltips in original order.
 		var tips = scope_Handles.map(addTooltip);
-		
+
 		if ( options.dir ) {
 			tips.reverse();
+			options.tooltips.reverse();
 		}
 
 		bindEvent('update', function(f, o, r) {
-			tips[o].innerHTML = options.tooltips[o] ? options.tooltips[o].to(r[o]) : f[o];
+			if ( tips[o] ) {
+				tips[o].innerHTML = options.tooltips[o] === true ? f[o] : options.tooltips[o].to(r[o]);
+			}
 		});
 	}
 
