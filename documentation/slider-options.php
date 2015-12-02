@@ -266,7 +266,7 @@
 
 	<div class="view">
 
-		<p>noUiSlider can provide a basic tooltip without using its events system. Set the <code>tooltips</code> option to <code>true</code> to enable. This option can also accept <a href="/nouislider/slider-read-write/#section-formatting">formatting options</a> to format the tooltips content. In that case, pass an <code>array</code> with a formatter for each handle, or <code>false</code> to use the default.</p>
+		<p>noUiSlider can provide a basic tooltip without using its events system. Set the <code>tooltips</code> option to <code>true</code> to enable. This option can also accept <a href="/nouislider/slider-read-write/#section-formatting">formatting options</a> to format the tooltips content. In that case, pass an <code>array</code> with a formatter for each handle, <code>true</code> to use the default or <code>false</code> to display no tooltip.</p>
 
 		<div class="example overflow">
 			<div id="slider-tooltips"></div>
@@ -278,7 +278,7 @@
 			<div><code>false</code></div>
 
 			<strong>Accepted values</strong>
-			<div><code>true</code>, <code>array[<em>formatter</em> or false]</code></div>
+			<div><code>false</code>, <code>true</code>, <code><em>formatter</em></code>, <code>array[<em>formatter</em> or false]</code></div>
 		</div>
 	</div>
 

@@ -192,28 +192,26 @@
 
 		var i;
 
-		if ( entry === true ) {
+		if ( entry === false ) {
+			return;
+		} else if ( entry === true ) {
 
 			parsed.tooltips = [];
 
 			for ( i = 0; i < parsed.handles; i++ ) {
-				parsed.tooltips.push(false);
+				parsed.tooltips.push(true);
 			}
 
 		} else {
 
 			parsed.tooltips = asArray(entry);
 
-			if ( parsed.dir ) {
-				parsed.tooltips.reverse();
-			}
-
 			if ( parsed.tooltips.length !== parsed.handles ) {
 				throw new Error("noUiSlider: must pass a formatter for all handles.");
 			}
 
 			parsed.tooltips.forEach(function(formatter){
-				if ( formatter !== false && (typeof formatter !== 'object' || typeof formatter.to !== 'function') ) {
+				if ( typeof formatter !== 'boolean' && (typeof formatter !== 'object' || typeof formatter.to !== 'function') ) {
 					throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
 				}
 			});
