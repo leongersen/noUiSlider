@@ -42,7 +42,7 @@ Devices/browsers tested:
 - iPad Air 2 (iOS 9.0)
 - iPad 3 (iOS 8.4)
 - Moto E (Android 5.1, Chrome)
-- Lumia 930 (WP10 mobile)
+- Lumia 930 (WP8.1, IE10 mobile)
 - Asus S400C (Windows 10, Touch + mouse)
 	+ Chrome
 	+ Firefox
@@ -54,11 +54,6 @@ Devices/browsers tested:
 Bower
 -----
 Bower users can install all compiled and minified files easily using `bower install nouislider --save`. Supporting bower unfortunately means keeping all compiled and minified versions in the repository.
-
-NPM
----
-Install noUiSlider using the [GitHub syntax](https://github.com/leongersen/noUiSlider/issues/433#issuecomment-118330780):
-```npm install leongersen/noUiSlider```
 
 Browserify
 ----------
