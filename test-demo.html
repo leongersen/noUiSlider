@@ -48,13 +48,23 @@
 <script>
 var slider2 = document.getElementById('slider2');
 
+function treatAsUTC(date) { // http://stackoverflow.com/a/11252167/1367431
+    var result = new Date(date);
+    result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+    return result;
+}
+function daysBetween(startDate, endDate) {
+    var millisecondsPerDay = 24 * 60 * 60 * 1000;
+    return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay;
+}
 
 var epoch_start = new Date('1995-11-15')
+var days_to_9999 = Math.round(daysBetween(epoch_start,new Date('9999-01-04')))
 
 var labelSizeFilter = function(x) {
     var temp = new Date(epoch_start);
     temp.setDate(temp.getDate()+x);
-    if (temp.getDate()==1 || x==0) {
+    if (temp.getDate()==1 || x==0 || x==days_to_9999 || x==days_to_9999) {
         return 1;
     } else {
         return 2;
@@ -68,26 +78,35 @@ var monthNames = [ // http://stackoverflow.com/a/3552493/1367431
   "November", "December"
 ];
 
+var dayNames = [ "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" ];
+
+// TODO check something sensible happens when daylight savings starts/ends.
 var formatter = { to: function(x) {
     var result = new Date(epoch_start);
     result.setDate(result.getDate()+x);
-    if (result.getDate()==1 || x==0)
+    if (x==days_to_9999)
+      return dayNames[result.getDay()]+"<br>Template";
+    else if (x>days_to_9999)
+      return dayNames[result.getDay()];
+    else if (result.getDate()==1 || x==0)
       return result.getDate()+"<br>"+monthNames[result.getMonth()];
     else
-      return result.getDate()
+      return dayNames[result.getDay()]+"<br>"+result.getDate();
 }}
 
 noUiSlider.create(slider2, {
 	start: [ 0, 10 ], // Handle start position
 	step: 1, // Slider moves in increments of '10'
-	margin: 1, // Handles must be more than '20' apart
+	//margin: 1, // Handles must be more than '20' apart
 	//connect: true, // Display a colored bar between the handles
 	//direction: 'rtl', // Put '0' at the bottom of the slider
 	//orientation: 'vertical', // Orient the slider vertically
 	//behaviour: 'tap-drag', // Move handle on tap, bar is draggable
 	range: { // Slider can select '0' to '100'
-		'min': 0,
-		'max': 30,
+		'min': [0, 1],
+		'80%': [35, 9999999],
+		'85%': [days_to_9999, 1],
+                'max': [days_to_9999 + 6, 1]
 	},
 	pips: { // Show a scale with the slider
 		mode: 'steps',
