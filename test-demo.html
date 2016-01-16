@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<link href="distribute/nouislider.min.css" rel="stylesheet"> 
+<style>
+.slider {
+    margin: 20px auto;
+    clear: left;
+}
+
+#slider1 {
+    width: 250px;
+    float: left;
+}
+
+#slider2 {
+    width: 80%;
+}
+
+.noUi-value-horizontal {
+    margin-left: -50px;
+    width: 100px;
+}
+
+</style>
+
+<script src="distribute/nouislider.js"></script>
+<!--<div class="slider" id="slider1"></div>
+
+<script>
+	var slider1 = document.getElementById('slider1');
+	noUiSlider.create(slider1, {
+		start: [5],
+		step: 1,
+		range: {
+			min: [0],
+			max: [10]
+		}
+	});
+	
+	slider1.noUiSlider.on('hover', function( value ){
+		console.log(value);
+	});
+</script>-->
+
+
+<div class="slider" id="slider2"></div>
+
+<script>
+var slider2 = document.getElementById('slider2');
+
+
+var epoch_start = new Date('1995-11-15')
+
+var labelSizeFilter = function(x) {
+    var temp = new Date(epoch_start);
+    temp.setDate(temp.getDate()+x);
+    if (temp.getDate()==1 || x==0) {
+        return 1;
+    } else {
+        return 2;
+    }
+}
+
+var monthNames = [ // http://stackoverflow.com/a/3552493/1367431
+  "January", "February", "March",
+  "April", "May", "June", "July",
+  "August", "September", "October",
+  "November", "December"
+];
+
+var formatter = { to: function(x) {
+    var result = new Date(epoch_start);
+    result.setDate(result.getDate()+x);
+    if (result.getDate()==1 || x==0)
+      return result.getDate()+"<br>"+monthNames[result.getMonth()];
+    else
+      return result.getDate()
+}}
+
+noUiSlider.create(slider2, {
+	start: [ 0, 10 ], // Handle start position
+	step: 1, // Slider moves in increments of '10'
+	margin: 1, // Handles must be more than '20' apart
+	//connect: true, // Display a colored bar between the handles
+	//direction: 'rtl', // Put '0' at the bottom of the slider
+	//orientation: 'vertical', // Orient the slider vertically
+	//behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+	range: { // Slider can select '0' to '100'
+		'min': 0,
+		'max': 30,
+	},
+	pips: { // Show a scale with the slider
+		mode: 'steps',
+		density: 5,
+		format: formatter,
+		filter: labelSizeFilter
+	}
+});
+</script>
+
