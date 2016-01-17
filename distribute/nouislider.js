@@ -1215,6 +1215,7 @@ function closure ( target, options ){
 	function inSliderOrder ( values ) {
 
 		// If only one handle is used, return a single value.
+		// Except when called from getCurrentStep.
 		if ( values.length === 1 ){
 			return values[0];
 		}
@@ -1705,10 +1706,11 @@ function closure ( target, options ){
 
 	// Get the current step size for the slider.
 	function getCurrentStep ( ) {
+		var backwards_compat_scope_locations = (scope_Locations.length>1?scope_Locations:scope_Locations.concat([-1]));
 
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
-		var retour = scope_Locations.map(function( location, index ){
+		var retour = backwards_compat_scope_locations.map(function( location, index ){
 
 			var step = scope_Spectrum.getApplicableStep( location ),
 
