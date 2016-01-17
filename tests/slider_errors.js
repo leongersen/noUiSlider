@@ -55,7 +55,7 @@
 
 		assert.throws(function(){
 			noUiSlider.create(slider, {
-				start: [ 1, 2, 3 ],
+				start: [ ],
 				range: {
 					'min': 0,
 					'max': 10
