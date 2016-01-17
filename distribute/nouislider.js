@@ -1,4 +1,4 @@
-/*! nouislider - 8.2.1 - 2015-12-02 21:43:14 */
+/*! nouislider - 8.2.1 - 2016-01-17 11:20:36 */
 
 (function (factory) {
 
@@ -1434,6 +1434,11 @@ function closure ( target, options ){
 
 		// Find the handle closest to the tapped position.
 		handleNumber = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
+		
+		// Check if handler is not disablet if yes set number to the next handler
+		if (scope_Handles[handleNumber].hasAttribute('disabled')) {
+			handleNumber = handleNumber ? 0 : 1;
+		}
 
 		location -= offset(scope_Base)[ options.style ];
 
