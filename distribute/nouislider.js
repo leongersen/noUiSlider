@@ -749,7 +749,7 @@ function closure ( target, options ){
 
 	// All variables local to 'closure' are prefixed with 'scope_'
 	var scope_Target = target,
-		scope_Locations = [-1, -1],
+		scope_Locations = [],
 		scope_Base,
 		scope_Handles,
 		scope_Spectrum = options.spectrum,
@@ -1286,7 +1286,6 @@ function closure ( target, options ){
 
 		var handles = data.handles || scope_Handles, positions, state = false,
 			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize, handleNumber, i;
-			//handleNumber = handles[0] === scope_Handles[0] ? 0 : 1, i;
 
 		for (handleNumber = 0 ; scope_Handles[handleNumber] !== handles[0] ; handleNumber++) { }
 
@@ -1791,7 +1790,7 @@ function closure ( target, options ){
 		scope_Spectrum = newOptions.spectrum;
 
 		// Invalidate the current positioning so valueSet forces an update.
-		scope_Locations = [-1, -1];
+		scope_Locations = [];
 		valueSet(v);
 
 		for ( i = 0; i < scope_Handles.length; i++ ) {
