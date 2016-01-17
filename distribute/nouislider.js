@@ -491,7 +491,7 @@
 
 		// Validate input. Values aren't tested, as the public .val method
 		// will always provide a valid location.
-		if ( !Array.isArray( entry ) || !entry.length || entry.length > 2 ) {
+		if ( !Array.isArray( entry ) || !entry.length ) {
 			throw new Error("noUiSlider: 'start' option is incorrect.");
 		}
 
@@ -786,7 +786,13 @@ function closure ( target, options ){
 
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b, delimit ) {
+		var result = b.slice();
+		for (var i=0 ; i<result.length ; i++) {
+			result[i]+=a;
+		}
+		return result;
 
+		/* TODO figure out what this delimit code was supposed to do, and unbreak it.
 		// Add movement to current position.
 		var c = a + b[0], d = a + b[1];
 
@@ -804,7 +810,7 @@ function closure ( target, options ){
 			return [limit(c), limit(d)];
 		}
 
-		return [c,d];
+		return [c,d];*/
 	}
 
 	// Provide a clean event with standardized offset values.
@@ -1279,8 +1285,10 @@ function closure ( target, options ){
 		}
 
 		var handles = data.handles || scope_Handles, positions, state = false,
-			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize,
-			handleNumber = handles[0] === scope_Handles[0] ? 0 : 1, i;
+			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize, handleNumber, i;
+			//handleNumber = handles[0] === scope_Handles[0] ? 0 : 1, i;
+
+		for (handleNumber = 0 ; scope_Handles[handleNumber] !== handles[0] ; handleNumber++) { }
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
@@ -1376,10 +1384,7 @@ function closure ( target, options ){
 			handles: data.handles,
 			handleNumber: data.handleNumber,
 			buttonsProperty: event.buttons,
-			positions: [
-				scope_Locations[0],
-				scope_Locations[scope_Handles.length - 1]
-			]
+			positions: scope_Locations.slice()
 		}), endEvent = attach(actions.end, d, end, {
 			handles: data.handles,
 			handleNumber: data.handleNumber
@@ -1543,18 +1548,18 @@ function closure ( target, options ){
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to, noLimitOption ) {
 
-		var trigger = handle !== scope_Handles[0] ? 1 : 0,
-			lowerMargin = scope_Locations[0] + options.margin,
-			upperMargin = scope_Locations[1] - options.margin,
-			lowerLimit = scope_Locations[0] + options.limit,
-			upperLimit = scope_Locations[1] - options.limit;
+		var trigger;
+		for (trigger = 0 ; scope_Handles[trigger] !== handle ; trigger++) { }
+
+		var lowerMargin = scope_Locations[trigger-1] + options.margin,
+			upperMargin = scope_Locations[trigger+1] - options.margin,
+			lowerLimit = scope_Locations[trigger-1] + options.limit,
+			upperLimit = scope_Locations[trigger+1] - options.limit;
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
-		if ( scope_Handles.length > 1 ) {
-			to = trigger ? Math.max( to, lowerMargin ) : Math.min( to, upperMargin );
-		}
+		to = Math.min(Math.max(to, isNaN(lowerMargin)?0:lowerMargin), isNaN(upperMargin)?100:upperMargin);
 
 		// The limit option has the opposite effect, limiting handles to a
 		// maximum distance from another. Limit must be > 0, as otherwise
@@ -1580,13 +1585,14 @@ function closure ( target, options ){
 		// Use requestAnimationFrame for efficient painting.
 		// No significant effect in Chrome, Edge sees dramatic
 		// performace improvements.
-		if ( window.requestAnimationFrame ) {
+		// TODO disabled to simplify debugging.
+		/*if ( window.requestAnimationFrame ) {
 			window.requestAnimationFrame(function(){
 				handle.style[options.style] = to + '%';
 			});
-		} else {
+		} else {*/
 			handle.style[options.style] = to + '%';
-		}
+		//}
 
 		// Force proper handle stacking
 		if ( !handle.previousSibling ) {
@@ -1622,7 +1628,7 @@ function closure ( target, options ){
 		// can be bounced of the second one properly.
 		for ( i = 0; i < count; i += 1 ) {
 
-			trigger = i%2;
+			trigger = i%values.length;
 
 			// Get the current argument from the array.
 			to = values[trigger];
@@ -1665,11 +1671,7 @@ function closure ( target, options ){
 		}
 
 		// Determine how often to set the handles.
-		count = scope_Handles.length > 1 ? 3 : 1;
-
-		if ( values.length === 1 ) {
-			count = 1;
-		}
+		count = (scope_Handles.length*2)-1;
 
 		setValues ( count, values );
 
