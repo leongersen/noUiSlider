@@ -425,11 +425,11 @@
 		return value;
 	};
 
-	Spectrum.prototype.getApplicableStep = function ( value ) {
-
-		// If the value is 100%, return the negative step twice.
-		var j = getJ(value, this.xPct), offset = value === 100 ? 2 : 1;
-		return [this.xNumSteps[j-2], this.xVal[j-offset], this.xNumSteps[j-offset]];
+	Spectrum.prototype.getNearbySteps = function ( value ) {
+		var j = getJ(value, this.xPct)
+                return {stepBefore: { xVal:this.xVal[j-2], xNumSteps: this.xNumSteps[j-2] },
+			thisStep:   { xVal:this.xVal[j-1], xNumSteps: this.xNumSteps[j-1] },
+			stepAfter:  { xVal:this.xVal[j-0], xNumSteps: this.xNumSteps[j-0] } };
 	};
 
 	// Outside testing
@@ -1711,27 +1711,36 @@ function closure ( target, options ){
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
 		var retour = backwards_compat_scope_locations.map(function( location, index ){
+			var nearbySteps = scope_Spectrum.getNearbySteps( location ),
+			// As per #391, the comparison for the decrement step can have some rounding issues.
+			// Round the value to the precision used in the step.
+			stepDecimals = countDecimals(String(nearbySteps.thisStep.xNumSteps)),
+			// Get the current numeric value
+			value = scope_Values[index];
 
-			var step = scope_Spectrum.getApplicableStep( location ),
-
-				// As per #391, the comparison for the decrement step can have some rounding issues.
-				// Round the value to the precision used in the step.
-				stepDecimals = countDecimals(String(step[2])),
-
-				// Get the current numeric value
-				value = scope_Values[index],
-
-				// To move the slider 'one step up', the current step value needs to be added.
-				// Use null if we are at the maximum slider value.
-				increment = location === 100 ? null : step[2],
-
-				// Going 'one step down' might put the slider in a different sub-range, so we
-				// need to switch between the current or the previous step.
-				prev = Number((value - step[2]).toFixed(stepDecimals)),
-
-				// If the value fits the step, return the current step value. Otherwise, use the
-				// previous step. Return null if the slider is at its minimum value.
-				decrement = location === 0 ? null : (prev >= step[1]) ? step[2] : (step[0] || false);
+			var increment, decrement;
+			if (location == 100) {
+				increment = null;
+				decrement = nearbySteps.stepBefore.xNumSteps;
+			} else if (location == 0) {
+				increment = nearbySteps.thisStep.xNumSteps;
+				decrement = null;
+			} else {
+				increment = nearbySteps.thisStep.xNumSteps;
+				if (value+increment>nearbySteps.stepAfter.xVal)
+					increment = nearbySteps.stepAfter.xVal-value;
+				if (value>nearbySteps.thisStep.xVal)
+					decrement = nearbySteps.thisStep.xNumSteps
+				else {
+					var numStepsInRangeBelow = (value-nearbySteps.stepBefore.xVal)/nearbySteps.stepBefore.xNumSteps,
+					highestStepIdx = (numStepsInRangeBelow%1==0 ? numStepsInRangeBelow-1 : Math.floor(numStepsInRangeBelow)),
+					stepBelow = nearbySteps.stepBefore.xVal + nearbySteps.stepBefore.xNumSteps*highestStepIdx;
+					decrement = value-stepBelow;
+				}
+				// Round per #391
+				decrement = Number(decrement.toFixed(stepDecimals));
+				increment = Number(increment.toFixed(stepDecimals));
+			}
 
 			return [decrement, increment];
 		});
