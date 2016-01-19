@@ -1727,19 +1727,23 @@ function closure ( target, options ){
 				decrement = null;
 			} else {
 				increment = nearbySteps.thisStep.xNumSteps;
-				if (value+increment>nearbySteps.stepAfter.xVal)
-					increment = nearbySteps.stepAfter.xVal-value;
-				if (value>nearbySteps.thisStep.xVal)
+				if (increment != false) {
+					if (value+increment>nearbySteps.stepAfter.xVal)
+						increment = nearbySteps.stepAfter.xVal-value;
+					increment = Number(increment.toFixed(stepDecimals));
+				}
+				if (value>nearbySteps.thisStep.xVal) {
 					decrement = nearbySteps.thisStep.xNumSteps
-				else {
+				} else if (nearbySteps.stepBefore.xNumSteps == false) {
+					decrement = false;
+				} else {
 					var numStepsInRangeBelow = (value-nearbySteps.stepBefore.xVal)/nearbySteps.stepBefore.xNumSteps,
 					highestStepIdx = (numStepsInRangeBelow%1==0 ? numStepsInRangeBelow-1 : Math.floor(numStepsInRangeBelow)),
 					stepBelow = nearbySteps.stepBefore.xVal + nearbySteps.stepBefore.xNumSteps*highestStepIdx;
 					decrement = value-stepBelow;
+					// Round per #391
+					decrement = Number(decrement.toFixed(stepDecimals));
 				}
-				// Round per #391
-				decrement = Number(decrement.toFixed(stepDecimals));
-				increment = Number(increment.toFixed(stepDecimals));
 			}
 
 			return [decrement, increment];
