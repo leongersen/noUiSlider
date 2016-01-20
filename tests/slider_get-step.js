@@ -89,7 +89,7 @@
 			}
 		});
 
-		matchStepBoth(slider4, [0, 18], [[null, false], [3, null]]); // 22
+		matchStepBoth(slider4, [0, 18], [[null, false], [1, null]]); // 22
 		assert.deepEqual(slider4.noUiSlider.get(), ['0.00', '18.00']); // 23
 		
 		matchStepBoth(slider4, [5, 9], [[6, 1], [1, 3]]); // 24
@@ -127,17 +127,17 @@
 			assert.deepEqual(Number(slider.noUiSlider.get()), expectedEnd);
 		}
 
-		stepRightCheckEnd(slider5, 6);
-		stepRightCheckEnd(slider5, 7);
-		stepRightCheckEnd(slider5, 8);
-		stepRightCheckEnd(slider5, 9);
-		stepRightCheckEnd(slider5, 10);
-		stepRightCheckEnd(slider5, 70);
-		stepRightCheckEnd(slider5, 100);
-		stepRightCheckEnd(slider5, 102);
-		stepRightCheckEnd(slider5, 104);
-		stepRightCheckEnd(slider5, 105);
-		stepRightCheckEnd(slider5, 105);
+		stepRightCheckEnd(slider5, 6); // 34
+		stepRightCheckEnd(slider5, 7); // 35
+		stepRightCheckEnd(slider5, 8); // 36
+		stepRightCheckEnd(slider5, 9); // 37
+		stepRightCheckEnd(slider5, 10); // 38
+		stepRightCheckEnd(slider5, 70); // 39
+		stepRightCheckEnd(slider5, 100); // 40
+		stepRightCheckEnd(slider5, 102); // 41
+		stepRightCheckEnd(slider5, 104); // 42
+		stepRightCheckEnd(slider5, 105); // 43
+		stepRightCheckEnd(slider5, 105); // 44
 
 
 		function stepLeftCheckEnd ( slider, expectedEnd ) {
@@ -149,22 +149,22 @@
 			assert.deepEqual(Number(slider.noUiSlider.get()), expectedEnd);
 		}
 
-		stepLeftCheckEnd(slider5, 104);
-		stepLeftCheckEnd(slider5, 102);
-		stepLeftCheckEnd(slider5, 100);
-		stepLeftCheckEnd(slider5, 70);
-		stepLeftCheckEnd(slider5, 10);
-		stepLeftCheckEnd(slider5, 9);
-		stepLeftCheckEnd(slider5, 8);
-		stepLeftCheckEnd(slider5, 7);
-		stepLeftCheckEnd(slider5, 6);
-		stepLeftCheckEnd(slider5, 5);
-		stepLeftCheckEnd(slider5, 4);
-		stepLeftCheckEnd(slider5, 3);
-		stepLeftCheckEnd(slider5, 2);
-		stepLeftCheckEnd(slider5, 1);
-		stepLeftCheckEnd(slider5, 0);
-		stepLeftCheckEnd(slider5, 0);
+		stepLeftCheckEnd(slider5, 104); // 45
+		stepLeftCheckEnd(slider5, 102); // 46
+		stepLeftCheckEnd(slider5, 100); // 47
+		stepLeftCheckEnd(slider5, 70); // 48
+		stepLeftCheckEnd(slider5, 10); // 49
+		stepLeftCheckEnd(slider5, 9); // 50
+		stepLeftCheckEnd(slider5, 8); // 51
+		stepLeftCheckEnd(slider5, 7); // 52
+		stepLeftCheckEnd(slider5, 6); // 53
+		stepLeftCheckEnd(slider5, 5); // 54
+		stepLeftCheckEnd(slider5, 4); // 55
+		stepLeftCheckEnd(slider5, 3); // 56
+		stepLeftCheckEnd(slider5, 2); // 57
+		stepLeftCheckEnd(slider5, 1); // 58
+		stepLeftCheckEnd(slider5, 0); // 59
+		stepLeftCheckEnd(slider5, 0); // 60
 
 
 	});

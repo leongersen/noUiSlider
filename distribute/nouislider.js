@@ -87,7 +87,8 @@
 
 	// Counts decimals
 	function countDecimals ( numStr ) {
-		var pieces = numStr.split(".");
+		var numStr = String(numStr),
+		pieces = numStr.split(".");
 		return pieces.length > 1 ? pieces[1].length : 0;
 	}
 
@@ -430,6 +431,11 @@
                 return {stepBefore: { xVal:this.xVal[j-2], xNumSteps: this.xNumSteps[j-2] },
 			thisStep:   { xVal:this.xVal[j-1], xNumSteps: this.xNumSteps[j-1] },
 			stepAfter:  { xVal:this.xVal[j-0], xNumSteps: this.xNumSteps[j-0] } };
+	};
+
+	Spectrum.prototype.countStepDecimals = function ( value ) {
+		var stepDecimals = this.xNumSteps.map(countDecimals);
+		return Math.max.apply(null, stepDecimals)
 	};
 
 	// Outside testing
@@ -1215,7 +1221,6 @@ function closure ( target, options ){
 	function inSliderOrder ( values ) {
 
 		// If only one handle is used, return a single value.
-		// Except when called from getCurrentStep.
 		if ( values.length === 1 ){
 			return values[0];
 		}
@@ -1704,24 +1709,30 @@ function closure ( target, options ){
 		delete scope_Target.noUiSlider;
 	}
 
+	function topStepOfRangeBelow(nearbySteps) {
+		var numStepsInRangeBelow = (nearbySteps.thisStep.xVal-nearbySteps.stepBefore.xVal)/nearbySteps.stepBefore.xNumSteps,
+		highestCompleteStep = Math.ceil(Number(numStepsInRangeBelow.toFixed(3))-1),
+		stepBelow = nearbySteps.stepBefore.xVal + nearbySteps.stepBefore.xNumSteps*highestCompleteStep;
+		return stepBelow;
+	}
+
 	// Get the current step size for the slider.
 	function getCurrentStep ( ) {
-		var backwards_compat_scope_locations = (scope_Locations.length>1?scope_Locations:scope_Locations.concat([-1]));
 
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
-		var retour = backwards_compat_scope_locations.map(function( location, index ){
+		var retour = scope_Locations.map(function( location, index ){
 			var nearbySteps = scope_Spectrum.getNearbySteps( location ),
 			// As per #391, the comparison for the decrement step can have some rounding issues.
-			// Round the value to the precision used in the step.
-			stepDecimals = countDecimals(String(nearbySteps.thisStep.xNumSteps)),
+			stepDecimals = scope_Spectrum.countStepDecimals(),
 			// Get the current numeric value
 			value = scope_Values[index];
 
 			var increment, decrement;
 			if (location == 100) {
 				increment = null;
-				decrement = nearbySteps.stepBefore.xNumSteps;
+				decrement = value-topStepOfRangeBelow(nearbySteps);
+				decrement = Number(decrement.toFixed(stepDecimals)); // Round per #391
 			} else if (location == 0) {
 				increment = nearbySteps.thisStep.xNumSteps;
 				decrement = null;
@@ -1737,12 +1748,8 @@ function closure ( target, options ){
 				} else if (nearbySteps.stepBefore.xNumSteps == false) {
 					decrement = false;
 				} else {
-					var numStepsInRangeBelow = (value-nearbySteps.stepBefore.xVal)/nearbySteps.stepBefore.xNumSteps,
-					highestStepIdx = (numStepsInRangeBelow%1==0 ? numStepsInRangeBelow-1 : Math.floor(numStepsInRangeBelow)),
-					stepBelow = nearbySteps.stepBefore.xVal + nearbySteps.stepBefore.xNumSteps*highestStepIdx;
-					decrement = value-stepBelow;
-					// Round per #391
-					decrement = Number(decrement.toFixed(stepDecimals));
+					decrement = value-topStepOfRangeBelow(nearbySteps);
+					decrement = Number(decrement.toFixed(stepDecimals)); // Round per #391
 				}
 			}
 
@@ -1750,7 +1757,8 @@ function closure ( target, options ){
 		});
 
 		// Return values in the proper order.
-		return inSliderOrder( retour );
+		if ( options.dir ) retour = retour.reverse();
+		return retour;
 	}
 
 	// Attach an event to this slider, possibly including a namespace
