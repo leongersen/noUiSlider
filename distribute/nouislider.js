@@ -1,4 +1,4 @@
-/*! nouislider - 8.2.1 - 2015-12-02 21:43:14 */
+/*! nouislider - 8.2.1 - 2016-01-21 00:07:45 */
 
 (function (factory) {
 
@@ -87,8 +87,8 @@
 
 	// Counts decimals
 	function countDecimals ( numStr ) {
-		var numStr = String(numStr),
-		pieces = numStr.split(".");
+		numStr = String(numStr);
+		var pieces = numStr.split(".");
 		return pieces.length > 1 ? pieces[1].length : 0;
 	}
 
@@ -427,16 +427,16 @@
 	};
 
 	Spectrum.prototype.getNearbySteps = function ( value ) {
-		var j = getJ(value, this.xPct)
+		var j = getJ(value, this.xPct);
                 return {stepBefore: { xVal:this.xVal[j-2], xNumSteps: this.xNumSteps[j-2] },
 			thisStep:   { xVal:this.xVal[j-1], xNumSteps: this.xNumSteps[j-1] },
 			stepAfter:  { xVal:this.xVal[j-0], xNumSteps: this.xNumSteps[j-0] } };
 	};
-
-	Spectrum.prototype.countStepDecimals = function ( value ) {
+ 
+	Spectrum.prototype.countStepDecimals = function () {
 		var stepDecimals = this.xNumSteps.map(countDecimals);
-		return Math.max.apply(null, stepDecimals)
-	};
+		return Math.max.apply(null, stepDecimals);
+ 	};
 
 	// Outside testing
 	Spectrum.prototype.convert = function ( value ) {
@@ -797,8 +797,9 @@ function closure ( target, options ){
 			result[i]+=a;
 		}
 		return result;
-
+ 
 		/* TODO figure out what this delimit code was supposed to do, and unbreak it.
+
 		// Add movement to current position.
 		var c = a + b[0], d = a + b[1];
 
@@ -816,7 +817,8 @@ function closure ( target, options ){
 			return [limit(c), limit(d)];
 		}
 
-		return [c,d];*/
+		return [c,d];
+		*/
 	}
 
 	// Provide a clean event with standardized offset values.
@@ -1590,14 +1592,13 @@ function closure ( target, options ){
 		// Use requestAnimationFrame for efficient painting.
 		// No significant effect in Chrome, Edge sees dramatic
 		// performace improvements.
-		// TODO disabled to simplify debugging.
-		/*if ( window.requestAnimationFrame ) {
+		if ( window.requestAnimationFrame ) {
 			window.requestAnimationFrame(function(){
 				handle.style[options.style] = to + '%';
 			});
-		} else {*/
+		} else {
 			handle.style[options.style] = to + '%';
-		//}
+		}
 
 		// Force proper handle stacking
 		if ( !handle.previousSibling ) {
@@ -1722,6 +1723,7 @@ function closure ( target, options ){
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
 		var retour = scope_Locations.map(function( location, index ){
+
 			var nearbySteps = scope_Spectrum.getNearbySteps( location ),
 			// As per #391, the comparison for the decrement step can have some rounding issues.
 			stepDecimals = scope_Spectrum.countStepDecimals(),
@@ -1733,19 +1735,20 @@ function closure ( target, options ){
 				increment = null;
 				decrement = value-topStepOfRangeBelow(nearbySteps);
 				decrement = Number(decrement.toFixed(stepDecimals)); // Round per #391
-			} else if (location == 0) {
+			} else if (location === 0) {
 				increment = nearbySteps.thisStep.xNumSteps;
 				decrement = null;
 			} else {
 				increment = nearbySteps.thisStep.xNumSteps;
-				if (increment != false) {
-					if (value+increment>nearbySteps.stepAfter.xVal)
+				if (increment !== false) {
+					if (value+increment>nearbySteps.stepAfter.xVal) {
 						increment = nearbySteps.stepAfter.xVal-value;
+					}
 					increment = Number(increment.toFixed(stepDecimals));
 				}
 				if (value>nearbySteps.thisStep.xVal) {
-					decrement = nearbySteps.thisStep.xNumSteps
-				} else if (nearbySteps.stepBefore.xNumSteps == false) {
+					decrement = nearbySteps.thisStep.xNumSteps;
+				} else if (nearbySteps.stepBefore.xNumSteps === false) {
 					decrement = false;
 				} else {
 					decrement = value-topStepOfRangeBelow(nearbySteps);
@@ -1757,7 +1760,9 @@ function closure ( target, options ){
 		});
 
 		// Return values in the proper order.
-		if ( options.dir ) retour = retour.reverse();
+		if ( options.dir ) {
+			retour = retour.reverse();
+		}
 		return retour;
 	}
 

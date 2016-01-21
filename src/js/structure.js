@@ -1,6 +1,13 @@
 
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b, delimit ) {
+		var result = b.slice();
+		for (var i=0 ; i<result.length ; i++) {
+			result[i]+=a;
+		}
+		return result;
+ 
+		/* TODO figure out what this delimit code was supposed to do, and unbreak it.
 
 		// Add movement to current position.
 		var c = a + b[0], d = a + b[1];
@@ -20,6 +27,7 @@
 		}
 
 		return [c,d];
+		*/
 	}
 
 	// Provide a clean event with standardized offset values.

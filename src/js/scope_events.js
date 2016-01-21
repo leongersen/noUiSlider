@@ -57,8 +57,9 @@
 		}
 
 		var handles = data.handles || scope_Handles, positions, state = false,
-			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize,
-			handleNumber = handles[0] === scope_Handles[0] ? 0 : 1, i;
+			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize, handleNumber, i;
+
+		for (handleNumber = 0 ; scope_Handles[handleNumber] !== handles[0] ; handleNumber++) { }
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
@@ -154,10 +155,7 @@
 			handles: data.handles,
 			handleNumber: data.handleNumber,
 			buttonsProperty: event.buttons,
-			positions: [
-				scope_Locations[0],
-				scope_Locations[scope_Handles.length - 1]
-			]
+			positions: scope_Locations.slice()
 		}), endEvent = attach(actions.end, d, end, {
 			handles: data.handles,
 			handleNumber: data.handleNumber

@@ -259,12 +259,17 @@
 		return value;
 	};
 
-	Spectrum.prototype.getApplicableStep = function ( value ) {
-
-		// If the value is 100%, return the negative step twice.
-		var j = getJ(value, this.xPct), offset = value === 100 ? 2 : 1;
-		return [this.xNumSteps[j-2], this.xVal[j-offset], this.xNumSteps[j-offset]];
+	Spectrum.prototype.getNearbySteps = function ( value ) {
+		var j = getJ(value, this.xPct);
+                return {stepBefore: { xVal:this.xVal[j-2], xNumSteps: this.xNumSteps[j-2] },
+			thisStep:   { xVal:this.xVal[j-1], xNumSteps: this.xNumSteps[j-1] },
+			stepAfter:  { xVal:this.xVal[j-0], xNumSteps: this.xNumSteps[j-0] } };
 	};
+ 
+	Spectrum.prototype.countStepDecimals = function () {
+		var stepDecimals = this.xNumSteps.map(countDecimals);
+		return Math.max.apply(null, stepDecimals);
+ 	};
 
 	// Outside testing
 	Spectrum.prototype.convert = function ( value ) {
