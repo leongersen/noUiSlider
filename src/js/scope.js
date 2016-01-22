@@ -95,7 +95,7 @@
 				}
 
 				to = options.format.from( to );
-				
+
 				// Request an update for all links if the value was invalid.
 				// Do so too if setting the handle fails.
 				if ( to === false || isNaN(to) || setHandle( scope_Handles[trigger], scope_Spectrum.toStepping( to ), isLimitingPass) === false ) {
