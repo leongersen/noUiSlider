@@ -107,6 +107,39 @@
 			});
 		});
 
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: 10,
+				limit: 5,
+				range: {
+					'min': 0,
+					'max': 10
+				}
+			});
+		}, "Should error if limit enabled with only one handle.");
+
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: [ 1, 2, 3 ],
+				limit: 5,
+				range: {
+					'min': 0,
+					'max': 10
+				}
+			});
+		}, "Should error if limit enabled with more than two handles.");
+
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: [ 1, 2, 3 ],
+				connect: true,
+				range: {
+					'min': 0,
+					'max': 10
+				}
+			});
+		}, "Should error if connect enabled with more than two handles.");
+
 		noUiSlider.create(slider, {
 			start: 1,
 			range: {
@@ -123,5 +156,5 @@
 					'max': 10
 				}
 			});
-		});
+		}, "Should error if slider already initialised");
 	});

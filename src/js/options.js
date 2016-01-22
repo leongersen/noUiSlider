@@ -94,6 +94,8 @@
 			parsed.connect = 3;
 		} else if ( entry === false ) {
 			parsed.connect = 0;
+		} else if (parsed.handles > 2) {
+			throw new Error("noUiSlider: 'connect' option does not support sliders with more than two handles.");
 		} else {
 			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
 		}
@@ -129,6 +131,10 @@
 	}
 
 	function testLimit ( parsed, entry ) {
+
+		if (parsed.handles !== 2) {
+			throw new Error("noUiSlider: 'limit' option only valid with exactly two handles.");
+		}
 
 		if ( !isNumeric(entry) ){
 			throw new Error("noUiSlider: 'limit' option must be numeric.");

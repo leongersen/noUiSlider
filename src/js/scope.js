@@ -39,13 +39,13 @@
 		// Use requestAnimationFrame for efficient painting.
 		// No significant effect in Chrome, Edge sees dramatic
 		// performace improvements.
-		if ( window.requestAnimationFrame ) {
+		/*if ( window.requestAnimationFrame ) {
 			window.requestAnimationFrame(function(){
 				handle.style[options.style] = to + '%';
 			});
-		} else {
+		} else {*/
 			handle.style[options.style] = to + '%';
-		}
+		//}
 
 		// Force proper handle stacking
 		if ( !handle.previousSibling ) {
@@ -67,21 +67,20 @@
 	}
 
 	// Loop values from value method and apply them.
-	function setValues ( count, values ) {
+	function setValues ( values ) {
 
-		var i, trigger, to;
-
-		// With the limit option, we'll need another limiting pass.
-		if ( options.limit ) {
-			count += 1;
-		}
+		var i, trigger, to,
+		basePasses = (values.length*values.length),
+		passesIncludingLimitingPass = basePasses+(options.limit?values.length:0);
 
 		// If there are multiple handles to be set run the setting
 		// mechanism twice for the first handle, to make sure it
 		// can be bounced of the second one properly.
-		for ( i = 0; i < count; i += 1 ) {
+		for ( i = 0; i < passesIncludingLimitingPass; i += 1 ) {
+			var isLimitingPass = i>basePasses;
 
 			trigger = i%values.length;
+			trigger = isLimitingPass&&options.dir ? values.length-1-trigger : trigger;
 
 			// Get the current argument from the array.
 			to = values[trigger];
@@ -96,10 +95,10 @@
 				}
 
 				to = options.format.from( to );
-
+				
 				// Request an update for all links if the value was invalid.
 				// Do so too if setting the handle fails.
-				if ( to === false || isNaN(to) || setHandle( scope_Handles[trigger], scope_Spectrum.toStepping( to ), i === (3 - options.dir) ) === false ) {
+				if ( to === false || isNaN(to) || setHandle( scope_Handles[trigger], scope_Spectrum.toStepping( to ), isLimitingPass) === false ) {
 					fireEvent('update', trigger);
 				}
 			}
@@ -109,7 +108,7 @@
 	// Set the slider value.
 	function valueSet ( input ) {
 
-		var count, values = asArray( input ), i;
+		var values = asArray( input ), i;
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
@@ -123,10 +122,7 @@
 			addClassFor( scope_Target, cssClasses[14], 300 );
 		}
 
-		// Determine how often to set the handles.
-		count = (scope_Handles.length*2)-1;
-
-		setValues ( count, values );
+		setValues ( values );
 
 		// Fire the 'set' event for both handles.
 		for ( i = 0; i < scope_Handles.length; i++ ) {
