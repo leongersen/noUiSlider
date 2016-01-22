@@ -62,7 +62,7 @@
 		for (handleNumber = 0 ; scope_Handles[handleNumber] !== handles[0] ; handleNumber++) { }
 
 		// Calculate relative positions for the handles.
-		positions = getPositions( proposal, data.positions, handles.length > 1);
+		positions = getPositions( proposal, data.positions );
 
 		state = setHandle ( handles[0], positions[handleNumber], handles.length === 1 );
 
