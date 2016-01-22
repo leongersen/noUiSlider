@@ -1,4 +1,4 @@
-/*! nouislider - 8.2.1 - 2016-01-21 00:07:45 */
+/*! nouislider - 8.2.1 - 2015-12-02 21:43:14 */
 
 (function (factory) {
 
@@ -87,7 +87,6 @@
 
 	// Counts decimals
 	function countDecimals ( numStr ) {
-		numStr = String(numStr);
 		var pieces = numStr.split(".");
 		return pieces.length > 1 ? pieces[1].length : 0;
 	}
@@ -426,17 +425,12 @@
 		return value;
 	};
 
-	Spectrum.prototype.getNearbySteps = function ( value ) {
-		var j = getJ(value, this.xPct);
-                return {stepBefore: { xVal:this.xVal[j-2], xNumSteps: this.xNumSteps[j-2] },
-			thisStep:   { xVal:this.xVal[j-1], xNumSteps: this.xNumSteps[j-1] },
-			stepAfter:  { xVal:this.xVal[j-0], xNumSteps: this.xNumSteps[j-0] } };
+	Spectrum.prototype.getApplicableStep = function ( value ) {
+
+		// If the value is 100%, return the negative step twice.
+		var j = getJ(value, this.xPct), offset = value === 100 ? 2 : 1;
+		return [this.xNumSteps[j-2], this.xVal[j-offset], this.xNumSteps[j-offset]];
 	};
- 
-	Spectrum.prototype.countStepDecimals = function () {
-		var stepDecimals = this.xNumSteps.map(countDecimals);
-		return Math.max.apply(null, stepDecimals);
- 	};
 
 	// Outside testing
 	Spectrum.prototype.convert = function ( value ) {
@@ -497,7 +491,7 @@
 
 		// Validate input. Values aren't tested, as the public .val method
 		// will always provide a valid location.
-		if ( !Array.isArray( entry ) || !entry.length ) {
+		if ( !Array.isArray( entry ) || !entry.length || entry.length > 2 ) {
 			throw new Error("noUiSlider: 'start' option is incorrect.");
 		}
 
@@ -755,7 +749,7 @@ function closure ( target, options ){
 
 	// All variables local to 'closure' are prefixed with 'scope_'
 	var scope_Target = target,
-		scope_Locations = [],
+		scope_Locations = [-1, -1],
 		scope_Base,
 		scope_Handles,
 		scope_Spectrum = options.spectrum,
@@ -792,13 +786,6 @@ function closure ( target, options ){
 
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b, delimit ) {
-		var result = b.slice();
-		for (var i=0 ; i<result.length ; i++) {
-			result[i]+=a;
-		}
-		return result;
- 
-		/* TODO figure out what this delimit code was supposed to do, and unbreak it.
 
 		// Add movement to current position.
 		var c = a + b[0], d = a + b[1];
@@ -818,7 +805,6 @@ function closure ( target, options ){
 		}
 
 		return [c,d];
-		*/
 	}
 
 	// Provide a clean event with standardized offset values.
@@ -1293,9 +1279,8 @@ function closure ( target, options ){
 		}
 
 		var handles = data.handles || scope_Handles, positions, state = false,
-			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize, handleNumber, i;
-
-		for (handleNumber = 0 ; scope_Handles[handleNumber] !== handles[0] ; handleNumber++) { }
+			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize,
+			handleNumber = handles[0] === scope_Handles[0] ? 0 : 1, i;
 
 		// Calculate relative positions for the handles.
 		positions = getPositions( proposal, data.positions, handles.length > 1);
@@ -1391,7 +1376,10 @@ function closure ( target, options ){
 			handles: data.handles,
 			handleNumber: data.handleNumber,
 			buttonsProperty: event.buttons,
-			positions: scope_Locations.slice()
+			positions: [
+				scope_Locations[0],
+				scope_Locations[scope_Handles.length - 1]
+			]
 		}), endEvent = attach(actions.end, d, end, {
 			handles: data.handles,
 			handleNumber: data.handleNumber
@@ -1555,18 +1543,18 @@ function closure ( target, options ){
 	// Test suggested values and apply margin, step.
 	function setHandle ( handle, to, noLimitOption ) {
 
-		var trigger;
-		for (trigger = 0 ; scope_Handles[trigger] !== handle ; trigger++) { }
-
-		var lowerMargin = scope_Locations[trigger-1] + options.margin,
-			upperMargin = scope_Locations[trigger+1] - options.margin,
-			lowerLimit = scope_Locations[trigger-1] + options.limit,
-			upperLimit = scope_Locations[trigger+1] - options.limit;
+		var trigger = handle !== scope_Handles[0] ? 1 : 0,
+			lowerMargin = scope_Locations[0] + options.margin,
+			upperMargin = scope_Locations[1] - options.margin,
+			lowerLimit = scope_Locations[0] + options.limit,
+			upperLimit = scope_Locations[1] - options.limit;
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
-		to = Math.min(Math.max(to, isNaN(lowerMargin)?0:lowerMargin), isNaN(upperMargin)?100:upperMargin);
+		if ( scope_Handles.length > 1 ) {
+			to = trigger ? Math.max( to, lowerMargin ) : Math.min( to, upperMargin );
+		}
 
 		// The limit option has the opposite effect, limiting handles to a
 		// maximum distance from another. Limit must be > 0, as otherwise
@@ -1634,7 +1622,7 @@ function closure ( target, options ){
 		// can be bounced of the second one properly.
 		for ( i = 0; i < count; i += 1 ) {
 
-			trigger = i%values.length;
+			trigger = i%2;
 
 			// Get the current argument from the array.
 			to = values[trigger];
@@ -1677,7 +1665,11 @@ function closure ( target, options ){
 		}
 
 		// Determine how often to set the handles.
-		count = (scope_Handles.length*2)-1;
+		count = scope_Handles.length > 1 ? 3 : 1;
+
+		if ( values.length === 1 ) {
+			count = 1;
+		}
 
 		setValues ( count, values );
 
@@ -1710,13 +1702,6 @@ function closure ( target, options ){
 		delete scope_Target.noUiSlider;
 	}
 
-	function topStepOfRangeBelow(nearbySteps) {
-		var numStepsInRangeBelow = (nearbySteps.thisStep.xVal-nearbySteps.stepBefore.xVal)/nearbySteps.stepBefore.xNumSteps,
-		highestCompleteStep = Math.ceil(Number(numStepsInRangeBelow.toFixed(3))-1),
-		stepBelow = nearbySteps.stepBefore.xVal + nearbySteps.stepBefore.xNumSteps*highestCompleteStep;
-		return stepBelow;
-	}
-
 	// Get the current step size for the slider.
 	function getCurrentStep ( ) {
 
@@ -1724,46 +1709,32 @@ function closure ( target, options ){
 		// Get the step point, then find it in the input list.
 		var retour = scope_Locations.map(function( location, index ){
 
-			var nearbySteps = scope_Spectrum.getNearbySteps( location ),
-			// As per #391, the comparison for the decrement step can have some rounding issues.
-			stepDecimals = scope_Spectrum.countStepDecimals(),
-			// Get the current numeric value
-			value = scope_Values[index];
+			var step = scope_Spectrum.getApplicableStep( location ),
 
-			var increment, decrement;
-			if (location == 100) {
-				increment = null;
-				decrement = value-topStepOfRangeBelow(nearbySteps);
-				decrement = Number(decrement.toFixed(stepDecimals)); // Round per #391
-			} else if (location === 0) {
-				increment = nearbySteps.thisStep.xNumSteps;
-				decrement = null;
-			} else {
-				increment = nearbySteps.thisStep.xNumSteps;
-				if (increment !== false) {
-					if (value+increment>nearbySteps.stepAfter.xVal) {
-						increment = nearbySteps.stepAfter.xVal-value;
-					}
-					increment = Number(increment.toFixed(stepDecimals));
-				}
-				if (value>nearbySteps.thisStep.xVal) {
-					decrement = nearbySteps.thisStep.xNumSteps;
-				} else if (nearbySteps.stepBefore.xNumSteps === false) {
-					decrement = false;
-				} else {
-					decrement = value-topStepOfRangeBelow(nearbySteps);
-					decrement = Number(decrement.toFixed(stepDecimals)); // Round per #391
-				}
-			}
+				// As per #391, the comparison for the decrement step can have some rounding issues.
+				// Round the value to the precision used in the step.
+				stepDecimals = countDecimals(String(step[2])),
+
+				// Get the current numeric value
+				value = scope_Values[index],
+
+				// To move the slider 'one step up', the current step value needs to be added.
+				// Use null if we are at the maximum slider value.
+				increment = location === 100 ? null : step[2],
+
+				// Going 'one step down' might put the slider in a different sub-range, so we
+				// need to switch between the current or the previous step.
+				prev = Number((value - step[2]).toFixed(stepDecimals)),
+
+				// If the value fits the step, return the current step value. Otherwise, use the
+				// previous step. Return null if the slider is at its minimum value.
+				decrement = location === 0 ? null : (prev >= step[1]) ? step[2] : (step[0] || false);
 
 			return [decrement, increment];
 		});
 
 		// Return values in the proper order.
-		if ( options.dir ) {
-			retour = retour.reverse();
-		}
-		return retour;
+		return inSliderOrder( retour );
 	}
 
 	// Attach an event to this slider, possibly including a namespace
@@ -1818,7 +1789,7 @@ function closure ( target, options ){
 		scope_Spectrum = newOptions.spectrum;
 
 		// Invalidate the current positioning so valueSet forces an update.
-		scope_Locations = [];
+		scope_Locations = [-1, -1];
 		valueSet(v);
 
 		for ( i = 0; i < scope_Handles.length; i++ ) {
