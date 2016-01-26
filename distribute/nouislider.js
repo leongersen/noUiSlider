@@ -1,4 +1,4 @@
-/*! nouislider - 8.2.1 - 2015-12-02 21:43:14 */
+/*! nouislider - 8.2.1 - 2016-01-26 19:21:58 */
 
 (function (factory) {
 
@@ -1786,6 +1786,9 @@ function closure ( target, options ){
 			}
 		});
 
+		// Save current spectrum direction as testOptions in testRange call
+		// doesn't rely on current direction
+		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
 		// Invalidate the current positioning so valueSet forces an update.
