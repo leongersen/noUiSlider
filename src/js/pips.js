@@ -163,7 +163,8 @@
 	function addMarking ( spread, filterFunc, formatter ) {
 
 		var style = ['horizontal', 'vertical'][options.ort],
-			element = document.createElement('div');
+			element = document.createElement('div'),
+			out = '';
 
 		addClass(element, cssClasses[20]);
 		addClass(element, cssClasses[20] + '-' + style);
@@ -189,11 +190,11 @@
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
 
 			// Add a marker for every point
-			element.innerHTML += '<div ' + getTags(offset, cssClasses[21], values) + '></div>';
+			out += '<div ' + getTags(offset, cssClasses[21], values) + '></div>';
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				element.innerHTML += '<div '+getTags(offset, cssClasses[22], values)+'>' + formatter.to(values[0]) + '</div>';
+				out += '<div '+getTags(offset, cssClasses[22], values)+'>' + formatter.to(values[0]) + '</div>';
 			}
 		}
 
@@ -201,6 +202,7 @@
 		Object.keys(spread).forEach(function(a){
 			addSpread(a, spread[a]);
 		});
+		element.innerHTML = out;
 
 		return element;
 	}
