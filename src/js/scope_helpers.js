@@ -1,7 +1,8 @@
 
 	// Shorthand for base dimensions.
 	function baseSize ( ) {
-		return scope_Base['offset' + ['Width', 'Height'][options.ort]];
+		var rect = scope_Base.getBoundingClientRect();
+		return options.ort === 0 ? rect.width : rect.height;
 	}
 
 	// External event handling
