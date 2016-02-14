@@ -281,7 +281,8 @@
 		off: removeEvent,
 		get: valueGet,
 		set: valueSet,
-		updateOptions: updateOptions
+		updateOptions: updateOptions,
+		options: options
 	};
 
 	// Attach user events.
