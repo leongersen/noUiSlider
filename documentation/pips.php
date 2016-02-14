@@ -24,6 +24,23 @@
 </section>
 
 
+<h2>API exposure</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>The pips feature is also exposed in the public API. This could be useful to update or remove pips after slider creation.</p>
+
+	</div>
+
+	<div class="side">
+
+		<?php code('pips-usage'); ?>
+	</div>
+</section>
+
+
 <?php sect('range'); ?>
 <h2>Range</h2>
 

@@ -299,7 +299,8 @@
 		set: valueSet,
 		updateOptions: updateOptions,
 		options: options, // Issue #600
-		target: scope_Target // Issue #597
+		target: scope_Target, // Issue #597
+		pips: pips // Issue #594
 	};
 
 	// Attach user events.
