@@ -153,7 +153,16 @@
 
 	// Removes classes from the root and empties it.
 	function destroy ( ) {
-		while (scope_Target.firstChild) scope_Target.removeChild(scope_Target.firstChild);
+
+		cssClasses.forEach(function(cls){
+			if ( !cls ) { return; } // Ignore empty classes
+			removeClass(scope_Target, cls);
+		});
+
+		while (scope_Target.firstChild) {
+			scope_Target.removeChild(scope_Target.firstChild);
+		}
+
 		delete scope_Target.noUiSlider;
 	}
 
