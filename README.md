@@ -16,13 +16,20 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
-### 8.2.1 (latest)
+### 8.3.0 (latest)
+- Expose several internal features, including `options` and `pips`.
+- Add a fifth argument to all events, containing the handle offsets.
+- Fixed `margin: 0` throwing an error.
+- Fixed `set` firing when calling `slider.noUiSlider.set` with a `null` value.
+- Fix and clarify some examples
+
+### 8.2.1
 - Fixed #568 and #569
 
 ### 8.2.0
 - Added 'start', 'end' and 'hover' events
 - Added better tooltip formatting options
-- Bugfixes, including an issues where a mouseup would be missed
+- Bugfixes, including an issue where a mouseup would be missed
 
 ### 8.1.0
 - Fixed Microsoft Edge support
@@ -77,7 +84,7 @@ noUiSlider.create(slider, {
 Browser support
 ---------------
 
-All major browsers are supported. **To support IE8** you'll need to shim several ES5 features. 
+All major browsers are supported. **To support IE8** you'll need to shim several ES5 features.
 
 You can use [polyfill.io](https://cdn.polyfill.io/v2/docs/) to easily do so:
 
