@@ -134,7 +134,11 @@
 
 		// Fire the 'set' event for both handles.
 		for ( i = 0; i < scope_Handles.length; i++ ) {
-			fireEvent('set', i);
+
+			// Fire the event only for handles that received a new value, as per #579
+			if ( values[i] !== null ) {
+				fireEvent('set', i);
+			}
 		}
 	}
 
