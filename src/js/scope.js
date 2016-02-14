@@ -294,7 +294,8 @@
 		get: valueGet,
 		set: valueSet,
 		updateOptions: updateOptions,
-		options: options
+		options: options, // Issue #600
+		target: scope_Target // Issue #597
 	};
 
 	// Attach user events.
