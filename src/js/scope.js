@@ -245,6 +245,9 @@
 			}
 		});
 
+		// Save current spectrum direction as testOptions in testRange call
+		// doesn't rely on current direction
+		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
 		// Invalidate the current positioning so valueSet forces an update.
