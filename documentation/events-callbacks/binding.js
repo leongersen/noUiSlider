@@ -1,8 +1,9 @@
-function doSomething ( values, handle, unencoded, tap ) {
+function doSomething ( values, handle, unencoded, tap, positions ) {
 	// values: Current slider values;
 	// handle: Handle that caused the event;
 	// unencoded: Slider values without formatting;
 	// tap: Event was caused by the user tapping the slider (bool);
+	// positions: Left offset of the handles in relation to the slider
 }
 
 // Binding signature
