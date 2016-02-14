@@ -1,4 +1,4 @@
-/*! nouislider - 8.2.1 - 2016-01-17 11:20:36 */
+/*! nouislider - 8.2.1 - 2016-01-26 19:21:58 */
 
 (function (factory) {
 
@@ -1434,11 +1434,6 @@ function closure ( target, options ){
 
 		// Find the handle closest to the tapped position.
 		handleNumber = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
-		
-		// Check if handler is not disablet if yes set number to the next handler
-		if (scope_Handles[handleNumber].hasAttribute('disabled')) {
-			handleNumber = handleNumber ? 0 : 1;
-		}
 
 		location -= offset(scope_Base)[ options.style ];
 
@@ -1791,6 +1786,9 @@ function closure ( target, options ){
 			}
 		});
 
+		// Save current spectrum direction as testOptions in testRange call
+		// doesn't rely on current direction
+		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
 		// Invalidate the current positioning so valueSet forces an update.
