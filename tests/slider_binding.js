@@ -64,14 +64,22 @@
 			};
 		}
 
-		simulant.fire( slider.querySelectorAll('.noUi-origin')[1], 'mousedown', {
-			button: 1, // middle-click
-			clientX: offset(slider).left + 100,
-			clientY: offset(slider).top + 8
-		});
+		var done = assert.async();
 
-		slider.noUiSlider.off('.namespace');
+		// Do this async, because we can't click the slider before it paints.
+		setTimeout(function() {
 
-		// Doesn't trigger 'set' again
-		slider.noUiSlider.set([5, 7]);
+			simulant.fire( slider.querySelectorAll('.noUi-origin')[1], 'mousedown', {
+				button: 1, // middle-click
+				clientX: offset(slider).left + 100,
+				clientY: offset(slider).top + 8
+			});
+
+			slider.noUiSlider.off('.namespace');
+
+			// Doesn't trigger 'set' again
+			slider.noUiSlider.set([5, 7]);
+			done();
+
+		}, 300);
 	});
