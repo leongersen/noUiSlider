@@ -85,13 +85,9 @@
 		}
 	}
 
-	// http://youmightnotneedjquery.com/#has_class
+	// https://plainjs.com/javascript/attributes/adding-removing-and-testing-for-classes-9/
 	function hasClass ( el, className ) {
-		if ( el.classList ) {
-			el.classList.contains(className);
-		} else {
-			new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
-		}
+		return el.classList ? el.classList.contains(className) : new RegExp('\\b' + className + '\\b').test(el.className);
 	}
 
 	// https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
