@@ -1,4 +1,4 @@
-/*! nouislider - 8.3.0 - 2016-02-14 17:37:19 */
+/*! nouislider - 8.3.0 - 2016-02-19 03:26:20 */
 
 (function (factory) {
 
