@@ -1,8 +1,9 @@
 
 function closure ( target, options ){
-
-	// All variables local to 'closure' are prefixed with 'scope_'
-	var scope_Target = target,
+	var
+		actions = getActions( ),
+		// All variables local to 'closure' are prefixed with 'scope_'
+		scope_Target = target,
 		scope_Locations = [-1, -1],
 		scope_Base,
 		scope_Handles,
