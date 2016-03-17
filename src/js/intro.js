@@ -3,7 +3,7 @@
     if ( typeof define === 'function' && define.amd ) {
 
         // AMD. Register as an anonymous module.
-        define([], factory);
+        define('noUiSlider', factory);
 
     } else if ( typeof exports === 'object' ) {
 
