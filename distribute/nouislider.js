@@ -1,4 +1,4 @@
-/*! nouislider - 8.3.0 - 2016-02-14 17:37:19 */
+/*! nouislider - 8.3.0 - 2016-03-30 18:02:45 */
 
 (function (factory) {
 
@@ -145,11 +145,11 @@
 	// Determine the events to bind. IE11 implements pointerEvents without
 	// a prefix, which breaks compatibility with the IE10 implementation.
 	/** @const */
-	actions = window.navigator.pointerEnabled ? {
+	actions = typeof window !== 'undefined' && window.navigator.pointerEnabled ? {
 		start: 'pointerdown',
 		move: 'pointermove',
 		end: 'pointerup'
-	} : window.navigator.msPointerEnabled ? {
+	} : typeof window !== 'undefined' && window.navigator.msPointerEnabled ? {
 		start: 'MSPointerDown',
 		move: 'MSPointerMove',
 		end: 'MSPointerUp'
