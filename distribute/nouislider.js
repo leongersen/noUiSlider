@@ -1430,9 +1430,8 @@ function closure ( target, options ){
 			document.body.addEventListener('selectstart', f, false);
 		}
 
-		if ( data.handleNumber !== undefined ) {
-			fireEvent('start', data.handleNumber);
-		}
+		data.handleNumber = (data.handleNumber == undefined) ? 2 : data.handleNumber;
+		fireEvent('start', data.handleNumber);
 	}
 
 	// Move closest handle to tapped location.
