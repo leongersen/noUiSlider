@@ -317,8 +317,8 @@
 		</div>
 
 		<br>
-		
-		<p>The <code>animationDuration</code> option can be used to set the animation speed assumed by the slider library. In <strong></strong> to this, you must manually set the CSS <code>(-webkit-)transition</code> property for the <code>.noUi-state-tap .noUi-origin</code> selector.</p>
+
+		<p>The <code>animationDuration</code> option can be used to set the animation speed assumed by the slider library. In <strong>addition</strong> to this, you must <strong>manually</strong> set the CSS <code>(-webkit-)transition</code> property for the <code>.noUi-state-tap .noUi-origin</code> selector.</p>
 
 		<div class="options">
 			<strong>Default</strong>
