@@ -119,7 +119,7 @@
 		// Animation is optional.
 		// Make sure the initial values where set before using animated placement.
 		if ( options.animate && scope_Locations[0] !== -1 ) {
-			addClassFor( scope_Target, cssClasses[14], 300 );
+			addClassFor( scope_Target, cssClasses[14], options.animationDuration );
 		}
 
 		// Determine how often to set the handles.
