@@ -71,7 +71,7 @@
 
 		<p>The <code>'set'</code> event fires when the slider values are restored. If this is undesired behaviour, you can pass <code>false</code> as the second parameter, <code>fireSetEvent</code>.</p>
 
-		<p>To update another option, destroy the slider (<code>slider.noUiSlider.destroy()</code>) and create a new one.</p>
+		<p>To update another option, destroy the slider (<code>slider.noUiSlider.destroy()</code>) and create a new one. Note that events are <strong>not</strong> unbound when destroying a slider.</p>
 
 		<div class="example">
 			<div id="slider-update"></div>
