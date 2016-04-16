@@ -1,5 +1,5 @@
 
-function closure ( target, options ){
+function closure ( target, options, originalOptions ){
 	var
 		actions = getActions( ),
 		// All variables local to 'closure' are prefixed with 'scope_'
