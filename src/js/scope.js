@@ -108,9 +108,10 @@
 	// Set the slider value.
 	function valueSet ( input, fireSetEvent ) {
 
-		var count, values = asArray( input ), i,
-			// Event fires by default
-			fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
+		var count, values = asArray( input ), i;
+
+		// Event fires by default
+		fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
@@ -242,7 +243,7 @@
 		// Spectrum is created using the range, snap, direction and step options.
 		// 'snap' and 'step' can be updated, 'direction' cannot, due to event binding.
 		// If 'snap' and 'step' are not passed, they should remain unchanged.
-		var v = valueGet(), i, newOptions = testOptions({
+		var v = valueGet(), newOptions = testOptions({
 			start: [0, 0],
 			margin: optionsToUpdate.margin,
 			limit: optionsToUpdate.limit,

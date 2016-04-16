@@ -1,4 +1,4 @@
-/*! nouislider - 8.4.0 - 2016-04-16 16:30:28 */
+/*! nouislider - 8.4.0 - 2016-04-16 16:46:07 */
 
 (function (factory) {
 
@@ -1690,9 +1690,10 @@ function closure ( target, options, originalOptions ){
 	// Set the slider value.
 	function valueSet ( input, fireSetEvent ) {
 
-		var count, values = asArray( input ), i,
-			// Event fires by default
-			fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
+		var count, values = asArray( input ), i;
+
+		// Event fires by default
+		fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
@@ -1824,7 +1825,7 @@ function closure ( target, options, originalOptions ){
 		// Spectrum is created using the range, snap, direction and step options.
 		// 'snap' and 'step' can be updated, 'direction' cannot, due to event binding.
 		// If 'snap' and 'step' are not passed, they should remain unchanged.
-		var v = valueGet(), i, newOptions = testOptions({
+		var v = valueGet(), newOptions = testOptions({
 			start: [0, 0],
 			margin: optionsToUpdate.margin,
 			limit: optionsToUpdate.limit,
