@@ -30,8 +30,8 @@ module.exports = function(grunt) {
 		{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true }
 	];
 
-    grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
+	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
 		concat: {
 			options: {
 				banner: VERSION_TEMPLATE
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
 				dest: 'distribute/nouislider.js',
 				nonull: true
 			}
-        },
+		},
 		cssmin: {
 			all: {
 				options: {
@@ -85,10 +85,10 @@ module.exports = function(grunt) {
 				files: releaseFiles
 			}
 		}
-    });
+	});
 
 	// https://github.com/gruntjs/grunt-contrib-concat
-    grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 
 	// https://github.com/gruntjs/grunt-contrib-uglify
 	grunt.loadNpmTasks('grunt-contrib-uglify');
