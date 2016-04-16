@@ -16,7 +16,16 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
-### 8.3.0 (latest)
+### 8.4.0 (latest)
+- Fix: don't assume `window` exists. #503, #533, #617 and #628
+- Fix: `:focus` style applied to wrong element. #631
+- Fix: `step` option is lost on updating. #619
+- Fix: exposed `options` should be the original options, not the parsed set. #607
+- Added: handle animation time configurable. #629
+- Added: slider values can be updated without firing `set`. #602
+- Change: internal value calculations no longer limited to 7 decimals. #614
+
+### 8.3.0
 - Expose several internal features, including `options` and `pips`.
 - Add a fifth argument to all events, containing the handle offsets.
 - Fixed `margin: 0` throwing an error.

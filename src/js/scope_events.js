@@ -132,12 +132,12 @@
 
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
-			addClass(data.handles[0].children[0], cssClasses[15]);
-
 			// Support 'disabled' handles
 			if ( data.handles[0].hasAttribute('disabled') ) {
 				return false;
 			}
+
+			addClass(data.handles[0].children[0], cssClasses[15]);
 		}
 
 		// Fix #551, where a handle gets selected instead of dragged.
@@ -212,7 +212,7 @@
 
 		// Find the handle closest to the tapped position.
 		handleNumber = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
-		
+
 		// Check if handler is not disablet if yes set number to the next handler
 		if (scope_Handles[handleNumber].hasAttribute('disabled')) {
 			handleNumber = handleNumber ? 0 : 1;
@@ -225,8 +225,8 @@
 
 		if ( !options.events.snap ) {
 			// Flag the slider as it is now in a transitional state.
-			// Transition takes 300 ms, so re-enable the slider afterwards.
-			addClassFor( scope_Target, cssClasses[14], 300 );
+			// Transition takes a configurable amount of ms (default 300). Re-enable the slider after that.
+			addClassFor( scope_Target, cssClasses[14], options.animationDuration );
 		}
 
 		// Support 'disabled' handles

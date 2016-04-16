@@ -4,6 +4,7 @@ var trueSlider = document.getElementById('slider-animate-true'),
 
 noUiSlider.create(trueSlider, {
 	animate: true,
+	animationDuration: 300,
 	start: 20,
 	range: {
 		min: 0,

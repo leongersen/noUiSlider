@@ -100,8 +100,7 @@
 			<div><em>none</em></div>
 
 			<strong>Accepted values</strong>
-			<div><code>number</code>
-			</div>
+			<div><code>number</code></div>
 		</div>
 	</div>
 
@@ -315,6 +314,18 @@
 
 			<strong>Accepted values</strong>
 			<div><code>true</code>, <code>false</code></div>
+		</div>
+
+		<br>
+
+		<p>The <code>animationDuration</code> option can be used to set the animation speed assumed by the slider library. In <strong>addition</strong> to this, you must <strong>manually</strong> set the CSS <code>(-webkit-)transition</code> property for the <code>.noUi-state-tap .noUi-origin</code> selector.</p>
+
+		<div class="options">
+			<strong>Default</strong>
+			<div><code>300</code></div>
+
+			<strong>Accepted values</strong>
+			<div><code>number</code></div>
 		</div>
 	</div>
 

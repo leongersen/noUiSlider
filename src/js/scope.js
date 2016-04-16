@@ -26,9 +26,8 @@
 		// Handle the step option.
 		to = scope_Spectrum.getStep( to );
 
-		// Limit to 0/100 for .val input, trim anything beyond 7 digits, as
-		// JavaScript has some issues in its floating point implementation.
-		to = limit(parseFloat(to.toFixed(7)));
+		// Limit percentage to the 0 - 100 range
+		to = limit(to);
 
 		// Return false if handle can't move
 		if ( to === scope_Locations[trigger] ) {
@@ -107,9 +106,11 @@
 	}
 
 	// Set the slider value.
-	function valueSet ( input ) {
+	function valueSet ( input, fireSetEvent ) {
 
-		var count, values = asArray( input ), i;
+		var count, values = asArray( input ), i,
+			// Event fires by default
+			fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
@@ -120,7 +121,7 @@
 		// Animation is optional.
 		// Make sure the initial values where set before using animated placement.
 		if ( options.animate && scope_Locations[0] !== -1 ) {
-			addClassFor( scope_Target, cssClasses[14], 300 );
+			addClassFor( scope_Target, cssClasses[14], options.animationDuration );
 		}
 
 		// Determine how often to set the handles.
@@ -136,7 +137,7 @@
 		for ( i = 0; i < scope_Handles.length; i++ ) {
 
 			// Fire the event only for handles that received a new value, as per #579
-			if ( values[i] !== null ) {
+			if ( values[i] !== null && fireSetEvent ) {
 				fireEvent('set', i);
 			}
 		}
@@ -221,8 +222,8 @@
 	// Undo attachment of event
 	function removeEvent ( namespacedEvent ) {
 
-		var event = namespacedEvent.split('.')[0],
-			namespace = namespacedEvent.substring(event.length);
+		var event = namespacedEvent && namespacedEvent.split('.')[0],
+			namespace = event && namespacedEvent.substring(event.length);
 
 		Object.keys(scope_Events).forEach(function( bind ){
 
@@ -236,19 +237,24 @@
 	}
 
 	// Updateable: margin, limit, step, range, animate, snap
-	function updateOptions ( optionsToUpdate ) {
+	function updateOptions ( optionsToUpdate, fireSetEvent ) {
 
+		// Spectrum is created using the range, snap, direction and step options.
+		// 'snap' and 'step' can be updated, 'direction' cannot, due to event binding.
+		// If 'snap' and 'step' are not passed, they should remain unchanged.
 		var v = valueGet(), i, newOptions = testOptions({
 			start: [0, 0],
 			margin: optionsToUpdate.margin,
 			limit: optionsToUpdate.limit,
-			step: optionsToUpdate.step,
+			step: optionsToUpdate.step === undefined ? options.singleStep : optionsToUpdate.step,
 			range: optionsToUpdate.range,
 			animate: optionsToUpdate.animate,
 			snap: optionsToUpdate.snap === undefined ? options.snap : optionsToUpdate.snap
 		});
 
-		['margin', 'limit', 'step', 'range', 'animate'].forEach(function(name){
+		['margin', 'limit', 'range', 'animate'].forEach(function(name){
+
+			// Only change options that we're actually passed to update.
 			if ( optionsToUpdate[name] !== undefined ) {
 				options[name] = optionsToUpdate[name];
 			}
@@ -261,11 +267,7 @@
 
 		// Invalidate the current positioning so valueSet forces an update.
 		scope_Locations = [-1, -1];
-		valueSet(v);
-
-		for ( i = 0; i < scope_Handles.length; i++ ) {
-			fireEvent('update', i);
-		}
+		valueSet(optionsToUpdate.start || v, fireSetEvent);
 	}
 
 
@@ -298,7 +300,7 @@
 		get: valueGet,
 		set: valueSet,
 		updateOptions: updateOptions,
-		options: options, // Issue #600
+		options: originalOptions, // Issue #600
 		target: scope_Target, // Issue #597
 		pips: pips // Issue #594
 	};

@@ -8,7 +8,7 @@
 
 		// Test the options and create the slider environment;
 		var options = testOptions( originalOptions, target ),
-			slider = closure( target, options );
+			slider = closure( target, options, originalOptions );
 
 		// Use the public value method to set the start values.
 		slider.set(options.start);
