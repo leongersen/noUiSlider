@@ -1,4 +1,4 @@
-/*! nouislider - 8.3.0 - 2016-02-14 17:37:19 */
+/*! nouislider - 8.3.0 - 2016-04-03 19:26:13 */
 
 (function (factory) {
 
@@ -1370,12 +1370,12 @@ function closure ( target, options ){
 
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
-			addClass(data.handles[0].children[0], cssClasses[15]);
-
 			// Support 'disabled' handles
 			if ( data.handles[0].hasAttribute('disabled') ) {
 				return false;
 			}
+
+			addClass(data.handles[0].children[0], cssClasses[15]);
 		}
 
 		// Fix #551, where a handle gets selected instead of dragged.

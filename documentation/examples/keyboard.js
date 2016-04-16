@@ -1,4 +1,4 @@
-var handle = slider.querySelector('.noUi-origin');
+var handle = slider.querySelector('.noUi-handle');
 
 handle.setAttribute('tabindex', 0);
 
