@@ -222,8 +222,8 @@
 	// Undo attachment of event
 	function removeEvent ( namespacedEvent ) {
 
-		var event = namespacedEvent.split('.')[0],
-			namespace = namespacedEvent.substring(event.length);
+		var event = namespacedEvent && namespacedEvent.split('.')[0],
+			namespace = event && namespacedEvent.substring(event.length);
 
 		Object.keys(scope_Events).forEach(function( bind ){
 
