@@ -162,21 +162,34 @@
 
 	function addMarking ( spread, filterFunc, formatter ) {
 
-		var style = ['horizontal', 'vertical'][options.ort],
+		var classPips, classMarker,
 			element = document.createElement('div'),
 			out = '';
 
-		addClass(element, cssClasses[20]);
-		addClass(element, cssClasses[20] + '-' + style);
+		addClass(element, options.cssClasses.pips);
 
-		function getSize( type ){
-			return [ '-normal', '-large', '-sub' ][type];
+		if (options.ort === 0) {
+			classPips = options.cssClasses.pipsHorizontal;
+			classMarker = options.cssClasses.markerHorizontal;
+		} else {
+			classPips = options.cssClasses.pipsVertical;
+			classMarker = options.cssClasses.markerVertical;
+		}
+
+		addClass(element, classPips);
+
+		function getSizeClass( type ){
+			return [
+				options.cssClasses.markerNormal,
+				options.cssClasses.markerLarge,
+				options.cssClasses.markerSub
+			][type];
 		}
 
 		function getTags( offset, source, values ) {
 			return 'class="' + source + ' ' +
-				source + '-' + style + ' ' +
-				source + getSize(values[1]) +
+				classMarker + ' ' +
+				getSizeClass(values[1]) +
 				'" style="' + options.style + ': ' + offset + '%"';
 		}
 
@@ -190,11 +203,11 @@
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
 
 			// Add a marker for every point
-			out += '<div ' + getTags(offset, cssClasses[21], values) + '></div>';
+			out += '<div ' + getTags(offset, options.cssClasses.marker, values) + '></div>';
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				out += '<div '+getTags(offset, cssClasses[22], values)+'>' + formatter.to(values[0]) + '</div>';
+				out += '<div '+getTags(offset, options.cssClasses.marker, values)+'>' + formatter.to(values[0]) + '</div>';
 			}
 		}
 

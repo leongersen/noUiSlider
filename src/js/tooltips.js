@@ -6,7 +6,7 @@
 		}
 
 		var element = document.createElement('div');
-		element.className = cssClasses[18];
+		element.className = options.cssClasses.tooltip;
 		return handle.firstChild.appendChild(element);
 	}
 

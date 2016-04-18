@@ -244,13 +244,13 @@
 		throw new Error( "noUiSlider: 'format' requires 'to' and 'from' methods.");
 	}
 
-	function testCssPrefix ( parsed, entry ) {
+	function testCssClasses ( parsed, entry ) {
 
-		if ( entry !== undefined && typeof entry !== 'string' ) {
-			throw new Error( "noUiSlider: 'cssPrefix' must be a string.");
+		if ( entry !== undefined && typeof entry !== 'object' ) {
+			throw new Error( "noUiSlider: 'cssClasses' must be an object.");
 		}
 
-		parsed.cssPrefix = entry;
+		parsed.cssClasses = entry;
 	}
 
 	// Test all developer settings and parse to assumption-safe values.
@@ -284,14 +284,44 @@
 			'behaviour': { r: true, t: testBehaviour },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
-			'cssPrefix': { r: false, t: testCssPrefix }
+			'cssClasses': { r: false, t: testCssClasses }
 		};
 
 		var defaults = {
 			'connect': false,
 			'direction': 'ltr',
 			'behaviour': 'tap',
-			'orientation': 'horizontal'
+			'orientation': 'horizontal',
+			'cssClasses': {
+				target: 'noUi-target',
+				base: 'noUi-base',
+				origin: 'noUi-origin',
+				handle: 'noUi-handle',
+				handleLower: 'noUi-handle-lower',
+				handleUpper: 'noUi-handle-upper',
+				horizontal: 'noUi-horizontal',
+				vertical: 'noUi-vertical',
+				background: 'noUi-background',
+				connect: 'noUi-connect',
+				ltr: 'noUi-ltr',
+				rtl: 'noUi-rtl',
+				draggable: 'noUi-draggable',
+				drag: 'noUi-state-drag',
+				tap: 'noUi-state-tap',
+				active: 'noUi-active',
+				stacking: 'noUi-stacking',
+				tooltip: 'noUi-tooltip',
+				pips: 'noUi-pips',
+				pipsHorizontal: 'noUi-pips-horizontal',
+				pipsVertical: 'noUi-pips-vertical',
+				marker: 'noUi-marker',
+				markerHorizontal: 'noUi-marker-horizontal',
+				markerVertical: 'noUi-marker-vertical',
+				markerNormal: 'noUi-marker-normal',
+				markerLarge: 'noUi-marker-large',
+				markerSub: 'noUi-marker-sub',
+				value: 'noUi-value'
+			}
 		};
 
 		// Run all options through a testing mechanism to ensure correct

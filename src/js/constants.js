@@ -1,6 +1,3 @@
-
-	var defaultCssPrefix = 'noUi-';
-
 	// we provide a function to compute constants instead
 	// of accessing window.* as soon as the module needs it
 	// so that we do not compute anything if not needed
