@@ -160,8 +160,8 @@
 	// Removes classes from the root and empties it.
 	function destroy ( ) {
 
-		for (var key in options.cssClasses) {
-			if (!options.cssClasses.hasOwnProperty(key)) { continue; };
+		for ( var key in options.cssClasses ) {
+			if ( !options.cssClasses.hasOwnProperty(key) ) { continue; };
 			removeClass(scope_Target, options.cssClasses[key]);
 		};
 
