@@ -163,7 +163,7 @@
 		for ( var key in options.cssClasses ) {
 			if ( !options.cssClasses.hasOwnProperty(key) ) { continue; };
 			removeClass(scope_Target, options.cssClasses[key]);
-		};
+		}
 
 		while (scope_Target.firstChild) {
 			scope_Target.removeChild(scope_Target.firstChild);
