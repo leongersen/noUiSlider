@@ -124,13 +124,13 @@
 		// Apply classes and data to the target.
 		addClass(target, options.cssClasses.target);
 
-		if (direction === 0) {
+		if ( direction === 0 ) {
 			addClass(target, options.cssClasses.ltr);
 		} else {
 			addClass(target, options.cssClasses.rtl);
 		}
 
-		if (orientation === 0) {
+		if ( orientation === 0 ) {
 			addClass(target, options.cssClasses.horizontal);
 		} else {
 			addClass(target, options.cssClasses.vertical);

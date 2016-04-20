@@ -168,7 +168,7 @@
 
 		addClass(element, options.cssClasses.pips);
 
-		if (options.ort === 0) {
+		if ( options.ort === 0 ) {
 			classPips = options.cssClasses.pipsHorizontal;
 			classMarker = options.cssClasses.markerHorizontal;
 		} else {
