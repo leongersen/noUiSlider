@@ -263,6 +263,8 @@
 			parsed.cssClasses = {};
 
 			for ( var key in entry ) {
+				if ( !entry.hasOwnProperty(key) ) { continue; }
+
 				parsed.cssClasses[key] = parsed.cssPrefix + entry[key];
 			}
 		} else {
