@@ -16,7 +16,12 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
-### 8.4.0 (latest)
+### 8.5.0 (latest)
+- Added: ability to completely override the classes used by the slider
+- Fix: removed invalid stopPropagation loop
+- Fix: source properly lints
+
+### 8.4.0
 - Fix: don't assume `window` exists. #503, #533, #617 and #628
 - Fix: `:focus` style applied to wrong element. #631
 - Fix: `step` option is lost on updating. #619

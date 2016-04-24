@@ -104,6 +104,5 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('default', ['concat', 'jshint']);
 	grunt.registerTask('create', ['concat', 'uglify', 'cssmin']);
-	grunt.registerTask('lint', ['jshint']);
 	grunt.registerTask('release', ['jshint', 'compress']);
 };
