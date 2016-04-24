@@ -102,10 +102,3 @@
 	function stopPropagation ( e ) {
 		e.stopPropagation();
 	}
-
-	// todo
-	function addCssPrefix(cssPrefix) {
-		return function(className) {
-			return cssPrefix + className;
-		};
-	}

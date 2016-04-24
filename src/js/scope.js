@@ -48,9 +48,9 @@
 
 		// Force proper handle stacking
 		if ( !handle.previousSibling ) {
-			removeClass(handle, cssClasses[17]);
+			removeClass(handle, options.cssClasses.stacking);
 			if ( to > 50 ) {
-				addClass(handle, cssClasses[17]);
+				addClass(handle, options.cssClasses.stacking);
 			}
 		}
 
@@ -122,7 +122,7 @@
 		// Animation is optional.
 		// Make sure the initial values where set before using animated placement.
 		if ( options.animate && scope_Locations[0] !== -1 ) {
-			addClassFor( scope_Target, cssClasses[14], options.animationDuration );
+			addClassFor( scope_Target, options.cssClasses.tap, options.animationDuration );
 		}
 
 		// Determine how often to set the handles.
@@ -160,10 +160,10 @@
 	// Removes classes from the root and empties it.
 	function destroy ( ) {
 
-		cssClasses.forEach(function(cls){
-			if ( !cls ) { return; } // Ignore empty classes
-			removeClass(scope_Target, cls);
-		});
+		for ( var key in options.cssClasses ) {
+			if ( !options.cssClasses.hasOwnProperty(key) ) { continue; }
+			removeClass(scope_Target, options.cssClasses[key]);
+		}
 
 		while (scope_Target.firstChild) {
 			scope_Target.removeChild(scope_Target.firstChild);
