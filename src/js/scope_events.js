@@ -266,20 +266,18 @@
 	// Attach events to several slider parts.
 	function events ( behaviour ) {
 
-		var i, drag;
-
 		// Attach the standard drag event to the handles.
 		if ( !behaviour.fixed ) {
 
-			for ( i = 0; i < scope_Handles.length; i += 1 ) {
+			scope_Handles.forEach(function( handle, index ){
 
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
-				attach ( actions.start, scope_Handles[i].children[0], start, {
-					handles: [ scope_Handles[i] ],
-					handleNumber: i
+				attach ( actions.start, handle.children[0], start, {
+					handles: [ handle ],
+					handleNumber: index
 				});
-			}
+			});
 		}
 
 		// Attach the tap event to the slider base.
@@ -293,17 +291,12 @@
 		// Fire hover events
 		if ( behaviour.hover ) {
 			attach ( actions.move, scope_Base, hover, { hover: true } );
-			for ( i = 0; i < scope_Handles.length; i += 1 ) {
-				['mousemove MSPointerMove pointermove'].forEach(function( eventName ){
-					scope_Handles[i].children[0].addEventListener(eventName, stopPropagation, false);
-				});
-			}
 		}
 
 		// Make the range draggable.
 		if ( behaviour.drag ){
 
-			drag = [scope_Base.querySelector( '.' + options.cssClasses.connect )];
+			var drag = [scope_Base.querySelector( '.' + options.cssClasses.connect )];
 			addClass(drag[0], options.cssClasses.draggable);
 
 			// When the range is fixed, the entire range can

@@ -97,8 +97,3 @@
 			y: y
 		};
 	}
-
-	// Shorthand for stopPropagation so we don't have to create a dynamic method
-	function stopPropagation ( e ) {
-		e.stopPropagation();
-	}
