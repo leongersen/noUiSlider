@@ -341,7 +341,12 @@
 				markerNormal: 'marker-normal',
 				markerLarge: 'marker-large',
 				markerSub: 'marker-sub',
-				value: 'value'
+				value: 'value',
+				valueHorizontal: 'value-horizontal',
+				valueVertical: 'value-vertical',
+				valueNormal: 'value-normal',
+				valueLarge: 'value-large',
+				valueSub: 'value-sub'
 			}
 		};
 

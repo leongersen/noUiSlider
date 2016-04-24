@@ -16,7 +16,11 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
-### 8.5.0 (latest)
+### 8.5.1 (latest)
+- Fix: class mixup in 8.5.0 merge
+- Change: position pips markers relatively
+
+### 8.5.0
 - Added: ability to completely override the classes used by the slider
 - Fix: removed invalid stopPropagation loop
 - Fix: source properly lints

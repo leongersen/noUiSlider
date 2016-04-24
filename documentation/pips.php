@@ -64,11 +64,11 @@
 
 		<h4 class="before-example">Vertical and vertical, bottom-to-top:</h4>
 
-		<div class="example vertical" style="float: left">
+		<div class="example vertical" style="width: 150px; float: left">
 			<div class="pips-range" id="pips-range-vertical"></div>
 		</div>
 
-		<div class="example vertical">
+		<div class="example vertical" style="width: 150px">
 			<div class="pips-range" id="pips-range-vertical-rtl"></div>
 		</div>
 

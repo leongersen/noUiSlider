@@ -16,7 +16,6 @@
  *
  */
 .noUi-value {
-	width: 40px;
 	position: absolute;
 	text-align: center;
 }
@@ -44,17 +43,14 @@
  */
 .noUi-pips-horizontal {
 	padding: 10px 0;
-	height: 50px;
+	height: 80px;
 	top: 100%;
 	left: 0;
 	width: 100%;
 }
 .noUi-value-horizontal {
-	margin-left: -20px;
-	padding-top: 20px;
-}
-.noUi-value-horizontal.noUi-value-sub {
-	padding-top: 15px;
+	-webkit-transform: translate3d(-50%,50%,0);
+	transform: translate3d(-50%,50%,0);
 }
 
 .noUi-marker-horizontal.noUi-marker {
@@ -79,9 +75,9 @@
 	left: 100%;
 }
 .noUi-value-vertical {
-	width: 15px;
-	margin-left: 20px;
-	margin-top: -5px;
+	-webkit-transform: translate3d(0,-50%,0);
+	transform: translate3d(0,-50%,0);
+	padding-left: 25px;
 }
 
 .noUi-marker-vertical.noUi-marker {

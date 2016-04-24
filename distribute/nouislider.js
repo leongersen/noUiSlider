@@ -1,4 +1,4 @@
-/*! nouislider - 8.5.0 - 2016-04-24 14:53:53 */
+/*! nouislider - 8.5.1 - 2016-04-24 16:00:29 */
 
 (function (factory) {
 
@@ -760,7 +760,12 @@
 				markerNormal: 'marker-normal',
 				markerLarge: 'marker-large',
 				markerSub: 'marker-sub',
-				value: 'value'
+				value: 'value',
+				valueHorizontal: 'value-horizontal',
+				valueVertical: 'value-vertical',
+				valueNormal: 'value-normal',
+				valueLarge: 'value-large',
+				valueSub: 'value-sub'
 			}
 		};
 
@@ -1147,35 +1152,40 @@ function closure ( target, options, originalOptions ){
 
 	function addMarking ( spread, filterFunc, formatter ) {
 
-		var classPips, classMarker,
-			element = document.createElement('div'),
-			out = '';
-
-		addClass(element, options.cssClasses.pips);
-
-		if ( options.ort === 0 ) {
-			classPips = options.cssClasses.pipsHorizontal;
-			classMarker = options.cssClasses.markerHorizontal;
-		} else {
-			classPips = options.cssClasses.pipsVertical;
-			classMarker = options.cssClasses.markerVertical;
-		}
-
-		addClass(element, classPips);
-
-		function getSizeClass( type ){
-			return [
+		var element = document.createElement('div'),
+			out = '',
+			valueSizeClasses = [
+				options.cssClasses.valueNormal,
+				options.cssClasses.valueLarge,
+				options.cssClasses.valueSub
+			],
+			markerSizeClasses = [
 				options.cssClasses.markerNormal,
 				options.cssClasses.markerLarge,
 				options.cssClasses.markerSub
-			][type];
+			],
+			valueOrientationClasses = [
+				options.cssClasses.valueHorizontal,
+				options.cssClasses.valueVertical
+			],
+			markerOrientationClasses = [
+				options.cssClasses.markerHorizontal,
+				options.cssClasses.markerVertical
+			];
+
+		addClass(element, options.cssClasses.pips);
+		addClass(element, options.ort === 0 ? options.cssClasses.pipsHorizontal : options.cssClasses.pipsVertical);
+
+		function getClasses( type, source ){
+			var a = source === options.cssClasses.value,
+				orientationClasses = a ? valueOrientationClasses : markerOrientationClasses,
+				sizeClasses = a ? valueSizeClasses : markerSizeClasses;
+
+			return source + ' ' + orientationClasses[options.ort] + ' ' + sizeClasses[type];
 		}
 
 		function getTags( offset, source, values ) {
-			return 'class="' + source + ' ' +
-				classMarker + ' ' +
-				getSizeClass(values[1]) +
-				'" style="' + options.style + ': ' + offset + '%"';
+			return 'class="' + getClasses(values[1], source) + '" style="' + options.style + ': ' + offset + '%"';
 		}
 
 		function addSpread ( offset, values ){
@@ -1192,7 +1202,7 @@ function closure ( target, options, originalOptions ){
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				out += '<div '+getTags(offset, options.cssClasses.marker, values)+'>' + formatter.to(values[0]) + '</div>';
+				out += '<div ' + getTags(offset, options.cssClasses.value, values) + '>' + formatter.to(values[0]) + '</div>';
 			}
 		}
 
@@ -1200,6 +1210,7 @@ function closure ( target, options, originalOptions ){
 		Object.keys(spread).forEach(function(a){
 			addSpread(a, spread[a]);
 		});
+
 		element.innerHTML = out;
 
 		return element;
