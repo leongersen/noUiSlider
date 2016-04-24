@@ -128,6 +128,8 @@
 	<div class="view">
 		<p>Styling noUiSlider is easy. The default stylesheet contains helpful comments to get a head start. I <strong>strongly</strong> recommend using the default stylesheet as a starting point when re-styling noUiSlider.</p>
 
+		<p>If your styling system doesn't match the convention in noUiSlider, you can use the <code>cssPrefix</code> and <code>cssClasses</code> options to reconfigure the markup.</p>
+		
 		<h3>Things to watch out for</h3>
 
 		<ul style="margin: 20px">
@@ -185,6 +187,12 @@
 					</tr>
 				</tbody>
 			</table>
+		</div>
+
+		<div class="viewer-header">Overriding classes</div>
+
+		<div class="viewer-content">
+<pre><code><?php include 'more/classes.js'; ?></code></pre>
 		</div>
 
 		<div class="viewer-header">Containing handles within the slider bar (horizontal)</div>
