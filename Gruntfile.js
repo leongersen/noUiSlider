@@ -40,6 +40,11 @@ module.exports = function(grunt) {
 				src: getFiles(),
 				dest: 'distribute/nouislider.js',
 				nonull: true
+			},
+			css: {
+				src: ['src/nouislider.css', 'src/nouislider.pips.css', 'src/nouislider.tooltips.css'],
+				dest: 'distribute/nouislider.css',
+				nonull: true
 			}
 		},
 		cssmin: {
