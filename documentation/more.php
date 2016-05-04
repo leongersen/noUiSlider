@@ -63,11 +63,15 @@
 
 	<div class="view">
 
-		<p>noUiSlider has an <code>updateOptions</code> method that can change the <code>'margin'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'animate'</code> and <code>'snap'</code> options. All other options require changes to the slider's HTML or event bindings.</p>
-		
-		<p>The <code>'update'</code> event fires after updating the slider. The value the slider has <em>before</em> updating is applied to it <em>after</em> updating, and the <code>'set'</code> event fires to reflect this.</p>
-		
-		<p>To update another option, destroy the slider (<code>slider.noUiSlider.destroy()</code>) and create a new one.</p>
+		<p>noUiSlider has an <code>updateOptions(newOptions, fireSetEvent)</code> method that can change the <code>'margin'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'animate'</code> and <code>'snap'</code> options. All other options require changes to the slider's HTML or event bindings.</p>
+
+		<p>The <code>'update'</code> event fires after updating the slider.</p>
+
+		<p>By default, the sliders <strong>values remain unchanged</strong>. To update the slider values, <code>newOptions</code> may also contain a <code>values</code> property</a> that matches the signature of the <a href="/nouislider/slider-read-write/#section-setting"><code>set</code></a> method.</p>
+
+		<p>The <code>'set'</code> event fires when the slider values are restored. If this is undesired behaviour, you can pass <code>false</code> as the second parameter, <code>fireSetEvent</code>.</p>
+
+		<p>To update another option, destroy the slider (<code>slider.noUiSlider.destroy()</code>) and create a new one. Note that events are <strong>not</strong> unbound when destroying a slider.</p>
 
 		<div class="example">
 			<div id="slider-update"></div>
@@ -124,6 +128,8 @@
 	<div class="view">
 		<p>Styling noUiSlider is easy. The default stylesheet contains helpful comments to get a head start. I <strong>strongly</strong> recommend using the default stylesheet as a starting point when re-styling noUiSlider.</p>
 
+		<p>If your styling system doesn't match the convention in noUiSlider, you can use the <code>cssPrefix</code> and <code>cssClasses</code> options to reconfigure the markup.</p>
+		
 		<h3>Things to watch out for</h3>
 
 		<ul style="margin: 20px">
@@ -181,6 +187,12 @@
 					</tr>
 				</tbody>
 			</table>
+		</div>
+
+		<div class="viewer-header">Overriding classes</div>
+
+		<div class="viewer-content">
+<pre><code><?php include 'more/classes.js'; ?></code></pre>
 		</div>
 
 		<div class="viewer-header">Containing handles within the slider bar (horizontal)</div>

@@ -1,7 +1,7 @@
-var slider = document.getElementById('keypress'),
+var keypressSlider = document.getElementById('keypress'),
 	input = document.getElementById('input-with-keypress');
 
-noUiSlider.create(slider, {
+noUiSlider.create(keypressSlider, {
 	start: 40,
 	step: 10,
 	range: {
@@ -12,10 +12,10 @@ noUiSlider.create(slider, {
 	}
 });
 
-slider.noUiSlider.on('update', function( values, handle ) {
+keypressSlider.noUiSlider.on('update', function( values, handle ) {
 	input.value = values[handle];
 });
 
 input.addEventListener('change', function(){
-	slider.noUiSlider.set([null, this.value]);
+	keypressSlider.noUiSlider.set([null, this.value]);
 });

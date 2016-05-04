@@ -239,7 +239,7 @@
 			value = 100 - value;
 		}
 
-		return accurateNumber(fromStepping( this.xVal, this.xPct, value ));
+		return fromStepping( this.xVal, this.xPct, value );
 	};
 
 	Spectrum.prototype.getStep = function ( value ) {

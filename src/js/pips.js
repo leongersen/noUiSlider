@@ -162,21 +162,40 @@
 
 	function addMarking ( spread, filterFunc, formatter ) {
 
-		var style = ['horizontal', 'vertical'][options.ort],
-			element = document.createElement('div');
+		var element = document.createElement('div'),
+			out = '',
+			valueSizeClasses = [
+				options.cssClasses.valueNormal,
+				options.cssClasses.valueLarge,
+				options.cssClasses.valueSub
+			],
+			markerSizeClasses = [
+				options.cssClasses.markerNormal,
+				options.cssClasses.markerLarge,
+				options.cssClasses.markerSub
+			],
+			valueOrientationClasses = [
+				options.cssClasses.valueHorizontal,
+				options.cssClasses.valueVertical
+			],
+			markerOrientationClasses = [
+				options.cssClasses.markerHorizontal,
+				options.cssClasses.markerVertical
+			];
 
-		addClass(element, cssClasses[20]);
-		addClass(element, cssClasses[20] + '-' + style);
+		addClass(element, options.cssClasses.pips);
+		addClass(element, options.ort === 0 ? options.cssClasses.pipsHorizontal : options.cssClasses.pipsVertical);
 
-		function getSize( type ){
-			return [ '-normal', '-large', '-sub' ][type];
+		function getClasses( type, source ){
+			var a = source === options.cssClasses.value,
+				orientationClasses = a ? valueOrientationClasses : markerOrientationClasses,
+				sizeClasses = a ? valueSizeClasses : markerSizeClasses;
+
+			return source + ' ' + orientationClasses[options.ort] + ' ' + sizeClasses[type];
 		}
 
 		function getTags( offset, source, values ) {
-			return 'class="' + source + ' ' +
-				source + '-' + style + ' ' +
-				source + getSize(values[1]) +
-				'" style="' + options.style + ': ' + offset + '%"';
+			return 'class="' + getClasses(values[1], source) + '" style="' + options.style + ': ' + offset + '%"';
 		}
 
 		function addSpread ( offset, values ){
@@ -189,11 +208,11 @@
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
 
 			// Add a marker for every point
-			element.innerHTML += '<div ' + getTags(offset, cssClasses[21], values) + '></div>';
+			out += '<div ' + getTags(offset, options.cssClasses.marker, values) + '></div>';
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				element.innerHTML += '<div '+getTags(offset, cssClasses[22], values)+'>' + formatter.to(values[0]) + '</div>';
+				out += '<div ' + getTags(offset, options.cssClasses.value, values) + '>' + formatter.to(values[0]) + '</div>';
 			}
 		}
 
@@ -201,6 +220,8 @@
 		Object.keys(spread).forEach(function(a){
 			addSpread(a, spread[a]);
 		});
+
+		element.innerHTML = out;
 
 		return element;
 	}

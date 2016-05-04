@@ -142,6 +142,7 @@
 
 		noUiSlider.create(slider, {
 			start: 1,
+			margin: 0, // Does not throw, issue #582
 			range: {
 				'min': 0,
 				'max': 10

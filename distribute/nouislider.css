@@ -1,3 +1,5 @@
+/*! nouislider - 8.5.1 - 2016-04-24 16:26:42 */
+
 
 /* Functional styling;
  * These styles are required for noUiSlider to function.
@@ -162,4 +164,121 @@
 [disabled].noUi-origin,
 [disabled] .noUi-handle {
 	cursor: not-allowed;
+}
+
+
+/* Base;
+ *
+ */
+.noUi-pips,
+.noUi-pips * {
+-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+.noUi-pips {
+	position: absolute;
+	color: #999;
+}
+
+/* Values;
+ *
+ */
+.noUi-value {
+	position: absolute;
+	text-align: center;
+}
+.noUi-value-sub {
+	color: #ccc;
+	font-size: 10px;
+}
+
+/* Markings;
+ *
+ */
+.noUi-marker {
+	position: absolute;
+	background: #CCC;
+}
+.noUi-marker-sub {
+	background: #AAA;
+}
+.noUi-marker-large {
+	background: #AAA;
+}
+
+/* Horizontal layout;
+ *
+ */
+.noUi-pips-horizontal {
+	padding: 10px 0;
+	height: 80px;
+	top: 100%;
+	left: 0;
+	width: 100%;
+}
+.noUi-value-horizontal {
+	-webkit-transform: translate3d(-50%,50%,0);
+	transform: translate3d(-50%,50%,0);
+}
+
+.noUi-marker-horizontal.noUi-marker {
+	margin-left: -1px;
+	width: 2px;
+	height: 5px;
+}
+.noUi-marker-horizontal.noUi-marker-sub {
+	height: 10px;
+}
+.noUi-marker-horizontal.noUi-marker-large {
+	height: 15px;
+}
+
+/* Vertical layout;
+ *
+ */
+.noUi-pips-vertical {
+	padding: 0 10px;
+	height: 100%;
+	top: 0;
+	left: 100%;
+}
+.noUi-value-vertical {
+	-webkit-transform: translate3d(0,-50%,0);
+	transform: translate3d(0,-50%,0);
+	padding-left: 25px;
+}
+
+.noUi-marker-vertical.noUi-marker {
+	width: 5px;
+	height: 2px;
+	margin-top: -1px;
+}
+.noUi-marker-vertical.noUi-marker-sub {
+	width: 10px;
+}
+.noUi-marker-vertical.noUi-marker-large {
+	width: 15px;
+}
+
+.noUi-tooltip {
+	display: block;
+	position: absolute;
+	border: 1px solid #D9D9D9;
+	border-radius: 3px;
+	background: #fff;
+	padding: 5px;
+	text-align: center;
+}
+
+.noUi-horizontal .noUi-handle-lower .noUi-tooltip {
+	top: -32px;
+}
+.noUi-horizontal .noUi-handle-upper .noUi-tooltip {
+	bottom: -32px;
+}
+.noUi-vertical .noUi-handle-lower .noUi-tooltip {
+	left: 120%;
+}
+.noUi-vertical .noUi-handle-upper .noUi-tooltip {
+	right: 120%;
 }

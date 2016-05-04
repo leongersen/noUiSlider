@@ -12,7 +12,7 @@
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( hasClass(scope_Target, cssClasses[14]) ) {
+			if ( hasClass(scope_Target, options.cssClasses.tap) ) {
 				return false;
 			}
 
@@ -86,11 +86,11 @@
 	function end ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = scope_Base.querySelector( '.' + cssClasses[15] ),
+		var active = scope_Base.querySelector( '.' + options.cssClasses.active ),
 			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1;
 
 		if ( active !== null ) {
-			removeClass(active, cssClasses[15]);
+			removeClass(active, options.cssClasses.active);
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -107,7 +107,7 @@
 		});
 
 		// Remove dragging class.
-		removeClass(scope_Target, cssClasses[12]);
+		removeClass(scope_Target, options.cssClasses.drag);
 
 		// Fire the change and set events.
 		fireEvent('set', handleNumber);
@@ -133,12 +133,12 @@
 
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
-			addClass(data.handles[0].children[0], cssClasses[15]);
-
 			// Support 'disabled' handles
 			if ( data.handles[0].hasAttribute('disabled') ) {
 				return false;
 			}
+
+			addClass(data.handles[0].children[0], options.cssClasses.active);
 		}
 
 		// Fix #551, where a handle gets selected instead of dragged.
@@ -177,7 +177,7 @@
 
 			// Mark the target with a dragging state.
 			if ( scope_Handles.length > 1 ) {
-				addClass(scope_Target, cssClasses[12]);
+				addClass(scope_Target, options.cssClasses.drag);
 			}
 
 			var f = function(){
@@ -211,6 +211,11 @@
 		// Find the handle closest to the tapped position.
 		handleNumber = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
 
+		// Check if handler is not disablet if yes set number to the next handler
+		if (scope_Handles[handleNumber].hasAttribute('disabled')) {
+			handleNumber = handleNumber ? 0 : 1;
+		}
+
 		location -= offset(scope_Base)[ options.style ];
 
 		// Calculate the new position.
@@ -218,8 +223,8 @@
 
 		if ( !options.events.snap ) {
 			// Flag the slider as it is now in a transitional state.
-			// Transition takes 300 ms, so re-enable the slider afterwards.
-			addClassFor( scope_Target, cssClasses[14], 300 );
+			// Transition takes a configurable amount of ms (default 300). Re-enable the slider after that.
+			addClassFor( scope_Target, options.cssClasses.tap, options.animationDuration );
 		}
 
 		// Support 'disabled' handles
@@ -259,20 +264,18 @@
 	// Attach events to several slider parts.
 	function events ( behaviour ) {
 
-		var i, drag;
-
 		// Attach the standard drag event to the handles.
 		if ( !behaviour.fixed ) {
 
-			for ( i = 0; i < scope_Handles.length; i += 1 ) {
+			scope_Handles.forEach(function( handle, index ){
 
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
-				attach ( actions.start, scope_Handles[i].children[0], start, {
-					handles: [ scope_Handles[i] ],
-					handleNumber: i
+				attach ( actions.start, handle.children[0], start, {
+					handles: [ handle ],
+					handleNumber: index
 				});
-			}
+			});
 		}
 
 		// Attach the tap event to the slider base.
@@ -286,18 +289,13 @@
 		// Fire hover events
 		if ( behaviour.hover ) {
 			attach ( actions.move, scope_Base, hover, { hover: true } );
-			for ( i = 0; i < scope_Handles.length; i += 1 ) {
-				['mousemove MSPointerMove pointermove'].forEach(function( eventName ){
-					scope_Handles[i].children[0].addEventListener(eventName, stopPropagation, false);
-				});
-			}
 		}
 
 		// Make the range draggable.
 		if ( behaviour.drag ){
 
-			drag = [scope_Base.querySelector( '.' + cssClasses[7] )];
-			addClass(drag[0], cssClasses[10]);
+			var drag = [scope_Base.querySelector( '.' + options.cssClasses.connect )];
+			addClass(drag[0], options.cssClasses.draggable);
 
 			// When the range is fixed, the entire range can
 			// be dragged by the handles. The handle in the first

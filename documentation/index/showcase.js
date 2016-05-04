@@ -1,6 +1,6 @@
-var slider = document.getElementById('range');
+var range = document.getElementById('range');
 
-noUiSlider.create(slider, {
+noUiSlider.create(range, {
 	start: [ 20, 80 ], // Handle start position
 	step: 10, // Slider moves in increments of '10'
 	margin: 20, // Handles must be more than '20' apart

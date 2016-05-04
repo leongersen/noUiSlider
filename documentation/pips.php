@@ -24,6 +24,23 @@
 </section>
 
 
+<h2>API exposure</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>The pips feature is also exposed in the public API. This could be useful to update or remove pips after slider creation.</p>
+
+	</div>
+
+	<div class="side">
+
+		<?php code('pips-usage'); ?>
+	</div>
+</section>
+
+
 <?php sect('range'); ?>
 <h2>Range</h2>
 
@@ -47,11 +64,11 @@
 
 		<h4 class="before-example">Vertical and vertical, bottom-to-top:</h4>
 
-		<div class="example vertical" style="float: left">
+		<div class="example vertical" style="width: 150px; float: left">
 			<div class="pips-range" id="pips-range-vertical"></div>
 		</div>
 
-		<div class="example vertical">
+		<div class="example vertical" style="width: 150px">
 			<div class="pips-range" id="pips-range-vertical-rtl"></div>
 		</div>
 

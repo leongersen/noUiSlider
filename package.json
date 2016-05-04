@@ -1,6 +1,6 @@
 {
   "name": "nouislider",
-  "version": "8.2.1",
+  "version": "8.5.1",
   "main": "distribute/nouislider",
   "style": "distribute/nouislider.min.css",
   "license": "WTFPL",
@@ -15,7 +15,7 @@
     "blanket": "1.1.7",
     "browser-sync": "2.9.3",
     "grunt": "~0.4.1",
-    "grunt-cli": "0.1.13",
+    "grunt-cli": "^0.1.13",
     "grunt-contrib-compress": "^0.11.0",
     "grunt-contrib-concat": "^0.5.0",
     "grunt-contrib-copy": "^0.5.0",

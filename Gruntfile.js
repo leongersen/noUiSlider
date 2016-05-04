@@ -30,8 +30,8 @@ module.exports = function(grunt) {
 		{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true }
 	];
 
-    grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
+	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
 		concat: {
 			options: {
 				banner: VERSION_TEMPLATE
@@ -40,8 +40,13 @@ module.exports = function(grunt) {
 				src: getFiles(),
 				dest: 'distribute/nouislider.js',
 				nonull: true
+			},
+			css: {
+				src: ['src/nouislider.css', 'src/nouislider.pips.css', 'src/nouislider.tooltips.css'],
+				dest: 'distribute/nouislider.css',
+				nonull: true
 			}
-        },
+		},
 		cssmin: {
 			all: {
 				options: {
@@ -85,10 +90,10 @@ module.exports = function(grunt) {
 				files: releaseFiles
 			}
 		}
-    });
+	});
 
 	// https://github.com/gruntjs/grunt-contrib-concat
-    grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 
 	// https://github.com/gruntjs/grunt-contrib-uglify
 	grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -104,6 +109,5 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('default', ['concat', 'jshint']);
 	grunt.registerTask('create', ['concat', 'uglify', 'cssmin']);
-	grunt.registerTask('lint', ['jshint']);
 	grunt.registerTask('release', ['jshint', 'compress']);
 };
