@@ -46,11 +46,26 @@
 			handle.style[options.style] = to + '%';
 		}
 
-		// Force proper handle stacking
-		if ( !handle.previousSibling ) {
-			removeClass(handle, options.cssClasses.stacking);
-			if ( to > 50 ) {
-				addClass(handle, options.cssClasses.stacking);
+		// Take care of handle stacking by manipulating the z-index of the inner div.
+		// Handles that are moved go to the top of the stack, so that the movement can be reverted,
+		// in order to be able to avoid a dead end.
+		var allHandles = handle.parentNode.childNodes;
+		var maxHandleZIndex = 10 + allHandles.length - 1;
+		// Take the z-index of the handle's inner div, defaulting to 0, if no z-index exists.
+		var handleZIndex = parseInt( handle.childNodes[0].style.zIndex ) || 0;
+		// If the handle is not already at the top (if it already is at the top, then nothing needs to be done).
+		if ( handleZIndex < maxHandleZIndex ) {
+			// Make it go a step above the top (because of needing to take a step down afterwards, when all handles are iterated).
+			handle.childNodes[0].style.zIndex = ( maxHandleZIndex + 1 ).toString();
+			// Iterate all handles.
+			for ( var i = 0; i < allHandles.length; i++ ) {
+				// The z-index of the other handle's inner div.
+				var otherHandleZIndex = parseInt( allHandles[i].childNodes[0].style.zIndex ) || 0;
+				// If the other handle's inner div is above the current handle's inner div before the z-index update,
+				// then take a step down.
+				if ( otherHandleZIndex > handleZIndex ) {
+					allHandles[i].childNodes[0].style.zIndex = ( otherHandleZIndex - 1 ).toString();
+				}
 			}
 		}
 
