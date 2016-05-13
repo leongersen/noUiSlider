@@ -50,20 +50,45 @@
 		// Handles that are moved go to the top of the stack, so that the movement can be reverted,
 		// in order to be able to avoid a dead end.
 		var allHandles = handle.parentNode.childNodes;
-		var maxHandleZIndex = 10 + allHandles.length - 1;
+		var handleCount = allHandles.length;
+		var minZIndex = 10;
+		// Multiplication by 2 is used to double the z-index range, so that the initialization of the
+		// left part of the slider is independent from the initialization of the right part of the slider.
+		var maxZIndex = minZIndex + 2 * handleCount - 1;
 		// Take the z-index of the handle's inner div, defaulting to 0, if no z-index exists.
-		var handleZIndex = parseInt( handle.childNodes[0].style.zIndex ) || 0;
-		// If the handle is not already at the top (if it already is at the top, then nothing needs to be done).
-		if ( handleZIndex < maxHandleZIndex ) {
+		var zIndex = parseInt( handle.childNodes[0].style.zIndex ) || 0;
+		// If the z-index does not exist and, thus, initialization is in order.
+		if ( zIndex == 0 ) {
+			// Calculate the position of the handle among all handles by counting previous siblings.
+			var handleIndex = 0;
+			var sibling = handle;
+			while ( ( sibling = sibling.previousSibling) != null ) {
+				handleIndex++;
+			}
+			// If the handle is up to the middle of the slider.
+			if ( to <= 50 ) {
+				// The z-indices up to the middle of the slider are increasing.
+				// The range of z-indices up to the middle of the slider is [minZIndex, minZIndex + handleCount - 1].
+				handle.childNodes[0].style.zIndex = ( minZIndex + handleIndex ).toString();
+			}
+			// Else, that is the handle is after the middle of the slider.
+			else {
+				// The z-indices after the middle of the slider are decreasing.
+				// The range of z-indices after the middle of the slider is [minZIndex + handleCount, maxZIndex].
+				handle.childNodes[0].style.zIndex = ( maxZIndex - handleIndex ).toString();
+			}
+		}
+		// If the z-index exists and the handle is not already at the top (if it already is at the top, then nothing needs to be done).
+		else if ( zIndex < maxZIndex ) {
 			// Make it go a step above the top (because of needing to take a step down afterwards, when all handles are iterated).
-			handle.childNodes[0].style.zIndex = ( maxHandleZIndex + 1 ).toString();
+			handle.childNodes[0].style.zIndex = ( maxZIndex + 1 ).toString();
 			// Iterate all handles.
-			for ( var i = 0; i < allHandles.length; i++ ) {
+			for ( var i = 0; i < handleCount; i++ ) {
 				// The z-index of the other handle's inner div.
-				var otherHandleZIndex = parseInt( allHandles[i].childNodes[0].style.zIndex ) || 0;
+				var otherZIndex = parseInt( allHandles[i].childNodes[0].style.zIndex ) || 0;
 				// If the other handle's inner div is above the current handle's inner div before the z-index update,
 				// then take a step down.
-				if ( otherHandleZIndex > handleZIndex ) {
+				if ( otherZIndex > zIndex ) {
 					allHandles[i].childNodes[0].style.zIndex = ( otherHandleZIndex - 1 ).toString();
 				}
 			}
