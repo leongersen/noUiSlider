@@ -58,11 +58,11 @@
 		// Take the z-index of the handle's inner div, defaulting to 0, if no z-index exists.
 		var zIndex = parseInt( handle.childNodes[0].style.zIndex ) || 0;
 		// If the z-index does not exist and, thus, initialization is in order.
-		if ( zIndex == 0 ) {
+		if ( zIndex === 0 ) {
 			// Calculate the position of the handle among all handles by counting previous siblings.
 			var handleIndex = 0;
 			var sibling = handle;
-			while ( ( sibling = sibling.previousSibling) != null ) {
+			while ( ( sibling = sibling.previousSibling) !== null ) {
 				handleIndex++;
 			}
 			// If the handle is up to the middle of the slider.
@@ -89,7 +89,7 @@
 				// If the other handle's inner div is above the current handle's inner div before the z-index update,
 				// then take a step down.
 				if ( otherZIndex > zIndex ) {
-					allHandles[i].childNodes[0].style.zIndex = ( otherHandleZIndex - 1 ).toString();
+					allHandles[i].childNodes[0].style.zIndex = ( otherZIndex - 1 ).toString();
 				}
 			}
 		}
