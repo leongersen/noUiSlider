@@ -89,6 +89,14 @@ module.exports = function(grunt) {
 				},
 				files: releaseFiles
 			}
+		},
+		qunit: {
+			files: ['tests/range.html', 'tests/slider.html'],
+			options: {
+				page : {
+					viewportSize : { width: 1280, height: 800 }
+				}
+			}
 		}
 	});
 
@@ -107,7 +115,11 @@ module.exports = function(grunt) {
 	// https://github.com/gruntjs/grunt-contrib-compress
 	grunt.loadNpmTasks('grunt-contrib-compress');
 
+	// https://github.com/gruntjs/grunt-contrib-qunit
+	grunt.loadNpmTasks('grunt-contrib-qunit');
+
 	grunt.registerTask('default', ['concat', 'jshint']);
-	grunt.registerTask('create', ['concat', 'uglify', 'cssmin']);
-	grunt.registerTask('release', ['jshint', 'compress']);
+	grunt.registerTask('test', ['concat', 'jshint', 'qunit']);
+	grunt.registerTask('create', ['concat', 'uglify', 'cssmin', 'qunit']);
+	grunt.registerTask('release', ['jshint', 'compress', 'qunit']);
 };
