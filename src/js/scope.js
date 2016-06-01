@@ -38,7 +38,7 @@
 		// Use requestAnimationFrame for efficient painting.
 		// No significant effect in Chrome, Edge sees dramatic
 		// performace improvements.
-		if ( window.requestAnimationFrame && !/PhantomJS/.test(window.navigator.userAgent) ) {
+		if ( window.requestAnimationFrame ) {
 			window.requestAnimationFrame(function(){
 				handle.style[options.style] = to + '%';
 			});
