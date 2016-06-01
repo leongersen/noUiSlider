@@ -31,18 +31,14 @@
 		// when you try to drag you get the non-movable one so they get stuck.
 		// See https://github.com/michaeltandy/noUiSlider/pull/3
 
-		// requestAnimationFrame is used for efficient painting but it breaks 
-		// this test as the handles don't get moved. Temporarily disable it.
-                var oldRAF = window.requestAnimationFrame;
-		window.requestAnimationFrame = false;
-
 		var slider2 = document.getElementById('slider2');
 		noUiSlider.create(slider2, {
 			start: [ 10, 20, 20 ],
 			range: {
 				'min': [0, 1],
 				'max': [20]
-			}
+			},
+			useRequestAnimationFrame: false
 		});
 
 		var handles2 = slider2.querySelectorAll('.noUi-handle'),
@@ -58,6 +54,4 @@
 			y = (middleHandlePos.top+middleHandlePos.bottom)/2,
 			selectedByClick = document.elementFromPoint(x, y);
 		assert.strictEqual(selectedByClick, middleHandle, "Middle handle should be selected by click as rightmost handle is unmovable move")
-
-		window.requestAnimationFrame = oldRAF;
 	});

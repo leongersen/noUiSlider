@@ -278,6 +278,14 @@
 		}
 	}
 
+	function testUseRaf ( parsed, entry ) {
+		if ( entry === true || entry === false ) {
+			parsed.useRequestAnimationFrame = entry;
+		} else {
+			throw new Error("noUiSlider: 'useRequestAnimationFrame' option should be true (default) or false.");
+		}
+	}
+
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
 
@@ -310,7 +318,8 @@
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
 			'cssPrefix': { r: false, t: testCssPrefix },
-			'cssClasses': { r: false, t: testCssClasses }
+			'cssClasses': { r: false, t: testCssClasses },
+			'useRequestAnimationFrame': { r: false, t: testUseRaf }
 		};
 
 		var defaults = {
@@ -353,7 +362,8 @@
 				valueNormal: 'value-normal',
 				valueLarge: 'value-large',
 				valueSub: 'value-sub'
-			}
+			},
+			'useRequestAnimationFrame': true
 		};
 
 		// Run all options through a testing mechanism to ensure correct

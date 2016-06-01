@@ -38,7 +38,8 @@
 		// Use requestAnimationFrame for efficient painting.
 		// No significant effect in Chrome, Edge sees dramatic
 		// performace improvements.
-		if ( window.requestAnimationFrame && !/PhantomJS/.test(window.navigator.userAgent) ) {
+		// Option to disable is useful for unit tests, and single-step debugging.
+		if ( window.requestAnimationFrame && options.useRequestAnimationFrame ) {
 			window.requestAnimationFrame(function(){
 				handle.style[options.style] = to + '%';
 			});
