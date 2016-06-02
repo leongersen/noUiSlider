@@ -198,22 +198,35 @@
 	// Move closest handle to tapped location.
 	function tap ( event ) {
 
-		var location = event.calcPoint, total = 0, handleNumber, to;
+		var location = event.calcPoint, handleNumber = -1, minDistance = Number.MAX_VALUE, to;
 
 		// The tap event shouldn't propagate up and cause 'edge' to run.
 		event.stopPropagation();
 
-		// Add up the handle offsets.
-		scope_Handles.forEach(function(a){
-			total += offset(a)[ options.style ];
-		});
-
-		// Find the handle closest to the tapped position.
-		handleNumber = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
-
-		// Check if handler is not disablet if yes set number to the next handler
-		if (scope_Handles[handleNumber].hasAttribute('disabled')) {
-			handleNumber = handleNumber ? 0 : 1;
+		// Iterate all handles.
+		for ( var handleIndex = 0; handleIndex < scope_Handles.length; handleIndex++ ) {
+			var a = scope_Handles[handleIndex];
+			// If the handle is not disabled (disabled handles are ignored).
+			if ( !scope_Handles[handleIndex].hasAttribute('disabled') ) {
+				var candidateMinDistance = Math.abs( offset(a)[ options.style ] - location );
+				// If the candidate is better, then update the minimum distance as well as the handle number.
+				if ( candidateMinDistance < minDistance ) {
+					minDistance = candidateMinDistance;
+					handleNumber = handleIndex;
+				}
+				// If they are the same, the relative positions of handle and location decide whether there is an update.
+				// This is needed for totally overlapping handles.
+				else if ( candidateMinDistance == minDistance ) {
+					// If this handle is before the location, then this handle should be selected.
+					if ( offset(a)[ options.style ] < location ) {
+						handleNumber = handleIndex;
+					}
+				}
+				// Else, that is the candidate is worse, then the candidates will be getting even worse from there on.
+				else {
+					break;
+				}
+			}
 		}
 
 		location -= offset(scope_Base)[ options.style ];
@@ -227,8 +240,8 @@
 			addClassFor( scope_Target, options.cssClasses.tap, options.animationDuration );
 		}
 
-		// Support 'disabled' handles
-		if ( scope_Handles[handleNumber].hasAttribute('disabled') ) {
+		// Tackle the case that all handles are 'disabled'.
+		if ( handleNumber == -1 ) {
 			return false;
 		}
 
