@@ -1,8 +1,8 @@
 
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b ) {
-		var result = b.slice();
-		for (var i=0 ; i<result.length ; i++) {
+		var result = b.slice(), i;
+		for ( i = 0; i < result.length; i++) {
 			result[i]+=a;
 		}
 		return result;
@@ -50,7 +50,7 @@
 	}
 
 	// Append a handle to the base.
-	function addHandle ( direction, index ) {
+	function addHandle ( base, direction, index ) {
 
 		var origin = document.createElement('div'),
 			handle = document.createElement('div'),
@@ -66,42 +66,42 @@
 		addClass(origin, options.cssClasses.origin);
 		origin.appendChild(handle);
 
+		base.appendChild(origin);
+
 		return origin;
 	}
 
-	// Add the proper connection classes.
-	function addConnection ( connect, target, handles ) {
+	function addConnect ( base, add ) {
 
-		// Apply the required connection classes to the elements
-		// that need them. Some classes are made up for several
-		// segments listed in the class list, to allow easy
-		// renaming and provide a minor compression benefit.
-		switch ( connect ) {
-			case 1:	addClass(target, options.cssClasses.connect);
-					addClass(handles[0], options.cssClasses.background);
-					break;
-			case 3: addClass(handles[1], options.cssClasses.background);
-					/* falls through */
-			case 2: addClass(handles[0], options.cssClasses.connect);
-					/* falls through */
-			case 0: addClass(target, options.cssClasses.background);
-					break;
+		if ( !add ) {
+			return false;
 		}
+
+		var connect = document.createElement('div');
+
+		addClass(connect, 'TODO-connect'); // TODO
+
+		base.appendChild(connect);
+
+		return connect;
 	}
 
 	// Add handles to the slider base.
-	function addHandles ( nrHandles, direction, base ) {
+	function addElements ( nrHandles, connectOptions, direction, base ) {
 
-		var index, handles = [];
+		var index, handles = [], connects = [];
+
+		connects.push(addConnect(base, connectOptions[0]));
 
 		// Append handles.
 		for ( index = 0; index < nrHandles; index += 1 ) {
 
 			// Keep a list of all added handles.
-			handles.push( base.appendChild(addHandle( direction, index )) );
+			handles.push(addHandle(base, direction, index));
+			connects.push(addConnect(base, connectOptions[index + 1]));
 		}
 
-		return handles;
+		return [handles, connects];
 	}
 
 	// Initialize a single slider.

@@ -95,6 +95,14 @@
 
 	function testConnect ( parsed, entry ) {
 
+		if ( entry.length !== parsed.handles + 1 ) {
+			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
+		}
+
+		parsed.connect = entry;
+
+		return; // TODO omg
+
 		if ( entry === 'lower' && parsed.handles === 1 ) {
 			parsed.connect = 1;
 		} else if ( entry === 'upper' && parsed.handles === 1 ) {

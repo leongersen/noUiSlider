@@ -3,7 +3,7 @@
 	function setHandle ( handle, to, noLimitOption ) {
 
 		var trigger;
-		for (trigger = 0 ; scope_Handles[trigger] !== handle ; trigger++) { }
+		for (trigger = 0 ; scope_Handles[trigger] !== handle ; trigger++) { } // TODO whatsdis
 
 		var lowerMargin = scope_Locations[trigger-1] + options.margin,
 			upperMargin = scope_Locations[trigger+1] - options.margin,
@@ -53,25 +53,32 @@
 		var allHandles = handle.parentNode.childNodes;
 		var handleCount = allHandles.length;
 		var minZIndex = 10;
+
 		// Multiplication by 2 is used to double the z-index range, so that the initialization of the
 		// left part of the slider is independent from the initialization of the right part of the slider.
 		var maxZIndex = minZIndex + 2 * handleCount - 1;
+
 		// Take the z-index of the handle's inner div, defaulting to 0, if no z-index exists.
 		var zIndex = parseInt( handle.childNodes[0].style.zIndex ) || 0;
+
 		// If the z-index does not exist and, thus, initialization is in order.
 		if ( zIndex === 0 ) {
+
 			// Calculate the position of the handle among all handles by counting previous siblings.
 			var handleIndex = 0;
 			var sibling = handle;
+
 			while ( ( sibling = sibling.previousSibling) !== null ) {
 				handleIndex++;
 			}
+
 			// If the handle is up to the middle of the slider.
 			if ( to <= 50 ) {
 				// The z-indices up to the middle of the slider are increasing.
 				// The range of z-indices up to the middle of the slider is [minZIndex, minZIndex + handleCount - 1].
 				handle.childNodes[0].style.zIndex = ( minZIndex + handleIndex ).toString();
 			}
+
 			// Else, that is the handle is after the middle of the slider.
 			else {
 				// The z-indices after the middle of the slider are decreasing.
@@ -79,14 +86,19 @@
 				handle.childNodes[0].style.zIndex = ( maxZIndex - handleIndex ).toString();
 			}
 		}
+
 		// If the z-index exists and the handle is not already at the top (if it already is at the top, then nothing needs to be done).
 		else if ( zIndex < maxZIndex ) {
+
 			// Make it go a step above the top (because of needing to take a step down afterwards, when all handles are iterated).
 			handle.childNodes[0].style.zIndex = ( maxZIndex + 1 ).toString();
+
 			// Iterate all handles.
 			for ( var i = 0; i < handleCount; i++ ) {
+
 				// The z-index of the other handle's inner div.
-				var otherZIndex = parseInt( allHandles[i].childNodes[0].style.zIndex ) || 0;
+				var otherZIndex = parseInt( allHandles[i].childNodes[0].style.zIndex ) || 0; // TODO reads style
+
 				// If the other handle's inner div is above the current handle's inner div before the z-index update,
 				// then take a step down.
 				if ( otherZIndex > zIndex ) {
@@ -101,9 +113,38 @@
 		// Convert the value to the slider stepping/range.
 		scope_Values[trigger] = scope_Spectrum.fromStepping( to );
 
+		populateConnects(scope_Connects, scope_Locations);
+
 		fireEvent('update', trigger);
 
 		return true;
+	}
+
+	function populateConnects ( scope_Connects, scope_Locations ) { // TODO run only after init
+
+		scope_Connects.forEach(function( connect, index ) {
+
+			// Skip connects set to false
+			if ( !connect ) {
+				return;
+			}
+
+			var l = 0, h = 100;
+
+			if ( index !== 0 ) {
+				l = scope_Locations[index - 1];
+			}
+
+			if ( index !== scope_Connects.length - 1 ) {
+				h = scope_Locations[index];
+			}
+
+			console.log(index, l, h);
+
+			// Start at 0
+			connect.style['left'] = l + '%'; // TODO raft, options.style, also this is a mess
+			connect.style['right'] = (100 - h) + '%';
+		});
 	}
 
 	// Loop values from value method and apply them.
@@ -205,10 +246,12 @@
 		delete scope_Target.noUiSlider;
 	}
 
-	function topStepOfRangeBelow(nearbySteps) {
-		var numStepsInRangeBelow = (nearbySteps.thisStep.xVal-nearbySteps.stepBefore.xVal)/nearbySteps.stepBefore.xNumSteps,
-		highestCompleteStep = Math.ceil(Number(numStepsInRangeBelow.toFixed(3))-1),
-		stepBelow = nearbySteps.stepBefore.xVal + nearbySteps.stepBefore.xNumSteps*highestCompleteStep;
+	function topStepOfRangeBelow ( nearbySteps ) {
+
+		var numStepsInRangeBelow = (nearbySteps.thisStep.xVal - nearbySteps.stepBefore.xVal) / nearbySteps.stepBefore.xNumSteps,
+		highestCompleteStep = Math.ceil(Number(numStepsInRangeBelow.toFixed(3)) - 1), // todo why tofixed
+		stepBelow = nearbySteps.stepBefore.xVal + nearbySteps.stepBefore.xNumSteps * highestCompleteStep;
+
 		return stepBelow;
 	}
 
@@ -334,10 +377,11 @@
 	// Create the base element, initialise HTML and set classes.
 	// Add handles and links.
 	scope_Base = addSlider( options.dir, options.ort, scope_Target );
-	scope_Handles = addHandles( options.handles, options.dir, scope_Base );
 
-	// Set the connect classes.
-	addConnection ( options.connect, scope_Target, scope_Handles );
+	var elements = addElements( options.handles, options.connect, options.dir, scope_Base );
+	scope_Handles = elements[0];
+	scope_Connects = elements[1];
+
 
 	if ( options.pips ) {
 		pips(options.pips);

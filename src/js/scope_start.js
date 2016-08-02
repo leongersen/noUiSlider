@@ -7,6 +7,7 @@ function closure ( target, options, originalOptions ){
 		scope_Locations = [],
 		scope_Base,
 		scope_Handles,
+		scope_Connects,
 		scope_Spectrum = options.spectrum,
 		scope_Values = [],
 		scope_Events = {},
