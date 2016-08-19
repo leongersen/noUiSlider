@@ -10,6 +10,12 @@ The best part? noUiSlider has no dependencies! As of version 8, **jQuery is no l
 
 Oh, and the licensing terms are simple: [just Do What the Fuck You Want](http://www.wtfpl.net/about/) with it.
 
+installation
+-------
+'''
+bower install nouislider --save
+'''
+
 Documentation
 -------
 An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](http://refreshless.com/nouislider/).
