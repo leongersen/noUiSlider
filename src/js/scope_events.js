@@ -32,8 +32,9 @@
 
 			// Call the event handler with the event [ and additional data ].
 			callback ( e, data );
+		};
 
-		}, methods = [];
+		var methods = [];
 
 		// Bind a closure on the target for every event type.
 		events.split(' ').forEach(function( eventName ){
@@ -44,8 +45,15 @@
 		return methods;
 	}
 
+	// Fire 'end' when a mouse or pen leaves the document.
+	function documentLeave ( event, data ) {
+		if ( event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null ){
+			EventEnd ( event, data );
+		}
+	}
+
 	// Handle movement on document for handle and range drag.
-	function move ( event, data ) {
+	function EventMove ( event, data ) {
 
 		// Fix #498
 		// Check value of .buttons in 'start' to work around a bug in IE10 mobile (data.buttonsProperty).
@@ -53,37 +61,43 @@
 		// IE9 has .buttons and .which zero on mousemove.
 		// Firefox breaks the spec MDN defines.
 		if ( navigator.appVersion.indexOf("MSIE 9") === -1 && event.buttons === 0 && data.buttonsProperty !== 0 ) {
-			return end(event, data);
+			return EventEnd(event, data);
 		}
 
-		var handles = data.handles || scope_Handles, positions, state = false,
-			proposal = ((event.calcPoint - data.start) * 100) / data.baseSize, handleNumber, i;
-
-		for (handleNumber = 0 ; scope_Handles[handleNumber] !== handles[0] ; handleNumber++) { }
-
-		// Calculate relative positions for the handles.
-		positions = getPositions( proposal, data.positions );
-
-		state = setHandle ( handles[0], positions[handleNumber], handles.length === 1 );
+		var handles = data.handles || scope_Handles;
+		var state = true;
+		var proposal = ((event.calcPoint - data.start) * 100) / data.baseSize;
+		var positions = data.positions.map(function(a){ return a + proposal });
+		var handleNumbers = asArray(data.handleNumber);
 
 		if ( handles.length > 1 ) {
 
-			state = setHandle ( handles[1], positions[handleNumber?0:1], false ) || state;
+			handles.forEach(function( handle, index ){
+				var handleNumber = handleNumbers[index];
+				var position = positions[handleNumber];
+				state = state && checkHandlePosition(handle, handleNumber, position);
+			});
+		}
 
-			if ( state ) {
-				// fire for both handles
-				for ( i = 0; i < data.handles.length; i++ ) {
-					fireEvent('slide', i);
-				}
+		if ( state ) {
+
+			handles.forEach(function( handle, index ){
+				var handleNumber = handleNumbers[index];
+				var position = positions[handleNumber];
+				state = state && setHandle(handle, position, handles.length === 1);
+			});
+		}
+
+		// fire for all involved handles
+		if ( state ) {
+			for ( i = 0; i < data.handles.length; i++ ) {
+				fireEvent('slide', i); // TODO i is NOT the handleNumber
 			}
-		} else if ( state ) {
-			// Fire for a single handle
-			fireEvent('slide', handleNumber);
 		}
 	}
 
 	// Unbind move events on document, call callbacks.
-	function end ( event, data ) {
+	function EventEnd ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
 		var active = scope_Base.querySelector( '.' + options.cssClasses.active ),
@@ -119,20 +133,12 @@
 		}
 	}
 
-	// Fire 'end' when a mouse or pen leaves the document.
-	function documentLeave ( event, data ) {
-		if ( event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null ){
-			end ( event, data );
-		}
-	}
-
 	// Bind move events on document.
-	function start ( event, data ) {
-
-		var d = document.documentElement;
+	function EventStart ( event, data ) {
 
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
+
 			// Support 'disabled' handles
 			if ( data.handles[0].hasAttribute('disabled') ) {
 				return false;
@@ -148,7 +154,7 @@
 		event.stopPropagation();
 
 		// Attach the move and end events.
-		var moveEvent = attach(actions.move, d, move, {
+		var moveEvent = attach(actions.move, document.documentElement, EventMove, {
 			start: event.calcPoint,
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
@@ -156,17 +162,19 @@
 			handleNumber: data.handleNumber,
 			buttonsProperty: event.buttons,
 			positions: scope_Locations.slice()
-		}), endEvent = attach(actions.end, d, end, {
+		});
+
+		var endEvent = attach(actions.end, document.documentElement, EventEnd, {
 			handles: data.handles,
 			handleNumber: data.handleNumber
 		});
 
-		var outEvent = attach("mouseout", d, documentLeave, {
+		var outEvent = attach("mouseout", document.documentElement, documentLeave, {
 			handles: data.handles,
 			handleNumber: data.handleNumber
 		});
 
-		d.noUiListeners = moveEvent.concat(endEvent, outEvent);
+		document.documentElement.noUiListeners = moveEvent.concat(endEvent, outEvent);
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
@@ -196,7 +204,7 @@
 	}
 
 	// Move closest handle to tapped location.
-	function tap ( event ) {
+	function EventTap ( event ) {
 
 		var location = event.calcPoint, handleNumber = -1, minDistance = Number.MAX_VALUE, to;
 
@@ -259,7 +267,7 @@
 	}
 
 	// Fires a 'hover' event for a hovered mouse/pen position.
-	function hover ( event ) {
+	function EventHover ( event ) {
 
 		var location = event.calcPoint - offset(scope_Base)[ options.style ],
 			to = scope_Spectrum.getStep(( location * 100 ) / baseSize()),
@@ -275,7 +283,7 @@
 	}
 
 	// Attach events to several slider parts.
-	function events ( behaviour ) {
+	function bindSliderEvents ( behaviour ) {
 
 		// Attach the standard drag event to the handles.
 		if ( !behaviour.fixed ) {
@@ -284,7 +292,7 @@
 
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
-				attach ( actions.start, handle.children[0], start, {
+				attach ( actions.start, handle.children[0], EventStart, {
 					handles: [ handle ],
 					handleNumber: index
 				});
@@ -294,33 +302,43 @@
 		// Attach the tap event to the slider base.
 		if ( behaviour.tap ) {
 
-			attach ( actions.start, scope_Base, tap, {
+			attach ( actions.start, scope_Base, EventTap, {
 				handles: scope_Handles
 			});
 		}
 
 		// Fire hover events
 		if ( behaviour.hover ) {
-			attach ( actions.move, scope_Base, hover, { hover: true } );
+			attach ( actions.move, scope_Base, EventHover, { hover: true } );
 		}
 
 		// Make the range draggable.
-		if ( behaviour.drag ){ return; // TODO
+		if ( behaviour.drag ){
 
-			var drag = [scope_Base.querySelector( '.' + options.cssClasses.connect )];
-			addClass(drag[0], options.cssClasses.draggable);
+			scope_Connects.forEach(function( connect, index ){
 
-			// When the range is fixed, the entire range can
-			// be dragged by the handles. The handle in the first
-			// origin will propagate the start event upward,
-			// but it needs to be bound manually on the other.
-			if ( behaviour.fixed ) {
-				drag.push(scope_Handles[(drag[0] === scope_Handles[0] ? 1 : 0)].children[0]);
-			}
+				if ( connect === false || index === 0 || index === scope_Connects.length - 1 ) return;
 
-			drag.forEach(function( element ) {
-				attach ( actions.start, element, start, {
-					handles: scope_Handles
+				var handleBefore = scope_Handles[index - 1];
+				var handleAfter = scope_Handles[index];
+				var eventHolders = [connect];
+
+				addClass(connect, options.cssClasses.draggable);
+
+				// When the range is fixed, the entire range can
+				// be dragged by the handles. The handle in the first
+				// origin will propagate the start event upward,
+				// but it needs to be bound manually on the other.
+				if ( behaviour.fixed ) {
+					eventHolders.push(handleBefore.children[0]);
+					eventHolders.push(handleAfter.children[0]);
+				}
+
+				eventHolders.forEach(function( eventHolder ) {
+					attach ( actions.start, eventHolder, EventStart, {
+						handles: [handleBefore, handleAfter],
+						handleNumber: [index - 1, index]
+					});
 				});
 			});
 		}

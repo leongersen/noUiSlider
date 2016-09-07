@@ -208,6 +208,8 @@
 	//	}
 	// TODO
 
+		// TODO 'fixed' with handles > 2
+
 		parsed.events = {
 			tap: tap || snap,
 			drag: drag,

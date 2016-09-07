@@ -1,26 +1,23 @@
 
-	// Test suggested values and apply margin, step.
-	function setHandle ( handle, to, noLimitOption ) {
+	// Split out the handle positioning logic so the Move event can use it, too
+	function checkHandlePosition ( handle, handleNumber, to, noLimitOption ) {
 
-		var trigger;
-		for (trigger = 0 ; scope_Handles[trigger] !== handle ; trigger++) { } // TODO whatsdis
-
-		var lowerMargin = scope_Locations[trigger-1] + options.margin,
-			upperMargin = scope_Locations[trigger+1] - options.margin,
-			lowerLimit = scope_Locations[trigger-1] + options.limit,
-			upperLimit = scope_Locations[trigger+1] - options.limit;
+		var lowerMargin = scope_Locations[handleNumber-1] + options.margin,
+			upperMargin = scope_Locations[handleNumber+1] - options.margin,
+			lowerLimit = scope_Locations[handleNumber-1] + options.limit,
+			upperLimit = scope_Locations[handleNumber+1] - options.limit;
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
-		to = Math.min(Math.max(to, isNaN(lowerMargin)?0:lowerMargin), isNaN(upperMargin)?100:upperMargin);
+		to = Math.min(Math.max(to, isNaN(lowerMargin)?0:lowerMargin), isNaN(upperMargin)?100:upperMargin); // TODO
 
 		// The limit option has the opposite effect, limiting handles to a
 		// maximum distance from another. Limit must be > 0, as otherwise
 		// handles would be unmoveable. 'noLimitOption' is set to 'false'
 		// for the .val() method, except for pass 4/4.
 		if ( noLimitOption !== false && options.limit && scope_Handles.length > 1 ) {
-			to = trigger ? Math.min ( to, lowerLimit ) : Math.max( to, upperLimit );
+			to = handleNumber ? Math.min ( to, lowerLimit ) : Math.max( to, upperLimit ); // todo ternary
 		}
 
 		// Handle the step option.
@@ -30,7 +27,22 @@
 		to = limit(to);
 
 		// Return false if handle can't move
-		if ( to === scope_Locations[trigger] ) {
+		if ( to === scope_Locations[handleNumber] ) {
+			return false;
+		}
+
+		return to;
+	}
+
+	// Test suggested values and apply margin, step.
+	function setHandle ( handle, to, noLimitOption ) {
+
+		var trigger;
+		for (trigger = 0 ; scope_Handles[trigger] !== handle ; trigger++) { } // TODO finds handleNumber
+
+		to = checkHandlePosition(handle, trigger, to, noLimitOption);
+
+		if ( to === false ) {
 			return false;
 		}
 
@@ -250,9 +262,9 @@
 	// TODO
 	function topStepOfRangeBelow ( nearbySteps ) {
 
-		var numStepsInRangeBelow = (nearbySteps.thisStep.xVal - nearbySteps.stepBefore.xVal) / nearbySteps.stepBefore.xNumSteps,
-		highestCompleteStep = Math.ceil(Number(numStepsInRangeBelow.toFixed(3)) - 1), // todo why tofixed
-		stepBelow = nearbySteps.stepBefore.xVal + nearbySteps.stepBefore.xNumSteps * highestCompleteStep;
+		var numStepsInRangeBelow = (nearbySteps.thisStep.xVal - nearbySteps.stepBefore.xVal) / nearbySteps.stepBefore.xNumSteps;
+		var highestCompleteStep = Math.ceil(Number(numStepsInRangeBelow.toFixed(3)) - 1); // todo why tofixed
+		var stepBelow = nearbySteps.stepBefore.xVal + (nearbySteps.stepBefore.xNumSteps * highestCompleteStep);
 
 		return stepBelow;
 	}
@@ -380,10 +392,7 @@
 	// Add handles and links.
 	scope_Base = addSlider( options.dir, options.ort, scope_Target );
 
-	var elements = addElements( options.handles, options.connect, options.dir, scope_Base );
-	scope_Handles = elements[0];
-	scope_Connects = elements[1];
-
+	addElements( options.handles, options.connect, options.dir, scope_Base );
 
 	if ( options.pips ) {
 		pips(options.pips);
@@ -407,6 +416,6 @@
 	};
 
 	// Attach user events.
-	events( options.events );
+	bindSliderEvents( options.events );
 
 	return scope_Self;

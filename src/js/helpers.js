@@ -1,6 +1,14 @@
 
+	// Creates a node, adds it to target, returns the new node.
+	function addNodeTo ( target, className ) {
+		var div = document.createElement('div');
+		addClass(div, className);
+		target.appendChild(div);
+		return div;
+	}
+
 	// Removes duplicates from an array.
-	function unique(array) {
+	function unique ( array ) {
 		return array.filter(function(a){
 			return !this[a] ? this[a] = true : false;
 		}, {});
