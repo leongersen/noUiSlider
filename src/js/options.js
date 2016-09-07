@@ -95,27 +95,27 @@
 
 	function testConnect ( parsed, entry ) {
 
-		if ( entry.length !== parsed.handles + 1 ) {
+		var connect = [false];
+		var i;
+
+		if ( entry === true || entry === false ) {
+
+			for ( i = 1; i < parsed.handles; i++ ) {
+				connect.push(entry);
+			}
+
+			connect.push(false);
+		}
+
+		else if ( !Array.isArray( entry ) || !entry.length || entry.length !== parsed.handles + 1 ) {
 			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
 		}
 
-		parsed.connect = entry;
-
-		return; // TODO omg
-
-		if ( entry === 'lower' && parsed.handles === 1 ) {
-			parsed.connect = 1;
-		} else if ( entry === 'upper' && parsed.handles === 1 ) {
-			parsed.connect = 2;
-		} else if ( entry === true && parsed.handles === 2 ) {
-			parsed.connect = 3;
-		} else if ( entry === false ) {
-			parsed.connect = 0;
-		} else if (parsed.handles > 2) {
-			throw new Error("noUiSlider: 'connect' option does not support sliders with more than two handles.");
-		} else {
-			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
+		else {
+			connect = entry;
 		}
+
+		parsed.connect = connect;
 	}
 
 	function testOrientation ( parsed, entry ) {
@@ -180,7 +180,7 @@
 			break;
 		  case 'rtl':
 			parsed.dir = 1;
-			parsed.connect = [0,2,1,3][parsed.connect];
+			parsed.connect.reverse();
 			break;
 		  default:
 			throw new Error("noUiSlider: 'direction' option was not recognized.");
@@ -203,9 +203,10 @@
 			hover = entry.indexOf('hover') >= 0;
 
 		// Fix #472
-		if ( drag && !parsed.connect ) {
-			throw new Error("noUiSlider: 'drag' behaviour must be used with 'connect': true.");
-		}
+	//	if ( drag && !parsed.connect ) {
+	//		throw new Error("noUiSlider: 'drag' behaviour must be used with 'connect': true.");
+	//	}
+	// TODO
 
 		parsed.events = {
 			tap: tap || snap,
@@ -341,14 +342,14 @@
 				base: 'base',
 				origin: 'origin',
 				handle: 'handle',
-				handleLower: 'handle-lower',
-				handleUpper: 'handle-upper',
+				handleLower: 'handle-lower', // todo
+				handleUpper: 'handle-upper', // todo
 				horizontal: 'horizontal',
 				vertical: 'vertical',
 				background: 'background',
 				connect: 'connect',
-				ltr: 'ltr',
-				rtl: 'rtl',
+				ltr: 'ltr', // todo
+				rtl: 'rtl', // todo
 				draggable: 'draggable',
 				drag: 'state-drag',
 				tap: 'state-tap',
@@ -397,6 +398,7 @@
 
 		// Pre-define the styles.
 		parsed.style = parsed.ort ? 'top' : 'left';
+		parsed.styleOposite = parsed.ort ? 'bottom' : 'right';
 
 		return parsed;
 	}

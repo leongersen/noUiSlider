@@ -34,19 +34,29 @@
 			return false;
 		}
 
+		// Update locations.
+		scope_Locations[trigger] = to;
+
+		// Convert the value to the slider stepping/range.
+		scope_Values[trigger] = scope_Spectrum.fromStepping( to );
+
+		// Called sync or on the next animationFrame
+		var stateUpdate = function() {
+			handle.style[options.style] = to + '%';
+			populateConnects();
+		};
+
 		// Set the handle to the new position.
 		// Use requestAnimationFrame for efficient painting.
 		// No significant effect in Chrome, Edge sees dramatic
 		// performace improvements.
 		// Option to disable is useful for unit tests, and single-step debugging.
 		if ( window.requestAnimationFrame && options.useRequestAnimationFrame ) {
-			window.requestAnimationFrame(function(){
-				handle.style[options.style] = to + '%';
-			});
+			window.requestAnimationFrame(stateUpdate);
 		} else {
-			handle.style[options.style] = to + '%';
+			stateUpdate();
 		}
-
+/*
 		// Take care of handle stacking by manipulating the z-index of the inner div.
 		// Handles that are moved go to the top of the stack, so that the movement can be reverted,
 		// in order to be able to avoid a dead end.
@@ -106,21 +116,14 @@
 				}
 			}
 		}
-
-		// Update locations.
-		scope_Locations[trigger] = to;
-
-		// Convert the value to the slider stepping/range.
-		scope_Values[trigger] = scope_Spectrum.fromStepping( to );
-
-		populateConnects(scope_Connects, scope_Locations);
-
+*/
 		fireEvent('update', trigger);
 
 		return true;
 	}
 
-	function populateConnects ( scope_Connects, scope_Locations ) { // TODO run only after init
+	// Updates style attribute for connect nodes
+	function populateConnects ( ) { // TODO run only after init
 
 		scope_Connects.forEach(function( connect, index ) {
 
@@ -139,11 +142,9 @@
 				h = scope_Locations[index];
 			}
 
-			console.log(index, l, h);
-
 			// Start at 0
-			connect.style['left'] = l + '%'; // TODO raft, options.style, also this is a mess
-			connect.style['right'] = (100 - h) + '%';
+			connect.style[options.style] = l + '%';
+			connect.style[options.styleOposite] = (100 - h) + '%';
 		});
 	}
 
@@ -246,6 +247,7 @@
 		delete scope_Target.noUiSlider;
 	}
 
+	// TODO
 	function topStepOfRangeBelow ( nearbySteps ) {
 
 		var numStepsInRangeBelow = (nearbySteps.thisStep.xVal - nearbySteps.stepBefore.xVal) / nearbySteps.stepBefore.xNumSteps,

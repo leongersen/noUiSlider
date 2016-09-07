@@ -305,7 +305,7 @@
 		}
 
 		// Make the range draggable.
-		if ( behaviour.drag ){
+		if ( behaviour.drag ){ return; // TODO
 
 			var drag = [scope_Base.querySelector( '.' + options.cssClasses.connect )];
 			addClass(drag[0], options.cssClasses.draggable);

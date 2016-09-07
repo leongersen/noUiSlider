@@ -1,4 +1,12 @@
 
+	// Creates a node, adds it to target, returns the new node.
+	function addNodeTo ( target, className ) {
+		var div = document.createElement('div');
+		addClass(div, className);
+		target.appendChild(div);
+		return div;
+	}
+
 	// Delimit proposed values for handle positions.
 	function getPositions ( a, b ) {
 		var result = b.slice(), i;
@@ -71,29 +79,25 @@
 		return origin;
 	}
 
+	// Insert nodes for connect elements
 	function addConnect ( base, add ) {
 
 		if ( !add ) {
 			return false;
 		}
 
-		var connect = document.createElement('div');
-
-		addClass(connect, 'TODO-connect'); // TODO
-
-		base.appendChild(connect);
-
-		return connect;
+		return addNodeTo(base, options.cssClasses.connect);
 	}
 
 	// Add handles to the slider base.
 	function addElements ( nrHandles, connectOptions, direction, base ) {
 
-		var index, handles = [], connects = [];
+		var index;
+		var handles = [];
+		var connects = [];
 
 		connects.push(addConnect(base, connectOptions[0]));
 
-		// Append handles.
 		for ( index = 0; index < nrHandles; index += 1 ) {
 
 			// Keep a list of all added handles.
@@ -122,8 +126,5 @@
 			addClass(target, options.cssClasses.vertical);
 		}
 
-		var div = document.createElement('div');
-		addClass(div, options.cssClasses.base);
-		target.appendChild(div);
-		return div;
+		return addNodeTo(target, options.cssClasses.base);
 	}
