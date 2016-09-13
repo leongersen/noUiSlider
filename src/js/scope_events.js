@@ -18,19 +18,43 @@
 			return eventEnd(event, data);
 		}
 
+		console.log('Handles', data.handles);
+
 		var handles = data.handles || scope_Handles; // TODO does this happen?
-		var state = true;
+		//var state = true;
 		var proposal = ((event.calcPoint - data.startCalcPoint) * 100) / data.baseSize;
-		var locations = data.locations.map(function(a){ return a + proposal; });
+		var movingUpward = proposal > 0;
+		var proposals = data.locations.map(function(a){ return a + proposal; });
 		var handleNumbers = asArray(data.handleNumber);
-		var i;
+		//var i;
+
+		if ( options.dir ) {
+			handleNumbers.reverse();
+		}
+
+		if ( movingUpward ) {
+			handleNumbers.reverse();
+		}
+
+		handleNumbers.forEach(function(handleNumber) {
+			setValue(handleNumber, proposals[handleNumber]);
+		});
+
+		// check the direction we are moving
+		// if 'up', get the position for the upper handle
+		// use that new position to validate the position of the lower handle
+		// set the new positions
+
+
+
+/*
 
 		if ( handles.length > 1 ) {
 
 			handles.forEach(function( handle, index ){
 				var handleNumber = handleNumbers[index];
 				var position = locations[handleNumber];
-				state = state && checkHandlePosition(handle, handleNumber, position);
+				state = state && checkHandlePosition(handle, handleNumber, position, false);
 			});
 		}
 
@@ -49,6 +73,7 @@
 				fireEvent('slide', i); // TODO i is NOT the handleNumber
 			}
 		}
+		*/
 	}
 
 	// Unbind move events on document, call callbacks.
@@ -105,6 +130,8 @@
 
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
+
+		console.log(scope_Locations);
 
 		// Attach the move and end events.
 		var moveEvent = attachEvent(actions.move, document.documentElement, eventMove, {

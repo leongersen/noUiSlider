@@ -51,7 +51,6 @@
 		return methods;
 	}
 
-
 	// Provide a clean event with standardized offset values.
 	function fixEvent ( e, pageOffset ) {
 

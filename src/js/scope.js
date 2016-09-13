@@ -1,73 +1,104 @@
 
-	// Split out the handle positioning logic so the Move event can use it, too
-	function checkHandlePosition ( handle, handleNumber, to, noLimitOption ) {
+	function getBounds ( handleNumber ) {
 
-		var lowerMargin = scope_Locations[handleNumber-1] + options.margin,
-			upperMargin = scope_Locations[handleNumber+1] - options.margin,
-			lowerLimit = scope_Locations[handleNumber-1] + options.limit,
+		var lowerMargin = 0;
+		var upperMargin = 0;
+		var lowerLimit = 0;
+		var upperLimit = 0;
+
+		if ( handleNumber > 0 ) {
+			lowerMargin = scope_Locations[handleNumber-1] + options.margin;
+			lowerLimit = scope_Locations[handleNumber-1] + options.limit;
+		}
+
+		if ( handleNumber < scope_Handles.length - 1 ) {
+			upperMargin = scope_Locations[handleNumber+1] - options.margin;
 			upperLimit = scope_Locations[handleNumber+1] - options.limit;
+		}
+
+		return {
+			lowerMargin: lowerMargin,
+			upperMargin: upperMargin,
+			lowerLimit: lowerLimit,
+			upperLimit: upperLimit
+		};
+	}
+
+	// Split out the handle positioning logic so the Move event can use it, too
+	function checkHandlePosition ( handleNumber, to ) {
+
+		var bounds = getBounds(handleNumber);
 
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
-		to = Math.min(Math.max(to, isNaN(lowerMargin)?0:lowerMargin), isNaN(upperMargin)?100:upperMargin); // TODO
+		to = Math.min(Math.max(to, bounds.lowerMargin), bounds.upperMargin);
 
 		// The limit option has the opposite effect, limiting handles to a
 		// maximum distance from another. Limit must be > 0, as otherwise
 		// handles would be unmoveable. 'noLimitOption' is set to 'false'
 		// for the .val() method, except for pass 4/4.
-		if ( noLimitOption !== false && options.limit && scope_Handles.length > 1 ) {
-			to = handleNumber ? Math.min ( to, lowerLimit ) : Math.max( to, upperLimit ); // todo ternary
-		}
+	//	if ( noLimitOption !== false && options.limit && scope_Handles.length > 1 ) {
+	//		to = handleNumber ? Math.min ( to, lowerLimit ) : Math.max( to, upperLimit ); // todo ternary assumes 0 or 1
+	//	} // TODO
 
 		// Handle the step option.
-		to = scope_Spectrum.getStep( to );
+		to = scope_Spectrum.getStep(to);
 
 		// Limit percentage to the 0 - 100 range
 		to = limit(to);
 
 		// Return false if handle can't move
 		if ( to === scope_Locations[handleNumber] ) {
+			console.log('hi', handleNumber, to, scope_Locations[handleNumber] );
 			return false;
 		}
 
 		return to;
 	}
 
-	// Test suggested values and apply margin, step.
-	function setHandle ( handle, to, noLimitOption ) {
-
-		var trigger;
-		for (trigger = 0 ; scope_Handles[trigger] !== handle ; trigger++) { } // TODO finds handleNumber
-
-		to = checkHandlePosition(handle, trigger, to, noLimitOption);
-
-		if ( to === false ) {
-			return false;
-		}
+	// Updates scope_Locations and scope_Values, updates visual state
+	function updateHandlePosition ( handleNumber, to ) {
 
 		// Update locations.
-		scope_Locations[trigger] = to;
+		scope_Locations[handleNumber] = to;
 
 		// Convert the value to the slider stepping/range.
-		scope_Values[trigger] = scope_Spectrum.fromStepping( to );
+		scope_Values[handleNumber] = scope_Spectrum.fromStepping( to );
 
 		// Called sync or on the next animationFrame
 		var stateUpdate = function() {
-			handle.style[options.style] = to + '%';
+			scope_Handles[handleNumber].style[options.style] = to + '%';
 			populateConnects();
 		};
 
 		// Set the handle to the new position.
 		// Use requestAnimationFrame for efficient painting.
-		// No significant effect in Chrome, Edge sees dramatic
-		// performace improvements.
+		// No significant effect in Chrome, Edge sees dramatic performace improvements.
 		// Option to disable is useful for unit tests, and single-step debugging.
 		if ( window.requestAnimationFrame && options.useRequestAnimationFrame ) {
 			window.requestAnimationFrame(stateUpdate);
 		} else {
 			stateUpdate();
 		}
+
+		fireEvent('update', handleNumber);
+	}
+
+	// Test suggested values and apply margin, step.
+	function setHandle ( handleNumber, to ) {
+
+		to = checkHandlePosition(handleNumber, to);
+
+		if ( to === false ) {
+			return false;
+		}
+
+		updateHandlePosition(handleNumber, to);
+
+		return true;
+
+
 /*
 		// Take care of handle stacking by manipulating the z-index of the inner div.
 		// Handles that are moved go to the top of the stack, so that the movement can be reverted,
@@ -129,9 +160,8 @@
 			}
 		}
 */
-		fireEvent('update', trigger);
 
-		return true;
+
 	}
 
 	// Updates style attribute for connect nodes
@@ -160,9 +190,35 @@
 		});
 	}
 
+	// ...
+	function setValue ( to, handleNumber ) {
+
+		// Setting with null indicates an 'ignore'.
+		// Inputting 'false' is invalid.
+		if ( to === null && to === false ) {
+			return;
+		}
+
+		// If a formatted number was passed, attemt to decode it.
+		if ( typeof to === 'number' ) {
+			to = String(to);
+		}
+
+		to = options.format.from(to);
+
+		// Request an update for all links if the value was invalid.
+		// Do so too if setting the handle fails.
+		if ( to === false || isNaN(to) || setHandle(handleNumber, scope_Spectrum.toStepping(to)) === false ) {
+			fireEvent('update', handleNumber);
+		}
+	}
+
 	// Loop values from value method and apply them.
 	function setValues ( values ) {
 
+		values.forEach(setValue);
+
+	/*
 		var i, trigger, to,
 		basePasses = (values.length*values.length),
 		passesIncludingLimitingPass = basePasses+(options.limit?values.length:0);
@@ -179,24 +235,13 @@
 			// Get the current argument from the array.
 			to = values[trigger];
 
-			// Setting with null indicates an 'ignore'.
-			// Inputting 'false' is invalid.
 			if ( to !== null && to !== false ) {
 
-				// If a formatted number was passed, attemt to decode it.
-				if ( typeof to === 'number' ) {
-					to = String(to);
-				}
 
-				to = options.format.from( to );
 
-				// Request an update for all links if the value was invalid.
-				// Do so too if setting the handle fails.
-				if ( to === false || isNaN(to) || setHandle( scope_Handles[trigger], scope_Spectrum.toStepping( to ), isLimitingPass) === false ) {
-					fireEvent('update', trigger);
-				}
+
 			}
-		}
+		}*/
 	}
 
 	// Set the slider value.

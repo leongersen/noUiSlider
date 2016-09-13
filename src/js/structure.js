@@ -26,6 +26,9 @@
 
 		scope_Connects.push(addConnect(base, connectOptions[0]));
 
+		// [::::O====O====O====]
+		// connectOptions = [0, 1, 1, 1]
+
 		for ( index = 0; index < nrHandles; index += 1 ) {
 
 			// Keep a list of all added handles.
