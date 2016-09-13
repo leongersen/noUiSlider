@@ -1,59 +1,13 @@
 
-	// Handler for attaching events trough a proxy.
-	function attach ( events, element, callback, data ) {
-
-		// This function can be used to 'filter' events to the slider.
-		// element is a node, not a nodeList
-
-		var method = function ( e ){
-
-			if ( scope_Target.hasAttribute('disabled') ) {
-				return false;
-			}
-
-			// Stop if an active 'tap' transition is taking place.
-			if ( hasClass(scope_Target, options.cssClasses.tap) ) {
-				return false;
-			}
-
-			e = fixEvent(e, data.pageOffset);
-
-			// Ignore right or middle clicks on start #454
-			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
-				return false;
-			}
-
-			// Ignore right or middle clicks on start #454
-			if ( data.hover && e.buttons ) {
-				return false;
-			}
-
-			e.calcPoint = e.points[ options.ort ];
-
-			// Call the event handler with the event [ and additional data ].
-			callback ( e, data );
-		};
-
-		var methods = [];
-
-		// Bind a closure on the target for every event type.
-		events.split(' ').forEach(function( eventName ){
-			element.addEventListener(eventName, method, false);
-			methods.push([eventName, method]);
-		});
-
-		return methods;
-	}
-
 	// Fire 'end' when a mouse or pen leaves the document.
 	function documentLeave ( event, data ) {
 		if ( event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null ){
-			EventEnd ( event, data );
+			eventEnd ( event, data );
 		}
 	}
 
 	// Handle movement on document for handle and range drag.
-	function EventMove ( event, data ) {
+	function eventMove ( event, data ) {
 
 		// Fix #498
 		// Check value of .buttons in 'start' to work around a bug in IE10 mobile (data.buttonsProperty).
@@ -61,20 +15,21 @@
 		// IE9 has .buttons and .which zero on mousemove.
 		// Firefox breaks the spec MDN defines.
 		if ( navigator.appVersion.indexOf("MSIE 9") === -1 && event.buttons === 0 && data.buttonsProperty !== 0 ) {
-			return EventEnd(event, data);
+			return eventEnd(event, data);
 		}
 
-		var handles = data.handles || scope_Handles;
+		var handles = data.handles || scope_Handles; // TODO does this happen?
 		var state = true;
-		var proposal = ((event.calcPoint - data.start) * 100) / data.baseSize;
-		var positions = data.positions.map(function(a){ return a + proposal });
+		var proposal = ((event.calcPoint - data.startCalcPoint) * 100) / data.baseSize;
+		var locations = data.locations.map(function(a){ return a + proposal; });
 		var handleNumbers = asArray(data.handleNumber);
+		var i;
 
 		if ( handles.length > 1 ) {
 
 			handles.forEach(function( handle, index ){
 				var handleNumber = handleNumbers[index];
-				var position = positions[handleNumber];
+				var position = locations[handleNumber];
 				state = state && checkHandlePosition(handle, handleNumber, position);
 			});
 		}
@@ -83,7 +38,7 @@
 
 			handles.forEach(function( handle, index ){
 				var handleNumber = handleNumbers[index];
-				var position = positions[handleNumber];
+				var position = locations[handleNumber];
 				state = state && setHandle(handle, position, handles.length === 1);
 			});
 		}
@@ -97,7 +52,7 @@
 	}
 
 	// Unbind move events on document, call callbacks.
-	function EventEnd ( event, data ) {
+	function eventEnd ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
 		var active = scope_Base.querySelector( '.' + options.cssClasses.active ),
@@ -113,11 +68,9 @@
 			document.body.removeEventListener('selectstart', document.body.noUiListener);
 		}
 
-		var d = document.documentElement;
-
 		// Unbind the move and end events, which are added on 'start'.
-		d.noUiListeners.forEach(function( c ) {
-			d.removeEventListener(c[0], c[1]);
+		document.documentElement.noUiListeners.forEach(function( c ) {
+			document.documentElement.removeEventListener(c[0], c[1]);
 		});
 
 		// Remove dragging class.
@@ -134,7 +87,7 @@
 	}
 
 	// Bind move events on document.
-	function EventStart ( event, data ) {
+	function eventStart ( event, data ) {
 
 		// Mark the handle as 'active' so it can be styled.
 		if ( data.handles.length === 1 ) {
@@ -154,22 +107,22 @@
 		event.stopPropagation();
 
 		// Attach the move and end events.
-		var moveEvent = attach(actions.move, document.documentElement, EventMove, {
-			start: event.calcPoint,
+		var moveEvent = attachEvent(actions.move, document.documentElement, eventMove, {
+			startCalcPoint: event.calcPoint,
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
 			handles: data.handles,
 			handleNumber: data.handleNumber,
 			buttonsProperty: event.buttons,
-			positions: scope_Locations.slice()
+			locations: scope_Locations.slice()
 		});
 
-		var endEvent = attach(actions.end, document.documentElement, EventEnd, {
+		var endEvent = attachEvent(actions.end, document.documentElement, eventEnd, {
 			handles: data.handles,
 			handleNumber: data.handleNumber
 		});
 
-		var outEvent = attach("mouseout", document.documentElement, documentLeave, {
+		var outEvent = attachEvent("mouseout", document.documentElement, documentLeave, {
 			handles: data.handles,
 			handleNumber: data.handleNumber
 		});
@@ -204,9 +157,12 @@
 	}
 
 	// Move closest handle to tapped location.
-	function EventTap ( event ) {
+	function eventTap ( event ) {
 
-		var location = event.calcPoint, handleNumber = -1, minDistance = Number.MAX_VALUE, to;
+		var location = event.calcPoint;
+		var handleNumber = -1;
+		var minDistance = Number.MAX_VALUE;
+		var to;
 
 		// The tap event shouldn't propagate up and cause 'edge' to run.
 		event.stopPropagation();
@@ -262,16 +218,16 @@
 		fireEvent('change', handleNumber, true);
 
 		if ( options.events.snap ) {
-			start(event, { handles: [scope_Handles[handleNumber]] });
+			eventStart(event, { handles: [scope_Handles[handleNumber]] });
 		}
 	}
 
 	// Fires a 'hover' event for a hovered mouse/pen position.
-	function EventHover ( event ) {
+	function eventHover ( event ) {
 
-		var location = event.calcPoint - offset(scope_Base)[ options.style ],
-			to = scope_Spectrum.getStep(( location * 100 ) / baseSize()),
-			value = scope_Spectrum.fromStepping( to );
+		var location = event.calcPoint - offset(scope_Base)[ options.style ];
+		var to = scope_Spectrum.getStep(( location * 100 ) / baseSize());
+		var value = scope_Spectrum.fromStepping( to );
 
 		Object.keys(scope_Events).forEach(function( targetEvent ) {
 			if ( 'hover' === targetEvent.split('.')[0] ) {
@@ -292,7 +248,7 @@
 
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
-				attach ( actions.start, handle.children[0], EventStart, {
+				attachEvent ( actions.start, handle.children[0], eventStart, {
 					handles: [ handle ],
 					handleNumber: index
 				});
@@ -302,14 +258,14 @@
 		// Attach the tap event to the slider base.
 		if ( behaviour.tap ) {
 
-			attach ( actions.start, scope_Base, EventTap, {
+			attachEvent ( actions.start, scope_Base, eventTap, {
 				handles: scope_Handles
 			});
 		}
 
 		// Fire hover events
 		if ( behaviour.hover ) {
-			attach ( actions.move, scope_Base, EventHover, { hover: true } );
+			attachEvent ( actions.move, scope_Base, eventHover, { hover: true } );
 		}
 
 		// Make the range draggable.
@@ -317,7 +273,9 @@
 
 			scope_Connects.forEach(function( connect, index ){
 
-				if ( connect === false || index === 0 || index === scope_Connects.length - 1 ) return;
+				if ( connect === false || index === 0 || index === scope_Connects.length - 1 ) {
+					return;
+				}
 
 				var handleBefore = scope_Handles[index - 1];
 				var handleAfter = scope_Handles[index];
@@ -335,7 +293,7 @@
 				}
 
 				eventHolders.forEach(function( eventHolder ) {
-					attach ( actions.start, eventHolder, EventStart, {
+					attachEvent ( actions.start, eventHolder, eventStart, {
 						handles: [handleBefore, handleAfter],
 						handleNumber: [index - 1, index]
 					});

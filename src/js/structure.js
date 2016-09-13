@@ -2,7 +2,7 @@
 	// Append a origin to the base
 	function addOrigin ( base ) {
 		var origin = addNodeTo(base, options.cssClasses.origin);
-		addNodeTo(origin, options.cssClasses.handle)
+		addNodeTo(origin, options.cssClasses.handle);
 		return origin;
 	}
 
