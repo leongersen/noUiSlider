@@ -11,10 +11,10 @@
 			lowerLimit = scope_Locations[handleNumber-1] + options.limit;
 		}
 
-		if ( handleNumber < scope_Handles.length - 1 ) {
-			upperMargin = scope_Locations[handleNumber+1] - options.margin;
-			upperLimit = scope_Locations[handleNumber+1] - options.limit;
-		}
+	//	if ( handleNumber < scope_Handles.length - 1 ) {
+	//		upperMargin = scope_Locations[handleNumber+1] - options.margin;
+	//		upperLimit = scope_Locations[handleNumber+1] - options.limit;
+	//	}
 
 		return {
 			lowerMargin: lowerMargin,
@@ -32,7 +32,7 @@
 		// For sliders with multiple handles,
 		// limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
-		to = Math.min(Math.max(to, bounds.lowerMargin), bounds.upperMargin);
+	//	to = Math.min(Math.max(to, bounds.lowerMargin), bounds.lowerLimit);
 
 		// The limit option has the opposite effect, limiting handles to a
 		// maximum distance from another. Limit must be > 0, as otherwise
@@ -50,7 +50,6 @@
 
 		// Return false if handle can't move
 		if ( to === scope_Locations[handleNumber] ) {
-			console.log('hi', handleNumber, to, scope_Locations[handleNumber] );
 			return false;
 		}
 
@@ -64,7 +63,7 @@
 		scope_Locations[handleNumber] = to;
 
 		// Convert the value to the slider stepping/range.
-		scope_Values[handleNumber] = scope_Spectrum.fromStepping( to );
+		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
 		// Called sync or on the next animationFrame
 		var stateUpdate = function() {
@@ -195,7 +194,7 @@
 
 		// Setting with null indicates an 'ignore'.
 		// Inputting 'false' is invalid.
-		if ( to === null && to === false ) {
+		if ( to === null || to === false ) {
 			return;
 		}
 
@@ -435,9 +434,9 @@
 
 	// Create the base element, initialise HTML and set classes.
 	// Add handles and links.
-	scope_Base = addSlider( options.dir, options.ort, scope_Target );
+	scope_Base = addSlider(scope_Target);
 
-	addElements( options.handles, options.connect, options.dir, scope_Base );
+	addElements(options.handles, options.connect, scope_Base);
 
 	if ( options.pips ) {
 		pips(options.pips);

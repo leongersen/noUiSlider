@@ -18,33 +18,22 @@
 			return eventEnd(event, data);
 		}
 
-		console.log('Handles', data.handles);
-
-		var handles = data.handles || scope_Handles; // TODO does this happen?
-		//var state = true;
 		var proposal = ((event.calcPoint - data.startCalcPoint) * 100) / data.baseSize;
 		var movingUpward = proposal > 0;
 		var proposals = data.locations.map(function(a){ return a + proposal; });
-		var handleNumbers = asArray(data.handleNumber);
-		//var i;
+		var handleNumbers = data.handleNumber.slice();
+		var state = true;
 
-		if ( options.dir ) {
-			handleNumbers.reverse();
-		}
-
+		// Check to see which handle is 'leading' // TODO explain
 		if ( movingUpward ) {
 			handleNumbers.reverse();
 		}
 
 		handleNumbers.forEach(function(handleNumber) {
-			setValue(handleNumber, proposals[handleNumber]);
+			if ( state ) {
+				state = setHandle(handleNumber, proposals[handleNumber]);
+			}
 		});
-
-		// check the direction we are moving
-		// if 'up', get the position for the upper handle
-		// use that new position to validate the position of the lower handle
-		// set the new positions
-
 
 
 /*
@@ -131,14 +120,12 @@
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
 
-		console.log(scope_Locations);
-
 		// Attach the move and end events.
 		var moveEvent = attachEvent(actions.move, document.documentElement, eventMove, {
 			startCalcPoint: event.calcPoint,
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
-			handles: data.handles,
+			handles: asArray(data.handles),
 			handleNumber: data.handleNumber,
 			buttonsProperty: event.buttons,
 			locations: scope_Locations.slice()
@@ -238,7 +225,7 @@
 
 		// Find the closest handle and calculate the tapped point.
 		// The set handle to the new position.
-		setHandle( scope_Handles[handleNumber], to );
+		setHandle(handleNumber, to);
 
 		fireEvent('slide', handleNumber, true);
 		fireEvent('set', handleNumber, true);

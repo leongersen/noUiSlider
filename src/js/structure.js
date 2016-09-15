@@ -17,7 +17,7 @@
 	}
 
 	// Add handles to the slider base.
-	function addElements ( nrHandles, connectOptions, direction, base ) {
+	function addElements ( nrHandles, connectOptions, base ) {
 
 		var index;
 
@@ -38,18 +38,18 @@
 	}
 
 	// Initialize a single slider.
-	function addSlider ( direction, orientation, target ) {
+	function addSlider ( target ) {
 
 		// Apply classes and data to the target.
 		addClass(target, options.cssClasses.target);
 
-		if ( direction === 0 ) {
+		if ( options.dir === 0 ) {
 			addClass(target, options.cssClasses.ltr);
 		} else {
 			addClass(target, options.cssClasses.rtl);
 		}
 
-		if ( orientation === 0 ) {
+		if ( options.ort === 0 ) {
 			addClass(target, options.cssClasses.horizontal);
 		} else {
 			addClass(target, options.cssClasses.vertical);
