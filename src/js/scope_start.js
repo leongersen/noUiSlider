@@ -10,6 +10,7 @@ function closure ( target, options, originalOptions ){
 		scope_HandleNumbers = [],
 		scope_Connects,
 		scope_Spectrum = options.spectrum,
+		scope_PreviousCalcPoint,
 		scope_Values = [],
 		scope_Events = {},
 		scope_Self;

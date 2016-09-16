@@ -20,7 +20,7 @@
 
 		var proposal = ((event.calcPoint - data.startCalcPoint) * 100) / data.baseSize;
 		var proposals = data.locations.map(function(a){ return a + proposal; });
-		var movingUpward = proposals[0] > scope_Locations[0];
+		var movingUpward = event.calcPoint > scope_PreviousCalcPoint;
 		var handleNumbers = data.handleNumber.slice();
 		var state = true;
 
@@ -36,6 +36,9 @@
 		});
 
 		if ( state ) {
+
+			scope_PreviousCalcPoint = event.calcPoint;
+
 			handleNumbers.forEach(function(handleNumber){
 				fireEvent('slide', handleNumber);
 			});
@@ -86,7 +89,7 @@
 			// Support 'disabled' handles
 			if ( data.handles[0].hasAttribute('disabled') ) {
 				return false;
-			}
+			} // todo doesn't fixevent do this?
 
 			addClass(data.handles[0].children[0], options.cssClasses.active);
 		}
@@ -96,6 +99,8 @@
 
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
+
+		scope_PreviousCalcPoint = event.calcPoint;
 
 		// Attach the move and end events.
 		var moveEvent = attachEvent(actions.move, document.documentElement, eventMove, {
