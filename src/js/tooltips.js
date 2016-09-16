@@ -1,7 +1,7 @@
 
-	function addTooltip ( handle, index ) {
+	function addTooltip ( handle, handleNumber ) {
 
-		if ( !options.tooltips[index] ) {
+		if ( !options.tooltips[handleNumber] ) {
 			return false;
 		}
 

@@ -1,10 +1,10 @@
 var tooltipSlider = document.getElementById('slider-tooltips');
 
 noUiSlider.create(tooltipSlider, {
-	start: [20, 80],
-	tooltips: [ false, wNumb({ decimals: 1 }) ],
+	start: [20, 80, 120],
+	tooltips: [ false, wNumb({ decimals: 1 }), true ],
 	range: {
 		'min': 0,
-		'max': 100
+		'max': 200
 	}
 });

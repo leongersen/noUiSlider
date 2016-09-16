@@ -34,6 +34,12 @@
 				state = setHandle(handleNumber, proposals[handleNumber], APPLY_MARGIN, APPLY_LIMIT, LOOK_FORWARD);
 			}
 		});
+
+		if ( state ) {
+			handleNumbers.forEach(function(handleNumber){
+				fireEvent('slide', handleNumber);
+			});
+		}
 	}
 
 	// Unbind move events on document, call callbacks.
@@ -199,8 +205,6 @@
 		if ( !options.events.snap ) {
 			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
 		}
-
-		console.log(handleNumber);
 
 		// Find the closest handle and calculate the tapped point.
 		// The set handle to the new position.

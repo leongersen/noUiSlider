@@ -6,7 +6,6 @@
 <section>
 	<ul>
 		<li><a href="#section-colorpicker">Colorpicker</a></li>
-		<li><a href="#section-custom-connect">Using a custom connecting bar</a></li>
 		<li><a href="#section-html5">Working with HTML5 input types</a></li>
 		<li><a href="#section-non-linear">Using non linear ranges</a></li>
 		<li><a href="#section-lock">Locking two sliders together</a></li>
@@ -75,49 +74,6 @@
 			<?php loadShowCSS('colorpicker'); ?>
 		</div>
 
-	</div>
-</section>
-
-
-<?php sect('custom-connect'); ?>
-<h1>Custom connect</h1>
-
-<section>
-
-	<div class="view">
-
-		<p>When using the <code>connect</code> option, noUiSlider paints the connecting bar in the negative space between handles. This uses one less element and has some nice performance benefits. When you need more control over the connecting option, you can create a custom connecting bar using the <code>update</code> event.</p>
-
-		<p>This custom element can be styled, or special features (like requested in <a href="https://github.com/leongersen/noUiSlider/issues/371">this issue</a>) can be implemented.</p>
-
-		<div class="example">
-			<div id="connect"></div>
-			<?php run('custom-connect-slider'); ?>
-			<?php run('custom-connect'); ?>
-		</div>
-	</div>
-
-	<div class="side">
-
-		<div class="viewer-header">Create the slider</div>
-
-		<div class="viewer-content">
-			<?php code('custom-connect-slider'); ?>
-		</div>
-
-
-		<div class="viewer-header">Create a connecting bar and bind it</div>
-
-		<div class="viewer-content">
-			<?php code('custom-connect'); ?>
-		</div>
-
-
-		<div class="viewer-header">CSS for the connecting bar</div>
-
-		<div class="viewer-content">
-			<?php loadShowCSS('custom-connect'); ?>
-		</div>
 	</div>
 </section>
 

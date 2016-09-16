@@ -26,6 +26,26 @@
 	</div>
 </section>
 
+<?php sect('handles-multiple'); ?>
+<h2>More than two handles</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>The number of handles in the <code>start</code> option is not limited to two. You can use the <a href="/nouislider/slider-options/#section-Connect">connect option</a> between every handle.</p>
+
+		<div class="example">
+			<div id="slider-handles4"></div>
+			<?php run('handles-multiple'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('handles-multiple'); ?>
+	</div>
+</section>
+
 
 <?php sect('range'); ?>
 <h2>Range</h2>
