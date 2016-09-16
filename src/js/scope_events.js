@@ -144,66 +144,77 @@
 	// Move closest handle to tapped location.
 	function eventTap ( event ) {
 
-		var location = event.calcPoint;
-		var handleNumber = -1;
+		var calcPoint = event.calcPoint;
+		var handleNumber = false;
 		var minDistance = Number.MAX_VALUE;
-		var to;
 
 		// The tap event shouldn't propagate up and cause 'edge' to run.
 		event.stopPropagation();
 
 		// Iterate all handles.
-		for ( var handleIndex = 0; handleIndex < scope_Handles.length; handleIndex++ ) {
-			var a = scope_Handles[handleIndex];
-			// If the handle is not disabled (disabled handles are ignored).
-			if ( !scope_Handles[handleIndex].hasAttribute('disabled') ) {
-				var candidateMinDistance = Math.abs( offset(a)[ options.style ] - location );
-				// If the candidate is better, then update the minimum distance as well as the handle number.
-				if ( candidateMinDistance < minDistance ) {
-					minDistance = candidateMinDistance;
-					handleNumber = handleIndex;
-				}
-				// If they are the same, the relative positions of handle and location decide whether there is an update.
-				// This is needed for totally overlapping handles.
-				else if ( candidateMinDistance == minDistance ) {
-					// If this handle is before the location, then this handle should be selected.
-					if ( offset(a)[ options.style ] < location ) {
-						handleNumber = handleIndex;
-					}
-				}
-				// Else, that is the candidate is worse, then the candidates will be getting even worse from there on.
-				else {
-					break;
+		scope_Handles.forEach(function(handle, index){
+
+			// Disabled handles are ignored
+			if ( handle.hasAttribute('disabled') ) {
+				return;
+			}
+
+			var current = offset(handle)[options.style];
+			var candidateMinDistance = Math.abs(current - calcPoint);
+
+			// If the candidate is better, then update the minimum distance as well as the handle number.
+			if ( candidateMinDistance < minDistance ) {
+				minDistance = candidateMinDistance;
+				handleNumber = index;
+			}
+
+			// If they are the same, the relative positions of handle and location decide whether there is an update.
+			// This is needed for totally overlapping handles.
+			else if ( candidateMinDistance == minDistance ) {
+
+				// If this handle is before the calcPoint, then this handle should be selected.
+				if ( current < calcPoint ) {
+					handleNumber = index;
 				}
 			}
-		}
 
-		location -= offset(scope_Base)[ options.style ];
-
-		// Calculate the new position.
-		to = ( location * 100 ) / baseSize();
-
-		if ( !options.events.snap ) {
-			// Flag the slider as it is now in a transitional state.
-			// Transition takes a configurable amount of ms (default 300). Re-enable the slider after that.
-			addClassFor( scope_Target, options.cssClasses.tap, options.animationDuration );
-		}
+			// Else, that is the candidate is worse, then the candidates will be getting even worse from there on.
+			else {
+				return;
+			}
+		});
 
 		// Tackle the case that all handles are 'disabled'.
-		if ( handleNumber == -1 ) {
+		if ( handleNumber === false ) {
 			return false;
 		}
 
+		calcPoint -= offset(scope_Base)[ options.style ];
+
+		// Calculate the new position.
+		var to = (calcPoint * 100) / baseSize();
+
+		// Flag the slider as it is now in a transitional state.
+		// Transition takes a configurable amount of ms (default 300). Re-enable the slider after that.
+		if ( !options.events.snap ) {
+			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
+		}
+
+		console.log(handleNumber);
+
 		// Find the closest handle and calculate the tapped point.
 		// The set handle to the new position.
-		setHandle(handleNumber, to);
+		setHandle(handleNumber, to, APPLY_MARGIN, APPLY_MARGIN, LOOK_FORWARD);
 
 		fireEvent('slide', handleNumber, true);
 		fireEvent('set', handleNumber, true);
 		fireEvent('change', handleNumber, true);
 
 		if ( options.events.snap ) {
-			eventStart(event, { handles: [scope_Handles[handleNumber]] });
+			eventStart(event, {
+				handles: [scope_Handles[handleNumber]],
+				handleNumber: [handleNumber]
+			});
 		}
 	}
 
