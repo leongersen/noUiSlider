@@ -93,7 +93,7 @@
 	}
 
 	// External event handling
-	function fireEvent ( event, handleNumber, tap ) {
+	function fireEvent ( eventName, handleNumber, tap ) {
 
 		var i;
 
@@ -104,26 +104,22 @@
 			}
 		}
 
-		if ( handleNumber !== undefined && options.handles !== 1 ) {
-			handleNumber = Math.abs(handleNumber - options.dir);
-		}
-
 		Object.keys(scope_Events).forEach(function( targetEvent ) {
 
 			var eventType = targetEvent.split('.')[0];
 
-			if ( event === eventType ) {
+			if ( eventName === eventType ) {
 				scope_Events[targetEvent].forEach(function( callback ) {
 
 					callback.call(
 						// Use the slider public API as the scope ('this')
 						scope_Self,
 						// Return values as array, so arg_1[arg_2] is always valid.
-						asArray(valueGet()),
+						scope_Values.map(options.format.to),
 						// Handle index, 0 or 1
 						handleNumber,
 						// Unformatted slider values
-						asArray(inSliderOrder(Array.prototype.slice.call(scope_Values))),
+						scope_Values.slice(),
 						// Event is fired by tap, true or false
 						tap || false,
 						// Left offset of the handle, in relation to the slider

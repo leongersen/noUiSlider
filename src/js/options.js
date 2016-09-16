@@ -154,10 +154,6 @@
 
 	function testLimit ( parsed, entry ) {
 
-		if (parsed.handles !== 2) {
-			throw new Error("noUiSlider: 'limit' option only valid with exactly two handles.");
-		}
-
 		if ( !isNumeric(entry) ){
 			throw new Error("noUiSlider: 'limit' option must be numeric.");
 		}

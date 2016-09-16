@@ -31,7 +31,7 @@
 
 		handleNumbers.forEach(function(handleNumber) {
 			if ( state ) {
-				state = setHandle(handleNumber, proposals[handleNumber], APPLY_MARGIN, handleNumbers.length === 1 ? APPLY_LIMIT : !APPLY_LIMIT, LOOK_FORWARD);
+				state = setHandle(handleNumber, proposals[handleNumber], APPLY_MARGIN, APPLY_LIMIT, LOOK_FORWARD);
 			}
 		});
 	}
