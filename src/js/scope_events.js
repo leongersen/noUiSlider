@@ -19,8 +19,8 @@
 		}
 
 		var proposal = ((event.calcPoint - data.startCalcPoint) * 100) / data.baseSize;
-		var movingUpward = proposal > 0;
 		var proposals = data.locations.map(function(a){ return a + proposal; });
+		var movingUpward = proposals[0] > scope_Locations[0];
 		var handleNumbers = data.handleNumber.slice();
 		var state = true;
 
