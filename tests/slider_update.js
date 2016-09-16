@@ -30,10 +30,10 @@
 		assert.deepEqual(slider.noUiSlider.get(), ['30', '60']);
 
 		slider.noUiSlider.set(70);
-		assert.deepEqual(slider.noUiSlider.get(), ['60', '60']);
+		assert.deepEqual(slider.noUiSlider.get(), ['70', '70']);
 
 		slider.noUiSlider.set(40);
-		assert.deepEqual(slider.noUiSlider.get(), ['40', '60']);
+		assert.deepEqual(slider.noUiSlider.get(), ['40', '70']);
 
 		equal ( slider.querySelectorAll('.noUi-connect').length, 0, 'Slider uses no connection' );
 

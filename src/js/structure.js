@@ -33,6 +33,7 @@
 
 			// Keep a list of all added handles.
 			scope_Handles.push(addOrigin(base));
+			scope_HandleNumbers[index] = index;
 			scope_Connects.push(addConnect(base, connectOptions[index + 1]));
 		}
 	}
@@ -55,5 +56,5 @@
 			addClass(target, options.cssClasses.vertical);
 		}
 
-		return addNodeTo(target, options.cssClasses.base);
+		scope_Base = addNodeTo(target, options.cssClasses.base);
 	}

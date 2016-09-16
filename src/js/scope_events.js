@@ -31,38 +31,9 @@
 
 		handleNumbers.forEach(function(handleNumber) {
 			if ( state ) {
-				state = setHandle(handleNumber, proposals[handleNumber]);
+				state = setHandle(handleNumber, proposals[handleNumber], APPLY_MARGIN, handleNumbers.length === 1 ? APPLY_LIMIT : !APPLY_LIMIT, LOOK_FORWARD);
 			}
 		});
-
-
-/*
-
-		if ( handles.length > 1 ) {
-
-			handles.forEach(function( handle, index ){
-				var handleNumber = handleNumbers[index];
-				var position = locations[handleNumber];
-				state = state && checkHandlePosition(handle, handleNumber, position, false);
-			});
-		}
-
-		if ( state ) {
-
-			handles.forEach(function( handle, index ){
-				var handleNumber = handleNumbers[index];
-				var position = locations[handleNumber];
-				state = state && setHandle(handle, position, handles.length === 1);
-			});
-		}
-
-		// fire for all involved handles
-		if ( state ) {
-			for ( i = 0; i < data.handles.length; i++ ) {
-				fireEvent('slide', i); // TODO i is NOT the handleNumber
-			}
-		}
-		*/
 	}
 
 	// Unbind move events on document, call callbacks.
@@ -70,7 +41,7 @@
 
 		// The handle is no longer active, so remove the class.
 		var active = scope_Base.querySelector( '.' + options.cssClasses.active ),
-			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1;
+			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1; // TODO
 
 		if ( active !== null ) {
 			removeClass(active, options.cssClasses.active);
@@ -95,7 +66,7 @@
 		fireEvent('change', handleNumber);
 
 		// If this is a standard handle movement, fire the end event.
-		if ( data.handleNumber !== undefined ) {
+		if ( data.handleNumber !== undefined ) { // TODO
 			fireEvent('end', data.handleNumber);
 		}
 	}
@@ -125,8 +96,8 @@
 			startCalcPoint: event.calcPoint,
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
-			handles: asArray(data.handles),
-			handleNumber: data.handleNumber,
+			handles: data.handles,
+			handleNumber: asArray(data.handleNumber),
 			buttonsProperty: event.buttons,
 			locations: scope_Locations.slice()
 		});

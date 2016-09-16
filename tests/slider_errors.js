@@ -87,29 +87,6 @@
 
 		assert.throws(function(){
 			noUiSlider.create(slider, {
-				start: [ 1 ],
-				range: {
-					'min': 0,
-					'max': 10
-				},
-				connect: true
-			});
-		});
-
-		assert.throws(function(){
-			noUiSlider.create(slider, {
-				start: 10,
-				connect: false,
-				behaviour: 'drag',
-				range: {
-					'min': 0,
-					'max': 10
-				}
-			});
-		});
-
-		assert.throws(function(){
-			noUiSlider.create(slider, {
 				start: 10,
 				range: {
 					'min': 10,
@@ -139,17 +116,6 @@
 				}
 			});
 		}, "Should error if limit enabled with more than two handles.");
-
-		assert.throws(function(){
-			noUiSlider.create(slider, {
-				start: [ 1, 2, 3 ],
-				connect: true,
-				range: {
-					'min': 0,
-					'max': 10
-				}
-			});
-		}, "Should error if connect enabled with more than two handles.");
 
 		noUiSlider.create(slider, {
 			start: 1,

@@ -10,6 +10,7 @@
 			start: [ 0, 10 ],
 			behaviour: 'drag',
 			connect: true,
+			useRequestAnimationFrame: false,
 			format: {
 				to: function(x){
 					return x.toFixed(1);
@@ -33,6 +34,7 @@
 		assert.deepEqual(slider.noUiSlider.get(), ["10.0", "980.5"]);
 
 		slider.noUiSlider.set([null, 80]);
+		assert.deepEqual(slider.noUiSlider.get(), ["10.0", "80.0"]);
 
 		slider.noUiSlider.set([10.6]);
 		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "80.0"]);
@@ -41,12 +43,12 @@
 		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "10.6"]);
 
 		slider.noUiSlider.set([30, null]);
-		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "10.6"]);
+		assert.deepEqual(slider.noUiSlider.get(), ["30.0", "30.0"]);
 
 		slider.noUiSlider.set(null);
-		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "10.6"]);
+		assert.deepEqual(slider.noUiSlider.get(), ["30.0", "30.0"]);
 
 		slider.noUiSlider.set(false);
-		assert.deepEqual(slider.noUiSlider.get(), ["10.6", "10.6"]);
+		assert.deepEqual(slider.noUiSlider.get(), ["30.0", "30.0"]);
 
 	});

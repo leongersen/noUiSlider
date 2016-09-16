@@ -7,8 +7,13 @@ function closure ( target, options, originalOptions ){
 		scope_Locations = [],
 		scope_Base,
 		scope_Handles,
+		scope_HandleNumbers = [],
 		scope_Connects,
 		scope_Spectrum = options.spectrum,
 		scope_Values = [],
 		scope_Events = {},
 		scope_Self;
+
+	var APPLY_MARGIN = true;
+	var APPLY_LIMIT = true;
+	var LOOK_FORWARD = true;

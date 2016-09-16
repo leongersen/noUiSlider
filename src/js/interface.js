@@ -7,8 +7,8 @@
 		}
 
 		// Test the options and create the slider environment;
-		var options = testOptions( originalOptions, target ),
-			slider = closure( target, options, originalOptions );
+		var options = testOptions( originalOptions, target );
+		var slider = closure( target, options, originalOptions );
 
 		// Use the public value method to set the start values.
 		slider.set(options.start);

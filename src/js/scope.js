@@ -1,46 +1,33 @@
 
-	function getBounds ( handleNumber ) {
-
-		var lowerMargin = 0;
-		var upperMargin = 0;
-		var lowerLimit = 0;
-		var upperLimit = 0;
-
-		if ( handleNumber > 0 ) {
-			lowerMargin = scope_Locations[handleNumber-1] + options.margin;
-			lowerLimit = scope_Locations[handleNumber-1] + options.limit;
-		}
-
-	//	if ( handleNumber < scope_Handles.length - 1 ) {
-	//		upperMargin = scope_Locations[handleNumber+1] - options.margin;
-	//		upperLimit = scope_Locations[handleNumber+1] - options.limit;
-	//	}
-
-		return {
-			lowerMargin: lowerMargin,
-			upperMargin: upperMargin,
-			lowerLimit: lowerLimit,
-			upperLimit: upperLimit
-		};
-	}
-
 	// Split out the handle positioning logic so the Move event can use it, too
-	function checkHandlePosition ( handleNumber, to ) {
+	function checkHandlePosition ( handleNumber, to, applyMargin, applyLimit, lookForward ) {
 
-		var bounds = getBounds(handleNumber);
-
-		// For sliders with multiple handles,
-		// limit movement to the other handle.
+		// For sliders with multiple handles, limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
-	//	to = Math.min(Math.max(to, bounds.lowerMargin), bounds.lowerLimit);
+		if ( applyMargin && scope_Handles.length > 1 ) {
+
+			if ( handleNumber > 0 ) {
+				to = Math.max(to, scope_Locations[handleNumber - 1] + options.margin);
+			}
+
+			if ( lookForward && handleNumber < scope_Handles.length - 1 ) {
+				to = Math.min(to, scope_Locations[handleNumber + 1] - options.margin);
+			}
+		}
 
 		// The limit option has the opposite effect, limiting handles to a
 		// maximum distance from another. Limit must be > 0, as otherwise
-		// handles would be unmoveable. 'noLimitOption' is set to 'false'
-		// for the .val() method, except for pass 4/4.
-	//	if ( noLimitOption !== false && options.limit && scope_Handles.length > 1 ) {
-	//		to = handleNumber ? Math.min ( to, lowerLimit ) : Math.max( to, upperLimit ); // todo ternary assumes 0 or 1
-	//	} // TODO
+		// handles would be unmoveable.
+		if ( applyLimit && scope_Handles.length > 1 && options.limit ) {
+
+			if ( handleNumber > 0 ) {
+				to = Math.min(to, scope_Locations[handleNumber - 1] + options.limit);
+			}
+
+			if ( lookForward && handleNumber < scope_Handles.length - 1 ) {
+				to = Math.max(to, scope_Locations[handleNumber + 1] - options.limit);
+			}
+		}
 
 		// Handle the step option.
 		to = scope_Spectrum.getStep(to);
@@ -85,9 +72,9 @@
 	}
 
 	// Test suggested values and apply margin, step.
-	function setHandle ( handleNumber, to ) {
+	function setHandle ( handleNumber, to, applyMargin, applyLimit, lookForward ) {
 
-		to = checkHandlePosition(handleNumber, to);
+		to = checkHandlePosition(handleNumber, to, applyMargin, applyLimit, lookForward);
 
 		if ( to === false ) {
 			return false;
@@ -212,58 +199,33 @@
 		}
 	}
 
-	// Loop values from value method and apply them.
-	function setValues ( values ) {
-
-		values.forEach(setValue);
-
-	/*
-		var i, trigger, to,
-		basePasses = (values.length*values.length),
-		passesIncludingLimitingPass = basePasses+(options.limit?values.length:0);
-
-		// If there are multiple handles to be set run the setting
-		// mechanism twice for the first handle, to make sure it
-		// can be bounced of the second one properly.
-		for ( i = 0; i < passesIncludingLimitingPass; i += 1 ) {
-			var isLimitingPass = i>basePasses;
-
-			trigger = i%values.length;
-			trigger = isLimitingPass&&options.dir ? values.length-1-trigger : trigger;
-
-			// Get the current argument from the array.
-			to = values[trigger];
-
-			if ( to !== null && to !== false ) {
-
-
-
-
-			}
-		}*/
-	}
-
 	// Set the slider value.
 	function valueSet ( input, fireSetEvent ) {
 
-		var values = asArray( input ), i;
+		var values = asArray(input);
+		var i;
 
 		// Event fires by default
 		fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
 
 		// The RTL settings is implemented by reversing the front-end,
 		// internal mechanisms are the same.
-		if ( options.dir && options.handles > 1 ) {
+		if ( options.dir ) {
 			values.reverse();
 		}
 
 		// Animation is optional.
-		// Make sure the initial values where set before using animated placement.
+		// Make sure the initial values were set before using animated placement.
 		if ( options.animate && scope_Locations[0] !== -1 ) {
-			addClassFor( scope_Target, options.cssClasses.tap, options.animationDuration );
+			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
 		}
 
-		setValues ( values );
+		values.forEach(setValue);
+
+		// Now that all base values are set, apply constraints
+		scope_HandleNumbers.forEach(function(handleNumber){
+			setHandle(handleNumber, scope_Locations[handleNumber], APPLY_MARGIN, APPLY_LIMIT, options.dir ? LOOK_FORWARD : !LOOK_FORWARD);
+		});
 
 		// Fire the 'set' event for both handles.
 		for ( i = 0; i < scope_Handles.length; i++ ) {
@@ -320,33 +282,48 @@
 		// Get the step point, then find it in the input list.
 		var retour = scope_Locations.map(function( location, index ){
 
-			var nearbySteps = scope_Spectrum.getNearbySteps( location ),
+			var nearbySteps = scope_Spectrum.getNearbySteps( location );
 			// As per #391, the comparison for the decrement step can have some rounding issues.
-			stepDecimals = scope_Spectrum.countStepDecimals(),
+			var stepDecimals = scope_Spectrum.countStepDecimals();
 			// Get the current numeric value
-			value = scope_Values[index];
+			var value = scope_Values[index];
 
-			var increment, decrement;
-			if (location == 100) {
+			var increment
+			var decrement;
+
+			if ( location === 100 ) {
 				increment = null;
 				decrement = value-topStepOfRangeBelow(nearbySteps);
 				decrement = Number(decrement.toFixed(stepDecimals)); // Round per #391
-			} else if (location === 0) {
+			}
+
+			else if ( location === 0 ) {
 				increment = nearbySteps.thisStep.xNumSteps;
 				decrement = null;
-			} else {
+			}
+
+			else {
+
 				increment = nearbySteps.thisStep.xNumSteps;
-				if (increment !== false) {
-					if (value+increment>nearbySteps.stepAfter.xVal) {
+
+				if ( increment !== false ) {
+
+					if ( value + increment > nearbySteps.stepAfter.xVal ) {
 						increment = nearbySteps.stepAfter.xVal-value;
 					}
+
 					increment = Number(increment.toFixed(stepDecimals));
 				}
-				if (value>nearbySteps.thisStep.xVal) {
+
+				if ( value > nearbySteps.thisStep.xVal ) {
 					decrement = nearbySteps.thisStep.xNumSteps;
-				} else if (nearbySteps.stepBefore.xNumSteps === false) {
+				}
+
+				else if ( nearbySteps.stepBefore.xNumSteps === false ) {
 					decrement = false;
-				} else {
+				}
+
+				else {
 					decrement = value-topStepOfRangeBelow(nearbySteps);
 					decrement = Number(decrement.toFixed(stepDecimals)); // Round per #391
 				}
@@ -359,6 +336,7 @@
 		if ( options.dir ) {
 			retour = retour.reverse();
 		}
+
 		return retour;
 	}
 
@@ -398,7 +376,9 @@
 		// Spectrum is created using the range, snap, direction and step options.
 		// 'snap' and 'step' can be updated, 'direction' cannot, due to event binding.
 		// If 'snap' and 'step' are not passed, they should remain unchanged.
-		var v = valueGet(), newOptions = testOptions({
+		var v = valueGet();
+
+		var newOptions = testOptions({
 			start: [0, 0],
 			margin: optionsToUpdate.margin,
 			limit: optionsToUpdate.limit,
@@ -433,9 +413,8 @@
 	}
 
 	// Create the base element, initialise HTML and set classes.
-	// Add handles and links.
-	scope_Base = addSlider(scope_Target);
-
+	// Add handles and connect elements.
+	addSlider(scope_Target);
 	addElements(options.handles, options.connect, scope_Base);
 
 	if ( options.pips ) {
@@ -460,6 +439,6 @@
 	};
 
 	// Attach user events.
-	bindSliderEvents( options.events );
+	bindSliderEvents(options.events);
 
 	return scope_Self;
