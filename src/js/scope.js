@@ -52,10 +52,11 @@
 		// Convert the value to the slider stepping/range.
 		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-		// Called sync or on the next animationFrame
+		// Called synchronously or on the next animationFrame
 		var stateUpdate = function() {
 			scope_Handles[handleNumber].style[options.style] = to + '%';
-			populateConnects();
+			updateConnect(handleNumber);
+			updateConnect(handleNumber + 1);
 		};
 
 		// Set the handle to the new position.
@@ -151,29 +152,26 @@
 	}
 
 	// Updates style attribute for connect nodes
-	function populateConnects ( ) { // TODO run only after init
+	function updateConnect ( index ) {
 
-		scope_Connects.forEach(function( connect, index ) {
+		// Skip connects set to false
+		if ( !scope_Connects[index] ) {
+			return;
+		}
 
-			// Skip connects set to false
-			if ( !connect ) {
-				return;
-			}
+		var l = 0;
+		var h = 100;
 
-			var l = 0, h = 100;
+		if ( index !== 0 ) {
+			l = scope_Locations[index - 1];
+		}
 
-			if ( index !== 0 ) {
-				l = scope_Locations[index - 1];
-			}
+		if ( index !== scope_Connects.length - 1 ) {
+			h = scope_Locations[index];
+		}
 
-			if ( index !== scope_Connects.length - 1 ) {
-				h = scope_Locations[index];
-			}
-
-			// Start at 0
-			connect.style[options.style] = l + '%';
-			connect.style[options.styleOposite] = (100 - h) + '%';
-		});
+		scope_Connects[index].style[options.style] = l + '%';
+		scope_Connects[index].style[options.styleOposite] = (100 - h) + '%';
 	}
 
 	// ...
@@ -204,6 +202,7 @@
 
 		var values = asArray(input);
 		var i;
+		var isInit = scope_Locations[0] === undefined;
 
 		// Event fires by default
 		fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
@@ -214,13 +213,13 @@
 			values.reverse();
 		}
 
+		values.forEach(setValue);
+
 		// Animation is optional.
 		// Make sure the initial values were set before using animated placement.
-		if ( options.animate && scope_Locations[0] !== -1 ) {
+		if ( options.animate && !isInit ) {
 			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
 		}
-
-		values.forEach(setValue);
 
 		// Now that all base values are set, apply constraints
 		scope_HandleNumbers.forEach(function(handleNumber){
@@ -288,18 +287,15 @@
 			// Get the current numeric value
 			var value = scope_Values[index];
 
-			var increment
-			var decrement;
+			var increment = null;
+			var decrement = null;
 
 			if ( location === 100 ) {
-				increment = null;
-				decrement = value-topStepOfRangeBelow(nearbySteps);
-				decrement = Number(decrement.toFixed(stepDecimals)); // Round per #391
+				decrement = Number((value - topStepOfRangeBelow(nearbySteps)).toFixed(stepDecimals)); // Round per #391
 			}
 
 			else if ( location === 0 ) {
 				increment = nearbySteps.thisStep.xNumSteps;
-				decrement = null;
 			}
 
 			else {
@@ -324,8 +320,7 @@
 				}
 
 				else {
-					decrement = value-topStepOfRangeBelow(nearbySteps);
-					decrement = Number(decrement.toFixed(stepDecimals)); // Round per #391
+					decrement = Number((value - topStepOfRangeBelow(nearbySteps)).toFixed(stepDecimals)); // Round per #391
 				}
 			}
 
