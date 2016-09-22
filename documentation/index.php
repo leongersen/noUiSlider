@@ -13,7 +13,8 @@
 
 		<div class="example" id="showcase">
 			<div id="range"></div>
-			<span id="value-span"></span>
+			<span id="value-span-1"></span>
+			<span id="value-span-2"></span>
 			<input id="value-input">
 			<?php run('showcase'); ?>
 			<?php run('showcase-connect'); ?>
