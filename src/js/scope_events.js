@@ -2,7 +2,7 @@
 	// Fire 'end' when a mouse or pen leaves the document.
 	function documentLeave ( event, data ) {
 		if ( event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null ){
-			eventEnd ( event, data );
+			eventEnd (event, data);
 		}
 	}
 
@@ -21,7 +21,7 @@
 		var proposal = ((event.calcPoint - data.startCalcPoint) * 100) / data.baseSize;
 		var proposals = data.locations.map(function(a){ return a + proposal; });
 		var movingUpward = event.calcPoint > scope_PreviousCalcPoint;
-		var handleNumbers = data.handleNumber.slice();
+		var handleNumbers = data.handleNumbers.slice();
 		var state = true;
 
 		// Check to see which handle is 'leading' // TODO explain
@@ -50,8 +50,7 @@
 	function eventEnd ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = scope_Base.querySelector( '.' + options.cssClasses.active ),
-			handleNumber = data.handles[0] === scope_Handles[0] ? 0 : 1; // TODO
+		var active = scope_Base.querySelector( '.' + options.cssClasses.active );
 
 		if ( active !== null ) {
 			removeClass(active, options.cssClasses.active);
@@ -71,14 +70,11 @@
 		// Remove dragging class.
 		removeClass(scope_Target, options.cssClasses.drag);
 
-		// Fire the change and set events.
-		fireEvent('set', handleNumber);
-		fireEvent('change', handleNumber);
-
-		// If this is a standard handle movement, fire the end event.
-		if ( data.handleNumber !== undefined ) { // TODO
-			fireEvent('end', data.handleNumber);
-		}
+		data.handleNumbers.forEach(function(handleNumber){
+			fireEvent('set', handleNumber);
+			fireEvent('change', handleNumber);
+			fireEvent('end', handleNumber);
+		});
 	}
 
 	// Bind move events on document.
@@ -109,19 +105,19 @@
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
 			handles: data.handles,
-			handleNumber: asArray(data.handleNumber),
+			handleNumbers: data.handleNumbers,
 			buttonsProperty: event.buttons,
 			locations: scope_Locations.slice()
 		});
 
 		var endEvent = attachEvent(actions.end, document.documentElement, eventEnd, {
 			handles: data.handles,
-			handleNumber: data.handleNumber
+			handleNumbers: data.handleNumbers
 		});
 
 		var outEvent = attachEvent("mouseout", document.documentElement, documentLeave, {
 			handles: data.handles,
-			handleNumber: data.handleNumber
+			handleNumbers: data.handleNumbers
 		});
 
 		document.documentElement.noUiListeners = moveEvent.concat(endEvent, outEvent);
@@ -148,9 +144,9 @@
 			document.body.addEventListener('selectstart', f, false);
 		}
 
-		if ( data.handleNumber !== undefined ) {
-			fireEvent('start', data.handleNumber);
-		}
+		data.handleNumbers.forEach(function(handleNumber){
+			fireEvent('start', handleNumber);
+		});
 	}
 
 	// Move closest handle to tapped location.
@@ -223,7 +219,7 @@
 		if ( options.events.snap ) {
 			eventStart(event, {
 				handles: [scope_Handles[handleNumber]],
-				handleNumber: [handleNumber]
+				handleNumbers: [handleNumber]
 			});
 		}
 	}
@@ -256,7 +252,7 @@
 				// element, not the 'real' origin element.
 				attachEvent ( actions.start, handle.children[0], eventStart, {
 					handles: [ handle ],
-					handleNumber: index
+					handleNumbers: [index]
 				});
 			});
 		}
@@ -301,7 +297,7 @@
 				eventHolders.forEach(function( eventHolder ) {
 					attachEvent ( actions.start, eventHolder, eventStart, {
 						handles: [handleBefore, handleAfter],
-						handleNumber: [index - 1, index]
+						handleNumbers: [index - 1, index]
 					});
 				});
 			});

@@ -16,6 +16,21 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
+### 9.0.0
+- Added: Support for more than 2 handles;
+- Added: `format` option can be updated (#641);
+- Added: `reset` method the return slider to start values (#673);
+- Change: `connect` option is now implemented as a separate node;
+- Change: all event arguments, including the handle number, are now in slider order;
+- Change: `updateOptions` now modifies the original options object. The reference in `slider.noUiSlider.options` remains up to date (#678).
+- Change: more events fire when using various `behaviour` options (#664);
+- Removed: `.noUi-handle-lower` and `.noUi-handle-upper` classes;
+- Removed: `.noUi-background`. This is now default;
+- Removed: `connect: 'lower'` and `connect: 'upper'`. These settings are replaced by `connect: [true, false]`;
+- Fixed: default tooltip color (#687);
+- Fixed: `margin` and `limit` calculated improperly after calling `updateOptions` with a new `range` option;
+- Fixed: `range` option was required in update, even when not updating it (#682);
+
 ### 8.5.1 (latest)
 - Fix: class mixup in 8.5.0 merge
 - Change: position pips markers relatively

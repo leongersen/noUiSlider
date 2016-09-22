@@ -201,7 +201,6 @@
 	function valueSet ( input, fireSetEvent ) {
 
 		var values = asArray(input);
-		var i;
 		var isInit = scope_Locations[0] === undefined;
 
 		// Event fires by default
@@ -227,17 +226,18 @@
 		});
 
 		scope_HandleNumbers.forEach(function(handleNumber){
-			fireEvent('update', handleNumber);
-		});
 
-		// Fire the 'set' event for both handles.
-		for ( i = 0; i < scope_Handles.length; i++ ) {
+			fireEvent('update', handleNumber);
 
 			// Fire the event only for handles that received a new value, as per #579
-			if ( values[i] !== null && fireSetEvent ) {
-				fireEvent('set', i);
+			if ( values[handleNumber] !== null && fireSetEvent ) {
+				fireEvent('set', handleNumber);
 			}
-		}
+		});
+	}
+
+	function valueReset ( fireSetEvent ) {
+		valueSet(options.start, fireSetEvent);
 	}
 
 	// Get the slider value.
@@ -313,7 +313,7 @@
 
 			// Now, if at the slider edges, there is not in/decrement
 			if ( location === 100 ) {
-				increment = null
+				increment = null;
 			}
 
 			else if ( location === 0 ) {
@@ -376,21 +376,21 @@
 		// If 'snap' and 'step' are not passed, they should remain unchanged.
 		var v = valueGet();
 
-		var newOptions = testOptions({
-			start: [0, 0],
-			margin: optionsToUpdate.margin,
-			limit: optionsToUpdate.limit,
-			step: optionsToUpdate.step === undefined ? options.singleStep : optionsToUpdate.step,
-			range: optionsToUpdate.range,
-			animate: optionsToUpdate.animate,
-			snap: optionsToUpdate.snap === undefined ? options.snap : optionsToUpdate.snap
+		var updateAble = ['margin', 'limit', 'range', 'animate', 'snap', 'step', 'format'];
+
+		// Only change options that we're actually passed to update.
+		updateAble.forEach(function(name){
+			if ( optionsToUpdate[name] !== undefined ) {
+				originalOptions[name] = optionsToUpdate[name];
+			}
 		});
 
-		['margin', 'limit', 'range', 'animate'].forEach(function(name){
+		var newOptions = testOptions(originalOptions);
 
-			// Only change options that we're actually passed to update.
+		// Load new options into the slider state
+		updateAble.forEach(function(name){
 			if ( optionsToUpdate[name] !== undefined ) {
-				options[name] = optionsToUpdate[name];
+				options[name] = newOptions[name];
 			}
 		});
 
@@ -399,11 +399,14 @@
 		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
+		// Limit and margin depend on the spectrum but are stored outside of it. (#677)
+		options.margin = newOptions.margin;
+		options.limit = newOptions.limit;
+
 		// Invalidate the current positioning so valueSet forces an update.
 		scope_Locations = [];
 		valueSet(optionsToUpdate.start || v, fireSetEvent);
 	}
-
 
 	// Throw an error if the slider was already initialized.
 	if ( scope_Target.noUiSlider ) {
@@ -422,8 +425,9 @@
 		off: removeEvent,
 		get: valueGet,
 		set: valueSet,
+		reset: valueReset,
+		options: originalOptions, // Issue #600, #678
 		updateOptions: updateOptions,
-		options: originalOptions, // Issue #600
 		target: scope_Target, // Issue #597
 		pips: pips // Issue #594
 	};
