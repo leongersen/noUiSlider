@@ -100,15 +100,6 @@
 	// External event handling
 	function fireEvent ( eventName, handleNumber, tap ) {
 
-		var i;
-
-		// During initialization, do not fire events.
-		for ( i = 0; i < options.handles; i++ ) {
-			if ( scope_Locations[i] === -1 ) {
-				return; // TODO add scope_Initialized
-			}
-		}
-
 		Object.keys(scope_Events).forEach(function( targetEvent ) {
 
 			var eventType = targetEvent.split('.')[0];

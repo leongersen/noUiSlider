@@ -192,19 +192,21 @@
 
 		// Check if the string contains any keywords.
 		// None are required.
-		var tap = entry.indexOf('tap') >= 0,
-			drag = entry.indexOf('drag') >= 0,
-			fixed = entry.indexOf('fixed') >= 0,
-			snap = entry.indexOf('snap') >= 0,
-			hover = entry.indexOf('hover') >= 0;
+		var tap = entry.indexOf('tap') >= 0;
+		var drag = entry.indexOf('drag') >= 0;
+		var fixed = entry.indexOf('fixed') >= 0;
+		var snap = entry.indexOf('snap') >= 0;
+		var hover = entry.indexOf('hover') >= 0;
 
-		// Fix #472
-	//	if ( drag && !parsed.connect ) {
-	//		throw new Error("noUiSlider: 'drag' behaviour must be used with 'connect': true.");
-	//	}
-	// TODO
+		if ( fixed ) {
 
-		// TODO 'fixed' with handles > 2
+			if ( parsed.handles !== 2 ) {
+				throw new Error("noUiSlider: 'fixed' behaviour must be used with 2 handles");
+			}
+
+			// Use margin to enforce fixed state
+			testMargin(parsed, parsed.start[1] - parsed.start[0]);
+		}
 
 		parsed.events = {
 			tap: tap || snap,
@@ -217,8 +219,6 @@
 
 	function testTooltips ( parsed, entry ) {
 
-		var i;
-
 		if ( entry === false ) {
 			return;
 		}
@@ -227,7 +227,7 @@
 
 			parsed.tooltips = [];
 
-			for ( i = 0; i < parsed.handles; i++ ) {
+			for ( var i = 0; i < parsed.handles; i++ ) {
 				parsed.tooltips.push(true);
 			}
 		}
@@ -246,10 +246,6 @@
 				}
 			});
 		}
-		
-	//	if ( parsed.dir ) {
-	//		parsed.tooltips.reverse();
-	//	}
 	}
 
 	function testFormat ( parsed, entry ) {
