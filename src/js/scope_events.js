@@ -23,6 +23,7 @@
 		var movingUpward = event.calcPoint > scope_PreviousCalcPoint;
 		var handleNumbers = data.handleNumbers.slice();
 		var state = true;
+		var firedOnce = false;
 
 		// Check to see which handle is 'leading'.
 		// If that one can't move the second can't either.
@@ -34,14 +35,17 @@
 		handleNumbers.forEach(function(handleNumber) {
 			if ( state ) {
 				state = setHandle(handleNumber, proposals[handleNumber], APPLY_MARGIN, APPLY_LIMIT, LOOK_FORWARD);
+				firedOnce = firedOnce || state;
 			}
 		});
 
-		// Only fire event if something changed
+		// Only consider the pointer movement if it resulted in a change
 		if ( state ) {
-
-			// Only consider the pointer movement if it resulted in a change
 			scope_PreviousCalcPoint = event.calcPoint;
+		}
+
+		// Only fire event if something changed
+		if ( firedOnce ) {
 
 			handleNumbers.forEach(function(handleNumber){
 				fireEvent('update', handleNumber);
