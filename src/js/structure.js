@@ -3,7 +3,7 @@
 	function addOrigin ( base, handleNumber ) {
 		var origin = addNodeTo(base, options.cssClasses.origin);
 		var handle = addNodeTo(origin, options.cssClasses.handle);
-		handle.innerHTML = handleNumber;
+		handle.setAttribute('data-handle', handleNumber);
 		return origin;
 	}
 

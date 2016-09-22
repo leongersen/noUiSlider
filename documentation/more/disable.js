@@ -18,7 +18,7 @@ function toggle ( element ){
 
 noUiSlider.create(slider1, {
 	start: 80,
-	connect: 'lower',
+	connect: [true, false],
 	range: {
 		min: 0,
 		max: 100

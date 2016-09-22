@@ -166,8 +166,8 @@
 						<td>The elements connected to the base, defining the handle locations.</td>
 					</tr>
 					<tr>
-						<td><code>.noUi-handle</code><br><code>.noUi-handle-lower</code><br><code>.noUi-handle-upper</code></td>
-						<td>The actual, visible handles. Style these any way you like! The lower and upper handles can be targeted individually.</td>
+						<td><code>.noUi-handle</code></td>
+						<td>The actual, visible handles. Style these any way you like!</td>
 					</tr>
 					<tr>
 						<td><code>.noUi-connect</code></td>
@@ -179,7 +179,7 @@
 					</tr>
 					<tr>
 						<td><code>.noUi-state-tap</code></td>
-						<td>This class is added when the slider bar is tapped or clicked. A slider with this call will reject any user input. noUiSlider will remove this class after 300ms, leaving that timespan to perform visual animations.</td>
+						<td>This class is added when the slider bar is tapped or clicked. A slider with this call will reject any user input. noUiSlider will remove this class after <code>300ms</code>, leaving that timespan to perform visual animations.</td>
 					</tr>
 					<tr>
 						<td><code>[disabled]</code></td>

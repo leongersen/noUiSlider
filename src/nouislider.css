@@ -34,6 +34,8 @@
 }
 .noUi-origin {
 	position: absolute;
+	height: 0;
+	width: 0;
 }
 .noUi-handle {
 	position: relative;
@@ -150,11 +152,12 @@
 
 /* Disabled state;
  */
-[disabled].noUi-connect,
+
 [disabled] .noUi-connect {
 	background: #B8B8B8;
 }
-[disabled].noUi-origin,
+[disabled].noUi-target,
+[disabled].noUi-handle,
 [disabled] .noUi-handle {
 	cursor: not-allowed;
 }

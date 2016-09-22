@@ -30,6 +30,7 @@ Changelog
 - Fixed: default tooltip color (#687);
 - Fixed: `margin` and `limit` calculated improperly after calling `updateOptions` with a new `range` option;
 - Fixed: `range` option was required in update, even when not updating it (#682);
+- Fixed: Cursor styling is now consistent for disable handles and sliders (#644);
 
 ### 8.5.1 (latest)
 - Fix: class mixup in 8.5.0 merge

@@ -24,19 +24,23 @@
 		var handleNumbers = data.handleNumbers.slice();
 		var state = true;
 
-		// Check to see which handle is 'leading' // TODO explain
+		// Check to see which handle is 'leading'.
+		// If that one can't move the second can't either.
 		if ( movingUpward ) {
 			handleNumbers.reverse();
 		}
 
+		// Stop if one of the handles can't move.
 		handleNumbers.forEach(function(handleNumber) {
 			if ( state ) {
 				state = setHandle(handleNumber, proposals[handleNumber], APPLY_MARGIN, APPLY_LIMIT, LOOK_FORWARD);
 			}
 		});
 
+		// Only fire event if something changed
 		if ( state ) {
 
+			// Only consider the pointer movement if it resulted in a change
 			scope_PreviousCalcPoint = event.calcPoint;
 
 			handleNumbers.forEach(function(handleNumber){
@@ -81,14 +85,16 @@
 	function eventStart ( event, data ) {
 
 		// Mark the handle as 'active' so it can be styled.
-		if ( data.handles.length === 1 ) {
+		if ( data.handleNumbers[0].length === 1 ) {
 
-			// Support 'disabled' handles
-			if ( data.handles[0].hasAttribute('disabled') ) {
+			var handle = scope_Handles[data.handleNumbers[0]];
+
+			// Ignore 'disabled' handles
+			if ( handle.hasAttribute('disabled') ) {
 				return false;
-			} // todo doesn't fixevent do this?
+			}
 
-			addClass(data.handles[0].children[0], options.cssClasses.active);
+			addClass(handle.children[0], options.cssClasses.active);
 		}
 
 		// Fix #551, where a handle gets selected instead of dragged.
@@ -104,19 +110,16 @@
 			startCalcPoint: event.calcPoint,
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
-			handles: data.handles,
 			handleNumbers: data.handleNumbers,
 			buttonsProperty: event.buttons,
 			locations: scope_Locations.slice()
 		});
 
 		var endEvent = attachEvent(actions.end, document.documentElement, eventEnd, {
-			handles: data.handles,
 			handleNumbers: data.handleNumbers
 		});
 
 		var outEvent = attachEvent("mouseout", document.documentElement, documentLeave, {
-			handles: data.handles,
 			handleNumbers: data.handleNumbers
 		});
 
@@ -217,10 +220,7 @@
 		fireEvent('change', handleNumber, true);
 
 		if ( options.events.snap ) {
-			eventStart(event, {
-				handles: [scope_Handles[handleNumber]],
-				handleNumbers: [handleNumber]
-			});
+			eventStart(event, { handleNumbers: [handleNumber] });
 		}
 	}
 
@@ -251,7 +251,6 @@
 				// These events are only bound to the visual handle
 				// element, not the 'real' origin element.
 				attachEvent ( actions.start, handle.children[0], eventStart, {
-					handles: [ handle ],
 					handleNumbers: [index]
 				});
 			});
@@ -259,15 +258,12 @@
 
 		// Attach the tap event to the slider base.
 		if ( behaviour.tap ) {
-
-			attachEvent ( actions.start, scope_Base, eventTap, {
-				handles: scope_Handles
-			});
+			attachEvent (actions.start, scope_Base, eventTap, {});
 		}
 
 		// Fire hover events
 		if ( behaviour.hover ) {
-			attachEvent ( actions.move, scope_Base, eventHover, { hover: true } );
+			attachEvent (actions.move, scope_Base, eventHover, { hover: true });
 		}
 
 		// Make the range draggable.

@@ -177,7 +177,6 @@
 		  case 'rtl':
 			parsed.dir = 1;
 			parsed.connect.reverse();
-		//	parsed.tooltips.reverse(); // TODO
 			break;
 		  default:
 			throw new Error("noUiSlider: 'direction' option was not recognized.");
@@ -348,8 +347,6 @@
 				base: 'base',
 				origin: 'origin',
 				handle: 'handle',
-				handleLower: 'handle-lower', // todo
-				handleUpper: 'handle-upper', // todo
 				horizontal: 'horizontal',
 				vertical: 'vertical',
 				background: 'background',
