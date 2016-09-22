@@ -67,7 +67,7 @@
 
 		<p>The <code>'update'</code> event fires after updating the slider.</p>
 
-		<p>By default, the sliders <strong>values remain unchanged</strong>. To update the slider values, <code>newOptions</code> may also contain a <code>values</code> property</a> that matches the signature of the <a href="/nouislider/slider-read-write/#section-setting"><code>set</code></a> method.</p>
+		<p>By default, the sliders <strong>values remain unchanged</strong>. To update the slider values, <code>newOptions</code> may also contain a <code>start</code> property</a> that matches the signature of the <a href="/nouislider/slider-read-write/#section-setting"><code>set</code></a> method.</p>
 
 		<p>The <code>'set'</code> event fires when the slider values are restored. If this is undesired behaviour, you can pass <code>false</code> as the second parameter, <code>fireSetEvent</code>.</p>
 
