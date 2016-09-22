@@ -69,7 +69,7 @@
 			stateUpdate();
 		}
 
-		fireEvent('update', handleNumber);
+	//	fireEvent('update', handleNumber);
 	}
 
 	// Test suggested values and apply margin, step.
@@ -192,8 +192,8 @@
 
 		// Request an update for all links if the value was invalid.
 		// Do so too if setting the handle fails.
-		if ( to === false || isNaN(to) || setHandle(handleNumber, scope_Spectrum.toStepping(to)) === false ) {
-			fireEvent('update', handleNumber);
+		if ( to !== false && !isNaN(to) ) {
+			setHandle(handleNumber, scope_Spectrum.toStepping(to));
 		}
 	}
 
@@ -226,6 +226,10 @@
 			setHandle(handleNumber, scope_Locations[handleNumber], APPLY_MARGIN, APPLY_LIMIT, options.dir ? LOOK_FORWARD : !LOOK_FORWARD);
 		});
 
+		scope_HandleNumbers.forEach(function(handleNumber){
+			fireEvent('update', handleNumber);
+		});
+
 		// Fire the 'set' event for both handles.
 		for ( i = 0; i < scope_Handles.length; i++ ) {
 
@@ -239,14 +243,19 @@
 	// Get the slider value.
 	function valueGet ( ) {
 
-		var i, retour = [];
+		var i, values = [];
 
 		// Get the value from all handles.
 		for ( i = 0; i < options.handles; i += 1 ){
-			retour[i] = options.format.to( scope_Values[i] );
+			values[i] = options.format.to(scope_Values[i]);
 		}
 
-		return inSliderOrder( retour );
+		// If only one handle is used, return a single value.
+		if ( values.length === 1 ){
+			return values[0];
+		}
+
+		return inSliderOrder(values);
 	}
 
 	// Removes classes from the root and empties it.
@@ -282,8 +291,10 @@
 		var retour = scope_Locations.map(function( location, index ){
 
 			var nearbySteps = scope_Spectrum.getNearbySteps( location );
+
 			// As per #391, the comparison for the decrement step can have some rounding issues.
 			var stepDecimals = scope_Spectrum.countStepDecimals();
+
 			// Get the current numeric value
 			var value = scope_Values[index];
 
@@ -327,12 +338,9 @@
 			return [decrement, increment];
 		});
 
-		// Return values in the proper order.
-		if ( options.dir ) {
-			retour = retour.reverse();
-		}
-
 		return retour;
+
+		//return inSliderOrder(retour);
 	}
 
 	// Attach an event to this slider, possibly including a namespace
@@ -410,15 +418,7 @@
 	// Create the base element, initialise HTML and set classes.
 	// Add handles and connect elements.
 	addSlider(scope_Target);
-	addElements(options.handles, options.connect, scope_Base);
-
-	if ( options.pips ) {
-		pips(options.pips);
-	}
-
-	if ( options.tooltips ) {
-		tooltips();
-	}
+	addElements(options.connect, scope_Base);
 
 	scope_Self = {
 		destroy: destroy,
@@ -435,5 +435,16 @@
 
 	// Attach user events.
 	bindSliderEvents(options.events);
+
+	// Use the public value method to set the start values.
+	valueSet(options.start);
+
+	if ( options.pips ) {
+		pips(options.pips);
+	}
+
+	if ( options.tooltips ) {
+		tooltips();
+	}
 
 	return scope_Self;

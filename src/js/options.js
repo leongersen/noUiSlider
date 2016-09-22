@@ -177,6 +177,7 @@
 		  case 'rtl':
 			parsed.dir = 1;
 			parsed.connect.reverse();
+		//	parsed.tooltips.reverse(); // TODO
 			break;
 		  default:
 			throw new Error("noUiSlider: 'direction' option was not recognized.");
@@ -221,15 +222,18 @@
 
 		if ( entry === false ) {
 			return;
-		} else if ( entry === true ) {
+		}
+
+		else if ( entry === true ) {
 
 			parsed.tooltips = [];
 
 			for ( i = 0; i < parsed.handles; i++ ) {
 				parsed.tooltips.push(true);
 			}
+		}
 
-		} else {
+		else {
 
 			parsed.tooltips = asArray(entry);
 
@@ -243,6 +247,10 @@
 				}
 			});
 		}
+		
+	//	if ( parsed.dir ) {
+	//		parsed.tooltips.reverse();
+	//	}
 	}
 
 	function testFormat ( parsed, entry ) {
@@ -346,8 +354,8 @@
 				vertical: 'vertical',
 				background: 'background',
 				connect: 'connect',
-				ltr: 'ltr', // todo
-				rtl: 'rtl', // todo
+				ltr: 'ltr',
+				rtl: 'rtl',
 				draggable: 'draggable',
 				drag: 'state-drag',
 				tap: 'state-tap',

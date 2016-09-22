@@ -5,29 +5,31 @@
 			return false;
 		}
 
-		var element = document.createElement('div');
-		element.className = options.cssClasses.tooltip;
-		return handle.firstChild.appendChild(element);
+		return addNodeTo(handle.firstChild, options.cssClasses.tooltip);
 	}
 
 	// The tooltips option is a shorthand for using the 'update' event.
 	function tooltips ( ) {
 
-		if ( options.dir ) {
-			options.tooltips.reverse();
-		}
-
 		// Tooltips are added with options.tooltips in original order.
 		var tips = scope_Handles.map(addTooltip);
 
-		if ( options.dir ) {
-			tips.reverse();
-			options.tooltips.reverse();
-		}
+		bindEvent('update', function(values, handleNumber, unencoded) {
 
-		bindEvent('update', function(f, o, r) {
-			if ( tips[o] ) {
-				tips[o].innerHTML = options.tooltips[o] === true ? f[o] : options.tooltips[o].to(r[o]);
+			var index = indexToHandleNumber(handleNumber);
+
+			if ( !tips[index] ) {
+				return;
 			}
+
+			var formattedValue = values[handleNumber];
+
+			console.log(values, handleNumber, unencoded);
+
+			if ( options.tooltips[handleNumber] !== true ) {
+				formattedValue = options.tooltips[handleNumber].to(unencoded[handleNumber]);
+			}
+
+			tips[index].innerHTML = formattedValue;
 		});
 	}

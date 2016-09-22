@@ -5,6 +5,10 @@
 		return options.ort === 0 ? (rect.width||scope_Base[alt]) : (rect.height||scope_Base[alt]);
 	}
 
+	function indexToHandleNumber ( index ) {
+		return options.dir ? (options.handles - 1 - index) : index;
+	}
+
 	// Handler for attaching events trough a proxy.
 	function attachEvent ( events, element, callback, data ) {
 
@@ -100,7 +104,7 @@
 		// During initialization, do not fire events.
 		for ( i = 0; i < options.handles; i++ ) {
 			if ( scope_Locations[i] === -1 ) {
-				return;
+				return; // TODO add scope_Initialized
 			}
 		}
 
@@ -115,15 +119,15 @@
 						// Use the slider public API as the scope ('this')
 						scope_Self,
 						// Return values as array, so arg_1[arg_2] is always valid.
-						scope_Values.map(options.format.to),
+						inSliderOrder(scope_Values.map(options.format.to)),
 						// Handle index, 0 or 1
-						handleNumber,
+						indexToHandleNumber(handleNumber),
 						// Unformatted slider values
-						scope_Values.slice(),
+						inSliderOrder(scope_Values),
 						// Event is fired by tap, true or false
 						tap || false,
 						// Left offset of the handle, in relation to the slider
-						scope_Locations
+						inSliderOrder(scope_Locations)
 					);
 				});
 			}
@@ -133,13 +137,10 @@
 	// Returns the input array, respecting the slider direction configuration.
 	function inSliderOrder ( values ) {
 
-		// If only one handle is used, return a single value.
-		if ( values.length === 1 ){
-			return values[0];
-		}
+		values = values.slice();
 
 		if ( options.dir ) {
-			return values.reverse();
+			values.reverse();
 		}
 
 		return values;

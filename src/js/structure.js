@@ -1,8 +1,9 @@
 
 	// Append a origin to the base
-	function addOrigin ( base ) {
+	function addOrigin ( base, handleNumber ) {
 		var origin = addNodeTo(base, options.cssClasses.origin);
-		addNodeTo(origin, options.cssClasses.handle);
+		var handle = addNodeTo(origin, options.cssClasses.handle);
+		handle.innerHTML = handleNumber;
 		return origin;
 	}
 
@@ -17,9 +18,10 @@
 	}
 
 	// Add handles to the slider base.
-	function addElements ( nrHandles, connectOptions, base ) {
+	function addElements ( connectOptions, base ) {
 
 		var index;
+		var handleNumber;
 
 		scope_Handles = [];
 		scope_Connects = [];
@@ -29,10 +31,13 @@
 		// [::::O====O====O====]
 		// connectOptions = [0, 1, 1, 1]
 
-		for ( index = 0; index < nrHandles; index += 1 ) {
+		for ( index = 0; index < options.handles; index += 1 ) {
+
+			// HandleNumbers are inverted for rtl sliders
+			handleNumber = indexToHandleNumber(index);
 
 			// Keep a list of all added handles.
-			scope_Handles.push(addOrigin(base));
+			scope_Handles.push(addOrigin(base, handleNumber));
 			scope_HandleNumbers[index] = index;
 			scope_Connects.push(addConnect(base, connectOptions[index + 1]));
 		}

@@ -40,6 +40,7 @@
 			scope_PreviousCalcPoint = event.calcPoint;
 
 			handleNumbers.forEach(function(handleNumber){
+				fireEvent('update', handleNumber);
 				fireEvent('slide', handleNumber);
 			});
 		}
