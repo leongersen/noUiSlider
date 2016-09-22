@@ -150,6 +150,8 @@
 		} else {
 			that.xSteps.push( isNaN(value[1]) ? false : value[1] );
 		}
+
+		that.xHighestCompleteStep.push(0);
 	}
 
 	function handleStepPoint ( i, n, that ) {
@@ -166,6 +168,12 @@
 		], n) / subRangeRatio (
 			that.xPct[i],
 			that.xPct[i+1] );
+
+		var totalSteps = (that.xVal[i+1] - that.xVal[i]) / that.xNumSteps[i];
+		var highestStep = Math.ceil(Number(totalSteps.toFixed(3)) - 1);
+		var step = that.xVal[i] + (that.xNumSteps[i] * highestStep);
+
+		that.xHighestCompleteStep[i] = step;
 	}
 
 
@@ -180,6 +188,7 @@
 		this.xVal = [];
 		this.xSteps = [ singleStep || false ];
 		this.xNumSteps = [ false ];
+		this.xHighestCompleteStep = [];
 
 		this.snap = snap;
 		this.direction = direction;
@@ -260,12 +269,13 @@
 	};
 
 	Spectrum.prototype.getNearbySteps = function ( value ) {
+
 		var j = getJ(value, this.xPct);
 
 		return {
-			stepBefore: { xVal:this.xVal[j-2], xNumSteps: this.xNumSteps[j-2] },
-			thisStep: { xVal:this.xVal[j-1], xNumSteps: this.xNumSteps[j-1] },
-			stepAfter: { xVal:this.xVal[j-0], xNumSteps: this.xNumSteps[j-0] }
+			stepBefore: { startValue: this.xVal[j-2], step: this.xNumSteps[j-2], highestStep: this.xHighestCompleteStep[j-2] },
+			thisStep: { startValue: this.xVal[j-1], step: this.xNumSteps[j-1], highestStep: this.xHighestCompleteStep[j-1] },
+			stepAfter: { startValue: this.xVal[j-0], step: this.xNumSteps[j-0], highestStep: this.xHighestCompleteStep[j-0] }
 		};
 	};
 

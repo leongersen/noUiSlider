@@ -185,3 +185,21 @@
 		</div>
 	</div>
 </section>
+
+
+<?php sect('steps'); ?>
+<h3>Getting the next slider steps</h3>
+
+<section>
+
+	<div class="view">
+
+		<p>Using the <code>steps</code> API, the sliders previous and next steps can be retrieved.</p>
+
+		<p>The <a href="/nouislider/examples/#section-keypress">examples section</a> demonstrates how this API can be used.</p>
+	</div>
+
+	<div class="side">
+		<?php code('steps'); ?>
+	</div>
+</section>

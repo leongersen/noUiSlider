@@ -236,7 +236,8 @@
 
 		<div class="example">
 			<div id="keypress"></div>
-			<input type="text" id="input-with-keypress">
+			<input type="text" id="input-with-keypress-1">
+			<input type="text" id="input-with-keypress-0">
 			<?php run('keypress-slider'); ?>
 			<?php run('keypress-event'); ?>
 		</div>

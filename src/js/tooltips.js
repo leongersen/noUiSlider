@@ -24,8 +24,6 @@
 
 			var formattedValue = values[handleNumber];
 
-			console.log(values, handleNumber, unencoded);
-
 			if ( options.tooltips[handleNumber] !== true ) {
 				formattedValue = options.tooltips[handleNumber].to(unencoded[handleNumber]);
 			}

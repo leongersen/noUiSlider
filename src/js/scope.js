@@ -273,16 +273,6 @@
 		delete scope_Target.noUiSlider;
 	}
 
-	// TODO
-	function topStepOfRangeBelow ( nearbySteps ) {
-
-		var numStepsInRangeBelow = (nearbySteps.thisStep.xVal - nearbySteps.stepBefore.xVal) / nearbySteps.stepBefore.xNumSteps;
-		var highestCompleteStep = Math.ceil(Number(numStepsInRangeBelow.toFixed(3)) - 1); // todo why tofixed
-		var stepBelow = nearbySteps.stepBefore.xVal + (nearbySteps.stepBefore.xNumSteps * highestCompleteStep);
-
-		return stepBelow;
-	}
-
 	// Get the current step size for the slider.
 	function getCurrentStep ( ) {
 
@@ -290,57 +280,62 @@
 		// Get the step point, then find it in the input list.
 		var retour = scope_Locations.map(function( location, index ){
 
+			if ( options.dir ) {
+				location = 100 - location;
+			}
+
 			var nearbySteps = scope_Spectrum.getNearbySteps( location );
+			var value = scope_Values[index];
+			var increment = nearbySteps.thisStep.step;
+			var decrement = null;
+
+			// If the next value in this step moves into the next step,
+			// the increment is the start of the next step - the current value
+			if ( increment !== false ) {
+				if ( value + increment > nearbySteps.stepAfter.startValue ) {
+					increment = nearbySteps.stepAfter.startValue - value;
+				}
+			}
+
+			// If the value is beyond the starting point
+			if ( value > nearbySteps.thisStep.startValue ) {
+				decrement = nearbySteps.thisStep.step;
+			}
+
+			else if ( nearbySteps.stepBefore.step === false ) {
+				decrement = false;
+			}
+
+			// If a handle is at the start of a step, it always steps back into the previous step first
+			else {
+				decrement = value - nearbySteps.stepBefore.highestStep;
+			}
+
+			// Now, if at the slider edges, there is not in/decrement
+			if ( location === 100 ) {
+				increment = null
+			}
+
+			else if ( location === 0 ) {
+				decrement = null;
+			}
 
 			// As per #391, the comparison for the decrement step can have some rounding issues.
 			var stepDecimals = scope_Spectrum.countStepDecimals();
 
-			// Get the current numeric value
-			var value = scope_Values[index];
-
-			var increment = null;
-			var decrement = null;
-
-			if ( location === 100 ) {
-				decrement = Number((value - topStepOfRangeBelow(nearbySteps)).toFixed(stepDecimals)); // Round per #391
+			// Round per #391
+			if ( increment !== null && increment !== false ) {
+				increment = Number(increment.toFixed(stepDecimals));
 			}
 
-			else if ( location === 0 ) {
-				increment = nearbySteps.thisStep.xNumSteps;
-			}
-
-			else {
-
-				increment = nearbySteps.thisStep.xNumSteps;
-
-				if ( increment !== false ) {
-
-					if ( value + increment > nearbySteps.stepAfter.xVal ) {
-						increment = nearbySteps.stepAfter.xVal-value;
-					}
-
-					increment = Number(increment.toFixed(stepDecimals));
-				}
-
-				if ( value > nearbySteps.thisStep.xVal ) {
-					decrement = nearbySteps.thisStep.xNumSteps;
-				}
-
-				else if ( nearbySteps.stepBefore.xNumSteps === false ) {
-					decrement = false;
-				}
-
-				else {
-					decrement = Number((value - topStepOfRangeBelow(nearbySteps)).toFixed(stepDecimals)); // Round per #391
-				}
+			if ( decrement !== null && decrement !== false ) {
+				decrement = Number(decrement.toFixed(stepDecimals));
 			}
 
 			return [decrement, increment];
 		});
 
-		return retour;
-
-		//return inSliderOrder(retour);
+		return inSliderOrder(retour);
 	}
 
 	// Attach an event to this slider, possibly including a namespace
