@@ -5,6 +5,7 @@
 		return options.ort === 0 ? (rect.width||scope_Base[alt]) : (rect.height||scope_Base[alt]);
 	}
 
+	// Index in scope_Handles isn't equal to public handleNumber on rtl sliders
 	function indexToHandleNumber ( index ) {
 		return options.dir ? (options.handles - 1 - index) : index;
 	}

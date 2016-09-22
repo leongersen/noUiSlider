@@ -78,6 +78,7 @@
 			fireEvent('set', handleNumber);
 			fireEvent('change', handleNumber);
 			fireEvent('end', handleNumber);
+			setZindex();
 		});
 	}
 
