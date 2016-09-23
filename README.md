@@ -24,6 +24,9 @@ Changelog
 - Change: all event arguments, including the handle number, are now in slider order;
 - Change: `updateOptions` now modifies the original options object. The reference in `slider.noUiSlider.options` remains up to date (#678).
 - Change: more events fire when using various `behaviour` options (#664);
+- Change: on `rtl` sliders, handles are now visually positioned from the sliders `right` edge;
+- Change: events for `rtl` sliders no fire in the same order has for `ltr` sliders (with incremental handleNumbers);
+- Change: internal `Spectrum` component is no longer `direction` aware.
 - Removed: `.noUi-handle-lower` and `.noUi-handle-upper` classes;
 - Removed: `.noUi-background`. This is now default;
 - Removed: `connect: 'lower'` and `connect: 'upper'`. These settings are replaced by `connect: [true, false]`;

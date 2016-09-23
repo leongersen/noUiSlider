@@ -20,7 +20,7 @@
 	}
 
 	// Current position of an element relative to the document.
-	function offset ( elem ) {
+	function offset ( elem, orientation ) {
 
 	var rect = elem.getBoundingClientRect(),
 		doc = elem.ownerDocument,
@@ -34,10 +34,7 @@
 			pageOffset.x = 0;
 		}
 
-		return {
-			top: rect.top + pageOffset.y - docElem.clientTop,
-			left: rect.left + pageOffset.x - docElem.clientLeft
-		};
+		return orientation ? (rect.top + pageOffset.y - docElem.clientTop) : (rect.left + pageOffset.x - docElem.clientLeft);
 	}
 
 	// Checks whether a value is numerical.

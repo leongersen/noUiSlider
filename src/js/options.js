@@ -160,8 +160,8 @@
 
 		parsed.limit = parsed.spectrum.getMargin(entry);
 
-		if ( !parsed.limit ) {
-			throw new Error("noUiSlider: 'limit' option is only supported on linear sliders.");
+		if ( !parsed.limit || parsed.handles < 2 ) {
+			throw new Error("noUiSlider: 'limit' option is only supported on linear sliders with 2 or more handles.");
 		}
 	}
 
@@ -395,7 +395,7 @@
 		parsed.pips = options.pips;
 
 		var styles = [['left', 'top'], ['right', 'bottom']];
-		
+
 		// Pre-define the styles.
 		parsed.style = styles[parsed.dir][parsed.ort];
 		parsed.styleOposite = styles[parsed.dir?0:1][parsed.ort];

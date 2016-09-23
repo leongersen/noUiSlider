@@ -193,7 +193,7 @@
 				return;
 			}
 
-			var current = offset(handle)[options.style]; // TODO
+			var current = offset(handle, options.ort);
 			var candidateMinDistance = Math.abs(current - calcPoint);
 
 			// If the candidate is better, then update the minimum distance as well as the handle number.
@@ -223,7 +223,7 @@
 			return false;
 		}
 
-		calcPoint -= offset(scope_Base)[ options.style ]; // TODO
+		calcPoint -= offset(scope_Base, options.ort);
 
 		// Calculate the new position.
 		var to = (calcPoint * 100) / baseSize();
@@ -236,7 +236,7 @@
 
 		// Find the closest handle and calculate the tapped point.
 		// The set handle to the new position.
-		setHandle(handleNumber, to, true, true);
+		setHandle(handleNumber, (options.dir ? 100 - to : to), true, true);
 
 		fireEvent('slide', handleNumber, true);
 		fireEvent('set', handleNumber, true);
@@ -250,9 +250,9 @@
 	// Fires a 'hover' event for a hovered mouse/pen position.
 	function eventHover ( event ) {
 
-		var location = event.calcPoint - offset(scope_Base)[ options.style ]; // TODO
+		var location = event.calcPoint - offset(scope_Base, options.ort);
 		var to = scope_Spectrum.getStep(( location * 100 ) / baseSize());
-		var value = scope_Spectrum.fromStepping( to );
+		var value = scope_Spectrum.fromStepping( options.dir ? 100 - to : to );
 
 		Object.keys(scope_Events).forEach(function( targetEvent ) {
 			if ( 'hover' === targetEvent.split('.')[0] ) {
