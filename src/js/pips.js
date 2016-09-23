@@ -189,11 +189,6 @@
 		}
 
 		function getTags( offset, source, values ) {
-
-			if ( scope_Spectrum.direction ) {
-				offset = 100 - offset;
-			}
-
 			return 'class="' + getClasses(values[1], source) + '" style="' + options.style + ': ' + offset + '%"';
 		}
 
