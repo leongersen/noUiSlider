@@ -20,9 +20,6 @@
 	// Add handles to the slider base.
 	function addElements ( connectOptions, base ) {
 
-		var index;
-		var handleNumber;
-
 		scope_Handles = [];
 		scope_Connects = [];
 
@@ -31,15 +28,11 @@
 		// [::::O====O====O====]
 		// connectOptions = [0, 1, 1, 1]
 
-		for ( index = 0; index < options.handles; index += 1 ) {
-
-			// HandleNumbers are inverted for rtl sliders
-			handleNumber = indexToHandleNumber(index);
-
+		for ( var i = 0; i < options.handles; i++ ) {
 			// Keep a list of all added handles.
-			scope_Handles.push(addOrigin(base, handleNumber));
-			scope_HandleNumbers[index] = index;
-			scope_Connects.push(addConnect(base, connectOptions[index + 1]));
+			scope_Handles.push(addOrigin(base, i));
+			scope_HandleNumbers[i] = i;
+			scope_Connects.push(addConnect(base, connectOptions[i + 1]));
 		}
 	}
 

@@ -233,37 +233,17 @@
 
 		value = toStepping( this.xVal, this.xPct, value );
 
-		// Invert the value if this is a right-to-left slider.
-		if ( this.direction ) {
-			value = 100 - value;
-		}
-
 		return value;
 	};
 
 	Spectrum.prototype.fromStepping = function ( value ) {
-
-		// Invert the value if this is a right-to-left slider.
-		if ( this.direction ) {
-			value = 100 - value;
-		}
 
 		return fromStepping( this.xVal, this.xPct, value );
 	};
 
 	Spectrum.prototype.getStep = function ( value ) {
 
-		// Find the proper step for rtl sliders by search in inverse direction.
-		// Fixes issue #262.
-		if ( this.direction ) {
-			value = 100 - value;
-		}
-
 		value = getStep(this.xPct, this.xSteps, this.snap, value );
-
-		if ( this.direction ) {
-			value = 100 - value;
-		}
 
 		return value;
 	};

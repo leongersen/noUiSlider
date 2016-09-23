@@ -1,31 +1,31 @@
 
 	// Split out the handle positioning logic so the Move event can use it, too
-	function checkHandlePosition ( handleNumber, to, applyMargin, applyLimit, lookForward ) {
+	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward ) {
 
 		// For sliders with multiple handles, limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
-		if ( applyMargin && scope_Handles.length > 1 ) {
+		if ( scope_Handles.length > 1 ) {
 
-			if ( handleNumber > 0 ) {
-				to = Math.max(to, scope_Locations[handleNumber - 1] + options.margin);
+			if ( lookBackward && handleNumber > 0 ) {
+				to = Math.max(to, reference[handleNumber - 1] + options.margin);
 			}
 
 			if ( lookForward && handleNumber < scope_Handles.length - 1 ) {
-				to = Math.min(to, scope_Locations[handleNumber + 1] - options.margin);
+				to = Math.min(to, reference[handleNumber + 1] - options.margin);
 			}
 		}
 
 		// The limit option has the opposite effect, limiting handles to a
 		// maximum distance from another. Limit must be > 0, as otherwise
 		// handles would be unmoveable.
-		if ( applyLimit && scope_Handles.length > 1 && options.limit ) {
+		if ( scope_Handles.length > 1 && options.limit ) {
 
-			if ( handleNumber > 0 ) {
-				to = Math.min(to, scope_Locations[handleNumber - 1] + options.limit);
+			if ( lookBackward && handleNumber > 0 ) {
+				to = Math.min(to, reference[handleNumber - 1] + options.limit);
 			}
 
 			if ( lookForward && handleNumber < scope_Handles.length - 1 ) {
-				to = Math.max(to, scope_Locations[handleNumber + 1] - options.limit);
+				to = Math.max(to, reference[handleNumber + 1] - options.limit);
 			}
 		}
 
@@ -36,11 +36,15 @@
 		to = limit(to);
 
 		// Return false if handle can't move
-		if ( to === scope_Locations[handleNumber] ) {
+		if ( to === reference[handleNumber] ) {
 			return false;
 		}
 
 		return to;
+	}
+
+	function toPct ( pct ) {
+		return pct + '%';
 	}
 
 	// Updates scope_Locations and scope_Values, updates visual state
@@ -54,7 +58,7 @@
 
 		// Called synchronously or on the next animationFrame
 		var stateUpdate = function() {
-			scope_Handles[handleNumber].style[options.style] = to + '%';
+			scope_Handles[handleNumber].style[options.style] = toPct(to);
 			updateConnect(handleNumber);
 			updateConnect(handleNumber + 1);
 		};
@@ -83,9 +87,9 @@
 	}
 
 	// Test suggested values and apply margin, step.
-	function setHandle ( handleNumber, to, applyMargin, applyLimit, lookForward ) {
+	function setHandle ( handleNumber, to, lookBackward, lookForward ) {
 
-		to = checkHandlePosition(handleNumber, to, applyMargin, applyLimit, lookForward);
+		to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward);
 
 		if ( to === false ) {
 			return false;
@@ -115,8 +119,8 @@
 			h = scope_Locations[index];
 		}
 
-		scope_Connects[index].style[options.style] = l + '%';
-		scope_Connects[index].style[options.styleOposite] = (100 - h) + '%';
+		scope_Connects[index].style[options.style] = toPct(l);
+		scope_Connects[index].style[options.styleOposite] = toPct(100 - h);
 	}
 
 	// ...
@@ -138,7 +142,7 @@
 		// Request an update for all links if the value was invalid.
 		// Do so too if setting the handle fails.
 		if ( to !== false && !isNaN(to) ) {
-			setHandle(handleNumber, scope_Spectrum.toStepping(to));
+			setHandle(handleNumber, scope_Spectrum.toStepping(to), false, false);
 		}
 	}
 
@@ -151,12 +155,6 @@
 		// Event fires by default
 		fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
 
-		// The RTL settings is implemented by reversing the front-end,
-		// internal mechanisms are the same.
-		if ( options.dir ) {
-			values.reverse();
-		}
-
 		values.forEach(setValue);
 
 		// Animation is optional.
@@ -167,7 +165,7 @@
 
 		// Now that all base values are set, apply constraints
 		scope_HandleNumbers.forEach(function(handleNumber){
-			setHandle(handleNumber, scope_Locations[handleNumber], APPLY_MARGIN, APPLY_LIMIT, options.dir ? LOOK_FORWARD : !LOOK_FORWARD);
+			setHandle(handleNumber, scope_Locations[handleNumber], true, false);
 		});
 
 		setZindex();
@@ -190,19 +188,14 @@
 	// Get the slider value.
 	function valueGet ( ) {
 
-		var i, values = [];
-
-		// Get the value from all handles.
-		for ( i = 0; i < options.handles; i += 1 ){
-			values[i] = options.format.to(scope_Values[i]);
-		}
+		var values = scope_Values.map(options.format.to);
 
 		// If only one handle is used, return a single value.
 		if ( values.length === 1 ){
 			return values[0];
 		}
 
-		return inSliderOrder(values);
+		return values;
 	}
 
 	// Removes classes from the root and empties it.
@@ -225,11 +218,7 @@
 
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
-		var retour = scope_Locations.map(function( location, index ){
-
-			if ( options.dir ) {
-				location = 100 - location;
-			}
+		return scope_Locations.map(function( location, index ){
 
 			var nearbySteps = scope_Spectrum.getNearbySteps( location );
 			var value = scope_Values[index];
@@ -281,8 +270,6 @@
 
 			return [decrement, increment];
 		});
-
-		return inSliderOrder(retour);
 	}
 
 	// Attach an event to this slider, possibly including a namespace

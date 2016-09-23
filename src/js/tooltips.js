@@ -16,9 +16,7 @@
 
 		bindEvent('update', function(values, handleNumber, unencoded) {
 
-			var index = indexToHandleNumber(handleNumber);
-
-			if ( !tips[index] ) {
+			if ( !tips[handleNumber] ) {
 				return;
 			}
 
@@ -28,6 +26,6 @@
 				formattedValue = options.tooltips[handleNumber].to(unencoded[handleNumber]);
 			}
 
-			tips[index].innerHTML = formattedValue;
+			tips[handleNumber].innerHTML = formattedValue;
 		});
 	}

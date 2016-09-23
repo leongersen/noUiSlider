@@ -176,7 +176,6 @@
 			break;
 		  case 'rtl':
 			parsed.dir = 1;
-			parsed.connect.reverse();
 			break;
 		  default:
 			throw new Error("noUiSlider: 'direction' option was not recognized.");
@@ -395,9 +394,11 @@
 		// Forward pips options
 		parsed.pips = options.pips;
 
+		var styles = [['left', 'top'], ['right', 'bottom']];
+		
 		// Pre-define the styles.
-		parsed.style = parsed.ort ? 'top' : 'left';
-		parsed.styleOposite = parsed.ort ? 'bottom' : 'right';
+		parsed.style = styles[parsed.dir][parsed.ort];
+		parsed.styleOposite = styles[parsed.dir?0:1][parsed.ort];
 
 		return parsed;
 	}

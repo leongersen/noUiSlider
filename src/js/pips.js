@@ -53,18 +53,12 @@
 			return (value + increment).toFixed(7) / 1;
 		}
 
-		var originalSpectrumDirection = scope_Spectrum.direction,
-			indexes = {},
+		var indexes = {},
 			firstInRange = scope_Spectrum.xVal[0],
 			lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length-1],
 			ignoreFirst = false,
 			ignoreLast = false,
 			prevPct = 0;
-
-		// This function loops the spectrum in an ltr linear fashion,
-		// while the toStepping method is direction aware. Trick it into
-		// believing it is ltr.
-		scope_Spectrum.direction = 0;
 
 		// Create a copy of the group, sort it and filter away all duplicates.
 		group = unique(group.slice().sort(function(a, b){ return a - b; }));
@@ -157,9 +151,6 @@
 			}
 		});
 
-		// Reset the spectrum.
-		scope_Spectrum.direction = originalSpectrumDirection;
-
 		return indexes;
 	}
 
@@ -198,14 +189,15 @@
 		}
 
 		function getTags( offset, source, values ) {
-			return 'class="' + getClasses(values[1], source) + '" style="' + options.style + ': ' + offset + '%"';
-		}
-
-		function addSpread ( offset, values ){
 
 			if ( scope_Spectrum.direction ) {
 				offset = 100 - offset;
 			}
+
+			return 'class="' + getClasses(values[1], source) + '" style="' + options.style + ': ' + offset + '%"';
+		}
+
+		function addSpread ( offset, values ){
 
 			// Apply the filter function, if it is set.
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];

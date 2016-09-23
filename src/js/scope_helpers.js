@@ -5,11 +5,6 @@
 		return options.ort === 0 ? (rect.width||scope_Base[alt]) : (rect.height||scope_Base[alt]);
 	}
 
-	// Index in scope_Handles isn't equal to public handleNumber on rtl sliders
-	function indexToHandleNumber ( index ) {
-		return options.dir ? (options.handles - 1 - index) : index;
-	}
-
 	// Handler for attaching events trough a proxy.
 	function attachEvent ( events, element, callback, data ) {
 
@@ -111,29 +106,17 @@
 						// Use the slider public API as the scope ('this')
 						scope_Self,
 						// Return values as array, so arg_1[arg_2] is always valid.
-						inSliderOrder(scope_Values.map(options.format.to)),
+						scope_Values.map(options.format.to),
 						// Handle index, 0 or 1
-						indexToHandleNumber(handleNumber),
+						handleNumber,
 						// Unformatted slider values
-						inSliderOrder(scope_Values),
+						scope_Values.slice(),
 						// Event is fired by tap, true or false
 						tap || false,
 						// Left offset of the handle, in relation to the slider
-						inSliderOrder(scope_Locations)
+						scope_Locations.slice()
 					);
 				});
 			}
 		});
-	}
-
-	// Returns the input array, respecting the slider direction configuration.
-	function inSliderOrder ( values ) {
-
-		values = values.slice();
-
-		if ( options.dir ) {
-			values.reverse();
-		}
-
-		return values;
 	}

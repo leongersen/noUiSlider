@@ -18,35 +18,55 @@
 			return eventEnd(event, data);
 		}
 
-		var proposal = ((event.calcPoint - data.startCalcPoint) * 100) / data.baseSize;
-		var proposals = data.locations.map(function(a){ return a + proposal; });
-		var movingUpward = event.calcPoint > scope_PreviousCalcPoint;
-		var handleNumbers = data.handleNumbers.slice();
 		var state = true;
-		var firedOnce = false;
+		var handleNumbers = data.handleNumbers.slice();
+		var movement = (options.dir ? -1 : 1) * (event.calcPoint - data.startCalcPoint);
+		var proposal = (movement * 100) / data.baseSize;
 
 		// Check to see which handle is 'leading'.
 		// If that one can't move the second can't either.
-		if ( movingUpward ) {
+		if ( movement > 0 ) {
 			handleNumbers.reverse();
 		}
 
+		var proposed_Locations = data.locations.slice();
+
 		// Stop if one of the handles can't move.
-		handleNumbers.forEach(function(handleNumber) {
-			if ( state ) {
-				state = setHandle(handleNumber, proposals[handleNumber], APPLY_MARGIN, APPLY_LIMIT, LOOK_FORWARD);
-				firedOnce = firedOnce || state;
+		handleNumbers.forEach(function(handleNumber, order) {
+			if ( state !== false ) {
+
+				var location = data.locations[handleNumber];
+				var one = handleNumbers.length === 1;
+				var a = order !== 0;
+				var b = order === 0;
+
+				state = checkHandlePosition(proposed_Locations, handleNumber, location + proposal,
+					one ? true : (movement > 0 ? a : !a), // LOOK_BACKWARD
+					one ? true : (movement > 0 ? b : !b)  // LOOK_FORWARD
+				);
+
+				if ( state === false ) {
+					proposal = 0;
+				} else {
+					proposed_Locations[handleNumber] = state;
+					proposal = state - location;
+				}
 			}
 		});
 
 		// Only consider the pointer movement if it resulted in a change
+		state = false;
+
+		handleNumbers.forEach(function(handleNumber) {
+			var pos = data.locations[handleNumber] + proposal;
+
+			if ( pos !== scope_Locations[handleNumber] ) {
+				updateHandlePosition(handleNumber, pos);
+				state = true;
+			}
+		});
+
 		if ( state ) {
-			scope_PreviousCalcPoint = event.calcPoint;
-		}
-
-		// Only fire event if something changed
-		if ( firedOnce ) {
-
 			handleNumbers.forEach(function(handleNumber){
 				fireEvent('update', handleNumber);
 				fireEvent('slide', handleNumber);
@@ -107,8 +127,6 @@
 
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
-
-		scope_PreviousCalcPoint = event.calcPoint;
 
 		// Attach the move and end events.
 		var moveEvent = attachEvent(actions.move, document.documentElement, eventMove, {
@@ -175,7 +193,7 @@
 				return;
 			}
 
-			var current = offset(handle)[options.style];
+			var current = offset(handle)[options.style]; // TODO
 			var candidateMinDistance = Math.abs(current - calcPoint);
 
 			// If the candidate is better, then update the minimum distance as well as the handle number.
@@ -205,7 +223,7 @@
 			return false;
 		}
 
-		calcPoint -= offset(scope_Base)[ options.style ];
+		calcPoint -= offset(scope_Base)[ options.style ]; // TODO
 
 		// Calculate the new position.
 		var to = (calcPoint * 100) / baseSize();
@@ -218,7 +236,7 @@
 
 		// Find the closest handle and calculate the tapped point.
 		// The set handle to the new position.
-		setHandle(handleNumber, to, APPLY_MARGIN, APPLY_MARGIN, LOOK_FORWARD);
+		setHandle(handleNumber, to, true, true);
 
 		fireEvent('slide', handleNumber, true);
 		fireEvent('set', handleNumber, true);
@@ -232,7 +250,7 @@
 	// Fires a 'hover' event for a hovered mouse/pen position.
 	function eventHover ( event ) {
 
-		var location = event.calcPoint - offset(scope_Base)[ options.style ];
+		var location = event.calcPoint - offset(scope_Base)[ options.style ]; // TODO
 		var to = scope_Spectrum.getStep(( location * 100 ) / baseSize());
 		var value = scope_Spectrum.fromStepping( to );
 
