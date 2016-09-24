@@ -226,6 +226,13 @@
 	}
 
 	Spectrum.prototype.getMargin = function ( value ) {
+
+		var step = this.xNumSteps[0];
+
+		if ( step && (value % step) ) {
+			throw new Error("noUiSlider: 'limit' and 'margin' must be divisible by step.");
+		}
+
 		return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;
 	};
 
