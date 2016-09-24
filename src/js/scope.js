@@ -2,6 +2,10 @@
 	// Split out the handle positioning logic so the Move event can use it, too
 	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward ) {
 
+		to = scope_Spectrum.getStep(to);
+
+		var steppedTo = to;
+
 		// For sliders with multiple handles, limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
 		if ( scope_Handles.length > 1 ) {
@@ -29,14 +33,11 @@
 			}
 		}
 
-		// Handle the step option.
-		to = scope_Spectrum.getStep(to);
-
 		// Limit percentage to the 0 - 100 range
 		to = limit(to);
 
 		// Return false if handle can't move
-		if ( to === reference[handleNumber] ) {
+		if ( to !== steppedTo || to === reference[handleNumber] ) {
 			return false;
 		}
 
