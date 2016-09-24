@@ -106,6 +106,18 @@
 			});
 		}, "Should error if limit enabled with only one handle.");
 
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: 0,
+				limit: 10,
+				step: 20,
+				range: {
+					'min': 0,
+					'max': 100
+				}
+			});
+		}, "Limit must be divisible by step.");
+
 		noUiSlider.create(slider, {
 			start: 1,
 			margin: 0, // Does not throw, issue #582
