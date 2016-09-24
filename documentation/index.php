@@ -11,11 +11,18 @@
 
 		<p>noUiSlider is a range slider <strong>without bloat</strong>. It offers a ton off <strong>features</strong>, and it is as small, <strong>lightweight</strong> and minimal as possible, which is great for mobile use on the many supported <strong>devices</strong>, including iPhone, iPad, Android devices &amp; Windows (Phone) 8 desktops, tablets and all-in-ones. It works on desktops too, of course!</p>
 
-		<div class="example" id="showcase">
+		<div class="example" id="showcase" style="margin: 0 20px;">
+
 			<div id="range"></div>
-			<span id="value-span-1"></span>
-			<span id="value-span-2"></span>
-			<input id="value-input">
+
+			<div style="text-align: center;">
+				<div id="range-value-3"></div>
+				<div id="range-diff-2" style="color: blue"></div>
+				<div id="range-value-2"></div>
+				<div id="range-diff-1" style="color: blue"></div>
+				<div id="range-value-1"></div>
+			</div>
+
 			<?php run('showcase'); ?>
 			<?php run('showcase-connect'); ?>
 		</div>
@@ -25,16 +32,10 @@
 
 		<?php code('showcase'); ?>
 
-		<div class="viewer-header">Connect the input to the slider</div>
+		<div class="viewer-header">Showing values</div>
 
 		<div class="viewer-content">
 			<?php code('showcase-connect'); ?>
-		</div>
-
-		<div class="viewer-header">CSS in this example</div>
-
-		<div class="viewer-content">
-			<?php loadShowCSS('showcase'); ?>
 		</div>
 	</div>
 </section>

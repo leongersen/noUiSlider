@@ -1,24 +1,27 @@
 var range = document.getElementById('range');
 
+range.style.height = '300px';
+range.style.margin = '0 auto 30px';
+
 noUiSlider.create(range, {
-	start: [ 1400, 2000, 2300 ], // Handle count and start position
-	margin: 200, // Handles must be at least 200 apart
+	start: [ 1450, 2050, 2350 ], // Handle count and start position
+	margin: 300, // Handles must be at least 300 apart
 	limit: 600, // ... but no more than 600
 	connect: true, // Display a colored bar between the handles
 	direction: 'rtl', // Put '0' at the bottom of the slider
 	orientation: 'vertical', // Orient the slider vertically
 	behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+	step: 150,
 	format: wNumb({
-		decimals: 0,
-		thousand: '.'
+		decimals: 0
 	}),
 	range: {
 		'min': 1300,
-		'max': 2700
+		'max': 2800
 	},
 	pips: { // Show a scale with the slider
-		mode: 'positions',
-		values: [0,25,50,75,100],
+		mode: 'steps',
+		stepped: true,
 		density: 4
 	}
 });

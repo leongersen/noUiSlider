@@ -1,28 +1,17 @@
-var valueInput = document.getElementById('value-input');
-var valueSpan1 = document.getElementById('value-span-1');
-var valueSpan2 = document.getElementById('value-span-2');
+var valuesDivs = [
+	document.getElementById('range-value-1'),
+	document.getElementById('range-value-2'),
+	document.getElementById('range-value-3')
+];
+
+var diffDivs = [
+	document.getElementById('range-diff-1'),
+	document.getElementById('range-diff-2')
+];
 
 // When the slider value changes, update the input and span
 range.noUiSlider.on('update', function( values, handle ) {
-
-	var value = values[handle];
-
-	switch ( handle ) {
-		case 0:
-			valueSpan1.innerHTML = value;
-			break;
-
-		case 1:
-			valueInput.value = value;
-			break;
-
-		case 2:
-			valueSpan2.innerHTML = value;
-			break;
-	}
-});
-
-// When the input changes, set the slider value
-valueInput.addEventListener('change', function(){
-	range.noUiSlider.set([null, this.value]);
+	valuesDivs[handle].innerHTML = values[handle];
+	diffDivs[0].innerHTML = values[1] - values[0];
+	diffDivs[1].innerHTML = values[2] - values[1];
 });
