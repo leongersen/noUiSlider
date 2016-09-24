@@ -238,6 +238,7 @@
 		fireEvent('slide', handleNumber, true);
 		fireEvent('set', handleNumber, true);
 		fireEvent('change', handleNumber, true);
+		fireEvent('update', handleNumber, true);
 
 		if ( options.events.snap ) {
 			eventStart(event, { handleNumbers: [handleNumber] });
