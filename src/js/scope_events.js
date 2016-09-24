@@ -18,12 +18,13 @@
 			return eventEnd(event, data);
 		}
 
-		var state = true;
-		var proposed_Locations = data.locations.slice();
-		var handleNumbers = data.handleNumbers.slice();
+		// Check if we are moving up or down
 		var movement = (options.dir ? -1 : 1) * (event.calcPoint - data.startCalcPoint);
+
+		// Convert the movement into a percentage of the slider width/height
 		var proposal = (movement * 100) / data.baseSize;
-		var one = handleNumbers.length === 1;
+		var proposals = data.locations.slice();
+		var handleNumbers = data.handleNumbers.slice();
 
 		// Check to see which handle is 'leading'.
 		// If that one can't move the second can't either.
@@ -31,38 +32,37 @@
 			handleNumbers.reverse();
 		}
 
-		function b( order ) { return one ? true : (movement > 0 ? !!order : !order); }
-		function f( order ) { return one ? true : (movement > 0 ? !order : !!order); }
+		// If moving forward, check backward if this is the LAST handle;
+		function b( order ) { return handleNumbers.length === 1 || (movement > 0 ? !!order : !order); }
 
-		// Stop if one of the handles can't move.
-		handleNumbers.forEach(function(handleNumber, o) {
-			if ( state !== false ) {
+		// If moving forward, check forward if this is the FIRST handle;
+		function f( order ) { return handleNumbers.length === 1 || (movement > 0 ? !order : !!order); }
 
-				var location = data.locations[handleNumber];
+		// Step 1: get the maximum percentage that any of the handles can move
+		if ( handleNumbers.length > 1 ) {
 
-				state = checkHandlePosition(proposed_Locations, handleNumber, location + proposal, b(o), f(o));
+			handleNumbers.forEach(function(handleNumber, o) {
 
-				if ( state === false ) {
+				var to = checkHandlePosition(proposals, handleNumber, proposals[handleNumber] + proposal, b(o), f(o));
+
+				// Stop if one of the handles can't move.
+				if ( to === false ) {
 					proposal = 0;
 				} else {
-					proposed_Locations[handleNumber] = state;
-					proposal = state - location;
+					proposal = to - proposals[handleNumber];
+					proposals[handleNumber] = to;
 				}
-			}
-		});
+			});
+		}
 
-		// Only consider the pointer movement if it resulted in a change
-		state = false;
+		var state = false;
 
+		// Step 2: Try to set the handles with the found percentage
 		handleNumbers.forEach(function(handleNumber, o) {
-			var pos = data.locations[handleNumber] + proposal;
-
-			if ( pos !== scope_Locations[handleNumber] ) {
-				setHandle(handleNumber, pos, b(o), f(o));
-				state = true;
-			}
+			state = setHandle(handleNumber, data.locations[handleNumber] + proposal, b(o), f(o)) || state;
 		});
 
+		// Step 3: If a handle moved, fire events
 		if ( state ) {
 			handleNumbers.forEach(function(handleNumber){
 				fireEvent('update', handleNumber);
