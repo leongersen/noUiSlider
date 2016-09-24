@@ -19,9 +19,11 @@
 		}
 
 		var state = true;
+		var proposed_Locations = data.locations.slice();
 		var handleNumbers = data.handleNumbers.slice();
 		var movement = (options.dir ? -1 : 1) * (event.calcPoint - data.startCalcPoint);
 		var proposal = (movement * 100) / data.baseSize;
+		var one = handleNumbers.length === 1;
 
 		// Check to see which handle is 'leading'.
 		// If that one can't move the second can't either.
@@ -29,21 +31,16 @@
 			handleNumbers.reverse();
 		}
 
-		var proposed_Locations = data.locations.slice();
+		function b( order ) { return one ? true : (movement > 0 ? !!order : !order); }
+		function f( order ) { return one ? true : (movement > 0 ? !order : !!order); }
 
 		// Stop if one of the handles can't move.
-		handleNumbers.forEach(function(handleNumber, order) {
+		handleNumbers.forEach(function(handleNumber, o) {
 			if ( state !== false ) {
 
 				var location = data.locations[handleNumber];
-				var one = handleNumbers.length === 1;
-				var a = order !== 0;
-				var b = order === 0;
 
-				state = checkHandlePosition(proposed_Locations, handleNumber, location + proposal,
-					one ? true : (movement > 0 ? a : !a), // LOOK_BACKWARD
-					one ? true : (movement > 0 ? b : !b)  // LOOK_FORWARD
-				);
+				state = checkHandlePosition(proposed_Locations, handleNumber, location + proposal, b(o), f(o));
 
 				if ( state === false ) {
 					proposal = 0;
@@ -57,11 +54,11 @@
 		// Only consider the pointer movement if it resulted in a change
 		state = false;
 
-		handleNumbers.forEach(function(handleNumber) {
+		handleNumbers.forEach(function(handleNumber, o) {
 			var pos = data.locations[handleNumber] + proposal;
 
 			if ( pos !== scope_Locations[handleNumber] ) {
-				updateHandlePosition(handleNumber, pos);
+				setHandle(handleNumber, pos, b(o), f(o));
 				state = true;
 			}
 		});
