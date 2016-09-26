@@ -20,7 +20,7 @@
     "grunt-contrib-concat": "^0.5.0",
     "grunt-contrib-copy": "^0.5.0",
     "grunt-contrib-cssmin": "^0.10.0",
-    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-jshint": "^0.11.3",
     "grunt-contrib-uglify": "^0.5.1",
     "onchange": "2.0.0",
     "simulant": "0.1.5"
