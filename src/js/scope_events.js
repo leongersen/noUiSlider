@@ -113,9 +113,7 @@
 		fireEvent('change', handleNumber);
 
 		// If this is a standard handle movement, fire the end event.
-		if ( data.handleNumber !== undefined ) {
-			fireEvent('end', data.handleNumber);
-		}
+		fireEvent('end', data.handleNumber || 2);
 	}
 
 	// Fire 'end' when a mouse or pen leaves the document.
@@ -192,9 +190,7 @@
 			document.body.addEventListener('selectstart', f, false);
 		}
 
-		if ( data.handleNumber !== undefined ) {
-			fireEvent('start', data.handleNumber);
-		}
+		fireEvent('start', data.handleNumber || 2);
 	}
 
 	// Move closest handle to tapped location.
