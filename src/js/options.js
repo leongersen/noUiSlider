@@ -352,7 +352,6 @@
 				drag: 'state-drag',
 				tap: 'state-tap',
 				active: 'active',
-				stacking: 'stacking',
 				tooltip: 'tooltip',
 				pips: 'pips',
 				pipsHorizontal: 'pips-horizontal',

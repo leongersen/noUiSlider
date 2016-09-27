@@ -41,11 +41,6 @@
 	position: relative;
 	z-index: 1;
 }
-.noUi-stacking .noUi-handle {
-/* This class is applied to the lower origin when
-   its values is > 50%. */
-	z-index: 10;
-}
 .noUi-state-tap .noUi-connect,
 .noUi-state-tap .noUi-origin {
 -webkit-transition: top 0.3s, right 0.3s, bottom 0.3s, left 0.3s;
