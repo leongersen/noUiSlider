@@ -4,11 +4,7 @@ noUiSlider is lightweight JavaScript range slider, originally developed to be a 
 
 It features cross-browser support, a wide range of options and support for a bunch of touch devices. It has been tested on Android phones, iPhone & iPad, Windows phone and touch-screen laptops and tablets and desktops.
 
-All modern browsers and [IE8+](#browser-support) are supported. The end result? A lean, extendible and bloat-less plugin that'll just do its job.
-
-The best part? noUiSlider has no dependencies! As of version 8, **jQuery is no longer required!**
-
-Oh, and the licensing terms are simple: [just Do What the Fuck You Want](http://www.wtfpl.net/about/) with it.
+All modern browsers and [IE9+](#browser-support) are supported. noUiSlider has no dependencies, and is licensed [WTFPL](http://www.wtfpl.net/about/).
 
 Documentation
 -------
@@ -17,17 +13,18 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changelog
 ---------
 ### 9.0.0
-- Added: Support for more than 2 handles;
+- Added: Support for **more than 2 handles**;
 - Added: `format` option can be updated (#641);
 - Added: `reset` method the return slider to start values (#673);
 - Change: `connect` option is now implemented as a separate node;
 - Change: all event arguments, including the handle number, are now in slider order;
-- Change: `updateOptions` now modifies the original options object. The reference in `slider.noUiSlider.options` remains up to date (#678);
+- Change: `updateOptions` now **modifies the original options** object. The reference in `slider.noUiSlider.options` remains up to date (#678);
 - Change: more events fire when using various `behaviour` options (#664);
-- Change: on `rtl` sliders, handles are now visually positioned from the sliders `right` edge;
-- Change: events for `rtl` sliders no fire in the same order has for `ltr` sliders (with incremental handleNumbers);
+- Change: on `rtl` sliders, handles are now visually positioned from the sliders `right`/`bottom` edge;
+- Change: events for `rtl` sliders now fire in the same order has for `ltr` sliders (with incremental handleNumbers);
 - Change: internal `Spectrum` component is no longer `direction` aware;
 - Change: `limit` and `margin` must be divisible by `step` (if set);
+- Removed: `.noUi-stacking` class. Handles now stack themselves;
 - Removed: `.noUi-handle-lower` and `.noUi-handle-upper` classes;
 - Removed: `.noUi-background`. This is now default;
 - Removed: `connect: 'lower'` and `connect: 'upper'`. These settings are replaced by `connect: [true, false]`;
@@ -36,58 +33,15 @@ Changelog
 - Fixed: `range` option was required in update, even when not updating it (#682);
 - Fixed: Cursor styling is now consistent for disable handles and sliders (#644);
 
-### 8.5.1 (latest)
-- Fix: class mixup in 8.5.0 merge
-- Change: position pips markers relatively
-
-### 8.5.0
-- Added: ability to completely override the classes used by the slider
-- Fix: removed invalid stopPropagation loop
-- Fix: source properly lints
-
-### 8.4.0
-- Fix: don't assume `window` exists. #503, #533, #617 and #628
-- Fix: `:focus` style applied to wrong element. #631
-- Fix: `step` option is lost on updating. #619
-- Fix: exposed `options` should be the original options, not the parsed set. #607
-- Added: handle animation time configurable. #629
-- Added: slider values can be updated without firing `set`. #602
-- Change: internal value calculations no longer limited to 7 decimals. #614
-
-### 8.3.0
-- Expose several internal features, including `options` and `pips`.
-- Add a fifth argument to all events, containing the handle offsets.
-- Fixed `margin: 0` throwing an error.
-- Fixed `set` firing when calling `slider.noUiSlider.set` with a `null` value.
-- Fix and clarify some examples
-
-### 8.2.1
-- Fixed #568 and #569
-
-### 8.2.0
-- Added 'start', 'end' and 'hover' events
-- Added better tooltip formatting options
-- Bugfixes, including an issue where a mouseup would be missed
-
-### 8.1.0
-- Fixed Microsoft Edge support
-- Merged several pull requests containing bug fixes
-- Fixed an issue where a slider handle could get 'stuck' to a mouse cursor after moving out of a window.
-- Combed through code using a profiler, fixed some performance issues.
-- Added support for basic tooltips.
-
-### 8.0.0
-Removed jQuery dependency! For more info and other changes, see [the release information](http://refreshless.com/nouislider/new-version).
-
 Devices
 -------
-
 Devices/browsers tested:
 - Surface Pro 3 (Windows 10)
-- iPad Air 2 (iOS 9.0)
+- iPad Air 2 (iOS 9.3)
 - iPad 3 (iOS 8.4)
 - Moto E (Android 5.1, Chrome)
 - Lumia 930 (WP8.1, IE10 mobile)
+- Lumia 930 (WM10, Edge)
 - Asus S400C (Windows 10, Touch + mouse)
 	+ Chrome
 	+ Firefox
