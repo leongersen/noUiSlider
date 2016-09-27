@@ -51,11 +51,12 @@
 		// Remove dragging class.
 		removeClass(scope_Target, options.cssClasses.drag);
 
+		setZindex();
+
 		data.handleNumbers.forEach(function(handleNumber){
 			fireEvent('set', handleNumber);
 			fireEvent('change', handleNumber);
 			fireEvent('end', handleNumber);
-			setZindex();
 		});
 	}
 
@@ -149,6 +150,8 @@
 		}
 
 		setHandle(handleNumber, proposal, true, true);
+
+		setZindex();
 
 		fireEvent('slide', handleNumber, true);
 		fireEvent('set', handleNumber, true);
