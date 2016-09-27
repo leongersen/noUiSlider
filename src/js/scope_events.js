@@ -63,7 +63,7 @@
 	function eventStart ( event, data ) {
 
 		// Mark the handle as 'active' so it can be styled.
-		if ( data.handleNumbers[0].length === 1 ) {
+		if ( data.handleNumbers.length === 1 ) {
 
 			var handle = scope_Handles[data.handleNumbers[0]];
 
@@ -131,55 +131,16 @@
 	// Move closest handle to tapped location.
 	function eventTap ( event ) {
 
-		var calcPoint = event.calcPoint;
-		var handleNumber = false;
-		var minDistance = Number.MAX_VALUE;
-
-		// The tap event shouldn't propagate up and cause 'edge' to run.
+		// The tap event shouldn't propagate up
 		event.stopPropagation();
 
-		// Iterate all handles.
-		scope_Handles.forEach(function(handle, index){
-
-			// Disabled handles are ignored
-			if ( handle.hasAttribute('disabled') ) {
-				return;
-			}
-
-			var current = offset(handle, options.ort);
-			var candidateMinDistance = Math.abs(current - calcPoint);
-
-			// If the candidate is better, then update the minimum distance as well as the handle number.
-			if ( candidateMinDistance < minDistance ) {
-				minDistance = candidateMinDistance;
-				handleNumber = index;
-			}
-
-			// If they are the same, the relative positions of handle and location decide whether there is an update.
-			// This is needed for totally overlapping handles.
-			else if ( candidateMinDistance == minDistance ) {
-
-				// If this handle is before the calcPoint, then this handle should be selected.
-				if ( current < calcPoint ) {
-					handleNumber = index;
-				}
-			}
-
-			// Else, that is the candidate is worse, then the candidates will be getting even worse from there on.
-			else {
-				return;
-			}
-		});
+		var proposal = calcPointToPercentage(event.calcPoint);
+		var handleNumber = getClosestHandle(proposal);
 
 		// Tackle the case that all handles are 'disabled'.
 		if ( handleNumber === false ) {
 			return false;
 		}
-
-		calcPoint -= offset(scope_Base, options.ort);
-
-		// Calculate the new position.
-		var to = (calcPoint * 100) / baseSize();
 
 		// Flag the slider as it is now in a transitional state.
 		// Transition takes a configurable amount of ms (default 300). Re-enable the slider after that.
@@ -187,9 +148,7 @@
 			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
 		}
 
-		// Find the closest handle and calculate the tapped point.
-		// The set handle to the new position.
-		setHandle(handleNumber, (options.dir ? 100 - to : to), true, true);
+		setHandle(handleNumber, proposal, true, true);
 
 		fireEvent('slide', handleNumber, true);
 		fireEvent('set', handleNumber, true);
@@ -204,9 +163,10 @@
 	// Fires a 'hover' event for a hovered mouse/pen position.
 	function eventHover ( event ) {
 
-		var location = event.calcPoint - offset(scope_Base, options.ort);
-		var to = scope_Spectrum.getStep(( location * 100 ) / baseSize());
-		var value = scope_Spectrum.fromStepping( options.dir ? 100 - to : to );
+		var proposal = calcPointToPercentage(event.calcPoint);
+
+		var to = scope_Spectrum.getStep(proposal);
+		var value = scope_Spectrum.fromStepping(to);
 
 		Object.keys(scope_Events).forEach(function( targetEvent ) {
 			if ( 'hover' === targetEvent.split('.')[0] ) {

@@ -92,6 +92,35 @@
 		return event;
 	}
 
+	function calcPointToPercentage ( calcPoint ) {
+		var location = calcPoint - offset(scope_Base, options.ort);
+		var proposal = ( location * 100 ) / baseSize();
+		return options.dir ? 100 - proposal : proposal;
+	}
+
+	function getClosestHandle ( proposal ) {
+
+		var closest = 100;
+		var handleNumber = false;
+
+		scope_Handles.forEach(function(handle, index){
+
+			// Disabled handles are ignored
+			if ( handle.hasAttribute('disabled') ) {
+				return;
+			}
+
+			var pos = Math.abs(scope_Locations[index] - proposal);
+
+			if ( pos < closest ) {
+				handleNumber = index;
+				closest = pos;
+			}
+		});
+
+		return handleNumber;
+	}
+
 	// Moves handle(s) by a percentage
 	// (bool, % to move, [% where handle started, ...], [index in scope_Handles, ...])
 	function moveHandles ( upward, proposal, locations, handleNumbers ) {
