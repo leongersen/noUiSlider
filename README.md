@@ -8,7 +8,7 @@ All modern browsers and [IE9+](#browser-support) are supported. noUiSlider has n
 
 Documentation
 -------
-An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](http://refreshless.com/nouislider/).
+An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](https://refreshless.com/nouislider/).
 
 Changelog
 ---------
