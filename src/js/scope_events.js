@@ -23,52 +23,8 @@
 
 		// Convert the movement into a percentage of the slider width/height
 		var proposal = (movement * 100) / data.baseSize;
-		var proposals = data.locations.slice();
-		var handleNumbers = data.handleNumbers.slice();
 
-		// Check to see which handle is 'leading'.
-		// If that one can't move the second can't either.
-		if ( movement > 0 ) {
-			handleNumbers.reverse();
-		}
-
-		// If moving forward, check backward if this is the LAST handle;
-		function b( order ) { return handleNumbers.length === 1 || (movement > 0 ? !!order : !order); }
-
-		// If moving forward, check forward if this is the FIRST handle;
-		function f( order ) { return handleNumbers.length === 1 || (movement > 0 ? !order : !!order); }
-
-		// Step 1: get the maximum percentage that any of the handles can move
-		if ( handleNumbers.length > 1 ) {
-
-			handleNumbers.forEach(function(handleNumber, o) {
-
-				var to = checkHandlePosition(proposals, handleNumber, proposals[handleNumber] + proposal, b(o), f(o));
-
-				// Stop if one of the handles can't move.
-				if ( to === false ) {
-					proposal = 0;
-				} else {
-					proposal = to - proposals[handleNumber];
-					proposals[handleNumber] = to;
-				}
-			});
-		}
-
-		var state = false;
-
-		// Step 2: Try to set the handles with the found percentage
-		handleNumbers.forEach(function(handleNumber, o) {
-			state = setHandle(handleNumber, data.locations[handleNumber] + proposal, b(o), f(o)) || state;
-		});
-
-		// Step 3: If a handle moved, fire events
-		if ( state ) {
-			handleNumbers.forEach(function(handleNumber){
-				fireEvent('update', handleNumber);
-				fireEvent('slide', handleNumber);
-			});
-		}
+		moveHandles(movement > 0, proposal, data.locations, data.handleNumbers);
 	}
 
 	// Unbind move events on document, call callbacks.
