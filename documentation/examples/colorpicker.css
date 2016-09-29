@@ -24,14 +24,14 @@
 	box-shadow: 0 0 10px;
 }
 
-#red {
+#red .noUi-connect {
 	background: #c0392b;
 }
 
-#green {
+#green .noUi-connect {
 	background: #27ae60;
 }
 
-#blue {
+#blue .noUi-connect {
 	background: #2980b9;
 }

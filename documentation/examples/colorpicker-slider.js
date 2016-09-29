@@ -5,7 +5,7 @@ for ( var i = 0; i < sliders.length; i++ ) {
 
 	noUiSlider.create(sliders[i], {
 		start: 127,
-		connect: "lower",
+		connect: [true, false],
 		orientation: "vertical",
 		range: {
 			'min': 0,

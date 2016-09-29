@@ -1,160 +1,200 @@
 
-	// Test suggested values and apply margin, step.
-	function setHandle ( handle, to, noLimitOption ) {
+	// Split out the handle positioning logic so the Move event can use it, too
+	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward ) {
 
-		var trigger = handle !== scope_Handles[0] ? 1 : 0,
-			lowerMargin = scope_Locations[0] + options.margin,
-			upperMargin = scope_Locations[1] - options.margin,
-			lowerLimit = scope_Locations[0] + options.limit,
-			upperLimit = scope_Locations[1] - options.limit;
-
-		// For sliders with multiple handles,
-		// limit movement to the other handle.
+		// For sliders with multiple handles, limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
 		if ( scope_Handles.length > 1 ) {
-			to = trigger ? Math.max( to, lowerMargin ) : Math.min( to, upperMargin );
+
+			if ( lookBackward && handleNumber > 0 ) {
+				to = Math.max(to, reference[handleNumber - 1] + options.margin);
+			}
+
+			if ( lookForward && handleNumber < scope_Handles.length - 1 ) {
+				to = Math.min(to, reference[handleNumber + 1] - options.margin);
+			}
 		}
 
 		// The limit option has the opposite effect, limiting handles to a
 		// maximum distance from another. Limit must be > 0, as otherwise
-		// handles would be unmoveable. 'noLimitOption' is set to 'false'
-		// for the .val() method, except for pass 4/4.
-		if ( noLimitOption !== false && options.limit && scope_Handles.length > 1 ) {
-			to = trigger ? Math.min ( to, lowerLimit ) : Math.max( to, upperLimit );
+		// handles would be unmoveable.
+		if ( scope_Handles.length > 1 && options.limit ) {
+
+			if ( lookBackward && handleNumber > 0 ) {
+				to = Math.min(to, reference[handleNumber - 1] + options.limit);
+			}
+
+			if ( lookForward && handleNumber < scope_Handles.length - 1 ) {
+				to = Math.max(to, reference[handleNumber + 1] - options.limit);
+			}
 		}
 
-		// Handle the step option.
-		to = scope_Spectrum.getStep( to );
+		to = scope_Spectrum.getStep(to);
 
 		// Limit percentage to the 0 - 100 range
 		to = limit(to);
 
 		// Return false if handle can't move
-		if ( to === scope_Locations[trigger] ) {
+		if ( to === reference[handleNumber] ) {
 			return false;
 		}
 
-		// Set the handle to the new position.
-		// Use requestAnimationFrame for efficient painting.
-		// No significant effect in Chrome, Edge sees dramatic
-		// performace improvements.
-		if ( window.requestAnimationFrame ) {
-			window.requestAnimationFrame(function(){
-				handle.style[options.style] = to + '%';
-			});
-		} else {
-			handle.style[options.style] = to + '%';
-		}
+		return to;
+	}
 
-		// Force proper handle stacking
-		if ( !handle.previousSibling ) {
-			removeClass(handle, options.cssClasses.stacking);
-			if ( to > 50 ) {
-				addClass(handle, options.cssClasses.stacking);
-			}
-		}
+	function toPct ( pct ) {
+		return pct + '%';
+	}
+
+	// Updates scope_Locations and scope_Values, updates visual state
+	function updateHandlePosition ( handleNumber, to ) {
 
 		// Update locations.
-		scope_Locations[trigger] = to;
+		scope_Locations[handleNumber] = to;
 
 		// Convert the value to the slider stepping/range.
-		scope_Values[trigger] = scope_Spectrum.fromStepping( to );
+		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-		fireEvent('update', trigger);
+		// Called synchronously or on the next animationFrame
+		var stateUpdate = function() {
+			scope_Handles[handleNumber].style[options.style] = toPct(to);
+			updateConnect(handleNumber);
+			updateConnect(handleNumber + 1);
+		};
+
+		// Set the handle to the new position.
+		// Use requestAnimationFrame for efficient painting.
+		// No significant effect in Chrome, Edge sees dramatic performace improvements.
+		// Option to disable is useful for unit tests, and single-step debugging.
+		if ( window.requestAnimationFrame && options.useRequestAnimationFrame ) {
+			window.requestAnimationFrame(stateUpdate);
+		} else {
+			stateUpdate();
+		}
+	}
+
+	function setZindex ( ) {
+
+		scope_HandleNumbers.forEach(function(handleNumber){
+			// Handles before the slider middle are stacked later = higher,
+			// Handles after the middle later is lower
+			// [[7] [8] .......... | .......... [5] [4]
+			var dir = (scope_Locations[handleNumber] > 50 ? -1 : 1);
+			var zIndex = 3 + (scope_Handles.length + (dir * handleNumber));
+			scope_Handles[handleNumber].childNodes[0].style.zIndex = zIndex;
+		});
+	}
+
+	// Test suggested values and apply margin, step.
+	function setHandle ( handleNumber, to, lookBackward, lookForward ) {
+
+		to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward);
+
+		if ( to === false ) {
+			return false;
+		}
+
+		updateHandlePosition(handleNumber, to);
 
 		return true;
 	}
 
-	// Loop values from value method and apply them.
-	function setValues ( count, values ) {
+	// Updates style attribute for connect nodes
+	function updateConnect ( index ) {
 
-		var i, trigger, to;
-
-		// With the limit option, we'll need another limiting pass.
-		if ( options.limit ) {
-			count += 1;
+		// Skip connects set to false
+		if ( !scope_Connects[index] ) {
+			return;
 		}
 
-		// If there are multiple handles to be set run the setting
-		// mechanism twice for the first handle, to make sure it
-		// can be bounced of the second one properly.
-		for ( i = 0; i < count; i += 1 ) {
+		var l = 0;
+		var h = 100;
 
-			trigger = i%2;
+		if ( index !== 0 ) {
+			l = scope_Locations[index - 1];
+		}
 
-			// Get the current argument from the array.
-			to = values[trigger];
+		if ( index !== scope_Connects.length - 1 ) {
+			h = scope_Locations[index];
+		}
 
-			// Setting with null indicates an 'ignore'.
-			// Inputting 'false' is invalid.
-			if ( to !== null && to !== false ) {
+		scope_Connects[index].style[options.style] = toPct(l);
+		scope_Connects[index].style[options.styleOposite] = toPct(100 - h);
+	}
 
-				// If a formatted number was passed, attemt to decode it.
-				if ( typeof to === 'number' ) {
-					to = String(to);
-				}
+	// ...
+	function setValue ( to, handleNumber ) {
 
-				to = options.format.from( to );
+		// Setting with null indicates an 'ignore'.
+		// Inputting 'false' is invalid.
+		if ( to === null || to === false ) {
+			return;
+		}
 
-				// Request an update for all links if the value was invalid.
-				// Do so too if setting the handle fails.
-				if ( to === false || isNaN(to) || setHandle( scope_Handles[trigger], scope_Spectrum.toStepping( to ), i === (3 - options.dir) ) === false ) {
-					fireEvent('update', trigger);
-				}
-			}
+		// If a formatted number was passed, attemt to decode it.
+		if ( typeof to === 'number' ) {
+			to = String(to);
+		}
+
+		to = options.format.from(to);
+
+		// Request an update for all links if the value was invalid.
+		// Do so too if setting the handle fails.
+		if ( to !== false && !isNaN(to) ) {
+			setHandle(handleNumber, scope_Spectrum.toStepping(to), false, false);
 		}
 	}
 
 	// Set the slider value.
 	function valueSet ( input, fireSetEvent ) {
 
-		var count, values = asArray( input ), i;
+		var values = asArray(input);
+		var isInit = scope_Locations[0] === undefined;
 
 		// Event fires by default
 		fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
 
-		// The RTL settings is implemented by reversing the front-end,
-		// internal mechanisms are the same.
-		if ( options.dir && options.handles > 1 ) {
-			values.reverse();
-		}
+		values.forEach(setValue);
 
 		// Animation is optional.
-		// Make sure the initial values where set before using animated placement.
-		if ( options.animate && scope_Locations[0] !== -1 ) {
-			addClassFor( scope_Target, options.cssClasses.tap, options.animationDuration );
+		// Make sure the initial values were set before using animated placement.
+		if ( options.animate && !isInit ) {
+			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
 		}
 
-		// Determine how often to set the handles.
-		count = scope_Handles.length > 1 ? 3 : 1;
+		// Now that all base values are set, apply constraints
+		scope_HandleNumbers.forEach(function(handleNumber){
+			setHandle(handleNumber, scope_Locations[handleNumber], true, false);
+		});
 
-		if ( values.length === 1 ) {
-			count = 1;
-		}
+		setZindex();
 
-		setValues ( count, values );
+		scope_HandleNumbers.forEach(function(handleNumber){
 
-		// Fire the 'set' event for both handles.
-		for ( i = 0; i < scope_Handles.length; i++ ) {
+			fireEvent('update', handleNumber);
 
 			// Fire the event only for handles that received a new value, as per #579
-			if ( values[i] !== null && fireSetEvent ) {
-				fireEvent('set', i);
+			if ( values[handleNumber] !== null && fireSetEvent ) {
+				fireEvent('set', handleNumber);
 			}
-		}
+		});
+	}
+
+	function valueReset ( fireSetEvent ) {
+		valueSet(options.start, fireSetEvent);
 	}
 
 	// Get the slider value.
 	function valueGet ( ) {
 
-		var i, retour = [];
+		var values = scope_Values.map(options.format.to);
 
-		// Get the value from all handles.
-		for ( i = 0; i < options.handles; i += 1 ){
-			retour[i] = options.format.to( scope_Values[i] );
+		// If only one handle is used, return a single value.
+		if ( values.length === 1 ){
+			return values[0];
 		}
 
-		return inSliderOrder( retour );
+		return values;
 	}
 
 	// Removes classes from the root and empties it.
@@ -177,34 +217,58 @@
 
 		// Check all locations, map them to their stepping point.
 		// Get the step point, then find it in the input list.
-		var retour = scope_Locations.map(function( location, index ){
+		return scope_Locations.map(function( location, index ){
 
-			var step = scope_Spectrum.getApplicableStep( location ),
+			var nearbySteps = scope_Spectrum.getNearbySteps( location );
+			var value = scope_Values[index];
+			var increment = nearbySteps.thisStep.step;
+			var decrement = null;
 
-				// As per #391, the comparison for the decrement step can have some rounding issues.
-				// Round the value to the precision used in the step.
-				stepDecimals = countDecimals(String(step[2])),
+			// If the next value in this step moves into the next step,
+			// the increment is the start of the next step - the current value
+			if ( increment !== false ) {
+				if ( value + increment > nearbySteps.stepAfter.startValue ) {
+					increment = nearbySteps.stepAfter.startValue - value;
+				}
+			}
 
-				// Get the current numeric value
-				value = scope_Values[index],
+			// If the value is beyond the starting point
+			if ( value > nearbySteps.thisStep.startValue ) {
+				decrement = nearbySteps.thisStep.step;
+			}
 
-				// To move the slider 'one step up', the current step value needs to be added.
-				// Use null if we are at the maximum slider value.
-				increment = location === 100 ? null : step[2],
+			else if ( nearbySteps.stepBefore.step === false ) {
+				decrement = false;
+			}
 
-				// Going 'one step down' might put the slider in a different sub-range, so we
-				// need to switch between the current or the previous step.
-				prev = Number((value - step[2]).toFixed(stepDecimals)),
+			// If a handle is at the start of a step, it always steps back into the previous step first
+			else {
+				decrement = value - nearbySteps.stepBefore.highestStep;
+			}
 
-				// If the value fits the step, return the current step value. Otherwise, use the
-				// previous step. Return null if the slider is at its minimum value.
-				decrement = location === 0 ? null : (prev >= step[1]) ? step[2] : (step[0] || false);
+			// Now, if at the slider edges, there is not in/decrement
+			if ( location === 100 ) {
+				increment = null;
+			}
+
+			else if ( location === 0 ) {
+				decrement = null;
+			}
+
+			// As per #391, the comparison for the decrement step can have some rounding issues.
+			var stepDecimals = scope_Spectrum.countStepDecimals();
+
+			// Round per #391
+			if ( increment !== null && increment !== false ) {
+				increment = Number(increment.toFixed(stepDecimals));
+			}
+
+			if ( decrement !== null && decrement !== false ) {
+				decrement = Number(decrement.toFixed(stepDecimals));
+			}
 
 			return [decrement, increment];
 		});
-
-		// Return values in the proper order.
-		return inSliderOrder( retour );
 	}
 
 	// Attach an event to this slider, possibly including a namespace
@@ -243,21 +307,23 @@
 		// Spectrum is created using the range, snap, direction and step options.
 		// 'snap' and 'step' can be updated, 'direction' cannot, due to event binding.
 		// If 'snap' and 'step' are not passed, they should remain unchanged.
-		var v = valueGet(), newOptions = testOptions({
-			start: [0, 0],
-			margin: optionsToUpdate.margin,
-			limit: optionsToUpdate.limit,
-			step: optionsToUpdate.step === undefined ? options.singleStep : optionsToUpdate.step,
-			range: optionsToUpdate.range,
-			animate: optionsToUpdate.animate,
-			snap: optionsToUpdate.snap === undefined ? options.snap : optionsToUpdate.snap
+		var v = valueGet();
+
+		var updateAble = ['margin', 'limit', 'range', 'animate', 'snap', 'step', 'format'];
+
+		// Only change options that we're actually passed to update.
+		updateAble.forEach(function(name){
+			if ( optionsToUpdate[name] !== undefined ) {
+				originalOptions[name] = optionsToUpdate[name];
+			}
 		});
 
-		['margin', 'limit', 'range', 'animate'].forEach(function(name){
+		var newOptions = testOptions(originalOptions);
 
-			// Only change options that we're actually passed to update.
+		// Load new options into the slider state
+		updateAble.forEach(function(name){
 			if ( optionsToUpdate[name] !== undefined ) {
-				options[name] = optionsToUpdate[name];
+				options[name] = newOptions[name];
 			}
 		});
 
@@ -266,11 +332,14 @@
 		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
+		// Limit and margin depend on the spectrum but are stored outside of it. (#677)
+		options.margin = newOptions.margin;
+		options.limit = newOptions.limit;
+
 		// Invalidate the current positioning so valueSet forces an update.
-		scope_Locations = [-1, -1];
+		scope_Locations = [];
 		valueSet(optionsToUpdate.start || v, fireSetEvent);
 	}
-
 
 	// Throw an error if the slider was already initialized.
 	if ( scope_Target.noUiSlider ) {
@@ -278,20 +347,9 @@
 	}
 
 	// Create the base element, initialise HTML and set classes.
-	// Add handles and links.
-	scope_Base = addSlider( options.dir, options.ort, scope_Target );
-	scope_Handles = addHandles( options.handles, options.dir, scope_Base );
-
-	// Set the connect classes.
-	addConnection ( options.connect, scope_Target, scope_Handles );
-
-	if ( options.pips ) {
-		pips(options.pips);
-	}
-
-	if ( options.tooltips ) {
-		tooltips();
-	}
+	// Add handles and connect elements.
+	addSlider(scope_Target);
+	addElements(options.connect, scope_Base);
 
 	scope_Self = {
 		destroy: destroy,
@@ -300,13 +358,27 @@
 		off: removeEvent,
 		get: valueGet,
 		set: valueSet,
+		reset: valueReset,
+		 // Exposed for unit testing, don't use this in your application.
+		__moveHandles: function(a, b, c) { moveHandles(a, b, scope_Locations, c); },
+		options: originalOptions, // Issue #600, #678
 		updateOptions: updateOptions,
-		options: originalOptions, // Issue #600
 		target: scope_Target, // Issue #597
 		pips: pips // Issue #594
 	};
 
 	// Attach user events.
-	events( options.events );
+	bindSliderEvents(options.events);
+
+	// Use the public value method to set the start values.
+	valueSet(options.start);
+
+	if ( options.pips ) {
+		pips(options.pips);
+	}
+
+	if ( options.tooltips ) {
+		tooltips();
+	}
 
 	return scope_Self;

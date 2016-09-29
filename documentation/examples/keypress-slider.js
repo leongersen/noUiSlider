@@ -1,21 +1,22 @@
-var keypressSlider = document.getElementById('keypress'),
-	input = document.getElementById('input-with-keypress');
+var keypressSlider = document.getElementById('keypress');
+var input0 = document.getElementById('input-with-keypress-0');
+var input1 = document.getElementById('input-with-keypress-1');
+var inputs = [input0, input1];
 
 noUiSlider.create(keypressSlider, {
-	start: 40,
-	step: 10,
+	start: [20, 80],
+	connect: true,
+	direction: 'rtl',
+	tooltips: [true, wNumb({ decimals: 1 })],
 	range: {
-		'min': 0,
-		'20%': [ 300, 100 ],
-		'50%': [ 800, 50 ],
-		'max': 1000
+		'min': [0],
+		'10%': [10, 10],
+		'50%': [80, 50],
+		'80%': 150,
+		'max': 200
 	}
 });
 
 keypressSlider.noUiSlider.on('update', function( values, handle ) {
-	input.value = values[handle];
-});
-
-input.addEventListener('change', function(){
-	keypressSlider.noUiSlider.set([null, this.value]);
+	inputs[handle].value = values[handle];
 });

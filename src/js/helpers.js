@@ -1,6 +1,14 @@
 
+	// Creates a node, adds it to target, returns the new node.
+	function addNodeTo ( target, className ) {
+		var div = document.createElement('div');
+		addClass(div, className);
+		target.appendChild(div);
+		return div;
+	}
+
 	// Removes duplicates from an array.
-	function unique(array) {
+	function unique ( array ) {
 		return array.filter(function(a){
 			return !this[a] ? this[a] = true : false;
 		}, {});
@@ -12,7 +20,7 @@
 	}
 
 	// Current position of an element relative to the document.
-	function offset ( elem ) {
+	function offset ( elem, orientation ) {
 
 	var rect = elem.getBoundingClientRect(),
 		doc = elem.ownerDocument,
@@ -26,10 +34,7 @@
 			pageOffset.x = 0;
 		}
 
-		return {
-			top: rect.top + pageOffset.y - docElem.clientTop,
-			left: rect.left + pageOffset.x - docElem.clientLeft
-		};
+		return orientation ? (rect.top + pageOffset.y - docElem.clientTop) : (rect.left + pageOffset.x - docElem.clientLeft);
 	}
 
 	// Checks whether a value is numerical.
@@ -39,10 +44,12 @@
 
 	// Sets a class and removes it after [duration] ms.
 	function addClassFor ( element, className, duration ) {
+		if (duration > 0) {
 		addClass(element, className);
-		setTimeout(function(){
-			removeClass(element, className);
-		}, duration);
+			setTimeout(function(){
+				removeClass(element, className);
+			}, duration);
+		}
 	}
 
 	// Limits a value to 0 - 100
@@ -51,12 +58,14 @@
 	}
 
 	// Wraps a variable as an array, if it isn't one yet.
+	// Note that an input array is returned by reference!
 	function asArray ( a ) {
 		return Array.isArray(a) ? a : [a];
 	}
 
 	// Counts decimals
 	function countDecimals ( numStr ) {
+		numStr = String(numStr);
 		var pieces = numStr.split(".");
 		return pieces.length > 1 ? pieces[1].length : 0;
 	}

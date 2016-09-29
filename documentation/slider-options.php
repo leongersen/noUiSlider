@@ -21,7 +21,7 @@
 
 	<div class="view">
 
-		<p>The start option sets the number of handles and their start positions, relative to <code>range</code>.</p>
+		<p>The start option sets the number of handles and corresponding start positions, relative to <code>range</code>.</p>
 
 		<div class="example">
 			<div id="slider-start"></div>
@@ -35,7 +35,7 @@
 			<strong>Accepted values</strong>
 			<div><code>number</code>,<br>
 				<code>array[number]</code>,<br>
-				<code>array[number, number]</code>
+				<code>array[number, number, ...]</code>
 			</div>
 		</div>
 	</div>
@@ -54,11 +54,20 @@
 
 	<div class="view">
 
-		<p>The connect setting can be used to control the (green) bar between the handles, or the edges of the slider. Use <code>"lower"</code> to connect to the lower side, or <code>"upper"</code> to connect to the upper side. Setting <code>true</code> sets the bar between the handles.</p>
+		<p>The connect setting can be used to control the (green) bar between the handles, or the edges of the slider.</p>
+
+		<p>Pass an <code>array</code> with a <code>boolean</code> for every connecting element, including the edges of the slider. The length of this array must match the handle count + 1.</p>
+
+		<p>Setting <code>true</code> sets the bars between the handles, but not between the handles and the sliders edges.</p>
 
 		<div class="example">
 			<div id="slider-connect"></div>
 			<?php run('connect', false); ?>
+		</div>
+
+		<div class="example">
+			<div id="slider-connect2"></div>
+			<?php run('connect-more', false); ?>
 		</div>
 
 		<div class="options">
@@ -66,13 +75,18 @@
 			<div><code>false</code></div>
 
 			<strong>Accepted values</strong>
-			<div><code>"lower"</code>, <code>"upper"</code>, <code>true</code>, <code>false</code></div>
+			<div>
+				<code>true</code>,<br>
+				<code>false</code>,<br>
+				<code>array[...]</code>
+			</div>
 		</div>
 
 	</div>
 
 	<div class="side">
 		<?php code('connect'); ?>
+		<?php code('connect-more'); ?>
 	</div>
 
 </section>
@@ -85,7 +99,7 @@
 
 	<div class="view">
 
-		<p>When using two handles, the minimum distance between the handles can be set using the margin option. The margin value is relative to the value set in 'range'. This option is only available on standard linear sliders.</p>
+		<p>When using two handles, the minimum distance between the handles can be set using the margin option. The margin value is relative to the value set in 'range'. This option is only available on linear sliders.</p>
 
 		<div class="example">
 			<div id="slider-margin"></div>
@@ -296,7 +310,7 @@
 
 	<div class="view">
 
-		<p>Set the animate option to <code>false</code> to prevent the slider from animating to a new value with when calling <code>.val()</code>.</p>
+		<p>Set the animate option to <code>false</code> to prevent the slider from animating to a new value with when calling <code>.set()</code>.</p>
 
 		<div class="example" style="margin: 0; padding-bottom: 20px">
 			<div class="sliders" id="slider-animate-true"></div>

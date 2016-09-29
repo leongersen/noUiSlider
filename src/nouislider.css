@@ -25,25 +25,26 @@
 	position: relative;
 	z-index: 1; /* Fix 401 */
 }
-.noUi-origin {
+.noUi-connect {
 	position: absolute;
 	right: 0;
 	top: 0;
 	left: 0;
 	bottom: 0;
 }
+.noUi-origin {
+	position: absolute;
+	height: 0;
+	width: 0;
+}
 .noUi-handle {
 	position: relative;
 	z-index: 1;
 }
-.noUi-stacking .noUi-handle {
-/* This class is applied to the lower origin when
-   its values is > 50%. */
-	z-index: 10;
-}
+.noUi-state-tap .noUi-connect,
 .noUi-state-tap .noUi-origin {
--webkit-transition: left 0.3s, top 0.3s;
-	transition: left 0.3s, top 0.3s;
+-webkit-transition: top 0.3s, right 0.3s, bottom 0.3s, left 0.3s;
+	transition: top 0.3s, right 0.3s, bottom 0.3s, left 0.3s;
 }
 .noUi-state-drag * {
 	cursor: inherit !important;
@@ -81,26 +82,17 @@
 
 /* Styling;
  */
-.noUi-background {
+.noUi-target {
 	background: #FAFAFA;
-	box-shadow: inset 0 1px 1px #f0f0f0;
+	border-radius: 4px;
+	border: 1px solid #D3D3D3;
+	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
 }
 .noUi-connect {
 	background: #3FB8AF;
 	box-shadow: inset 0 0 3px rgba(51,51,51,0.45);
 -webkit-transition: background 450ms;
 	transition: background 450ms;
-}
-.noUi-origin {
-	border-radius: 2px;
-}
-.noUi-target {
-	border-radius: 4px;
-	border: 1px solid #D3D3D3;
-	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
-}
-.noUi-target.noUi-connect {
-	box-shadow: inset 0 0 3px rgba(51,51,51,0.45), 0 3px 6px -5px #BBB;
 }
 
 /* Handles and cursors;
@@ -155,11 +147,12 @@
 
 /* Disabled state;
  */
-[disabled].noUi-connect,
+
 [disabled] .noUi-connect {
 	background: #B8B8B8;
 }
-[disabled].noUi-origin,
+[disabled].noUi-target,
+[disabled].noUi-handle,
 [disabled] .noUi-handle {
 	cursor: not-allowed;
 }

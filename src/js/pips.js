@@ -53,18 +53,12 @@
 			return (value + increment).toFixed(7) / 1;
 		}
 
-		var originalSpectrumDirection = scope_Spectrum.direction,
-			indexes = {},
+		var indexes = {},
 			firstInRange = scope_Spectrum.xVal[0],
 			lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length-1],
 			ignoreFirst = false,
 			ignoreLast = false,
 			prevPct = 0;
-
-		// This function loops the spectrum in an ltr linear fashion,
-		// while the toStepping method is direction aware. Trick it into
-		// believing it is ltr.
-		scope_Spectrum.direction = 0;
 
 		// Create a copy of the group, sort it and filter away all duplicates.
 		group = unique(group.slice().sort(function(a, b){ return a - b; }));
@@ -106,6 +100,9 @@
 			if ( low === false || high === undefined ) {
 				return;
 			}
+
+			// Make sure step isn't 0, which would cause an infinite loop (#654)
+			step = Math.max(step, 0.0000001);
 
 			// Find all steps in the subrange.
 			for ( i = low; i <= high; i = safeIncrement(i, step) ) {
@@ -154,9 +151,6 @@
 			}
 		});
 
-		// Reset the spectrum.
-		scope_Spectrum.direction = originalSpectrumDirection;
-
 		return indexes;
 	}
 
@@ -199,10 +193,6 @@
 		}
 
 		function addSpread ( offset, values ){
-
-			if ( scope_Spectrum.direction ) {
-				offset = 100 - offset;
-			}
 
 			// Apply the filter function, if it is set.
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];

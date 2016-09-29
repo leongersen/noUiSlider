@@ -4,6 +4,7 @@ var hoverSlider = document.getElementById('hover'),
 noUiSlider.create(hoverSlider, {
 	start: 20,
 	behaviour: 'hover-snap',
+	direction: 'rtl',
 	range: {
 		'min':  0,
 		'max':  10

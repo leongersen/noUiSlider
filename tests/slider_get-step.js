@@ -16,12 +16,14 @@
 			<div id="slider2"></div>\
 			<div id="slider3"></div>\
 			<div id="slider4"></div>\
+			<div id="slider5"></div>\
 		';
 
 		var slider1 = document.getElementById('slider1'),
 			slider2 = document.getElementById('slider2'),
 			slider3 = document.getElementById('slider3'),
-			slider4 = document.getElementById('slider4');
+			slider4 = document.getElementById('slider4'),
+			slider5 = document.getElementById('slider5');
 
 		// Issue #391
 		noUiSlider.create(slider1, {
@@ -87,21 +89,82 @@
 			}
 		});
 
-		matchStepBoth(slider4, [0, 18], [[null, false], [3, null]]); // 22
+		matchStepBoth(slider4, [0, 18], [[null, false], [1, null]]); // 22
 		assert.deepEqual(slider4.noUiSlider.get(), ['0.00', '18.00']); // 23
 		
-		matchStepBoth(slider4, [5, 9], [[6, 6], [6, 3]]); // 24
+		matchStepBoth(slider4, [5, 9], [[6, 1], [1, 3]]); // 24
 		assert.deepEqual(slider4.noUiSlider.get(), ['7.00', '8.00']); // 25
 		
-		matchStepBoth(slider4, [1, 16], [[false, 6], [3, 3]]); // 26
+		matchStepBoth(slider4, [1, 16], [[false, 6], [3, 1]]); // 26
 		assert.deepEqual(slider4.noUiSlider.get(), ['1.00', '17.00']); // 27
 		
-		matchStepBoth(slider4, [1.0008, 8], [[false, 6], [6, 3]]); // 28
+		matchStepBoth(slider4, [1.0008, 8], [[false, 6], [1, 3]]); // 28
 		assert.deepEqual(slider4.noUiSlider.get(), ['1.00', '8.00']); // 29
 		
-		matchStepBoth(slider4, [1.2, 16.458], [[false, 6], [3, 3]]); // 30
+		matchStepBoth(slider4, [1.2, 16.458], [[false, 6], [3, 1]]); // 30
 		assert.deepEqual(slider4.noUiSlider.get(), ['1.00', '17.00']); // 31
 		
-		matchStepBoth(slider4, [1.3, 8], [[false, 6], [6, 3]]); // 32
+		matchStepBoth(slider4, [1.3, 8], [[false, 6], [1, 3]]); // 32
 		assert.deepEqual(slider4.noUiSlider.get(), ['1.00', '8.00']); // 33
+
+
+		noUiSlider.create(slider5, {
+			start: 5,
+			range: {
+				'min': [0, 1],
+				'75%': [10, 60],
+				'85%': [100, 2],
+		                'max': [105]
+			}
+		});
+
+		function stepRightCheckEnd ( slider, expectedEnd ) {
+			var valueBefore = Number( slider.noUiSlider.get() ),
+				sliderStep = slider.noUiSlider.steps()[0],
+				plannedEnd = valueBefore + sliderStep[1];
+			slider.noUiSlider.set(plannedEnd);
+			assert.deepEqual(plannedEnd, expectedEnd);
+			assert.deepEqual(Number(slider.noUiSlider.get()), expectedEnd);
+		}
+
+		stepRightCheckEnd(slider5, 6); // 34
+		stepRightCheckEnd(slider5, 7); // 35
+		stepRightCheckEnd(slider5, 8); // 36
+		stepRightCheckEnd(slider5, 9); // 37
+		stepRightCheckEnd(slider5, 10); // 38
+		stepRightCheckEnd(slider5, 70); // 39
+		stepRightCheckEnd(slider5, 100); // 40
+		stepRightCheckEnd(slider5, 102); // 41
+		stepRightCheckEnd(slider5, 104); // 42
+		stepRightCheckEnd(slider5, 105); // 43
+		stepRightCheckEnd(slider5, 105); // 44
+
+
+		function stepLeftCheckEnd ( slider, expectedEnd ) {
+			var valueBefore = Number( slider.noUiSlider.get() ),
+				sliderStep = slider.noUiSlider.steps()[0],
+				plannedEnd = valueBefore - sliderStep[0];
+			slider.noUiSlider.set(plannedEnd);
+			assert.deepEqual(plannedEnd, expectedEnd);
+			assert.deepEqual(Number(slider.noUiSlider.get()), expectedEnd);
+		}
+
+		stepLeftCheckEnd(slider5, 104); // 45
+		stepLeftCheckEnd(slider5, 102); // 46
+		stepLeftCheckEnd(slider5, 100); // 47
+		stepLeftCheckEnd(slider5, 70); // 48
+		stepLeftCheckEnd(slider5, 10); // 49
+		stepLeftCheckEnd(slider5, 9); // 50
+		stepLeftCheckEnd(slider5, 8); // 51
+		stepLeftCheckEnd(slider5, 7); // 52
+		stepLeftCheckEnd(slider5, 6); // 53
+		stepLeftCheckEnd(slider5, 5); // 54
+		stepLeftCheckEnd(slider5, 4); // 55
+		stepLeftCheckEnd(slider5, 3); // 56
+		stepLeftCheckEnd(slider5, 2); // 57
+		stepLeftCheckEnd(slider5, 1); // 58
+		stepLeftCheckEnd(slider5, 0); // 59
+		stepLeftCheckEnd(slider5, 0); // 60
+
+
 	});

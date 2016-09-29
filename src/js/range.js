@@ -150,6 +150,8 @@
 		} else {
 			that.xSteps.push( isNaN(value[1]) ? false : value[1] );
 		}
+
+		that.xHighestCompleteStep.push(0);
 	}
 
 	function handleStepPoint ( i, n, that ) {
@@ -166,6 +168,12 @@
 		], n) / subRangeRatio (
 			that.xPct[i],
 			that.xPct[i+1] );
+
+		var totalSteps = (that.xVal[i+1] - that.xVal[i]) / that.xNumSteps[i];
+		var highestStep = Math.ceil(Number(totalSteps.toFixed(3)) - 1);
+		var step = that.xVal[i] + (that.xNumSteps[i] * highestStep);
+
+		that.xHighestCompleteStep[i] = step;
 	}
 
 
@@ -180,6 +188,7 @@
 		this.xVal = [];
 		this.xSteps = [ singleStep || false ];
 		this.xNumSteps = [ false ];
+		this.xHighestCompleteStep = [];
 
 		this.snap = snap;
 		this.direction = direction;
@@ -217,6 +226,13 @@
 	}
 
 	Spectrum.prototype.getMargin = function ( value ) {
+
+		var step = this.xNumSteps[0];
+
+		if ( step && (value % step) ) {
+			throw new Error("noUiSlider: 'limit' and 'margin' must be divisible by step.");
+		}
+
 		return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;
 	};
 
@@ -224,47 +240,36 @@
 
 		value = toStepping( this.xVal, this.xPct, value );
 
-		// Invert the value if this is a right-to-left slider.
-		if ( this.direction ) {
-			value = 100 - value;
-		}
-
 		return value;
 	};
 
 	Spectrum.prototype.fromStepping = function ( value ) {
-
-		// Invert the value if this is a right-to-left slider.
-		if ( this.direction ) {
-			value = 100 - value;
-		}
 
 		return fromStepping( this.xVal, this.xPct, value );
 	};
 
 	Spectrum.prototype.getStep = function ( value ) {
 
-		// Find the proper step for rtl sliders by search in inverse direction.
-		// Fixes issue #262.
-		if ( this.direction ) {
-			value = 100 - value;
-		}
-
 		value = getStep(this.xPct, this.xSteps, this.snap, value );
-
-		if ( this.direction ) {
-			value = 100 - value;
-		}
 
 		return value;
 	};
 
-	Spectrum.prototype.getApplicableStep = function ( value ) {
+	Spectrum.prototype.getNearbySteps = function ( value ) {
 
-		// If the value is 100%, return the negative step twice.
-		var j = getJ(value, this.xPct), offset = value === 100 ? 2 : 1;
-		return [this.xNumSteps[j-2], this.xVal[j-offset], this.xNumSteps[j-offset]];
+		var j = getJ(value, this.xPct);
+
+		return {
+			stepBefore: { startValue: this.xVal[j-2], step: this.xNumSteps[j-2], highestStep: this.xHighestCompleteStep[j-2] },
+			thisStep: { startValue: this.xVal[j-1], step: this.xNumSteps[j-1], highestStep: this.xHighestCompleteStep[j-1] },
+			stepAfter: { startValue: this.xVal[j-0], step: this.xNumSteps[j-0], highestStep: this.xHighestCompleteStep[j-0] }
+		};
 	};
+
+	Spectrum.prototype.countStepDecimals = function () {
+		var stepDecimals = this.xNumSteps.map(countDecimals);
+		return Math.max.apply(null, stepDecimals);
+ 	};
 
 	// Outside testing
 	Spectrum.prototype.convert = function ( value ) {

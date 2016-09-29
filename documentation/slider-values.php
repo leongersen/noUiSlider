@@ -26,6 +26,26 @@
 	</div>
 </section>
 
+<?php sect('handles-multiple'); ?>
+<h2>More than two handles</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>The number of handles in the <code>start</code> option is not limited to two. You can use the <a href="/nouislider/slider-options/#section-Connect">connect option</a> between every handle.</p>
+
+		<div class="example">
+			<div id="slider-handles4"></div>
+			<?php run('handles-multiple'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('handles-multiple'); ?>
+	</div>
+</section>
+
 
 <?php sect('range'); ?>
 <h2>Range</h2>
@@ -33,7 +53,7 @@
 <section>
 
 	<div class="view">
-		<p>All values on the slider are part of a range. The range has a minimum and maximum value.</p>
+		<p>All values on the slider are part of a range. The range has a minimum and maximum value. The minimum value <a href="https://github.com/leongersen/noUiSlider/issues/676">cannot be equal to the maximum value</a>.</p>
 
 		<div class="example">
 			<div id="slider-range"></div>
@@ -163,5 +183,23 @@
 		<div class="viewer-content">
 			<?php code('snap-link'); ?>
 		</div>
+	</div>
+</section>
+
+
+<?php sect('steps'); ?>
+<h3>Getting the next slider steps</h3>
+
+<section>
+
+	<div class="view">
+
+		<p>Using the <code>steps</code> API, the sliders previous and next steps can be retrieved.</p>
+
+		<p>The <a href="/nouislider/examples/#section-keypress">examples section</a> demonstrates how this API can be used.</p>
+	</div>
+
+	<div class="side">
+		<?php code('steps'); ?>
 	</div>
 </section>

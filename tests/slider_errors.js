@@ -55,7 +55,7 @@
 
 		assert.throws(function(){
 			noUiSlider.create(slider, {
-				start: [ 1, 2, 3 ],
+				start: [ ],
 				range: {
 					'min': 0,
 					'max': 10
@@ -81,21 +81,9 @@
 					'min': 0,
 					'max': 10
 				},
-				connect: true
+				useRequestAnimationFrame: 'Hello'
 			});
-		});
-
-		assert.throws(function(){
-			noUiSlider.create(slider, {
-				start: 10,
-				connect: false,
-				behaviour: 'drag',
-				range: {
-					'min': 0,
-					'max': 10
-				}
-			});
-		});
+		}, "Should error if useRequestAnimationFrame not a boolean.");
 
 		assert.throws(function(){
 			noUiSlider.create(slider, {
@@ -106,6 +94,29 @@
 				}
 			});
 		});
+
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: 10,
+				limit: 5,
+				range: {
+					'min': 0,
+					'max': 10
+				}
+			});
+		}, "Should error if limit enabled with only one handle.");
+
+		assert.throws(function(){
+			noUiSlider.create(slider, {
+				start: 0,
+				limit: 10,
+				step: 20,
+				range: {
+					'min': 0,
+					'max': 100
+				}
+			});
+		}, "Limit must be divisible by step.");
 
 		noUiSlider.create(slider, {
 			start: 1,
@@ -124,5 +135,5 @@
 					'max': 10
 				}
 			});
-		});
+		}, "Should error if slider already initialised");
 	});

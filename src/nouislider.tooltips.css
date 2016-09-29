@@ -4,19 +4,19 @@
 	border: 1px solid #D9D9D9;
 	border-radius: 3px;
 	background: #fff;
+	color: #000;
 	padding: 5px;
 	text-align: center;
 }
-
-.noUi-horizontal .noUi-handle-lower .noUi-tooltip {
-	top: -32px;
+.noUi-horizontal .noUi-tooltip {
+-webkit-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+    left: 50%;
+    bottom: 120%;
 }
-.noUi-horizontal .noUi-handle-upper .noUi-tooltip {
-	bottom: -32px;
-}
-.noUi-vertical .noUi-handle-lower .noUi-tooltip {
-	left: 120%;
-}
-.noUi-vertical .noUi-handle-upper .noUi-tooltip {
-	right: 120%;
+.noUi-vertical .noUi-tooltip {
+-webkit-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+    top: 50%;
+    right: 120%;
 }

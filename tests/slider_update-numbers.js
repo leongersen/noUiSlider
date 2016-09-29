@@ -59,7 +59,7 @@
 
 		// --
 
-		var countSlider3Updates = 1;
+		var countSlider3Updates = 0;
 
 		noUiSlider.create(sliders[3], {
 			start: [20, 80],
@@ -73,6 +73,6 @@
 		sliders[3].noUiSlider.on('update', function( values, handle ){
 			assert.equal(handle, countSlider3Updates);
 			assert.deepEqual(values, ['20.00', '80.00']);
-			countSlider3Updates--;
+			countSlider3Updates++;
 		});
 	});

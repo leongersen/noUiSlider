@@ -52,7 +52,7 @@
 
 		// Validate input. Values aren't tested, as the public .val method
 		// will always provide a valid location.
-		if ( !Array.isArray( entry ) || !entry.length || entry.length > 2 ) {
+		if ( !Array.isArray( entry ) || !entry.length ) {
 			throw new Error("noUiSlider: 'start' option is incorrect.");
 		}
 
@@ -95,17 +95,27 @@
 
 	function testConnect ( parsed, entry ) {
 
-		if ( entry === 'lower' && parsed.handles === 1 ) {
-			parsed.connect = 1;
-		} else if ( entry === 'upper' && parsed.handles === 1 ) {
-			parsed.connect = 2;
-		} else if ( entry === true && parsed.handles === 2 ) {
-			parsed.connect = 3;
-		} else if ( entry === false ) {
-			parsed.connect = 0;
-		} else {
+		var connect = [false];
+		var i;
+
+		if ( entry === true || entry === false ) {
+
+			for ( i = 1; i < parsed.handles; i++ ) {
+				connect.push(entry);
+			}
+
+			connect.push(false);
+		}
+
+		else if ( !Array.isArray( entry ) || !entry.length || entry.length !== parsed.handles + 1 ) {
 			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
 		}
+
+		else {
+			connect = entry;
+		}
+
+		parsed.connect = connect;
 	}
 
 	function testOrientation ( parsed, entry ) {
@@ -150,8 +160,8 @@
 
 		parsed.limit = parsed.spectrum.getMargin(entry);
 
-		if ( !parsed.limit ) {
-			throw new Error("noUiSlider: 'limit' option is only supported on linear sliders.");
+		if ( !parsed.limit || parsed.handles < 2 ) {
+			throw new Error("noUiSlider: 'limit' option is only supported on linear sliders with 2 or more handles.");
 		}
 	}
 
@@ -166,7 +176,6 @@
 			break;
 		  case 'rtl':
 			parsed.dir = 1;
-			parsed.connect = [0,2,1,3][parsed.connect];
 			break;
 		  default:
 			throw new Error("noUiSlider: 'direction' option was not recognized.");
@@ -182,15 +191,20 @@
 
 		// Check if the string contains any keywords.
 		// None are required.
-		var tap = entry.indexOf('tap') >= 0,
-			drag = entry.indexOf('drag') >= 0,
-			fixed = entry.indexOf('fixed') >= 0,
-			snap = entry.indexOf('snap') >= 0,
-			hover = entry.indexOf('hover') >= 0;
+		var tap = entry.indexOf('tap') >= 0;
+		var drag = entry.indexOf('drag') >= 0;
+		var fixed = entry.indexOf('fixed') >= 0;
+		var snap = entry.indexOf('snap') >= 0;
+		var hover = entry.indexOf('hover') >= 0;
 
-		// Fix #472
-		if ( drag && !parsed.connect ) {
-			throw new Error("noUiSlider: 'drag' behaviour must be used with 'connect': true.");
+		if ( fixed ) {
+
+			if ( parsed.handles !== 2 ) {
+				throw new Error("noUiSlider: 'fixed' behaviour must be used with 2 handles");
+			}
+
+			// Use margin to enforce fixed state
+			testMargin(parsed, parsed.start[1] - parsed.start[0]);
 		}
 
 		parsed.events = {
@@ -204,19 +218,20 @@
 
 	function testTooltips ( parsed, entry ) {
 
-		var i;
-
 		if ( entry === false ) {
 			return;
-		} else if ( entry === true ) {
+		}
+
+		else if ( entry === true ) {
 
 			parsed.tooltips = [];
 
-			for ( i = 0; i < parsed.handles; i++ ) {
+			for ( var i = 0; i < parsed.handles; i++ ) {
 				parsed.tooltips.push(true);
 			}
+		}
 
-		} else {
+		else {
 
 			parsed.tooltips = asArray(entry);
 
@@ -272,6 +287,14 @@
 		}
 	}
 
+	function testUseRaf ( parsed, entry ) {
+		if ( entry === true || entry === false ) {
+			parsed.useRequestAnimationFrame = entry;
+		} else {
+			throw new Error("noUiSlider: 'useRequestAnimationFrame' option should be true (default) or false.");
+		}
+	}
+
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
 
@@ -304,7 +327,8 @@
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
 			'cssPrefix': { r: false, t: testCssPrefix },
-			'cssClasses': { r: false, t: testCssClasses }
+			'cssClasses': { r: false, t: testCssClasses },
+			'useRequestAnimationFrame': { r: false, t: testUseRaf }
 		};
 
 		var defaults = {
@@ -318,8 +342,6 @@
 				base: 'base',
 				origin: 'origin',
 				handle: 'handle',
-				handleLower: 'handle-lower',
-				handleUpper: 'handle-upper',
 				horizontal: 'horizontal',
 				vertical: 'vertical',
 				background: 'background',
@@ -330,7 +352,6 @@
 				drag: 'state-drag',
 				tap: 'state-tap',
 				active: 'active',
-				stacking: 'stacking',
 				tooltip: 'tooltip',
 				pips: 'pips',
 				pipsHorizontal: 'pips-horizontal',
@@ -347,7 +368,8 @@
 				valueNormal: 'value-normal',
 				valueLarge: 'value-large',
 				valueSub: 'value-sub'
-			}
+			},
+			'useRequestAnimationFrame': true
 		};
 
 		// Run all options through a testing mechanism to ensure correct
@@ -371,8 +393,11 @@
 		// Forward pips options
 		parsed.pips = options.pips;
 
+		var styles = [['left', 'top'], ['right', 'bottom']];
+
 		// Pre-define the styles.
-		parsed.style = parsed.ort ? 'top' : 'left';
+		parsed.style = styles[parsed.dir][parsed.ort];
+		parsed.styleOposite = styles[parsed.dir?0:1][parsed.ort];
 
 		return parsed;
 	}

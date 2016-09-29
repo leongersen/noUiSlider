@@ -1,151 +1,58 @@
 
-	// Delimit proposed values for handle positions.
-	function getPositions ( a, b, delimit ) {
-
-		// Add movement to current position.
-		var c = a + b[0], d = a + b[1];
-
-		// Only alter the other position on drag,
-		// not on standard sliding.
-		if ( delimit ) {
-			if ( c < 0 ) {
-				d += Math.abs(c);
-			}
-			if ( d > 100 ) {
-				c -= ( d - 100 );
-			}
-
-			// Limit values to 0 and 100.
-			return [limit(c), limit(d)];
-		}
-
-		return [c,d];
-	}
-
-	// Provide a clean event with standardized offset values.
-	function fixEvent ( e, pageOffset ) {
-
-		// Prevent scrolling and panning on touch events, while
-		// attempting to slide. The tap event also depends on this.
-		e.preventDefault();
-
-		// Filter the event to register the type, which can be
-		// touch, mouse or pointer. Offset changes need to be
-		// made on an event specific basis.
-		var touch = e.type.indexOf('touch') === 0,
-			mouse = e.type.indexOf('mouse') === 0,
-			pointer = e.type.indexOf('pointer') === 0,
-			x,y, event = e;
-
-		// IE10 implemented pointer events with a prefix;
-		if ( e.type.indexOf('MSPointer') === 0 ) {
-			pointer = true;
-		}
-
-		if ( touch ) {
-			// noUiSlider supports one movement at a time,
-			// so we can select the first 'changedTouch'.
-
-			// Fix bug when user touches with two or more fingers on mobile devices.
-			// It's usefull when you have two or more sliders on one page,
-			// that can be touched simultaneously.
-			if (event.touches.length > 1) {
-				return false;
-			}
-
-			x = e.changedTouches[0].pageX;
-			y = e.changedTouches[0].pageY;
-		}
-
-		pageOffset = pageOffset || getPageOffset();
-
-		if ( mouse || pointer ) {
-			x = e.clientX + pageOffset.x;
-			y = e.clientY + pageOffset.y;
-		}
-
-		event.pageOffset = pageOffset;
-		event.points = [x, y];
-		event.cursor = mouse || pointer; // Fix #435
-
-		return event;
-	}
-
-	// Append a handle to the base.
-	function addHandle ( direction, index ) {
-
-		var origin = document.createElement('div'),
-			handle = document.createElement('div'),
-			classModifier = [options.cssClasses.handleLower, options.cssClasses.handleUpper];
-
-		if ( direction ) {
-			classModifier.reverse();
-		}
-
-		addClass(handle, options.cssClasses.handle);
-		addClass(handle, classModifier[index]);
-
-		addClass(origin, options.cssClasses.origin);
-		origin.appendChild(handle);
-
+	// Append a origin to the base
+	function addOrigin ( base, handleNumber ) {
+		var origin = addNodeTo(base, options.cssClasses.origin);
+		var handle = addNodeTo(origin, options.cssClasses.handle);
+		handle.setAttribute('data-handle', handleNumber);
 		return origin;
 	}
 
-	// Add the proper connection classes.
-	function addConnection ( connect, target, handles ) {
+	// Insert nodes for connect elements
+	function addConnect ( base, add ) {
 
-		// Apply the required connection classes to the elements
-		// that need them. Some classes are made up for several
-		// segments listed in the class list, to allow easy
-		// renaming and provide a minor compression benefit.
-		switch ( connect ) {
-			case 1:	addClass(target, options.cssClasses.connect);
-					addClass(handles[0], options.cssClasses.background);
-					break;
-			case 3: addClass(handles[1], options.cssClasses.background);
-					/* falls through */
-			case 2: addClass(handles[0], options.cssClasses.connect);
-					/* falls through */
-			case 0: addClass(target, options.cssClasses.background);
-					break;
+		if ( !add ) {
+			return false;
 		}
+
+		return addNodeTo(base, options.cssClasses.connect);
 	}
 
 	// Add handles to the slider base.
-	function addHandles ( nrHandles, direction, base ) {
+	function addElements ( connectOptions, base ) {
 
-		var index, handles = [];
+		scope_Handles = [];
+		scope_Connects = [];
 
-		// Append handles.
-		for ( index = 0; index < nrHandles; index += 1 ) {
+		scope_Connects.push(addConnect(base, connectOptions[0]));
 
+		// [::::O====O====O====]
+		// connectOptions = [0, 1, 1, 1]
+
+		for ( var i = 0; i < options.handles; i++ ) {
 			// Keep a list of all added handles.
-			handles.push( base.appendChild(addHandle( direction, index )) );
+			scope_Handles.push(addOrigin(base, i));
+			scope_HandleNumbers[i] = i;
+			scope_Connects.push(addConnect(base, connectOptions[i + 1]));
 		}
-
-		return handles;
 	}
 
 	// Initialize a single slider.
-	function addSlider ( direction, orientation, target ) {
+	function addSlider ( target ) {
 
 		// Apply classes and data to the target.
 		addClass(target, options.cssClasses.target);
 
-		if ( direction === 0 ) {
+		if ( options.dir === 0 ) {
 			addClass(target, options.cssClasses.ltr);
 		} else {
 			addClass(target, options.cssClasses.rtl);
 		}
 
-		if ( orientation === 0 ) {
+		if ( options.ort === 0 ) {
 			addClass(target, options.cssClasses.horizontal);
 		} else {
 			addClass(target, options.cssClasses.vertical);
 		}
 
-		var div = document.createElement('div');
-		addClass(div, options.cssClasses.base);
-		target.appendChild(div);
-		return div;
+		scope_Base = addNodeTo(target, options.cssClasses.base);
 	}

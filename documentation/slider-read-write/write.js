@@ -12,3 +12,7 @@ slider.noUiSlider.set([null, 14]);
 
 // Set both slider handles
 slider.noUiSlider.set([13.2, 15.7]);
+
+// Return the the 'start' values
+// Does NOT reset any other slider properties
+slider.noUiSlider.reset();
