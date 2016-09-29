@@ -16,7 +16,7 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
-### 9.0.0
+### 9.0.0 (*2016-09-26*)
 - Added: Support for **more than 2 handles**;
 - Added: `format` option can be updated (#641);
 - Added: `reset` method the return slider to start values (#673);
