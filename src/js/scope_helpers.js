@@ -72,6 +72,15 @@
 		}
 
 		if ( touch ) {
+
+			// Fix bug when user touches with two or more fingers on mobile devices.
+			// It's useful when you have two or more sliders on one page,
+			// that can be touched simultaneously.
+			// #649, #663, #668
+			if ( event.touches.length > 1 ) {
+				return false;
+			}
+
 			// noUiSlider supports one movement at a time,
 			// so we can select the first 'changedTouch'.
 			x = e.changedTouches[0].pageX;

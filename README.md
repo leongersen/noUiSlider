@@ -4,7 +4,11 @@ noUiSlider is lightweight JavaScript range slider, originally developed to be a 
 
 It features cross-browser support, a wide range of options and support for a bunch of touch devices. It has been tested on Android phones, iPhone & iPad, Windows phone and touch-screen laptops and tablets and desktops.
 
-All modern browsers and [IE9+](#browser-support) are supported. noUiSlider has no dependencies, and is licensed [WTFPL](http://www.wtfpl.net/about/).
+All modern browsers and [IE9+](#browser-support) are supported. noUiSlider has no dependencies!
+
+License
+-------
+noUiSlider is licensed [WTFPL](http://www.wtfpl.net/about/). You can use it **for free** and **without any attribution**, in any personal or commercial project. You may also fork the project and re-release it under another license you prefer.
 
 Documentation
 -------
@@ -32,6 +36,7 @@ Changelog
 - Fixed: `margin` and `limit` calculated improperly after calling `updateOptions` with a new `range` option;
 - Fixed: `range` option was required in update, even when not updating it (#682);
 - Fixed: Cursor styling is now consistent for disable handles and sliders (#644);
+- Fixed: Sliders now ignore touches when the screen is touched multiple times (#649, #663, #668);
 
 Devices
 -------
