@@ -171,7 +171,7 @@
 <section>
 
 	<div class="view">
-		<p>Whenever a slider is changed to a new value, this event is fired. This function will trigger every time a slider <em>stops</em> changing, <strong>including</strong> after calls to the <code>.val()</code> method. You can consider this 'end of slide'.</p>
+		<p>Whenever a slider is changed to a new value, this event is fired. This function will trigger every time a slider <em>stops</em> changing, <strong>including</strong> after calls to the <code>.set()</code> method. You can consider this 'end of slide'.</p>
 	</div>
 
 </section>

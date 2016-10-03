@@ -140,9 +140,7 @@
 		<div class="example">
 			<div id="nonlinear"></div>
 			<span class="example-val" id="lower-value"></span>
-			<span id="lower-offset"></span>
 			<span class="example-val" id="upper-value"></span>
-			<span id="upper-offset"></span>
 			<?php run('nonlinear-slider'); ?>
 			<?php run('nonlinear-link'); ?>
 		</div>
@@ -489,7 +487,7 @@
 			<?php code('slider-soft-setup'); ?>
 		</div>
 
-		<div class="viewer-header">Resetting using the <code>set</code> event</div>
+		<div class="viewer-header">Resetting using the <code>change</code> event</div>
 
 		<div class="viewer-content">
 			<?php code('slider-soft'); ?>
