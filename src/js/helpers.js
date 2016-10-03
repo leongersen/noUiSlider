@@ -45,7 +45,7 @@
 	// Sets a class and removes it after [duration] ms.
 	function addClassFor ( element, className, duration ) {
 		if (duration > 0) {
-		addClass(element, className);
+			addClass(element, className);
 			setTimeout(function(){
 				removeClass(element, className);
 			}, duration);
