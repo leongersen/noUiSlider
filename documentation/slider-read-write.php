@@ -37,6 +37,8 @@
 		<p>If you have configured the slider to use one handle, you can change the current value by passing a number to the <code>.set()</code> method. If you have two handles, pass an array. One-handled sliders will also accept arrays.</p>
 
 		<p>Within an array, you can set one position to <code>null</code> if you want to leave a handle unchanged.</p>
+
+		<p>To return to the initial slider values, you can use the <code>.reset()</code> method. This will <strong>only</strong> reset the slider values.</p>
 	</div>
 
 	<div class="side">

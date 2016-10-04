@@ -2,7 +2,7 @@ var slider = document.getElementById('slider');
 
 noUiSlider.create(slider, /* { options } */);
 
-// Set one .noUiSlider.setue
+// Set one handled slider
 slider.noUiSlider.set(10);
 slider.noUiSlider.set([150]);
 
@@ -13,6 +13,6 @@ slider.noUiSlider.set([null, 14]);
 // Set both slider handles
 slider.noUiSlider.set([13.2, 15.7]);
 
-// Return the the 'start' values
+// Return to the 'start' values
 // Does NOT reset any other slider properties
 slider.noUiSlider.reset();
