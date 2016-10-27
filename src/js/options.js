@@ -180,6 +180,14 @@
 		if ( !parsed.padding ) {
 			throw new Error("noUiSlider: 'padding' option is only supported on linear sliders.");
 		}
+
+		if ( parsed.padding < 0 ) {
+			throw new Error("noUiSlider: 'padding' option must be a positive number.");
+		}
+
+		if ( parsed.padding >= 50 ) {
+			throw new Error("noUiSlider: 'padding' option must be less than half the range.");
+		}
 	}
 
 	function testDirection ( parsed, entry ) {
