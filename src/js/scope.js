@@ -33,11 +33,11 @@
 		// edges of the slider. Padding must be > 0.
 		if ( options.padding ) {
 
-			if ( lookBackward && handleNumber === 0 ) {
+			if ( handleNumber === 0 ) {
 				to = Math.max(to, options.padding);
 			}
 
-			if ( lookForward && handleNumber === scope_Handles.length - 1 ) {
+			if ( handleNumber === scope_Handles.length - 1 ) {
 				to = Math.min(to, 100 - options.padding);
 			}
 		}
