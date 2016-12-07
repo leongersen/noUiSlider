@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 
 	var releaseFiles = [
 		{ src: ['**/*'], dest: '', cwd: 'distribute/', expand: true },
-		{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true }
+		{ src: ['**/*.less'], dest: '', cwd: 'src/', expand: true }
 	];
 
 	grunt.initConfig({
@@ -40,11 +40,11 @@ module.exports = function(grunt) {
 				src: getFiles(),
 				dest: 'distribute/nouislider.js',
 				nonull: true
-			},
-			css: {
-				src: ['src/nouislider.css', 'src/nouislider.pips.css', 'src/nouislider.tooltips.css'],
-				dest: 'distribute/nouislider.css',
-				nonull: true
+			}
+		},
+		less: {
+			all: {
+				files: {'distribute/nouislider.css': 'src/nouislider.less'}
 			}
 		},
 		cssmin: {
@@ -53,7 +53,7 @@ module.exports = function(grunt) {
 					banner: VERSION_TEMPLATE
 				},
 				files: {
-					'distribute/nouislider.min.css': ['src/nouislider.css', 'src/nouislider.pips.css', 'src/nouislider.tooltips.css']
+					'distribute/nouislider.min.css': ['distribute/nouislider.css']
 				}
 			}
 		},
@@ -109,6 +109,9 @@ module.exports = function(grunt) {
 	// https://github.com/gruntjs/grunt-contrib-jshint
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 
+	// https://github.com/gruntjs/grunt-contrib-less
+	grunt.loadNpmTasks('grunt-contrib-less');
+
 	// https://github.com/gruntjs/grunt-contrib-cssmin
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 
@@ -118,8 +121,8 @@ module.exports = function(grunt) {
 	// https://github.com/gruntjs/grunt-contrib-qunit
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 
-	grunt.registerTask('default', ['concat', 'jshint']);
-	grunt.registerTask('test', ['concat', 'jshint', 'qunit']);
-	grunt.registerTask('create', ['concat', 'uglify', 'cssmin', 'qunit']);
+	grunt.registerTask('default', ['concat', 'less', 'jshint']);
+	grunt.registerTask('test', ['concat', 'less', 'jshint', 'qunit']);
+	grunt.registerTask('create', ['concat', 'less', 'uglify', 'cssmin', 'qunit']);
 	grunt.registerTask('release', ['jshint', 'compress', 'qunit']);
 };
