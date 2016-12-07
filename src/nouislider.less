@@ -3,8 +3,8 @@
  * These styles are required for noUiSlider to function.
  * You don't need to change these rules to apply your design.
  */
-.noUi-target,
-.noUi-target * {
+.@{noUi-css-prefix}-target,
+.@{noUi-css-prefix}-target * {
 -webkit-touch-callout: none;
 -webkit-user-select: none;
 -ms-touch-action: none;
@@ -15,65 +15,65 @@
 -moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
-.noUi-target {
+.@{noUi-css-prefix}-target {
 	position: relative;
 	direction: ltr;
 }
-.noUi-base {
+.@{noUi-css-prefix}-base {
 	width: 100%;
 	height: 100%;
 	position: relative;
 	z-index: 1; /* Fix 401 */
 }
-.noUi-connect {
+.@{noUi-css-prefix}-connect {
 	position: absolute;
 	right: 0;
 	top: 0;
 	left: 0;
 	bottom: 0;
 }
-.noUi-origin {
+.@{noUi-css-prefix}-origin {
 	position: absolute;
 	height: 0;
 	width: 0;
 }
-.noUi-handle {
+.@{noUi-css-prefix}-handle {
 	position: relative;
 	z-index: 1;
 }
-.noUi-state-tap .noUi-connect,
-.noUi-state-tap .noUi-origin {
+.@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-connect,
+.@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-origin {
 -webkit-transition: top 0.3s, right 0.3s, bottom 0.3s, left 0.3s;
 	transition: top 0.3s, right 0.3s, bottom 0.3s, left 0.3s;
 }
-.noUi-state-drag * {
+.@{noUi-css-prefix}-state-drag * {
 	cursor: inherit !important;
 }
 
 /* Painting and performance;
  * Browsers can paint handles in their own layer.
  */
-.noUi-base,
-.noUi-handle {
+.@{noUi-css-prefix}-base,
+.@{noUi-css-prefix}-handle {
 	-webkit-transform: translate3d(0,0,0);
 	transform: translate3d(0,0,0);
 }
 
 /* Slider size and handle placement;
  */
-.noUi-horizontal {
+.@{noUi-css-prefix}-horizontal {
 	height: 18px;
 }
-.noUi-horizontal .noUi-handle {
+.@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-handle {
 	width: 34px;
 	height: 28px;
 	left: -17px;
 	top: -6px;
 }
-.noUi-vertical {
+.@{noUi-css-prefix}-vertical {
 	width: 18px;
 }
-.noUi-vertical .noUi-handle {
+.@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-handle {
 	width: 28px;
 	height: 34px;
 	left: -6px;
@@ -82,13 +82,13 @@
 
 /* Styling;
  */
-.noUi-target {
+.@{noUi-css-prefix}-target {
 	background: #FAFAFA;
 	border-radius: 4px;
 	border: 1px solid #D3D3D3;
 	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
 }
-.noUi-connect {
+.@{noUi-css-prefix}-connect {
 	background: #3FB8AF;
 	box-shadow: inset 0 0 3px rgba(51,51,51,0.45);
 -webkit-transition: background 450ms;
@@ -97,13 +97,13 @@
 
 /* Handles and cursors;
  */
-.noUi-draggable {
+.@{noUi-css-prefix}-draggable {
 	cursor: w-resize;
 }
-.noUi-vertical .noUi-draggable {
+.@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-draggable {
 	cursor: n-resize;
 }
-.noUi-handle {
+.@{noUi-css-prefix}-handle {
 	border: 1px solid #D9D9D9;
 	border-radius: 3px;
 	background: #FFF;
@@ -112,7 +112,7 @@
 				inset 0 1px 7px #EBEBEB,
 				0 3px 6px -3px #BBB;
 }
-.noUi-active {
+.@{noUi-css-prefix}-active {
 	box-shadow: inset 0 0 1px #FFF,
 				inset 0 1px 7px #DDD,
 				0 3px 6px -3px #BBB;
@@ -120,8 +120,8 @@
 
 /* Handle stripes;
  */
-.noUi-handle:before,
-.noUi-handle:after {
+.@{noUi-css-prefix}-handle:before,
+.@{noUi-css-prefix}-handle:after {
 	content: "";
 	display: block;
 	position: absolute;
@@ -131,28 +131,28 @@
 	left: 14px;
 	top: 6px;
 }
-.noUi-handle:after {
+.@{noUi-css-prefix}-handle:after {
 	left: 17px;
 }
-.noUi-vertical .noUi-handle:before,
-.noUi-vertical .noUi-handle:after {
+.@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-handle:before,
+.@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-handle:after {
 	width: 14px;
 	height: 1px;
 	left: 6px;
 	top: 14px;
 }
-.noUi-vertical .noUi-handle:after {
+.@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-handle:after {
 	top: 17px;
 }
 
 /* Disabled state;
  */
 
-[disabled] .noUi-connect {
+[disabled] .@{noUi-css-prefix}-connect {
 	background: #B8B8B8;
 }
-[disabled].noUi-target,
-[disabled].noUi-handle,
-[disabled] .noUi-handle {
+[disabled].@{noUi-css-prefix}-target,
+[disabled].@{noUi-css-prefix}-handle,
+[disabled] .@{noUi-css-prefix}-handle {
 	cursor: not-allowed;
 }
