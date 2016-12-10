@@ -176,6 +176,31 @@
 		}
 	}
 
+	function testPadding ( parsed, entry ) {
+
+		if ( !isNumeric(entry) ){
+			throw new Error("noUiSlider: 'padding' option must be numeric.");
+		}
+
+		if ( entry === 0 ) {
+			return;
+		}
+
+		parsed.padding = parsed.spectrum.getMargin(entry);
+
+		if ( !parsed.padding ) {
+			throw new Error("noUiSlider: 'padding' option is only supported on linear sliders.");
+		}
+
+		if ( parsed.padding < 0 ) {
+			throw new Error("noUiSlider: 'padding' option must be a positive number.");
+		}
+
+		if ( parsed.padding >= 50 ) {
+			throw new Error("noUiSlider: 'padding' option must be less than half the range.");
+		}
+	}
+
 	function testDirection ( parsed, entry ) {
 
 		// Set direction as a numerical value for easy parsing.
@@ -316,6 +341,7 @@
 		var parsed = {
 			margin: 0,
 			limit: 0,
+			padding: 0,
 			animate: true,
 			animationDuration: 300,
 			format: defaultFormatter
@@ -334,6 +360,7 @@
 			'orientation': { r: false, t: testOrientation },
 			'margin': { r: false, t: testMargin },
 			'limit': { r: false, t: testLimit },
+			'padding': { r: false, t: testPadding },
 			'behaviour': { r: true, t: testBehaviour },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
