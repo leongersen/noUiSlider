@@ -16,6 +16,17 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
+
+### 9.1.0 (*2016-12-10*)
+- Fixed: Slider not properly handling multitouch (#700, #704);
+- Fixed: Removed a querySelector for the currently active handle (#720);
+- Fixed: Removed iOS/webkit flashes on tap;
+- Fixed: Incorrect error when using margin/limit with a step smaller than 0 (#736);
+- Fixed: Drag option using incorrect cursor arrows (#681);
+- Added: New `padding` option (#711);
+- Added: Re-introduced `.noUi-handle-lower` and `.noUi-handle-upper` classes removed in 9.0.0;
+- Added: Compatibility for legacy `connect` options removed in 9.0.0;
+
 ### 9.0.0 (*2016-09-26*)
 - Added: Support for **more than 2 handles**;
 - Added: `format` option can be updated (#641);

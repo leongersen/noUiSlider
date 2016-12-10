@@ -11,7 +11,7 @@
 
 		<p>noUiSlider is open source, and you can use it <strong>for free</strong> in any personal or commercial product. No attribution required. Both the uncompressed and compressed version of noUiSlider are available in a <code>.zip</code> release, which is hosted by Github and available over <code>https</code>.</p>
 
-		<a class="button" href="https://github.com/leongersen/noUiSlider/releases/download/9.0.0/noUiSlider.9.0.0.zip" data-category="convert" data-action="download">Download noUiSlider from Github</a>
+		<a class="button" href="https://github.com/leongersen/noUiSlider/releases/download/9.1.0/noUiSlider.9.1.0.zip" data-category="convert" data-action="download">Download noUiSlider from Github</a>
 
 		<div class="share">
 			<iframe src="https://ghbtns.com/github-btn.html?user=leongersen&repo=noUiSlider&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
