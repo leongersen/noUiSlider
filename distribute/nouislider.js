@@ -1,4 +1,4 @@
-/*! nouislider - 9.0.0 - 2016-09-29 21:44:02 */
+/*! nouislider - 9.1.0 - 2016-12-10 16:00:32 */
 
 (function (factory) {
 
@@ -384,8 +384,8 @@
 
 		var step = this.xNumSteps[0];
 
-		if ( step && (value % step) ) {
-			throw new Error("noUiSlider: 'limit' and 'margin' must be divisible by step.");
+		if ( step && ((value / step) % 1) !== 0 ) {
+			throw new Error("noUiSlider: 'limit', 'margin' and 'padding' must be divisible by step.");
 		}
 
 		return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;
@@ -531,6 +531,16 @@
 		var connect = [false];
 		var i;
 
+		// Map legacy options
+		if ( entry === 'lower' ) {
+			entry = [true, false];
+		}
+
+		else if ( entry === 'upper' ) {
+			entry = [false, true];
+		}
+
+		// Handle boolean options
 		if ( entry === true || entry === false ) {
 
 			for ( i = 1; i < parsed.handles; i++ ) {
@@ -540,6 +550,7 @@
 			connect.push(false);
 		}
 
+		// Reject invalid input
 		else if ( !Array.isArray( entry ) || !entry.length || entry.length !== parsed.handles + 1 ) {
 			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
 		}
@@ -595,6 +606,31 @@
 
 		if ( !parsed.limit || parsed.handles < 2 ) {
 			throw new Error("noUiSlider: 'limit' option is only supported on linear sliders with 2 or more handles.");
+		}
+	}
+
+	function testPadding ( parsed, entry ) {
+
+		if ( !isNumeric(entry) ){
+			throw new Error("noUiSlider: 'padding' option must be numeric.");
+		}
+
+		if ( entry === 0 ) {
+			return;
+		}
+
+		parsed.padding = parsed.spectrum.getMargin(entry);
+
+		if ( !parsed.padding ) {
+			throw new Error("noUiSlider: 'padding' option is only supported on linear sliders.");
+		}
+
+		if ( parsed.padding < 0 ) {
+			throw new Error("noUiSlider: 'padding' option must be a positive number.");
+		}
+
+		if ( parsed.padding >= 50 ) {
+			throw new Error("noUiSlider: 'padding' option must be less than half the range.");
 		}
 	}
 
@@ -738,13 +774,14 @@
 		var parsed = {
 			margin: 0,
 			limit: 0,
+			padding: 0,
 			animate: true,
 			animationDuration: 300,
 			format: defaultFormatter
-		}, tests;
+		};
 
 		// Tests are executed in the order they are presented here.
-		tests = {
+		var tests = {
 			'step': { r: false, t: testStep },
 			'start': { r: true, t: testStart },
 			'connect': { r: true, t: testConnect },
@@ -756,6 +793,7 @@
 			'orientation': { r: false, t: testOrientation },
 			'margin': { r: false, t: testMargin },
 			'limit': { r: false, t: testLimit },
+			'padding': { r: false, t: testPadding },
 			'behaviour': { r: true, t: testBehaviour },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
@@ -775,6 +813,8 @@
 				base: 'base',
 				origin: 'origin',
 				handle: 'handle',
+				handleLower: 'handle-lower',
+				handleUpper: 'handle-upper',
 				horizontal: 'horizontal',
 				vertical: 'vertical',
 				background: 'background',
@@ -846,6 +886,7 @@ function closure ( target, options, originalOptions ){
 	var scope_Base;
 	var scope_Handles;
 	var scope_HandleNumbers = [];
+	var scope_ActiveHandle = false;
 	var scope_Connects;
 	var scope_Spectrum = options.spectrum;
 	var scope_Values = [];
@@ -855,9 +896,20 @@ function closure ( target, options, originalOptions ){
 
 	// Append a origin to the base
 	function addOrigin ( base, handleNumber ) {
+
 		var origin = addNodeTo(base, options.cssClasses.origin);
 		var handle = addNodeTo(origin, options.cssClasses.handle);
+
 		handle.setAttribute('data-handle', handleNumber);
+
+		if ( handleNumber === 0 ) {
+			addClass(handle, options.cssClasses.handleLower);
+		}
+
+		else if ( handleNumber === options.handles - 1 ) {
+			addClass(handle, options.cssClasses.handleUpper);
+		}
+
 		return origin;
 	}
 
@@ -1207,6 +1259,11 @@ function closure ( target, options, originalOptions ){
 
 			e = fixEvent(e, data.pageOffset);
 
+			// Handle reject of multitouch
+			if ( !e ) {
+				return false;
+			}
+
 			// Ignore right or middle clicks on start #454
 			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
 				return false;
@@ -1244,10 +1301,11 @@ function closure ( target, options, originalOptions ){
 		// Filter the event to register the type, which can be
 		// touch, mouse or pointer. Offset changes need to be
 		// made on an event specific basis.
-		var touch = e.type.indexOf('touch') === 0,
-			mouse = e.type.indexOf('mouse') === 0,
-			pointer = e.type.indexOf('pointer') === 0,
-			x,y, event = e;
+		var touch = e.type.indexOf('touch') === 0;
+		var mouse = e.type.indexOf('mouse') === 0;
+		var pointer = e.type.indexOf('pointer') === 0;
+		var x;
+		var y;
 
 		// IE10 implemented pointer events with a prefix;
 		if ( e.type.indexOf('MSPointer') === 0 ) {
@@ -1260,7 +1318,7 @@ function closure ( target, options, originalOptions ){
 			// It's useful when you have two or more sliders on one page,
 			// that can be touched simultaneously.
 			// #649, #663, #668
-			if ( event.touches.length > 1 ) {
+			if ( e.touches.length > 1 ) {
 				return false;
 			}
 
@@ -1277,19 +1335,21 @@ function closure ( target, options, originalOptions ){
 			y = e.clientY + pageOffset.y;
 		}
 
-		event.pageOffset = pageOffset;
-		event.points = [x, y];
-		event.cursor = mouse || pointer; // Fix #435
+		e.pageOffset = pageOffset;
+		e.points = [x, y];
+		e.cursor = mouse || pointer; // Fix #435
 
-		return event;
+		return e;
 	}
 
+	// Translate a coordinate in the document to a percentage on the slider
 	function calcPointToPercentage ( calcPoint ) {
 		var location = calcPoint - offset(scope_Base, options.ort);
 		var proposal = ( location * 100 ) / baseSize();
 		return options.dir ? 100 - proposal : proposal;
 	}
 
+	// Find handle closest to a certain percentage on the slider
 	function getClosestHandle ( proposal ) {
 
 		var closest = 100;
@@ -1431,10 +1491,9 @@ function closure ( target, options, originalOptions ){
 	function eventEnd ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = scope_Base.querySelector( '.' + options.cssClasses.active );
-
-		if ( active !== null ) {
-			removeClass(active, options.cssClasses.active);
+		if ( scope_ActiveHandle ) {
+			removeClass(scope_ActiveHandle, options.cssClasses.active);
+			scope_ActiveHandle = false;
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -1463,7 +1522,6 @@ function closure ( target, options, originalOptions ){
 	// Bind move events on document.
 	function eventStart ( event, data ) {
 
-		// Mark the handle as 'active' so it can be styled.
 		if ( data.handleNumbers.length === 1 ) {
 
 			var handle = scope_Handles[data.handleNumbers[0]];
@@ -1473,7 +1531,9 @@ function closure ( target, options, originalOptions ){
 				return false;
 			}
 
-			addClass(handle.children[0], options.cssClasses.active);
+			// Mark the handle as 'active' so it can be styled.
+			scope_ActiveHandle = handle.children[0];
+			addClass(scope_ActiveHandle, options.cssClasses.active);
 		}
 
 		// Fix #551, where a handle gets selected instead of dragged.
@@ -1671,6 +1731,19 @@ function closure ( target, options, originalOptions ){
 			}
 		}
 
+		// The padding option keeps the handles a certain distance from the
+		// edges of the slider. Padding must be > 0.
+		if ( options.padding ) {
+
+			if ( handleNumber === 0 ) {
+				to = Math.max(to, options.padding);
+			}
+
+			if ( handleNumber === scope_Handles.length - 1 ) {
+				to = Math.min(to, 100 - options.padding);
+			}
+		}
+
 		to = scope_Spectrum.getStep(to);
 
 		// Limit percentage to the 0 - 100 range
@@ -1822,6 +1895,7 @@ function closure ( target, options, originalOptions ){
 		});
 	}
 
+	// Reset slider to initial values
 	function valueReset ( fireSetEvent ) {
 		valueSet(options.start, fireSetEvent);
 	}
@@ -1874,6 +1948,7 @@ function closure ( target, options, originalOptions ){
 				}
 			}
 
+
 			// If the value is beyond the starting point
 			if ( value > nearbySteps.thisStep.startValue ) {
 				decrement = nearbySteps.thisStep.step;
@@ -1887,6 +1962,7 @@ function closure ( target, options, originalOptions ){
 			else {
 				decrement = value - nearbySteps.stepBefore.highestStep;
 			}
+
 
 			// Now, if at the slider edges, there is not in/decrement
 			if ( location === 100 ) {
@@ -1929,8 +2005,8 @@ function closure ( target, options, originalOptions ){
 	// Undo attachment of event
 	function removeEvent ( namespacedEvent ) {
 
-		var event = namespacedEvent && namespacedEvent.split('.')[0],
-			namespace = event && namespacedEvent.substring(event.length);
+		var event = namespacedEvent && namespacedEvent.split('.')[0];
+		var namespace = event && namespacedEvent.substring(event.length);
 
 		Object.keys(scope_Events).forEach(function( bind ){
 
@@ -1943,7 +2019,7 @@ function closure ( target, options, originalOptions ){
 		});
 	}
 
-	// Updateable: margin, limit, step, range, animate, snap
+	// Updateable: margin, limit, padding, step, range, animate, snap
 	function updateOptions ( optionsToUpdate, fireSetEvent ) {
 
 		// Spectrum is created using the range, snap, direction and step options.
@@ -1951,7 +2027,7 @@ function closure ( target, options, originalOptions ){
 		// If 'snap' and 'step' are not passed, they should remain unchanged.
 		var v = valueGet();
 
-		var updateAble = ['margin', 'limit', 'range', 'animate', 'snap', 'step', 'format'];
+		var updateAble = ['margin', 'limit', 'padding', 'range', 'animate', 'snap', 'step', 'format'];
 
 		// Only change options that we're actually passed to update.
 		updateAble.forEach(function(name){
@@ -1974,9 +2050,10 @@ function closure ( target, options, originalOptions ){
 		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
-		// Limit and margin depend on the spectrum but are stored outside of it. (#677)
+		// Limit, margin and padding depend on the spectrum but are stored outside of it. (#677)
 		options.margin = newOptions.margin;
 		options.limit = newOptions.limit;
+		options.padding = newOptions.padding;
 
 		// Invalidate the current positioning so valueSet forces an update.
 		scope_Locations = [];
@@ -2001,7 +2078,7 @@ function closure ( target, options, originalOptions ){
 		get: valueGet,
 		set: valueSet,
 		reset: valueReset,
-		 // Exposed for unit testing, don't use this in your application.
+		// Exposed for unit testing, don't use this in your application.
 		__moveHandles: function(a, b, c) { moveHandles(a, b, scope_Locations, c); },
 		options: originalOptions, // Issue #600, #678
 		updateOptions: updateOptions,
