@@ -229,7 +229,7 @@
 
 		var step = this.xNumSteps[0];
 
-		if ( step && (value % step) ) {
+		if ( step && ((value / step) % 1) !== 0 ) {
 			throw new Error("noUiSlider: 'limit' and 'margin' must be divisible by step.");
 		}
 
