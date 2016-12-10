@@ -1,8 +1,10 @@
 
 	// Append a origin to the base
 	function addOrigin ( base, handleNumber ) {
+
 		var origin = addNodeTo(base, options.cssClasses.origin);
 		var handle = addNodeTo(origin, options.cssClasses.handle);
+
 		handle.setAttribute('data-handle', handleNumber);
 
 		if ( handleNumber === 0 ) {

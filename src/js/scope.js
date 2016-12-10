@@ -180,6 +180,7 @@
 		});
 	}
 
+	// Reset slider to initial values
 	function valueReset ( fireSetEvent ) {
 		valueSet(options.start, fireSetEvent);
 	}
@@ -232,6 +233,7 @@
 				}
 			}
 
+
 			// If the value is beyond the starting point
 			if ( value > nearbySteps.thisStep.startValue ) {
 				decrement = nearbySteps.thisStep.step;
@@ -245,6 +247,7 @@
 			else {
 				decrement = value - nearbySteps.stepBefore.highestStep;
 			}
+
 
 			// Now, if at the slider edges, there is not in/decrement
 			if ( location === 100 ) {
@@ -287,8 +290,8 @@
 	// Undo attachment of event
 	function removeEvent ( namespacedEvent ) {
 
-		var event = namespacedEvent && namespacedEvent.split('.')[0],
-			namespace = event && namespacedEvent.substring(event.length);
+		var event = namespacedEvent && namespacedEvent.split('.')[0];
+		var namespace = event && namespacedEvent.substring(event.length);
 
 		Object.keys(scope_Events).forEach(function( bind ){
 
@@ -359,7 +362,7 @@
 		get: valueGet,
 		set: valueSet,
 		reset: valueReset,
-		 // Exposed for unit testing, don't use this in your application.
+		// Exposed for unit testing, don't use this in your application.
 		__moveHandles: function(a, b, c) { moveHandles(a, b, scope_Locations, c); },
 		options: originalOptions, // Issue #600, #678
 		updateOptions: updateOptions,

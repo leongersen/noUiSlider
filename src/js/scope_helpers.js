@@ -107,12 +107,14 @@
 		return e;
 	}
 
+	// Translate a coordinate in the document to a percentage on the slider
 	function calcPointToPercentage ( calcPoint ) {
 		var location = calcPoint - offset(scope_Base, options.ort);
 		var proposal = ( location * 100 ) / baseSize();
 		return options.dir ? 100 - proposal : proposal;
 	}
 
+	// Find handle closest to a certain percentage on the slider
 	function getClosestHandle ( proposal ) {
 
 		var closest = 100;
