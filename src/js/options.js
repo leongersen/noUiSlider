@@ -98,6 +98,16 @@
 		var connect = [false];
 		var i;
 
+		// Map legacy options
+		if ( entry === 'lower' ) {
+			entry = [true, false];
+		}
+
+		else if ( entry === 'upper' ) {
+			entry = [false, true];
+		}
+
+		// Handle boolean options
 		if ( entry === true || entry === false ) {
 
 			for ( i = 1; i < parsed.handles; i++ ) {
@@ -107,6 +117,7 @@
 			connect.push(false);
 		}
 
+		// Reject invalid input
 		else if ( !Array.isArray( entry ) || !entry.length || entry.length !== parsed.handles + 1 ) {
 			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
 		}
