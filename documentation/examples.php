@@ -9,6 +9,7 @@
 		<li><a href="#section-html5">Working with HTML5 input types</a></li>
 		<li><a href="#section-non-linear">Using non linear ranges</a></li>
 		<li><a href="#section-lock">Locking two sliders together</a></li>
+		<li><a href="#section-colored-connect">Colored connect elements</a></li>
 		<li><a href="#section-keypress">Changing the slider value by keypress</a></li>
 		<li><a href="#section-skipping">Skipping values on a slider</a></li>
 		<li><a href="#section-huge-numbers">Working with huge numbers</a></li>
@@ -213,6 +214,28 @@
 		<div class="viewer-content">
 			<?php code('locked-link'); ?>
 		</div>
+	</div>
+</section>
+
+
+<?php sect('colored-connect'); ?>
+<h1>Colored Connect Elements</h1>
+
+<section>
+
+	<div class="view">
+
+		<p>noUiSlider's connect elements can be individually colored or otherwise styled.</p>
+
+		<div class="example">
+			<div class="slider" id="slider-color"></div>
+			<?php run('colored'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('colored'); ?>
+		<?php loadShowCSS('colored'); ?>
 	</div>
 </section>
 
