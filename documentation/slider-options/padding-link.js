@@ -3,8 +3,8 @@ var paddingMin = document.getElementById('slider-padding-value-min'),
 
 paddingSlider.noUiSlider.on('update', function ( values, handle ) {
 	if ( handle ) {
-		marginMax.innerHTML = values[handle];
+		paddingMax.innerHTML = values[handle];
 	} else {
-		marginMin.innerHTML = values[handle];
+		paddingMin.innerHTML = values[handle];
 	}
 });
