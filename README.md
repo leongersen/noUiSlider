@@ -58,6 +58,9 @@ Devices/browsers tested:
 - Moto E (Android 5.1, Chrome)
 - Lumia 930 (WP8.1, IE10 mobile)
 - Lumia 930 (WM10, Edge)
+- OnePlus 3 (Android 6)
+	+ Chrome
+	+ Firefox
 - Asus S400C (Windows 10, Touch + mouse)
 	+ Chrome
 	+ Firefox
