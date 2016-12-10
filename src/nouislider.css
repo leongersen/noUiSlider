@@ -99,10 +99,10 @@
 /* Handles and cursors;
  */
 .noUi-draggable {
-	cursor: w-resize;
+	cursor: ew-resize;
 }
 .noUi-vertical .noUi-draggable {
-	cursor: n-resize;
+	cursor: ns-resize;
 }
 .noUi-handle {
 	border: 1px solid #D9D9D9;
