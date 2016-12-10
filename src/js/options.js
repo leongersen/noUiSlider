@@ -319,10 +319,10 @@
 			animate: true,
 			animationDuration: 300,
 			format: defaultFormatter
-		}, tests;
+		};
 
 		// Tests are executed in the order they are presented here.
-		tests = {
+		var tests = {
 			'step': { r: false, t: testStep },
 			'start': { r: true, t: testStart },
 			'connect': { r: true, t: testConnect },
@@ -353,6 +353,8 @@
 				base: 'base',
 				origin: 'origin',
 				handle: 'handle',
+				handleLower: 'handle-lower',
+				handleUpper: 'handle-upper',
 				horizontal: 'horizontal',
 				vertical: 'vertical',
 				background: 'background',
