@@ -170,6 +170,45 @@
 
 </section>
 
+<?php sect('padding'); ?>
+<h2>Padding</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>Padding limits how close to the slider edges handles can be.</p>
+
+		<div class="example">
+			<div id="slider-padding"></div>
+			<span class="example-val" id="slider-padding-value-min"></span>
+			<span class="example-val" id="slider-padding-value-max"></span>
+			<?php run('padding'); ?>
+			<?php run('padding-link'); ?>
+		</div>
+
+		<div class="options">
+			<strong>Default</strong>
+			<div><em>0</em></div>
+
+			<strong>Accepted values</strong>
+			<div><code>number</code></div>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('padding'); ?>
+
+		<div class="viewer-header">Show the slider value</div>
+
+		<div class="viewer-content">
+			<?php code('padding-link'); ?>
+		</div>
+	</div>
+
+</section>
+
+
 
 <?php sect('step'); ?>
 <h2>Step</h2>

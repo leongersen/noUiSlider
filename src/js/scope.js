@@ -29,6 +29,19 @@
 			}
 		}
 
+		// The padding option keeps the handles a certain distance from the
+		// edges of the slider. Padding must be > 0.
+		if ( options.padding ) {
+
+			if ( handleNumber === 0 ) {
+				to = Math.max(to, options.padding);
+			}
+
+			if ( handleNumber === scope_Handles.length - 1 ) {
+				to = Math.min(to, 100 - options.padding);
+			}
+		}
+
 		to = scope_Spectrum.getStep(to);
 
 		// Limit percentage to the 0 - 100 range
@@ -180,6 +193,7 @@
 		});
 	}
 
+	// Reset slider to initial values
 	function valueReset ( fireSetEvent ) {
 		valueSet(options.start, fireSetEvent);
 	}
@@ -232,6 +246,7 @@
 				}
 			}
 
+
 			// If the value is beyond the starting point
 			if ( value > nearbySteps.thisStep.startValue ) {
 				decrement = nearbySteps.thisStep.step;
@@ -245,6 +260,7 @@
 			else {
 				decrement = value - nearbySteps.stepBefore.highestStep;
 			}
+
 
 			// Now, if at the slider edges, there is not in/decrement
 			if ( location === 100 ) {
@@ -287,8 +303,8 @@
 	// Undo attachment of event
 	function removeEvent ( namespacedEvent ) {
 
-		var event = namespacedEvent && namespacedEvent.split('.')[0],
-			namespace = event && namespacedEvent.substring(event.length);
+		var event = namespacedEvent && namespacedEvent.split('.')[0];
+		var namespace = event && namespacedEvent.substring(event.length);
 
 		Object.keys(scope_Events).forEach(function( bind ){
 
@@ -301,7 +317,7 @@
 		});
 	}
 
-	// Updateable: margin, limit, step, range, animate, snap
+	// Updateable: margin, limit, padding, step, range, animate, snap
 	function updateOptions ( optionsToUpdate, fireSetEvent ) {
 
 		// Spectrum is created using the range, snap, direction and step options.
@@ -309,7 +325,7 @@
 		// If 'snap' and 'step' are not passed, they should remain unchanged.
 		var v = valueGet();
 
-		var updateAble = ['margin', 'limit', 'range', 'animate', 'snap', 'step', 'format'];
+		var updateAble = ['margin', 'limit', 'padding', 'range', 'animate', 'snap', 'step', 'format'];
 
 		// Only change options that we're actually passed to update.
 		updateAble.forEach(function(name){
@@ -332,9 +348,10 @@
 		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
-		// Limit and margin depend on the spectrum but are stored outside of it. (#677)
+		// Limit, margin and padding depend on the spectrum but are stored outside of it. (#677)
 		options.margin = newOptions.margin;
 		options.limit = newOptions.limit;
+		options.padding = newOptions.padding;
 
 		// Invalidate the current positioning so valueSet forces an update.
 		scope_Locations = [];
@@ -359,7 +376,7 @@
 		get: valueGet,
 		set: valueSet,
 		reset: valueReset,
-		 // Exposed for unit testing, don't use this in your application.
+		// Exposed for unit testing, don't use this in your application.
 		__moveHandles: function(a, b, c) { moveHandles(a, b, scope_Locations, c); },
 		options: originalOptions, // Issue #600, #678
 		updateOptions: updateOptions,

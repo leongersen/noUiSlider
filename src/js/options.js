@@ -98,6 +98,16 @@
 		var connect = [false];
 		var i;
 
+		// Map legacy options
+		if ( entry === 'lower' ) {
+			entry = [true, false];
+		}
+
+		else if ( entry === 'upper' ) {
+			entry = [false, true];
+		}
+
+		// Handle boolean options
 		if ( entry === true || entry === false ) {
 
 			for ( i = 1; i < parsed.handles; i++ ) {
@@ -107,6 +117,7 @@
 			connect.push(false);
 		}
 
+		// Reject invalid input
 		else if ( !Array.isArray( entry ) || !entry.length || entry.length !== parsed.handles + 1 ) {
 			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
 		}
@@ -162,6 +173,31 @@
 
 		if ( !parsed.limit || parsed.handles < 2 ) {
 			throw new Error("noUiSlider: 'limit' option is only supported on linear sliders with 2 or more handles.");
+		}
+	}
+
+	function testPadding ( parsed, entry ) {
+
+		if ( !isNumeric(entry) ){
+			throw new Error("noUiSlider: 'padding' option must be numeric.");
+		}
+
+		if ( entry === 0 ) {
+			return;
+		}
+
+		parsed.padding = parsed.spectrum.getMargin(entry);
+
+		if ( !parsed.padding ) {
+			throw new Error("noUiSlider: 'padding' option is only supported on linear sliders.");
+		}
+
+		if ( parsed.padding < 0 ) {
+			throw new Error("noUiSlider: 'padding' option must be a positive number.");
+		}
+
+		if ( parsed.padding >= 50 ) {
+			throw new Error("noUiSlider: 'padding' option must be less than half the range.");
 		}
 	}
 
@@ -305,13 +341,14 @@
 		var parsed = {
 			margin: 0,
 			limit: 0,
+			padding: 0,
 			animate: true,
 			animationDuration: 300,
 			format: defaultFormatter
-		}, tests;
+		};
 
 		// Tests are executed in the order they are presented here.
-		tests = {
+		var tests = {
 			'step': { r: false, t: testStep },
 			'start': { r: true, t: testStart },
 			'connect': { r: true, t: testConnect },
@@ -323,6 +360,7 @@
 			'orientation': { r: false, t: testOrientation },
 			'margin': { r: false, t: testMargin },
 			'limit': { r: false, t: testLimit },
+			'padding': { r: false, t: testPadding },
 			'behaviour': { r: true, t: testBehaviour },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
@@ -342,6 +380,8 @@
 				base: 'base',
 				origin: 'origin',
 				handle: 'handle',
+				handleLower: 'handle-lower',
+				handleUpper: 'handle-upper',
 				horizontal: 'horizontal',
 				vertical: 'vertical',
 				background: 'background',

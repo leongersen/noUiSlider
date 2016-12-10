@@ -229,8 +229,8 @@
 
 		var step = this.xNumSteps[0];
 
-		if ( step && (value % step) ) {
-			throw new Error("noUiSlider: 'limit' and 'margin' must be divisible by step.");
+		if ( step && ((value / step) % 1) !== 0 ) {
+			throw new Error("noUiSlider: 'limit', 'margin' and 'padding' must be divisible by step.");
 		}
 
 		return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;

@@ -9,6 +9,7 @@ function closure ( target, options, originalOptions ){
 	var scope_Base;
 	var scope_Handles;
 	var scope_HandleNumbers = [];
+	var scope_ActiveHandle = false;
 	var scope_Connects;
 	var scope_Spectrum = options.spectrum;
 	var scope_Values = [];

@@ -24,6 +24,11 @@
 
 			e = fixEvent(e, data.pageOffset);
 
+			// Handle reject of multitouch
+			if ( !e ) {
+				return false;
+			}
+
 			// Ignore right or middle clicks on start #454
 			if ( events === actions.start && e.buttons !== undefined && e.buttons > 1 ) {
 				return false;
@@ -61,10 +66,11 @@
 		// Filter the event to register the type, which can be
 		// touch, mouse or pointer. Offset changes need to be
 		// made on an event specific basis.
-		var touch = e.type.indexOf('touch') === 0,
-			mouse = e.type.indexOf('mouse') === 0,
-			pointer = e.type.indexOf('pointer') === 0,
-			x,y, event = e;
+		var touch = e.type.indexOf('touch') === 0;
+		var mouse = e.type.indexOf('mouse') === 0;
+		var pointer = e.type.indexOf('pointer') === 0;
+		var x;
+		var y;
 
 		// IE10 implemented pointer events with a prefix;
 		if ( e.type.indexOf('MSPointer') === 0 ) {
@@ -77,7 +83,7 @@
 			// It's useful when you have two or more sliders on one page,
 			// that can be touched simultaneously.
 			// #649, #663, #668
-			if ( event.touches.length > 1 ) {
+			if ( e.touches.length > 1 ) {
 				return false;
 			}
 
@@ -94,19 +100,21 @@
 			y = e.clientY + pageOffset.y;
 		}
 
-		event.pageOffset = pageOffset;
-		event.points = [x, y];
-		event.cursor = mouse || pointer; // Fix #435
+		e.pageOffset = pageOffset;
+		e.points = [x, y];
+		e.cursor = mouse || pointer; // Fix #435
 
-		return event;
+		return e;
 	}
 
+	// Translate a coordinate in the document to a percentage on the slider
 	function calcPointToPercentage ( calcPoint ) {
 		var location = calcPoint - offset(scope_Base, options.ort);
 		var proposal = ( location * 100 ) / baseSize();
 		return options.dir ? 100 - proposal : proposal;
 	}
 
+	// Find handle closest to a certain percentage on the slider
 	function getClosestHandle ( proposal ) {
 
 		var closest = 100;

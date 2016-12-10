@@ -26,8 +26,7 @@ module.exports = function(grunt) {
 	}
 
 	var releaseFiles = [
-		{ src: ['**/*'], dest: '', cwd: 'distribute/', expand: true },
-		{ src: ['**/*.css'], dest: '', cwd: 'src/', expand: true }
+		{ src: ['**/*'], dest: '', cwd: 'distribute/', expand: true }
 	];
 
 	grunt.initConfig({

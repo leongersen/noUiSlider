@@ -31,10 +31,9 @@
 	function eventEnd ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		var active = scope_Base.querySelector( '.' + options.cssClasses.active );
-
-		if ( active !== null ) {
-			removeClass(active, options.cssClasses.active);
+		if ( scope_ActiveHandle ) {
+			removeClass(scope_ActiveHandle, options.cssClasses.active);
+			scope_ActiveHandle = false;
 		}
 
 		// Remove cursor styles and text-selection events bound to the body.
@@ -63,7 +62,6 @@
 	// Bind move events on document.
 	function eventStart ( event, data ) {
 
-		// Mark the handle as 'active' so it can be styled.
 		if ( data.handleNumbers.length === 1 ) {
 
 			var handle = scope_Handles[data.handleNumbers[0]];
@@ -73,7 +71,9 @@
 				return false;
 			}
 
-			addClass(handle.children[0], options.cssClasses.active);
+			// Mark the handle as 'active' so it can be styled.
+			scope_ActiveHandle = handle.children[0];
+			addClass(scope_ActiveHandle, options.cssClasses.active);
 		}
 
 		// Fix #551, where a handle gets selected instead of dragged.
