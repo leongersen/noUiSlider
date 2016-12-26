@@ -14,6 +14,14 @@ Documentation
 -------
 An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](https://refreshless.com/nouislider/).
 
+Bower
+-----
+`bower install nouislider --save`
+
+npm [(package)](https://www.npmjs.com/package/nouislider)
+---
+`npm install nouislider --save`
+
 Changelog
 ---------
 
@@ -68,10 +76,6 @@ Devices/browsers tested:
 	+ IE11
 	+ IE10 (Emulated)
 	+ IE9 (Emulated)
-
-Bower
------
-Bower users can install all compiled and minified files easily using `bower install nouislider --save`. Supporting bower unfortunately means keeping all compiled and minified versions in the repository.
 
 Browserify
 ----------
