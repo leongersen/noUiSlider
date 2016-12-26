@@ -1,4 +1,4 @@
-tapSlider = document.getElementById('tap');
+var tapSlider = document.getElementById('tap');
 
 noUiSlider.create(tapSlider, {
 	start: 40,

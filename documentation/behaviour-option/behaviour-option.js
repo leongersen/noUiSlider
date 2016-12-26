@@ -1,4 +1,4 @@
-behaviourSlider = document.getElementById('behaviour');
+var behaviourSlider = document.getElementById('behaviour');
 
 noUiSlider.create(behaviourSlider, {
 	start: [ 20, 40 ],

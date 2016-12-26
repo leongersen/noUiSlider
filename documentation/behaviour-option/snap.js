@@ -1,4 +1,4 @@
-snapSlider = document.getElementById('snap');
+var snapSlider = document.getElementById('snap');
 
 noUiSlider.create(snapSlider, {
 	start: 40,

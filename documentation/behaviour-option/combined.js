@@ -1,4 +1,4 @@
-dragTapSlider = document.getElementById('combined');
+var dragTapSlider = document.getElementById('combined');
 
 noUiSlider.create(dragTapSlider, {
 	start: [ 40, 60 ],

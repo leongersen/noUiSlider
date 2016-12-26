@@ -1,5 +1,5 @@
-var hoverSlider = document.getElementById('hover'),
-	field = document.getElementById('hover-val');
+var hoverSlider = document.getElementById('hover');
+var field = document.getElementById('hover-val');
 
 noUiSlider.create(hoverSlider, {
 	start: 20,

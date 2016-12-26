@@ -493,7 +493,7 @@
 
 	<div class="view">
 
-		<p>If you want to disable the edges of a slider, the set event can be used to reset the value if a limit is passed. Note how the handle 'bounces back' when it is released below <code>20</code> or above <code>80</code>. noUiSlider doesn't support disabling edges altogether, but this effect might be created visually by <a href="/nouislider/more#section-styling">setting padding</a> on the slider.</p>
+		<p>If you want to disable the edges of a slider, the set event can be used to reset the value if a limit is passed. Note how the handle 'bounces back' when it is released below <code>20</code> or above <code>80</code>. noUiSlider also supports disabling edges altogether, which can be done using the <a href="/nouislider/slider-options/#section-padding">padding option</a>.</p>
 
 		<div class="example">
 			<div id="soft"></div>

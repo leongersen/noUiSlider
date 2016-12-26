@@ -1,4 +1,4 @@
-dragFixedSlider = document.getElementById('drag-fixed');
+var dragFixedSlider = document.getElementById('drag-fixed');
 
 noUiSlider.create(dragFixedSlider, {
 	start: [ 40, 60 ],
