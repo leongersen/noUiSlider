@@ -1,6 +1,6 @@
-var slider = document.getElementById('slider-events'),
-	setter = document.getElementById('setter'),
-	inputLog = document.getElementById('input-log');
+var slider = document.getElementById('slider-events');
+var setter = document.getElementById('setter');
+var inputLog = document.getElementById('input-log');
 
 noUiSlider.create(slider, {
 	start: [ 0, 10 ],
