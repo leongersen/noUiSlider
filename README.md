@@ -44,7 +44,7 @@ Changelog
 - Change: `updateOptions` now **modifies the original options** object. The reference in `slider.noUiSlider.options` remains up to date (#678);
 - Change: more events fire when using various `behaviour` options (#664);
 - Change: on `rtl` sliders, handles are now visually positioned from the sliders `right`/`bottom` edge;
-- Change: events for `rtl` sliders now fire in the same order has for `ltr` sliders (with incremental handleNumbers);
+- Change: events for `rtl` sliders now fire in the same order as for `ltr` sliders (with incremental handleNumbers);
 - Change: internal `Spectrum` component is no longer `direction` aware;
 - Change: `limit` and `margin` must be divisible by `step` (if set);
 - Removed: `.noUi-stacking` class. Handles now stack themselves;
@@ -54,7 +54,7 @@ Changelog
 - Fixed: default tooltip color (#687);
 - Fixed: `margin` and `limit` calculated improperly after calling `updateOptions` with a new `range` option;
 - Fixed: `range` option was required in update, even when not updating it (#682);
-- Fixed: Cursor styling is now consistent for disable handles and sliders (#644);
+- Fixed: Cursor styling is now consistent for disabled handles and sliders (#644);
 - Fixed: Sliders now ignore touches when the screen is touched multiple times (#649, #663, #668);
 
 Devices
@@ -109,8 +109,3 @@ You can use [polyfill.io](https://cdn.polyfill.io/v2/docs/) to easily do so:
 <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
 <![endif]-->
 ```
-
-Version numbering
-------------------------------
-Version numbering follows the 'Semantic versioning' style.
-You'll find an excellent documentation at [Semver.org](http://semver.org/).
