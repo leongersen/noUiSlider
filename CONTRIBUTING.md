@@ -1,5 +1,9 @@
 # Issues
-Please, only use the issue tracker for **problems, bugs and feature requests**. For help with implementing this slider, ask your question on [stackoverflow](http://stackoverflow.com/questions/tagged/nouislider). I look a questions posted there daily, and you will get you an answer much faster.
+Please, only use the issue tracker for **problems, bugs and feature requests**.
+
+For help with implementing this slider, ask your question on [stackoverflow](http://stackoverflow.com/questions/tagged/nouislider). I look a questions posted there daily, and you will get you an answer much faster.
+
+I can't debug screenshots or issues that do not include an example and required code to reproduce.
 
 # Pull requests
 - Detail (in the pull request comment) what your changes do.
