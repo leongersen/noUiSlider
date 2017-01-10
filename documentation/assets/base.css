@@ -133,7 +133,7 @@
 
 	.example {
 		position: relative;
-		padding: 20px 60px 50px 30px;
+		padding: 40px 60px 50px 30px;
 		margin: 20px 0;
 		overflow: hidden;
 	}
@@ -338,7 +338,7 @@
 	.noUi-tooltip {
 		font: 700 12px/12px Arial;
 	}
-	
+
 @media ( min-width: 800px ) {
 
 	.index-demo {
