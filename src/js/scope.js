@@ -360,7 +360,7 @@
 
 	// Throw an error if the slider was already initialized.
 	if ( scope_Target.noUiSlider ) {
-		throw new Error('Slider was already initialized.');
+		throw new Error("noUiSlider (" + VERSION + "): Slider was already initialized.");
 	}
 
 	// Create the base element, initialise HTML and set classes.

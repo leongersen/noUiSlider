@@ -1,4 +1,4 @@
-/*! nouislider - 9.1.0 - 2016-12-10 16:00:32 */
+/*! nouislider - 9.1.1 - 2017-01-11 10:01:29 */
 
 (function (factory) {
 
@@ -21,6 +21,8 @@
 }(function( ){
 
 	'use strict';
+
+	var VERSION = '9.1.1';
 
 
 	// Creates a node, adds it to target, returns the new node.
@@ -274,7 +276,7 @@
 
 		// Reject any invalid input, by testing whether value is an array.
 		if ( Object.prototype.toString.call( value ) !== '[object Array]' ){
-			throw new Error("noUiSlider: 'range' contains invalid value.");
+			throw new Error("noUiSlider (" + VERSION + "): 'range' contains invalid value.");
 		}
 
 		// Covert min/max syntax to 0 and 100.
@@ -288,7 +290,7 @@
 
 		// Check for correct input.
 		if ( !isNumeric( percentage ) || !isNumeric( value[0] ) ) {
-			throw new Error("noUiSlider: 'range' value isn't numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'range' value isn't numeric.");
 		}
 
 		// Store values.
@@ -385,7 +387,7 @@
 		var step = this.xNumSteps[0];
 
 		if ( step && ((value / step) % 1) !== 0 ) {
-			throw new Error("noUiSlider: 'limit', 'margin' and 'padding' must be divisible by step.");
+			throw new Error("noUiSlider (" + VERSION + "): 'limit', 'margin' and 'padding' must be divisible by step.");
 		}
 
 		return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;
@@ -451,7 +453,7 @@
 	function testStep ( parsed, entry ) {
 
 		if ( !isNumeric( entry ) ) {
-			throw new Error("noUiSlider: 'step' is not numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'step' is not numeric.");
 		}
 
 		// The step option can still be used to set stepping
@@ -463,17 +465,17 @@
 
 		// Filter incorrect input.
 		if ( typeof entry !== 'object' || Array.isArray(entry) ) {
-			throw new Error("noUiSlider: 'range' is not an object.");
+			throw new Error("noUiSlider (" + VERSION + "): 'range' is not an object.");
 		}
 
 		// Catch missing start or end.
 		if ( entry.min === undefined || entry.max === undefined ) {
-			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
+			throw new Error("noUiSlider (" + VERSION + "): Missing 'min' or 'max' in 'range'.");
 		}
 
 		// Catch equal start or end.
 		if ( entry.min === entry.max ) {
-			throw new Error("noUiSlider: 'range' 'min' and 'max' cannot be equal.");
+			throw new Error("noUiSlider (" + VERSION + "): 'range' 'min' and 'max' cannot be equal.");
 		}
 
 		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
@@ -486,7 +488,7 @@
 		// Validate input. Values aren't tested, as the public .val method
 		// will always provide a valid location.
 		if ( !Array.isArray( entry ) || !entry.length ) {
-			throw new Error("noUiSlider: 'start' option is incorrect.");
+			throw new Error("noUiSlider (" + VERSION + "): 'start' option is incorrect.");
 		}
 
 		// Store the number of handles.
@@ -503,7 +505,7 @@
 		parsed.snap = entry;
 
 		if ( typeof entry !== 'boolean' ){
-			throw new Error("noUiSlider: 'snap' option must be a boolean.");
+			throw new Error("noUiSlider (" + VERSION + "): 'snap' option must be a boolean.");
 		}
 	}
 
@@ -513,7 +515,7 @@
 		parsed.animate = entry;
 
 		if ( typeof entry !== 'boolean' ){
-			throw new Error("noUiSlider: 'animate' option must be a boolean.");
+			throw new Error("noUiSlider (" + VERSION + "): 'animate' option must be a boolean.");
 		}
 	}
 
@@ -522,7 +524,7 @@
 		parsed.animationDuration = entry;
 
 		if ( typeof entry !== 'number' ){
-			throw new Error("noUiSlider: 'animationDuration' option must be a number.");
+			throw new Error("noUiSlider (" + VERSION + "): 'animationDuration' option must be a number.");
 		}
 	}
 
@@ -552,7 +554,7 @@
 
 		// Reject invalid input
 		else if ( !Array.isArray( entry ) || !entry.length || entry.length !== parsed.handles + 1 ) {
-			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
+			throw new Error("noUiSlider (" + VERSION + "): 'connect' option doesn't match handle count.");
 		}
 
 		else {
@@ -574,14 +576,14 @@
 			parsed.ort = 1;
 			break;
 		  default:
-			throw new Error("noUiSlider: 'orientation' option is invalid.");
+			throw new Error("noUiSlider (" + VERSION + "): 'orientation' option is invalid.");
 		}
 	}
 
 	function testMargin ( parsed, entry ) {
 
 		if ( !isNumeric(entry) ){
-			throw new Error("noUiSlider: 'margin' option must be numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be numeric.");
 		}
 
 		// Issue #582
@@ -592,27 +594,27 @@
 		parsed.margin = parsed.spectrum.getMargin(entry);
 
 		if ( !parsed.margin ) {
-			throw new Error("noUiSlider: 'margin' option is only supported on linear sliders.");
+			throw new Error("noUiSlider (" + VERSION + "): 'margin' option is only supported on linear sliders.");
 		}
 	}
 
 	function testLimit ( parsed, entry ) {
 
 		if ( !isNumeric(entry) ){
-			throw new Error("noUiSlider: 'limit' option must be numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'limit' option must be numeric.");
 		}
 
 		parsed.limit = parsed.spectrum.getMargin(entry);
 
 		if ( !parsed.limit || parsed.handles < 2 ) {
-			throw new Error("noUiSlider: 'limit' option is only supported on linear sliders with 2 or more handles.");
+			throw new Error("noUiSlider (" + VERSION + "): 'limit' option is only supported on linear sliders with 2 or more handles.");
 		}
 	}
 
 	function testPadding ( parsed, entry ) {
 
 		if ( !isNumeric(entry) ){
-			throw new Error("noUiSlider: 'padding' option must be numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric.");
 		}
 
 		if ( entry === 0 ) {
@@ -622,15 +624,15 @@
 		parsed.padding = parsed.spectrum.getMargin(entry);
 
 		if ( !parsed.padding ) {
-			throw new Error("noUiSlider: 'padding' option is only supported on linear sliders.");
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option is only supported on linear sliders.");
 		}
 
 		if ( parsed.padding < 0 ) {
-			throw new Error("noUiSlider: 'padding' option must be a positive number.");
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number.");
 		}
 
 		if ( parsed.padding >= 50 ) {
-			throw new Error("noUiSlider: 'padding' option must be less than half the range.");
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be less than half the range.");
 		}
 	}
 
@@ -647,7 +649,7 @@
 			parsed.dir = 1;
 			break;
 		  default:
-			throw new Error("noUiSlider: 'direction' option was not recognized.");
+			throw new Error("noUiSlider (" + VERSION + "): 'direction' option was not recognized.");
 		}
 	}
 
@@ -655,7 +657,7 @@
 
 		// Make sure the input is a string.
 		if ( typeof entry !== 'string' ) {
-			throw new Error("noUiSlider: 'behaviour' must be a string containing options.");
+			throw new Error("noUiSlider (" + VERSION + "): 'behaviour' must be a string containing options.");
 		}
 
 		// Check if the string contains any keywords.
@@ -669,7 +671,7 @@
 		if ( fixed ) {
 
 			if ( parsed.handles !== 2 ) {
-				throw new Error("noUiSlider: 'fixed' behaviour must be used with 2 handles");
+				throw new Error("noUiSlider (" + VERSION + "): 'fixed' behaviour must be used with 2 handles");
 			}
 
 			// Use margin to enforce fixed state
@@ -705,12 +707,12 @@
 			parsed.tooltips = asArray(entry);
 
 			if ( parsed.tooltips.length !== parsed.handles ) {
-				throw new Error("noUiSlider: must pass a formatter for all handles.");
+				throw new Error("noUiSlider (" + VERSION + "): must pass a formatter for all handles.");
 			}
 
 			parsed.tooltips.forEach(function(formatter){
 				if ( typeof formatter !== 'boolean' && (typeof formatter !== 'object' || typeof formatter.to !== 'function') ) {
-					throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
+					throw new Error("noUiSlider (" + VERSION + "): 'tooltips' must be passed a formatter or 'false'.");
 				}
 			});
 		}
@@ -725,13 +727,13 @@
 			return true;
 		}
 
-		throw new Error("noUiSlider: 'format' requires 'to' and 'from' methods.");
+		throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
 	}
 
 	function testCssPrefix ( parsed, entry ) {
 
 		if ( entry !== undefined && typeof entry !== 'string' && entry !== false ) {
-			throw new Error("noUiSlider: 'cssPrefix' must be a string or `false`.");
+			throw new Error("noUiSlider (" + VERSION + "): 'cssPrefix' must be a string or `false`.");
 		}
 
 		parsed.cssPrefix = entry;
@@ -740,7 +742,7 @@
 	function testCssClasses ( parsed, entry ) {
 
 		if ( entry !== undefined && typeof entry !== 'object' ) {
-			throw new Error("noUiSlider: 'cssClasses' must be an object.");
+			throw new Error("noUiSlider (" + VERSION + "): 'cssClasses' must be an object.");
 		}
 
 		if ( typeof parsed.cssPrefix === 'string' ) {
@@ -760,7 +762,7 @@
 		if ( entry === true || entry === false ) {
 			parsed.useRequestAnimationFrame = entry;
 		} else {
-			throw new Error("noUiSlider: 'useRequestAnimationFrame' option should be true (default) or false.");
+			throw new Error("noUiSlider (" + VERSION + "): 'useRequestAnimationFrame' option should be true (default) or false.");
 		}
 	}
 
@@ -854,7 +856,7 @@
 			if ( options[name] === undefined && defaults[name] === undefined ) {
 
 				if ( tests[name].r ) {
-					throw new Error("noUiSlider: '" + name + "' is required.");
+					throw new Error("noUiSlider (" + VERSION + "): '" + name + "' is required.");
 				}
 
 				return true;
@@ -1005,12 +1007,19 @@ function closure ( target, options, originalOptions ){
 
 		if ( mode === 'count' ) {
 
+			if ( !values ) {
+				throw new Error("noUiSlider (" + VERSION + "): 'values' required for mode 'count'.");
+			}
+
 			// Divide 0 - 100 in 'count' parts.
-			var spread = ( 100 / (values-1) ), v, i = 0;
+			var spread = ( 100 / (values - 1) );
+			var v;
+			var i = 0;
+
 			values = [];
 
 			// List these parts and have them handled as 'positions'.
-			while ((v=i++*spread) <= 100 ) {
+			while ( (v = i++ * spread) <= 100 ) {
 				values.push(v);
 			}
 
@@ -1050,12 +1059,12 @@ function closure ( target, options, originalOptions ){
 			return (value + increment).toFixed(7) / 1;
 		}
 
-		var indexes = {},
-			firstInRange = scope_Spectrum.xVal[0],
-			lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length-1],
-			ignoreFirst = false,
-			ignoreLast = false,
-			prevPct = 0;
+		var indexes = {};
+		var firstInRange = scope_Spectrum.xVal[0];
+		var lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length-1];
+		var ignoreFirst = false;
+		var ignoreLast = false;
+		var prevPct = 0;
 
 		// Create a copy of the group, sort it and filter away all duplicates.
 		group = unique(group.slice().sort(function(a, b){ return a - b; }));
@@ -1075,11 +1084,18 @@ function closure ( target, options, originalOptions ){
 		group.forEach(function ( current, index ) {
 
 			// Get the current step and the lower + upper positions.
-			var step, i, q,
-				low = current,
-				high = group[index+1],
-				newPct, pctDifference, pctPos, type,
-				steps, realSteps, stepsize;
+			var step;
+			var i;
+			var q;
+			var low = current;
+			var high = group[index+1];
+			var newPct;
+			var pctDifference;
+			var pctPos;
+			var type;
+			var steps;
+			var realSteps;
+			var stepsize;
 
 			// When using 'steps' mode, use the provided steps.
 			// Otherwise, we'll step on to the next subrange.
@@ -1153,34 +1169,34 @@ function closure ( target, options, originalOptions ){
 
 	function addMarking ( spread, filterFunc, formatter ) {
 
-		var element = document.createElement('div'),
-			out = '',
-			valueSizeClasses = [
-				options.cssClasses.valueNormal,
-				options.cssClasses.valueLarge,
-				options.cssClasses.valueSub
-			],
-			markerSizeClasses = [
-				options.cssClasses.markerNormal,
-				options.cssClasses.markerLarge,
-				options.cssClasses.markerSub
-			],
-			valueOrientationClasses = [
-				options.cssClasses.valueHorizontal,
-				options.cssClasses.valueVertical
-			],
-			markerOrientationClasses = [
-				options.cssClasses.markerHorizontal,
-				options.cssClasses.markerVertical
-			];
+		var element = document.createElement('div');
+		var out = '';
+		var valueSizeClasses = [
+			options.cssClasses.valueNormal,
+			options.cssClasses.valueLarge,
+			options.cssClasses.valueSub
+		];
+		var markerSizeClasses = [
+			options.cssClasses.markerNormal,
+			options.cssClasses.markerLarge,
+			options.cssClasses.markerSub
+		];
+		var valueOrientationClasses = [
+			options.cssClasses.valueHorizontal,
+			options.cssClasses.valueVertical
+		];
+		var markerOrientationClasses = [
+			options.cssClasses.markerHorizontal,
+			options.cssClasses.markerVertical
+		];
 
 		addClass(element, options.cssClasses.pips);
 		addClass(element, options.ort === 0 ? options.cssClasses.pipsHorizontal : options.cssClasses.pipsVertical);
 
 		function getClasses( type, source ){
-			var a = source === options.cssClasses.value,
-				orientationClasses = a ? valueOrientationClasses : markerOrientationClasses,
-				sizeClasses = a ? valueSizeClasses : markerSizeClasses;
+			var a = source === options.cssClasses.value;
+			var orientationClasses = a ? valueOrientationClasses : markerOrientationClasses;
+			var sizeClasses = a ? valueSizeClasses : markerSizeClasses;
 
 			return source + ' ' + orientationClasses[options.ort] + ' ' + sizeClasses[type];
 		}
@@ -1215,14 +1231,14 @@ function closure ( target, options, originalOptions ){
 
 	function pips ( grid ) {
 
-	var mode = grid.mode,
-		density = grid.density || 1,
-		filter = grid.filter || false,
-		values = grid.values || false,
-		stepped = grid.stepped || false,
-		group = getGroup( mode, values, stepped ),
-		spread = generateSpread( density, mode, group ),
-		format = grid.format || {
+		var mode = grid.mode;
+		var density = grid.density || 1;
+		var filter = grid.filter || false;
+		var values = grid.values || false;
+		var stepped = grid.stepped || false;
+		var group = getGroup( mode, values, stepped );
+		var spread = generateSpread( density, mode, group );
+		var format = grid.format || {
 			to: Math.round
 		};
 
@@ -2062,7 +2078,7 @@ function closure ( target, options, originalOptions ){
 
 	// Throw an error if the slider was already initialized.
 	if ( scope_Target.noUiSlider ) {
-		throw new Error('Slider was already initialized.');
+		throw new Error("noUiSlider (" + VERSION + "): Slider was already initialized.");
 	}
 
 	// Create the base element, initialise HTML and set classes.
@@ -2109,7 +2125,7 @@ function closure ( target, options, originalOptions ){
 	function initialize ( target, originalOptions ) {
 
 		if ( !target.nodeName ) {
-			throw new Error('noUiSlider.create requires a single element.');
+			throw new Error("noUiSlider (" + VERSION + "): create requires a single element.");
 		}
 
 		// Test the options and create the slider environment;
@@ -2123,6 +2139,7 @@ function closure ( target, options, originalOptions ){
 
 	// Use an object instead of a function for future expansibility;
 	return {
+		version: VERSION,
 		create: initialize
 	};
 

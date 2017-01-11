@@ -18,7 +18,7 @@
 	function testStep ( parsed, entry ) {
 
 		if ( !isNumeric( entry ) ) {
-			throw new Error("noUiSlider: 'step' is not numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'step' is not numeric.");
 		}
 
 		// The step option can still be used to set stepping
@@ -30,17 +30,17 @@
 
 		// Filter incorrect input.
 		if ( typeof entry !== 'object' || Array.isArray(entry) ) {
-			throw new Error("noUiSlider: 'range' is not an object.");
+			throw new Error("noUiSlider (" + VERSION + "): 'range' is not an object.");
 		}
 
 		// Catch missing start or end.
 		if ( entry.min === undefined || entry.max === undefined ) {
-			throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
+			throw new Error("noUiSlider (" + VERSION + "): Missing 'min' or 'max' in 'range'.");
 		}
 
 		// Catch equal start or end.
 		if ( entry.min === entry.max ) {
-			throw new Error("noUiSlider: 'range' 'min' and 'max' cannot be equal.");
+			throw new Error("noUiSlider (" + VERSION + "): 'range' 'min' and 'max' cannot be equal.");
 		}
 
 		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
@@ -53,7 +53,7 @@
 		// Validate input. Values aren't tested, as the public .val method
 		// will always provide a valid location.
 		if ( !Array.isArray( entry ) || !entry.length ) {
-			throw new Error("noUiSlider: 'start' option is incorrect.");
+			throw new Error("noUiSlider (" + VERSION + "): 'start' option is incorrect.");
 		}
 
 		// Store the number of handles.
@@ -70,7 +70,7 @@
 		parsed.snap = entry;
 
 		if ( typeof entry !== 'boolean' ){
-			throw new Error("noUiSlider: 'snap' option must be a boolean.");
+			throw new Error("noUiSlider (" + VERSION + "): 'snap' option must be a boolean.");
 		}
 	}
 
@@ -80,7 +80,7 @@
 		parsed.animate = entry;
 
 		if ( typeof entry !== 'boolean' ){
-			throw new Error("noUiSlider: 'animate' option must be a boolean.");
+			throw new Error("noUiSlider (" + VERSION + "): 'animate' option must be a boolean.");
 		}
 	}
 
@@ -89,7 +89,7 @@
 		parsed.animationDuration = entry;
 
 		if ( typeof entry !== 'number' ){
-			throw new Error("noUiSlider: 'animationDuration' option must be a number.");
+			throw new Error("noUiSlider (" + VERSION + "): 'animationDuration' option must be a number.");
 		}
 	}
 
@@ -119,7 +119,7 @@
 
 		// Reject invalid input
 		else if ( !Array.isArray( entry ) || !entry.length || entry.length !== parsed.handles + 1 ) {
-			throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
+			throw new Error("noUiSlider (" + VERSION + "): 'connect' option doesn't match handle count.");
 		}
 
 		else {
@@ -141,14 +141,14 @@
 			parsed.ort = 1;
 			break;
 		  default:
-			throw new Error("noUiSlider: 'orientation' option is invalid.");
+			throw new Error("noUiSlider (" + VERSION + "): 'orientation' option is invalid.");
 		}
 	}
 
 	function testMargin ( parsed, entry ) {
 
 		if ( !isNumeric(entry) ){
-			throw new Error("noUiSlider: 'margin' option must be numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be numeric.");
 		}
 
 		// Issue #582
@@ -159,27 +159,27 @@
 		parsed.margin = parsed.spectrum.getMargin(entry);
 
 		if ( !parsed.margin ) {
-			throw new Error("noUiSlider: 'margin' option is only supported on linear sliders.");
+			throw new Error("noUiSlider (" + VERSION + "): 'margin' option is only supported on linear sliders.");
 		}
 	}
 
 	function testLimit ( parsed, entry ) {
 
 		if ( !isNumeric(entry) ){
-			throw new Error("noUiSlider: 'limit' option must be numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'limit' option must be numeric.");
 		}
 
 		parsed.limit = parsed.spectrum.getMargin(entry);
 
 		if ( !parsed.limit || parsed.handles < 2 ) {
-			throw new Error("noUiSlider: 'limit' option is only supported on linear sliders with 2 or more handles.");
+			throw new Error("noUiSlider (" + VERSION + "): 'limit' option is only supported on linear sliders with 2 or more handles.");
 		}
 	}
 
 	function testPadding ( parsed, entry ) {
 
 		if ( !isNumeric(entry) ){
-			throw new Error("noUiSlider: 'padding' option must be numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric.");
 		}
 
 		if ( entry === 0 ) {
@@ -189,15 +189,15 @@
 		parsed.padding = parsed.spectrum.getMargin(entry);
 
 		if ( !parsed.padding ) {
-			throw new Error("noUiSlider: 'padding' option is only supported on linear sliders.");
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option is only supported on linear sliders.");
 		}
 
 		if ( parsed.padding < 0 ) {
-			throw new Error("noUiSlider: 'padding' option must be a positive number.");
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number.");
 		}
 
 		if ( parsed.padding >= 50 ) {
-			throw new Error("noUiSlider: 'padding' option must be less than half the range.");
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be less than half the range.");
 		}
 	}
 
@@ -214,7 +214,7 @@
 			parsed.dir = 1;
 			break;
 		  default:
-			throw new Error("noUiSlider: 'direction' option was not recognized.");
+			throw new Error("noUiSlider (" + VERSION + "): 'direction' option was not recognized.");
 		}
 	}
 
@@ -222,7 +222,7 @@
 
 		// Make sure the input is a string.
 		if ( typeof entry !== 'string' ) {
-			throw new Error("noUiSlider: 'behaviour' must be a string containing options.");
+			throw new Error("noUiSlider (" + VERSION + "): 'behaviour' must be a string containing options.");
 		}
 
 		// Check if the string contains any keywords.
@@ -236,7 +236,7 @@
 		if ( fixed ) {
 
 			if ( parsed.handles !== 2 ) {
-				throw new Error("noUiSlider: 'fixed' behaviour must be used with 2 handles");
+				throw new Error("noUiSlider (" + VERSION + "): 'fixed' behaviour must be used with 2 handles");
 			}
 
 			// Use margin to enforce fixed state
@@ -272,12 +272,12 @@
 			parsed.tooltips = asArray(entry);
 
 			if ( parsed.tooltips.length !== parsed.handles ) {
-				throw new Error("noUiSlider: must pass a formatter for all handles.");
+				throw new Error("noUiSlider (" + VERSION + "): must pass a formatter for all handles.");
 			}
 
 			parsed.tooltips.forEach(function(formatter){
 				if ( typeof formatter !== 'boolean' && (typeof formatter !== 'object' || typeof formatter.to !== 'function') ) {
-					throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
+					throw new Error("noUiSlider (" + VERSION + "): 'tooltips' must be passed a formatter or 'false'.");
 				}
 			});
 		}
@@ -292,13 +292,13 @@
 			return true;
 		}
 
-		throw new Error("noUiSlider: 'format' requires 'to' and 'from' methods.");
+		throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
 	}
 
 	function testCssPrefix ( parsed, entry ) {
 
 		if ( entry !== undefined && typeof entry !== 'string' && entry !== false ) {
-			throw new Error("noUiSlider: 'cssPrefix' must be a string or `false`.");
+			throw new Error("noUiSlider (" + VERSION + "): 'cssPrefix' must be a string or `false`.");
 		}
 
 		parsed.cssPrefix = entry;
@@ -307,7 +307,7 @@
 	function testCssClasses ( parsed, entry ) {
 
 		if ( entry !== undefined && typeof entry !== 'object' ) {
-			throw new Error("noUiSlider: 'cssClasses' must be an object.");
+			throw new Error("noUiSlider (" + VERSION + "): 'cssClasses' must be an object.");
 		}
 
 		if ( typeof parsed.cssPrefix === 'string' ) {
@@ -327,7 +327,7 @@
 		if ( entry === true || entry === false ) {
 			parsed.useRequestAnimationFrame = entry;
 		} else {
-			throw new Error("noUiSlider: 'useRequestAnimationFrame' option should be true (default) or false.");
+			throw new Error("noUiSlider (" + VERSION + "): 'useRequestAnimationFrame' option should be true (default) or false.");
 		}
 	}
 
@@ -421,7 +421,7 @@
 			if ( options[name] === undefined && defaults[name] === undefined ) {
 
 				if ( tests[name].r ) {
-					throw new Error("noUiSlider: '" + name + "' is required.");
+					throw new Error("noUiSlider (" + VERSION + "): '" + name + "' is required.");
 				}
 
 				return true;

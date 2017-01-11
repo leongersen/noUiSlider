@@ -3,7 +3,7 @@
 	function initialize ( target, originalOptions ) {
 
 		if ( !target.nodeName ) {
-			throw new Error('noUiSlider.create requires a single element.');
+			throw new Error("noUiSlider (" + VERSION + "): create requires a single element.");
 		}
 
 		// Test the options and create the slider environment;
@@ -17,5 +17,6 @@
 
 	// Use an object instead of a function for future expansibility;
 	return {
+		version: VERSION,
 		create: initialize
 	};

@@ -8,12 +8,19 @@
 
 		if ( mode === 'count' ) {
 
+			if ( !values ) {
+				throw new Error("noUiSlider (" + VERSION + "): 'values' required for mode 'count'.");
+			}
+
 			// Divide 0 - 100 in 'count' parts.
-			var spread = ( 100 / (values-1) ), v, i = 0;
+			var spread = ( 100 / (values - 1) );
+			var v;
+			var i = 0;
+
 			values = [];
 
 			// List these parts and have them handled as 'positions'.
-			while ((v=i++*spread) <= 100 ) {
+			while ( (v = i++ * spread) <= 100 ) {
 				values.push(v);
 			}
 
@@ -53,12 +60,12 @@
 			return (value + increment).toFixed(7) / 1;
 		}
 
-		var indexes = {},
-			firstInRange = scope_Spectrum.xVal[0],
-			lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length-1],
-			ignoreFirst = false,
-			ignoreLast = false,
-			prevPct = 0;
+		var indexes = {};
+		var firstInRange = scope_Spectrum.xVal[0];
+		var lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length-1];
+		var ignoreFirst = false;
+		var ignoreLast = false;
+		var prevPct = 0;
 
 		// Create a copy of the group, sort it and filter away all duplicates.
 		group = unique(group.slice().sort(function(a, b){ return a - b; }));
@@ -78,11 +85,18 @@
 		group.forEach(function ( current, index ) {
 
 			// Get the current step and the lower + upper positions.
-			var step, i, q,
-				low = current,
-				high = group[index+1],
-				newPct, pctDifference, pctPos, type,
-				steps, realSteps, stepsize;
+			var step;
+			var i;
+			var q;
+			var low = current;
+			var high = group[index+1];
+			var newPct;
+			var pctDifference;
+			var pctPos;
+			var type;
+			var steps;
+			var realSteps;
+			var stepsize;
 
 			// When using 'steps' mode, use the provided steps.
 			// Otherwise, we'll step on to the next subrange.
@@ -156,34 +170,34 @@
 
 	function addMarking ( spread, filterFunc, formatter ) {
 
-		var element = document.createElement('div'),
-			out = '',
-			valueSizeClasses = [
-				options.cssClasses.valueNormal,
-				options.cssClasses.valueLarge,
-				options.cssClasses.valueSub
-			],
-			markerSizeClasses = [
-				options.cssClasses.markerNormal,
-				options.cssClasses.markerLarge,
-				options.cssClasses.markerSub
-			],
-			valueOrientationClasses = [
-				options.cssClasses.valueHorizontal,
-				options.cssClasses.valueVertical
-			],
-			markerOrientationClasses = [
-				options.cssClasses.markerHorizontal,
-				options.cssClasses.markerVertical
-			];
+		var element = document.createElement('div');
+		var out = '';
+		var valueSizeClasses = [
+			options.cssClasses.valueNormal,
+			options.cssClasses.valueLarge,
+			options.cssClasses.valueSub
+		];
+		var markerSizeClasses = [
+			options.cssClasses.markerNormal,
+			options.cssClasses.markerLarge,
+			options.cssClasses.markerSub
+		];
+		var valueOrientationClasses = [
+			options.cssClasses.valueHorizontal,
+			options.cssClasses.valueVertical
+		];
+		var markerOrientationClasses = [
+			options.cssClasses.markerHorizontal,
+			options.cssClasses.markerVertical
+		];
 
 		addClass(element, options.cssClasses.pips);
 		addClass(element, options.ort === 0 ? options.cssClasses.pipsHorizontal : options.cssClasses.pipsVertical);
 
 		function getClasses( type, source ){
-			var a = source === options.cssClasses.value,
-				orientationClasses = a ? valueOrientationClasses : markerOrientationClasses,
-				sizeClasses = a ? valueSizeClasses : markerSizeClasses;
+			var a = source === options.cssClasses.value;
+			var orientationClasses = a ? valueOrientationClasses : markerOrientationClasses;
+			var sizeClasses = a ? valueSizeClasses : markerSizeClasses;
 
 			return source + ' ' + orientationClasses[options.ort] + ' ' + sizeClasses[type];
 		}
@@ -218,14 +232,14 @@
 
 	function pips ( grid ) {
 
-	var mode = grid.mode,
-		density = grid.density || 1,
-		filter = grid.filter || false,
-		values = grid.values || false,
-		stepped = grid.stepped || false,
-		group = getGroup( mode, values, stepped ),
-		spread = generateSpread( density, mode, group ),
-		format = grid.format || {
+		var mode = grid.mode;
+		var density = grid.density || 1;
+		var filter = grid.filter || false;
+		var values = grid.values || false;
+		var stepped = grid.stepped || false;
+		var group = getGroup( mode, values, stepped );
+		var spread = generateSpread( density, mode, group );
+		var format = grid.format || {
 			to: Math.round
 		};
 

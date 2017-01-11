@@ -25,6 +25,11 @@ npm [(package)](https://www.npmjs.com/package/nouislider)
 Changelog
 ---------
 
+### 9.1.1 (*2017-01-17*)
+- Added: Version number to exceptions;
+- Added: `noUiSlider.version` holds current version number;
+- Added: Throw exception on invalid `pips` configuration (#721);
+
 ### 9.1.0 (*2016-12-10*)
 - Fixed: Slider not properly handling multitouch (#700, #704);
 - Fixed: Removed a querySelector for the currently active handle (#720);

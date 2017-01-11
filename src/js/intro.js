@@ -19,3 +19,5 @@
 }(function( ){
 
 	'use strict';
+
+	var VERSION = '%%REPLACE_THIS_WITH_VERSION%%';

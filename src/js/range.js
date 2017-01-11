@@ -119,7 +119,7 @@
 
 		// Reject any invalid input, by testing whether value is an array.
 		if ( Object.prototype.toString.call( value ) !== '[object Array]' ){
-			throw new Error("noUiSlider: 'range' contains invalid value.");
+			throw new Error("noUiSlider (" + VERSION + "): 'range' contains invalid value.");
 		}
 
 		// Covert min/max syntax to 0 and 100.
@@ -133,7 +133,7 @@
 
 		// Check for correct input.
 		if ( !isNumeric( percentage ) || !isNumeric( value[0] ) ) {
-			throw new Error("noUiSlider: 'range' value isn't numeric.");
+			throw new Error("noUiSlider (" + VERSION + "): 'range' value isn't numeric.");
 		}
 
 		// Store values.
@@ -230,7 +230,7 @@
 		var step = this.xNumSteps[0];
 
 		if ( step && ((value / step) % 1) !== 0 ) {
-			throw new Error("noUiSlider: 'limit', 'margin' and 'padding' must be divisible by step.");
+			throw new Error("noUiSlider (" + VERSION + "): 'limit', 'margin' and 'padding' must be divisible by step.");
 		}
 
 		return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;

@@ -29,11 +29,21 @@ module.exports = function(grunt) {
 		{ src: ['**/*'], dest: '', cwd: 'distribute/', expand: true }
 	];
 
+	var pkg = grunt.file.readJSON('package.json');
+
 	grunt.initConfig({
-		pkg: grunt.file.readJSON('package.json'),
+		pkg: pkg,
 		concat: {
 			options: {
-				banner: VERSION_TEMPLATE
+				banner: VERSION_TEMPLATE,
+				process: function(src, filepath) {
+
+					if ( filepath === 'src/js/intro.js' ) {
+						src = src.replace('%%REPLACE_THIS_WITH_VERSION%%', pkg.version);
+					}
+
+					return src;
+				}
 			},
 			basic: {
 				src: getFiles(),
