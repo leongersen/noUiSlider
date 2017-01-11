@@ -1,4 +1,4 @@
-/*! nouislider - 9.1.1 - 2017-01-11 10:01:29 */
+/*! nouislider - 9.2.0 - 2017-01-11 10:35:34 */
 
 (function (factory) {
 
@@ -22,7 +22,7 @@
 
 	'use strict';
 
-	var VERSION = '9.1.1';
+	var VERSION = '9.2.0';
 
 
 	// Creates a node, adds it to target, returns the new node.

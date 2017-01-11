@@ -53,14 +53,14 @@ module.exports = function(grunt) {
 		},
 		less: {
 			all: {
+				options: {
+					banner: VERSION_TEMPLATE
+				},
 				files: {'distribute/nouislider.css': 'src/nouislider.less'}
 			}
 		},
 		cssmin: {
 			all: {
-				options: {
-					banner: VERSION_TEMPLATE
-				},
 				files: {
 					'distribute/nouislider.min.css': ['distribute/nouislider.css']
 				}
@@ -132,6 +132,6 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('default', ['concat', 'less', 'jshint']);
 	grunt.registerTask('test', ['concat', 'less', 'jshint', 'qunit']);
-	grunt.registerTask('create', ['concat', 'less', 'uglify', 'cssmin', 'qunit']);
-	grunt.registerTask('release', ['jshint', 'compress', 'qunit']);
+	grunt.registerTask('create', ['concat', 'less', 'uglify', 'cssmin']);
+	grunt.registerTask('release', ['jshint', 'compress']);
 };
