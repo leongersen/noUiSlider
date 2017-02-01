@@ -163,7 +163,7 @@
 <section>
 
 	<div class="view">
-		<p>Use this event when synchronising the slider value to another element, such as an <code>&lt;input&gt;</code>. It fires every time the slider values are <strong>changed</strong>, either by a user or by calling API methods. Additionally, it fires <strong>immediately</strong> when bound.</p>
+		<p>Use this event when synchronising the slider value to another element, such as an <code>&lt;input&gt;</code>. It fires every time the slider values are <strong>changed</strong>, either by a user or by calling API methods. Additionally, it fires <strong>immediately</strong> when bound. In most cases, this event should be more convenient than the <code>'slide'</code> event.</p>
 	</div>
 </section>
 
@@ -174,10 +174,9 @@
 <section>
 
 	<div class="view">
-		<p>This event is useful when you want to update a value or perform an actions every time a handle is dragged. For example, you can use the <code>'slide'</code> event to update graphs. For convenience, this function also fires on a change by 'tap'.</p>
+		<p>This event is useful when you specifically want to listen to a handle being dragged, but want to ignore other updates to the slider value. This event also fires on a change by a 'tap'.</p>
 	</div>
 </section>
-
 
 <?php sect('set'); ?>
 <h2>Set</h2>

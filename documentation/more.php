@@ -57,7 +57,7 @@
 </section>
 
 <?php sect('update'); ?>
-<h2>Updating slider options</h2>
+<h2>Updating and reading slider options</h2>
 
 <section>
 
@@ -65,14 +65,16 @@
 
 		<p>noUiSlider has an <code>updateOptions(newOptions, fireSetEvent)</code> method that can change the <code>'margin'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'animate'</code> and <code>'snap'</code> options. All other options require changes to the slider's HTML or event bindings.</p>
 
+		<p>To update any other option, destroy the slider using <code>slider.noUiSlider.destroy()</code> and create a new one. Note that events are <strong>not</strong> unbound when destroying a slider.</p>
+
 		<p>The <code>'update'</code> event fires after updating the slider.</p>
 
 		<p>By default, the sliders <strong>values remain unchanged</strong>. To update the slider values, <code>newOptions</code> may also contain a <code>start</code> property</a> that matches the signature of the <a href="/nouislider/slider-read-write/#section-setting"><code>set</code></a> method.</p>
 
-		<p>The <code>'set'</code> event fires when the slider values are restored. If this is undesired behaviour, you can pass <code>false</code> as the second parameter, <code>fireSetEvent</code>.</p>
+		<p>The <code>'set'</code> event fires when the slider values are restored. If this is unwanted, you can pass <code>false</code> as the second parameter, <code>fireSetEvent</code>.</p>
 
-		<p>To update another option, destroy the slider (<code>slider.noUiSlider.destroy()</code>) and create a new one. Note that events are <strong>not</strong> unbound when destroying a slider.</p>
-
+		<p>Options can be read from the slider using the <code>slider.noUiSlider.options</code> property. This property contains a <strong>reference</strong> to the options object passed when creating the slider. This object is <strong>modified</strong> when calling <code>updateOptions</code>. Note that if you initiate multiple sliders using the same options object and update a subset of them later, this <em>will</em> move the <code>options</code> property out of sync with the actual slider options.</p>
+		
 		<div class="example">
 			<div id="slider-update"></div>
 			<span class="example-val" id="slider-update-value"></span>
@@ -155,7 +157,7 @@
 				<tbody>
 					<tr>
 						<td><code>.noUi-target</code></td>
-						<td>This class is added to the element you call <code>.noUiSlider()</code> on. Has <code>border</code>, <code>background</code> and other styling properties to establish the slider design. </td>
+						<td>This class is added to the element you call <code>.noUiSlider()</code> on. Has <code>border</code>, <code>background</code> and other styling properties to establish the slider design and background.</td>
 					</tr>
 					<tr>
 						<td><code>.noUi-base</code></td>
@@ -172,10 +174,6 @@
 					<tr>
 						<td><code>.noUi-connect</code></td>
 						<td>Styling class for setting properties related to the slider <code>connect</code> segment.</td>
-					</tr>
-					<tr>
-						<td><code>.noUi-background</code></td>
-						<td>Styling class for setting properties related to the slider background.</td>
 					</tr>
 					<tr>
 						<td><code>.noUi-state-tap</code></td>
