@@ -54,9 +54,9 @@ Changelog
 - Change: internal `Spectrum` component is no longer `direction` aware;
 - Change: `limit` and `margin` must be divisible by `step` (if set);
 - Removed: `.noUi-stacking` class. Handles now stack themselves;
-- Removed: `.noUi-handle-lower` and `.noUi-handle-upper` classes;
+- ~~Removed~~ (returned in 9.1.0): `.noUi-handle-lower` and `.noUi-handle-upper` classes;
 - Removed: `.noUi-background`. Use `.noUi-target` instead;
-- Removed: `connect: 'lower'` and `connect: 'upper'`. These settings are replaced by `connect: [true, false]`;
+- ~~Removed~~ (backward compatibility in 9.1.0): `connect: 'lower'` and `connect: 'upper'`. These settings are replaced by `connect: [true, false]`;
 - Fixed: default tooltip color (#687);
 - Fixed: `margin` and `limit` calculated improperly after calling `updateOptions` with a new `range` option;
 - Fixed: `range` option was required in update, even when not updating it (#682);
