@@ -10,6 +10,6 @@ noUiSlider.create(sliderFormat, {
 	format: wNumb({
 		decimals: 3,
 		thousand: '.',
-		postfix: ' (US $)',
+		suffix: ' (US $)',
 	})
 });

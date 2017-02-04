@@ -1,14 +1,31 @@
-(function(){
+(function (factory) {
+
+    if ( typeof define === 'function' && define.amd ) {
+
+        // AMD. Register as an anonymous module.
+        define([], factory);
+
+    } else if ( typeof exports === 'object' ) {
+
+        // Node/CommonJS
+        module.exports = factory();
+
+    } else {
+
+        // Browser globals
+        window.wNumb = factory();
+    }
+
+}(function(){
 
 	'use strict';
 
-var
-/** @const */ FormatOptions = [
+var FormatOptions = [
 	'decimals',
 	'thousand',
 	'mark',
 	'prefix',
-	'postfix',
+	'suffix',
 	'encoder',
 	'decoder',
 	'negativeBefore',
@@ -29,7 +46,7 @@ var
 		return input.substring(0, match.length) === match;
 	}
 
-	// Check is a string ends in a specified postfix.
+	// Check is a string ends in a specified suffix.
 	function strEndsWith ( input, match ) {
 		return input.slice(-1 * match.length) === match;
 	}
@@ -47,16 +64,19 @@ var
 	}
 
 	// Provide rounding-accurate toFixed method.
-	function toFixed ( value, decimals ) {
-		var scale = Math.pow(10, decimals);
-		return ( Math.round(value * scale) / scale).toFixed( decimals );
+	// Borrowed: http://stackoverflow.com/a/21323330/775265
+	function toFixed ( value, exp ) {
+		value = value.toString().split('e');
+		value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
+		value = value.toString().split('e');
+		return (+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp))).toFixed(exp);
 	}
 
 
 // Formatting
 
 	// Accept a number as input, output formatted string.
-	function formatTo ( decimals, thousand, mark, prefix, postfix, encoder, decoder, negativeBefore, negative, edit, undo, input ) {
+	function formatTo ( decimals, thousand, mark, prefix, suffix, encoder, decoder, negativeBefore, negative, edit, undo, input ) {
 
 		var originalInput = input, inputIsNegative, inputPieces, inputBase, inputDecimals = '', output = '';
 
@@ -133,9 +153,9 @@ var
 		output += inputBase;
 		output += inputDecimals;
 
-		// Apply the postfix.
-		if ( postfix ) {
-			output += postfix;
+		// Apply the suffix.
+		if ( suffix ) {
+			output += suffix;
 		}
 
 		// Run the output through a user-specified post-formatter.
@@ -148,7 +168,7 @@ var
 	}
 
 	// Accept a sting as input, output decoded number.
-	function formatFrom ( decimals, thousand, mark, prefix, postfix, encoder, decoder, negativeBefore, negative, edit, undo, input ) {
+	function formatFrom ( decimals, thousand, mark, prefix, suffix, encoder, decoder, negativeBefore, negative, edit, undo, input ) {
 
 		var originalInput = input, inputIsNegative, output = '';
 
@@ -180,10 +200,10 @@ var
 			inputIsNegative = true;
 		}
 
-		// Remove the postfix.
+		// Remove the suffix.
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice
-		if ( postfix && strEndsWith(input, postfix) ) {
-			input = input.slice(0, -1 * postfix.length);
+		if ( suffix && strEndsWith(input, suffix) ) {
+			input = input.slice(0, -1 * suffix.length);
 		}
 
 		// Remove the thousand grouping.
@@ -236,6 +256,10 @@ var
 
 		var i, optionName, optionValue,
 			filteredOptions = {};
+
+		if ( inputOptions['suffix'] === undefined ) {
+			inputOptions['suffix'] = inputOptions['postfix'];
+		}
 
 		for ( i = 0; i < FormatOptions.length; i+=1 ) {
 
@@ -305,7 +329,6 @@ var
 		return method.apply('', args);
 	}
 
-	/** @constructor */
 	function wNumb ( options ) {
 
 		if ( !(this instanceof wNumb) ) {
@@ -329,7 +352,6 @@ var
 		};
 	}
 
-	/** @export */
-	window.wNumb = wNumb;
+	return wNumb;
 
-}());
+}));
