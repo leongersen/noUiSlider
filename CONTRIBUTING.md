@@ -1,7 +1,7 @@
 # Issues
 Please, only use the issue tracker for **problems, bugs and feature requests**.
 
-For help with implementing this slider, ask your question on [stackoverflow](http://stackoverflow.com/questions/tagged/nouislider). I look a questions posted there daily, and you will get you an answer much faster.
+For help with implementing this slider, ask your question on [stackoverflow](https://stackoverflow.com/questions/tagged/nouislider). I look at questions posted there daily, and you will get you an answer much faster. Please follow the guidelines of the platform.
 
 While I'm happy to help if you can't figure something out, please note this: I won't debug screenshots or issues that do not include **an example with code** that reproduces it. I also won't dig through your production site or huge chunks of unrelated code. I also won't implement your business requirements for you.
 
