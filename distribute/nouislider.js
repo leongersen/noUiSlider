@@ -1241,7 +1241,8 @@ function closure ( target, options, originalOptions ){
 		var format = grid.format || {
 			to: Math.round
 		};
-
+                if (scope_Target.childNodes.length == 2)
+                    scope_Target.removeChild(scope_Target.childNodes[1])
 		return scope_Target.appendChild(addMarking(
 			spread,
 			filter,
@@ -2070,7 +2071,9 @@ function closure ( target, options, originalOptions ){
 		options.margin = newOptions.margin;
 		options.limit = newOptions.limit;
 		options.padding = newOptions.padding;
-
+		if ( options.pips ) {
+   		     pips(options.pips);
+		}
 		// Invalidate the current positioning so valueSet forces an update.
 		scope_Locations = [];
 		valueSet(optionsToUpdate.start || v, fireSetEvent);
