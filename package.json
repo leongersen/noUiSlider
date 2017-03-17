@@ -1,6 +1,6 @@
 {
   "name": "nouislider",
-  "version": "9.2.0",
+  "version": "9.2.1",
   "main": "distribute/nouislider",
   "style": "distribute/nouislider.min.css",
   "license": "WTFPL",
@@ -8,7 +8,7 @@
     "build": "grunt create",
     "watch:js": "npm run build && onchange 'src/js/*.js' 'src/*.css' -- npm run build",
     "serve-tests": "browser-sync start --server . --startPath tests/slider.html --files 'distribute/, tests/*.js'",
-    "test": "grunt lint",
+    "test": "grunt test",
     "dev": "./scripts/dev.sh"
   },
   "devDependencies": {
