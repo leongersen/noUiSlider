@@ -231,7 +231,7 @@
 	}
 
 	function pips ( grid ) {
-		debugger;
+
 		var mode = grid.mode;
 		var density = grid.density || 1;
 		var filter = grid.filter || false;
@@ -242,11 +242,6 @@
 		var format = grid.format || {
 			to: Math.round
 		};
-		var pips = scope_Target.querySelector('.'+options.cssClasses.pips);
-		
-		if(pips){
-			scope_Target.removeChild(pips);
-		}
 
 		return scope_Target.appendChild(addMarking(
 			spread,

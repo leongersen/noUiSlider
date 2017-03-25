@@ -1,4 +1,4 @@
-/*! nouislider - 9.2.0 - 2017-03-25 16:35:40 */
+/*! nouislider - 9.2.0 - 2017-01-11 10:35:34 */
 
 (function (factory) {
 
@@ -1230,7 +1230,7 @@ function closure ( target, options, originalOptions ){
 	}
 
 	function pips ( grid ) {
-		debugger;
+
 		var mode = grid.mode;
 		var density = grid.density || 1;
 		var filter = grid.filter || false;
