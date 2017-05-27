@@ -1,7 +1,9 @@
 
 function closure ( target, options, originalOptions ){
 
-	var actions = getActions( );
+	var actions = getActions();
+	var supportsTouchActionNone = getSupportsTouchActionNone();
+	var supportsPassive = supportsTouchActionNone && getSupportsPassive();
 
 	// All variables local to 'closure' are prefixed with 'scope_'
 	var scope_Target = target;

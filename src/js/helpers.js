@@ -1,4 +1,9 @@
 
+	// Bindable version
+	function preventDefault ( e ) {
+		e.preventDefault();
+	}
+
 	// Creates a node, adds it to target, returns the new node.
 	function addNodeTo ( target, className ) {
 		var div = document.createElement('div');

@@ -39,7 +39,7 @@
 		// Remove cursor styles and text-selection events bound to the body.
 		if ( event.cursor ) {
 			document.body.style.cursor = '';
-			document.body.removeEventListener('selectstart', document.body.noUiListener);
+			document.body.removeEventListener('selectstart', preventDefault);
 		}
 
 		// Unbind the move and end events, which are added on 'start'.
@@ -76,9 +76,6 @@
 			addClass(scope_ActiveHandle, options.cssClasses.active);
 		}
 
-		// Fix #551, where a handle gets selected instead of dragged.
-		event.preventDefault();
-
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
 
@@ -114,14 +111,13 @@
 				addClass(scope_Target, options.cssClasses.drag);
 			}
 
-			var f = function(){
-				return false;
-			};
-
-			document.body.noUiListener = f;
-
 			// Prevent text selection when dragging the handles.
-			document.body.addEventListener('selectstart', f, false);
+			// In noUiSlider <= 9.2.0, this was handled by calling preventDefault on mouse/touch start/move,
+			// which is scroll blocking. The selectstart event is supported by FireFox starting from version 52,
+			// meaning the only holdout is iOS Safari. This doesn't matter: text selection isn't triggered there.
+			// The 'cursor' flag is false.
+			// See: http://caniuse.com/#search=selectstart
+			document.body.addEventListener('selectstart', preventDefault, false);
 		}
 
 		data.handleNumbers.forEach(function(handleNumber){
