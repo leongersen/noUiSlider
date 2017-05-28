@@ -53,8 +53,8 @@
 		setZindex();
 
 		data.handleNumbers.forEach(function(handleNumber){
-			fireEvent('set', handleNumber);
 			fireEvent('change', handleNumber);
+			fireEvent('set', handleNumber);
 			fireEvent('end', handleNumber);
 		});
 	}
@@ -150,9 +150,9 @@
 		setZindex();
 
 		fireEvent('slide', handleNumber, true);
-		fireEvent('set', handleNumber, true);
-		fireEvent('change', handleNumber, true);
 		fireEvent('update', handleNumber, true);
+		fireEvent('change', handleNumber, true);
+		fireEvent('set', handleNumber, true);
 
 		if ( options.events.snap ) {
 			eventStart(event, { handleNumbers: [handleNumber] });

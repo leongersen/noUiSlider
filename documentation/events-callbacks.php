@@ -11,6 +11,8 @@
 
 		<p>noUiSlider offers several ways to listen to interaction: <code>'update'</code>, <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time. There are also the <code>'start'</code> and <code>'end'</code> events, that fire when a drag is started or ended.</p>
 
+		<p>Events always fire in the order <code>'start'</code> &gt; <code>'slide'</code> &gt; <code>'update'</code> &gt; <code>'change'</code> &gt; <code>'set'</code> &gt; <code>'end'</code>.</p>
+
 		<div class="example">
 
 			<div id="slider-events"></div>
@@ -174,7 +176,7 @@
 <section>
 
 	<div class="view">
-		<p>This event is useful when you specifically want to listen to a handle being dragged, but want to ignore other updates to the slider value. This event also fires on a change by a 'tap'.</p>
+		<p>This event is useful when you specifically want to listen to a handle being dragged, but want to <strong>ignore other updates</strong> to the slider value. This event also fires on a change by a 'tap'. In most cases, the <code>'update'</code> is the better choice.</p>
 	</div>
 </section>
 
