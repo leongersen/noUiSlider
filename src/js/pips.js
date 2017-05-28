@@ -170,7 +170,7 @@
 
 	function addMarking ( spread, filterFunc, formatter ) {
 
-		var element = document.createElement('div');
+		var element = scope_Document.createElement('div');
 
 		var valueSizeClasses = [
 			options.cssClasses.valueNormal,

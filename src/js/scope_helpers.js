@@ -99,7 +99,7 @@
 			y = e.changedTouches[0].pageY;
 		}
 
-		pageOffset = pageOffset || getPageOffset();
+		pageOffset = pageOffset || getPageOffset(scope_Document);
 
 		if ( mouse || pointer ) {
 			x = e.clientX + pageOffset.x;

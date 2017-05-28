@@ -1,4 +1,18 @@
 
+	// Creates a node, adds it to target, returns the new node.
+	function addNodeTo ( target, className ) {
+
+		var div = scope_Document.createElement('div');
+
+		if ( className ) {
+			addClass(div, className);
+		}
+
+		target.appendChild(div);
+
+		return div;
+	}
+
 	// Append a origin to the base
 	function addOrigin ( base, handleNumber ) {
 
