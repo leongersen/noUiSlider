@@ -17,3 +17,4 @@ function closure ( target, options, originalOptions ){
 	var scope_Values = [];
 	var scope_Events = {};
 	var scope_Self;
+	var scope_Pips;
