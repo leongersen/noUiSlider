@@ -2,8 +2,8 @@
 	// Run the standard initializer
 	function initialize ( target, originalOptions ) {
 
-		if ( !target.nodeName ) {
-			throw new Error("noUiSlider (" + VERSION + "): create requires a single element.");
+		if ( !target || !target.nodeName ) {
+			throw new Error("noUiSlider (" + VERSION + "): create requires a single element, got: " + target);
 		}
 
 		// Test the options and create the slider environment;

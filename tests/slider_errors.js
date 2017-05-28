@@ -14,7 +14,7 @@
 					'max': 10
 				}
 			});
-		});
+		}, new Error('noUiSlider (' + noUiSlider.version + '): create requires a single element, got: [object NodeList]'), 'Gave a nodelist');
 
 		assert.throws(function(){
 			noUiSlider.create(slider, {
