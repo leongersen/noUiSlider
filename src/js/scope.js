@@ -381,6 +381,7 @@
 		options: originalOptions, // Issue #600, #678
 		updateOptions: updateOptions,
 		target: scope_Target, // Issue #597
+		removePips: removePips,
 		pips: pips // Issue #594
 	};
 
