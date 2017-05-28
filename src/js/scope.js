@@ -1,6 +1,6 @@
 
 	// Split out the handle positioning logic so the Move event can use it, too
-	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward ) {
+	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward, getValue ) {
 
 		// For sliders with multiple handles, limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
@@ -48,7 +48,7 @@
 		to = limit(to);
 
 		// Return false if handle can't move
-		if ( to === reference[handleNumber] ) {
+		if ( to === reference[handleNumber] && !getValue ) {
 			return false;
 		}
 
@@ -101,7 +101,7 @@
 	// Test suggested values and apply margin, step.
 	function setHandle ( handleNumber, to, lookBackward, lookForward ) {
 
-		to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward);
+		to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
 
 		if ( to === false ) {
 			return false;
@@ -321,7 +321,7 @@
 	function updateOptions ( optionsToUpdate, fireSetEvent ) {
 
 		// Spectrum is created using the range, snap, direction and step options.
-		// 'snap' and 'step' can be updated, 'direction' cannot, due to event binding.
+		// 'snap' and 'step' can be updated.
 		// If 'snap' and 'step' are not passed, they should remain unchanged.
 		var v = valueGet();
 
@@ -343,15 +343,17 @@
 			}
 		});
 
-		// Save current spectrum direction as testOptions in testRange call
-		// doesn't rely on current direction
-		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
 		// Limit, margin and padding depend on the spectrum but are stored outside of it. (#677)
 		options.margin = newOptions.margin;
 		options.limit = newOptions.limit;
 		options.padding = newOptions.padding;
+
+		// Update pips, removes existing.
+		if ( options.pips ) {
+			pips(options.pips);
+		}
 
 		// Invalidate the current positioning so valueSet forces an update.
 		scope_Locations = [];
@@ -381,6 +383,7 @@
 		options: originalOptions, // Issue #600, #678
 		updateOptions: updateOptions,
 		target: scope_Target, // Issue #597
+		removePips: removePips,
 		pips: pips // Issue #594
 	};
 
@@ -397,5 +400,7 @@
 	if ( options.tooltips ) {
 		tooltips();
 	}
+
+	aria();
 
 	return scope_Self;

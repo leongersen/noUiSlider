@@ -15,6 +15,7 @@ module.exports = function(grunt) {
 			'src/js/scope_start.js',
 			'src/js/structure.js',
 			'src/js/tooltips.js',
+			'src/js/aria.js',
 			'src/js/pips.js',
 			'src/js/scope_helpers.js',
 			'src/js/scope_events.js',

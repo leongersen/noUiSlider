@@ -179,10 +179,7 @@
 
 // Interface
 
-	// The interface to Spectrum handles all direction-based
-	// conversions, so the above values are unaware.
-
-	function Spectrum ( entry, snap, direction, singleStep ) {
+	function Spectrum ( entry, snap, singleStep ) {
 
 		this.xPct = [];
 		this.xVal = [];
@@ -191,7 +188,6 @@
 		this.xHighestCompleteStep = [];
 
 		this.snap = snap;
-		this.direction = direction;
 
 		var index, ordered = [ /* [0, 'min'], [1, '50%'], [2, 'max'] */ ];
 

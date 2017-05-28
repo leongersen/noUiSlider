@@ -170,8 +170,8 @@
 
 	function addMarking ( spread, filterFunc, formatter ) {
 
-		var element = document.createElement('div');
-		var out = '';
+		var element = scope_Document.createElement('div');
+
 		var valueSizeClasses = [
 			options.cssClasses.valueNormal,
 			options.cssClasses.valueLarge,
@@ -202,21 +202,22 @@
 			return source + ' ' + orientationClasses[options.ort] + ' ' + sizeClasses[type];
 		}
 
-		function getTags( offset, source, values ) {
-			return 'class="' + getClasses(values[1], source) + '" style="' + options.style + ': ' + offset + '%"';
-		}
-
 		function addSpread ( offset, values ){
 
 			// Apply the filter function, if it is set.
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
 
 			// Add a marker for every point
-			out += '<div ' + getTags(offset, options.cssClasses.marker, values) + '></div>';
+			var node = addNodeTo(element, false);
+				node.className = getClasses(values[1], options.cssClasses.marker);
+				node.style[options.style] = offset + '%';
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				out += '<div ' + getTags(offset, options.cssClasses.value, values) + '>' + formatter.to(values[0]) + '</div>';
+				node = addNodeTo(element, false);
+				node.className = getClasses(values[1], options.cssClasses.value);
+				node.style[options.style] = offset + '%';
+				node.innerText = formatter.to(values[0]);
 			}
 		}
 
@@ -225,12 +226,20 @@
 			addSpread(a, spread[a]);
 		});
 
-		element.innerHTML = out;
-
 		return element;
 	}
 
+	function removePips ( ) {
+		if ( scope_Pips ) {
+			removeElement(scope_Pips);
+			scope_Pips = null;
+		}
+	}
+
 	function pips ( grid ) {
+
+		// Fix #669
+		removePips();
 
 		var mode = grid.mode;
 		var density = grid.density || 1;
@@ -243,9 +252,11 @@
 			to: Math.round
 		};
 
-		return scope_Target.appendChild(addMarking(
+		scope_Pips = scope_Target.appendChild(addMarking(
 			spread,
 			filter,
 			format
 		));
+
+		return scope_Pips;
 	}

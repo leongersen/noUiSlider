@@ -15,6 +15,16 @@
 		return value !== undefined && value.toFixed(2);
 	}, 'from': Number };
 
+	function validateFormat ( entry ) {
+
+		// Any object with a to and from method is supported.
+		if ( isValidFormatter(entry) ) {
+			return true;
+		}
+
+		throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
+	}
+
 	function testStep ( parsed, entry ) {
 
 		if ( !isNumeric( entry ) ) {
@@ -43,7 +53,7 @@
 			throw new Error("noUiSlider (" + VERSION + "): 'range' 'min' and 'max' cannot be equal.");
 		}
 
-		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
+		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.singleStep);
 	}
 
 	function testStart ( parsed, entry ) {
@@ -283,16 +293,14 @@
 		}
 	}
 
+	function testAriaFormat ( parsed, entry ) {
+		parsed.ariaFormat = entry;
+		validateFormat(entry);
+	}
+
 	function testFormat ( parsed, entry ) {
-
 		parsed.format = entry;
-
-		// Any object with a to and from method is supported.
-		if ( typeof entry.to === 'function' && typeof entry.from === 'function' ) {
-			return true;
-		}
-
-		throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
+		validateFormat(entry);
 	}
 
 	function testCssPrefix ( parsed, entry ) {
@@ -344,6 +352,7 @@
 			padding: 0,
 			animate: true,
 			animationDuration: 300,
+			ariaFormat: defaultFormatter,
 			format: defaultFormatter
 		};
 
@@ -362,6 +371,7 @@
 			'limit': { r: false, t: testLimit },
 			'padding': { r: false, t: testPadding },
 			'behaviour': { r: true, t: testBehaviour },
+			'ariaFormat': { r: false, t: testAriaFormat },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
 			'cssPrefix': { r: false, t: testCssPrefix },
@@ -411,6 +421,11 @@
 			},
 			'useRequestAnimationFrame': true
 		};
+
+		// AriaFormat defaults to regular format, if any.
+		if ( options.format && !options.ariaFormat ) {
+			options.ariaFormat = options.format;
+		}
 
 		// Run all options through a testing mechanism to ensure correct
 		// input. It should be noted that options might get modified to

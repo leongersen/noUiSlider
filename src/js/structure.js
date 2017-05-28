@@ -1,4 +1,18 @@
 
+	// Creates a node, adds it to target, returns the new node.
+	function addNodeTo ( target, className ) {
+
+		var div = scope_Document.createElement('div');
+
+		if ( className ) {
+			addClass(div, className);
+		}
+
+		target.appendChild(div);
+
+		return div;
+	}
+
 	// Append a origin to the base
 	function addOrigin ( base, handleNumber ) {
 
@@ -6,6 +20,12 @@
 		var handle = addNodeTo(origin, options.cssClasses.handle);
 
 		handle.setAttribute('data-handle', handleNumber);
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+		// 0 = focusable and reachable
+		handle.setAttribute('tabindex', '0');
+		handle.setAttribute('role', 'slider');
+		handle.setAttribute('aria-orientation', options.ort ? 'vertical' : 'horizontal');
 
 		if ( handleNumber === 0 ) {
 			addClass(handle, options.cssClasses.handleLower);

@@ -39,6 +39,15 @@
 				return false;
 			}
 
+			// 'supportsPassive' is only true if a browser also supports touch-action: none in CSS.
+			// iOS safari does not, so it doesn't get to benefit from passive scrolling. iOS does support
+			// touch-action: manipulation, but that allows panning, which breaks
+			// sliders after zooming/on non-responsive pages.
+			// See: https://bugs.webkit.org/show_bug.cgi?id=133112
+			if ( !supportsPassive ) {
+				e.preventDefault();
+			}
+
 			e.calcPoint = e.points[ options.ort ];
 
 			// Call the event handler with the event [ and additional data ].
@@ -49,7 +58,7 @@
 
 		// Bind a closure on the target for every event type.
 		events.split(' ').forEach(function( eventName ){
-			element.addEventListener(eventName, method, false);
+			element.addEventListener(eventName, method, supportsPassive ? { passive: true } : false);
 			methods.push([eventName, method]);
 		});
 
@@ -59,16 +68,13 @@
 	// Provide a clean event with standardized offset values.
 	function fixEvent ( e, pageOffset ) {
 
-		// Prevent scrolling and panning on touch events, while
-		// attempting to slide. The tap event also depends on this.
-		e.preventDefault();
-
 		// Filter the event to register the type, which can be
 		// touch, mouse or pointer. Offset changes need to be
 		// made on an event specific basis.
 		var touch = e.type.indexOf('touch') === 0;
 		var mouse = e.type.indexOf('mouse') === 0;
 		var pointer = e.type.indexOf('pointer') === 0;
+
 		var x;
 		var y;
 
@@ -93,7 +99,7 @@
 			y = e.changedTouches[0].pageY;
 		}
 
-		pageOffset = pageOffset || getPageOffset();
+		pageOffset = pageOffset || getPageOffset(scope_Document);
 
 		if ( mouse || pointer ) {
 			x = e.clientX + pageOffset.x;
@@ -161,7 +167,7 @@
 
 			handleNumbers.forEach(function(handleNumber, o) {
 
-				var to = checkHandlePosition(proposals, handleNumber, proposals[handleNumber] + proposal, b[o], f[o]);
+				var to = checkHandlePosition(proposals, handleNumber, proposals[handleNumber] + proposal, b[o], f[o], false);
 
 				// Stop if one of the handles can't move.
 				if ( to === false ) {

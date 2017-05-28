@@ -1,10 +1,15 @@
 
-	// Creates a node, adds it to target, returns the new node.
-	function addNodeTo ( target, className ) {
-		var div = document.createElement('div');
-		addClass(div, className);
-		target.appendChild(div);
-		return div;
+	function isValidFormatter ( entry ) {
+		return typeof entry === 'object' && typeof entry.to === 'function' && typeof entry.from === 'function';
+	}
+
+	function removeElement ( el ) {
+		el.parentElement.removeChild(el);
+	}
+
+	// Bindable version
+	function preventDefault ( e ) {
+		e.preventDefault();
 	}
 
 	// Removes duplicates from an array.
@@ -22,10 +27,10 @@
 	// Current position of an element relative to the document.
 	function offset ( elem, orientation ) {
 
-	var rect = elem.getBoundingClientRect(),
-		doc = elem.ownerDocument,
-		docElem = doc.documentElement,
-		pageOffset = getPageOffset();
+		var rect = elem.getBoundingClientRect();
+		var doc = elem.ownerDocument;
+		var docElem = doc.documentElement;
+		var pageOffset = getPageOffset(doc);
 
 		// getBoundingClientRect contains left scroll in Chrome on Android.
 		// I haven't found a feature detection that proves this. Worst case
@@ -94,12 +99,12 @@
 	}
 
 	// https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
-	function getPageOffset ( ) {
+	function getPageOffset ( doc ) {
 
-		var supportPageOffset = window.pageXOffset !== undefined,
-			isCSS1Compat = ((document.compatMode || "") === "CSS1Compat"),
-			x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? document.documentElement.scrollLeft : document.body.scrollLeft,
-			y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
+		var supportPageOffset = window.pageXOffset !== undefined;
+		var isCSS1Compat = ((doc.compatMode || "") === "CSS1Compat");
+		var x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? doc.documentElement.scrollLeft : doc.body.scrollLeft;
+		var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? doc.documentElement.scrollTop : doc.body.scrollTop;
 
 		return {
 			x: x,

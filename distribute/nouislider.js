@@ -1,4 +1,4 @@
-/*! nouislider - 9.2.0 - 2017-01-11 10:35:34 */
+/*! nouislider - 10.0.0 - 2017-05-28 14:52:48 */
 
 (function (factory) {
 
@@ -22,15 +22,20 @@
 
 	'use strict';
 
-	var VERSION = '9.2.0';
+	var VERSION = '10.0.0';
 
 
-	// Creates a node, adds it to target, returns the new node.
-	function addNodeTo ( target, className ) {
-		var div = document.createElement('div');
-		addClass(div, className);
-		target.appendChild(div);
-		return div;
+	function isValidFormatter ( entry ) {
+		return typeof entry === 'object' && typeof entry.to === 'function' && typeof entry.from === 'function';
+	}
+
+	function removeElement ( el ) {
+		el.parentElement.removeChild(el);
+	}
+
+	// Bindable version
+	function preventDefault ( e ) {
+		e.preventDefault();
 	}
 
 	// Removes duplicates from an array.
@@ -48,10 +53,10 @@
 	// Current position of an element relative to the document.
 	function offset ( elem, orientation ) {
 
-	var rect = elem.getBoundingClientRect(),
-		doc = elem.ownerDocument,
-		docElem = doc.documentElement,
-		pageOffset = getPageOffset();
+		var rect = elem.getBoundingClientRect();
+		var doc = elem.ownerDocument;
+		var docElem = doc.documentElement;
+		var pageOffset = getPageOffset(doc);
 
 		// getBoundingClientRect contains left scroll in Chrome on Android.
 		// I haven't found a feature detection that proves this. Worst case
@@ -120,12 +125,12 @@
 	}
 
 	// https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
-	function getPageOffset ( ) {
+	function getPageOffset ( doc ) {
 
-		var supportPageOffset = window.pageXOffset !== undefined,
-			isCSS1Compat = ((document.compatMode || "") === "CSS1Compat"),
-			x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? document.documentElement.scrollLeft : document.body.scrollLeft,
-			y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
+		var supportPageOffset = window.pageXOffset !== undefined;
+		var isCSS1Compat = ((doc.compatMode || "") === "CSS1Compat");
+		var x = supportPageOffset ? window.pageXOffset : isCSS1Compat ? doc.documentElement.scrollLeft : doc.body.scrollLeft;
+		var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? doc.documentElement.scrollTop : doc.body.scrollTop;
 
 		return {
 			x: x,
@@ -153,6 +158,31 @@
 			move: 'mousemove touchmove',
 			end: 'mouseup touchend'
 		};
+	}
+
+	// https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
+	// Issue #785
+	function getSupportsPassive ( ) {
+
+		var supportsPassive = false;
+
+		try {
+
+			var opts = Object.defineProperty({}, 'passive', {
+				get: function() {
+					supportsPassive = true;
+				}
+			});
+
+			window.addEventListener('test', null, opts);
+
+		} catch (e) {}
+
+		return supportsPassive;
+	}
+
+	function getSupportsTouchActionNone ( ) {
+		return window.CSS && CSS.supports && CSS.supports('touch-action', 'none');
 	}
 
 
@@ -336,10 +366,7 @@
 
 // Interface
 
-	// The interface to Spectrum handles all direction-based
-	// conversions, so the above values are unaware.
-
-	function Spectrum ( entry, snap, direction, singleStep ) {
+	function Spectrum ( entry, snap, singleStep ) {
 
 		this.xPct = [];
 		this.xVal = [];
@@ -348,7 +375,6 @@
 		this.xHighestCompleteStep = [];
 
 		this.snap = snap;
-		this.direction = direction;
 
 		var index, ordered = [ /* [0, 'min'], [1, '50%'], [2, 'max'] */ ];
 
@@ -450,6 +476,16 @@
 		return value !== undefined && value.toFixed(2);
 	}, 'from': Number };
 
+	function validateFormat ( entry ) {
+
+		// Any object with a to and from method is supported.
+		if ( isValidFormatter(entry) ) {
+			return true;
+		}
+
+		throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
+	}
+
 	function testStep ( parsed, entry ) {
 
 		if ( !isNumeric( entry ) ) {
@@ -478,7 +514,7 @@
 			throw new Error("noUiSlider (" + VERSION + "): 'range' 'min' and 'max' cannot be equal.");
 		}
 
-		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
+		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.singleStep);
 	}
 
 	function testStart ( parsed, entry ) {
@@ -718,16 +754,14 @@
 		}
 	}
 
+	function testAriaFormat ( parsed, entry ) {
+		parsed.ariaFormat = entry;
+		validateFormat(entry);
+	}
+
 	function testFormat ( parsed, entry ) {
-
 		parsed.format = entry;
-
-		// Any object with a to and from method is supported.
-		if ( typeof entry.to === 'function' && typeof entry.from === 'function' ) {
-			return true;
-		}
-
-		throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
+		validateFormat(entry);
 	}
 
 	function testCssPrefix ( parsed, entry ) {
@@ -779,6 +813,7 @@
 			padding: 0,
 			animate: true,
 			animationDuration: 300,
+			ariaFormat: defaultFormatter,
 			format: defaultFormatter
 		};
 
@@ -797,6 +832,7 @@
 			'limit': { r: false, t: testLimit },
 			'padding': { r: false, t: testPadding },
 			'behaviour': { r: true, t: testBehaviour },
+			'ariaFormat': { r: false, t: testAriaFormat },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
 			'cssPrefix': { r: false, t: testCssPrefix },
@@ -847,6 +883,11 @@
 			'useRequestAnimationFrame': true
 		};
 
+		// AriaFormat defaults to regular format, if any.
+		if ( options.format && !options.ariaFormat ) {
+			options.ariaFormat = options.format;
+		}
+
 		// Run all options through a testing mechanism to ensure correct
 		// input. It should be noted that options might get modified to
 		// be handled properly. E.g. wrapping integers in arrays.
@@ -880,7 +921,9 @@
 
 function closure ( target, options, originalOptions ){
 
-	var actions = getActions( );
+	var actions = getActions();
+	var supportsTouchActionNone = getSupportsTouchActionNone();
+	var supportsPassive = supportsTouchActionNone && getSupportsPassive();
 
 	// All variables local to 'closure' are prefixed with 'scope_'
 	var scope_Target = target;
@@ -894,7 +937,26 @@ function closure ( target, options, originalOptions ){
 	var scope_Values = [];
 	var scope_Events = {};
 	var scope_Self;
+	var scope_Pips;
+	var scope_Listeners = null;
+	var scope_Document = target.ownerDocument;
+	var scope_DocumentElement = scope_Document.documentElement;
+	var scope_Body = scope_Document.body;
 
+
+	// Creates a node, adds it to target, returns the new node.
+	function addNodeTo ( target, className ) {
+
+		var div = scope_Document.createElement('div');
+
+		if ( className ) {
+			addClass(div, className);
+		}
+
+		target.appendChild(div);
+
+		return div;
+	}
 
 	// Append a origin to the base
 	function addOrigin ( base, handleNumber ) {
@@ -903,6 +965,12 @@ function closure ( target, options, originalOptions ){
 		var handle = addNodeTo(origin, options.cssClasses.handle);
 
 		handle.setAttribute('data-handle', handleNumber);
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+		// 0 = focusable and reachable
+		handle.setAttribute('tabindex', '0');
+		handle.setAttribute('role', 'slider');
+		handle.setAttribute('aria-orientation', options.ort ? 'vertical' : 'horizontal');
 
 		if ( handleNumber === 0 ) {
 			addClass(handle, options.cssClasses.handleLower);
@@ -994,6 +1062,30 @@ function closure ( target, options, originalOptions ){
 			}
 
 			tips[handleNumber].innerHTML = formattedValue;
+		});
+	}
+
+
+	function aria ( ) {
+
+		bindEvent('update', function ( values, handleNumber, unencoded, tap, positions ) {
+
+			// Update Aria Values for all handles, as a change in one changes min and max values for the next.
+			scope_HandleNumbers.forEach(function( handleNumber ){
+
+				var handle = scope_Handles[handleNumber];
+
+				var min = checkHandlePosition(scope_Locations, handleNumber, 0, true, true, true);
+				var max = checkHandlePosition(scope_Locations, handleNumber, 100, true, true, true);
+
+				var now = positions[handleNumber];
+				var text = options.ariaFormat.to(unencoded[handleNumber]);
+
+				handle.children[0].setAttribute('aria-valuemin', min.toFixed(1));
+				handle.children[0].setAttribute('aria-valuemax', max.toFixed(1));
+				handle.children[0].setAttribute('aria-valuenow', now.toFixed(1));
+				handle.children[0].setAttribute('aria-valuetext', text);
+			});
 		});
 	}
 
@@ -1169,8 +1261,8 @@ function closure ( target, options, originalOptions ){
 
 	function addMarking ( spread, filterFunc, formatter ) {
 
-		var element = document.createElement('div');
-		var out = '';
+		var element = scope_Document.createElement('div');
+
 		var valueSizeClasses = [
 			options.cssClasses.valueNormal,
 			options.cssClasses.valueLarge,
@@ -1201,21 +1293,22 @@ function closure ( target, options, originalOptions ){
 			return source + ' ' + orientationClasses[options.ort] + ' ' + sizeClasses[type];
 		}
 
-		function getTags( offset, source, values ) {
-			return 'class="' + getClasses(values[1], source) + '" style="' + options.style + ': ' + offset + '%"';
-		}
-
 		function addSpread ( offset, values ){
 
 			// Apply the filter function, if it is set.
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
 
 			// Add a marker for every point
-			out += '<div ' + getTags(offset, options.cssClasses.marker, values) + '></div>';
+			var node = addNodeTo(element, false);
+				node.className = getClasses(values[1], options.cssClasses.marker);
+				node.style[options.style] = offset + '%';
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				out += '<div ' + getTags(offset, options.cssClasses.value, values) + '>' + formatter.to(values[0]) + '</div>';
+				node = addNodeTo(element, false);
+				node.className = getClasses(values[1], options.cssClasses.value);
+				node.style[options.style] = offset + '%';
+				node.innerText = formatter.to(values[0]);
 			}
 		}
 
@@ -1224,12 +1317,20 @@ function closure ( target, options, originalOptions ){
 			addSpread(a, spread[a]);
 		});
 
-		element.innerHTML = out;
-
 		return element;
 	}
 
+	function removePips ( ) {
+		if ( scope_Pips ) {
+			removeElement(scope_Pips);
+			scope_Pips = null;
+		}
+	}
+
 	function pips ( grid ) {
+
+		// Fix #669
+		removePips();
 
 		var mode = grid.mode;
 		var density = grid.density || 1;
@@ -1242,11 +1343,13 @@ function closure ( target, options, originalOptions ){
 			to: Math.round
 		};
 
-		return scope_Target.appendChild(addMarking(
+		scope_Pips = scope_Target.appendChild(addMarking(
 			spread,
 			filter,
 			format
 		));
+
+		return scope_Pips;
 	}
 
 
@@ -1290,6 +1393,15 @@ function closure ( target, options, originalOptions ){
 				return false;
 			}
 
+			// 'supportsPassive' is only true if a browser also supports touch-action: none in CSS.
+			// iOS safari does not, so it doesn't get to benefit from passive scrolling. iOS does support
+			// touch-action: manipulation, but that allows panning, which breaks
+			// sliders after zooming/on non-responsive pages.
+			// See: https://bugs.webkit.org/show_bug.cgi?id=133112
+			if ( !supportsPassive ) {
+				e.preventDefault();
+			}
+
 			e.calcPoint = e.points[ options.ort ];
 
 			// Call the event handler with the event [ and additional data ].
@@ -1300,7 +1412,7 @@ function closure ( target, options, originalOptions ){
 
 		// Bind a closure on the target for every event type.
 		events.split(' ').forEach(function( eventName ){
-			element.addEventListener(eventName, method, false);
+			element.addEventListener(eventName, method, supportsPassive ? { passive: true } : false);
 			methods.push([eventName, method]);
 		});
 
@@ -1310,16 +1422,13 @@ function closure ( target, options, originalOptions ){
 	// Provide a clean event with standardized offset values.
 	function fixEvent ( e, pageOffset ) {
 
-		// Prevent scrolling and panning on touch events, while
-		// attempting to slide. The tap event also depends on this.
-		e.preventDefault();
-
 		// Filter the event to register the type, which can be
 		// touch, mouse or pointer. Offset changes need to be
 		// made on an event specific basis.
 		var touch = e.type.indexOf('touch') === 0;
 		var mouse = e.type.indexOf('mouse') === 0;
 		var pointer = e.type.indexOf('pointer') === 0;
+
 		var x;
 		var y;
 
@@ -1344,7 +1453,7 @@ function closure ( target, options, originalOptions ){
 			y = e.changedTouches[0].pageY;
 		}
 
-		pageOffset = pageOffset || getPageOffset();
+		pageOffset = pageOffset || getPageOffset(scope_Document);
 
 		if ( mouse || pointer ) {
 			x = e.clientX + pageOffset.x;
@@ -1412,7 +1521,7 @@ function closure ( target, options, originalOptions ){
 
 			handleNumbers.forEach(function(handleNumber, o) {
 
-				var to = checkHandlePosition(proposals, handleNumber, proposals[handleNumber] + proposal, b[o], f[o]);
+				var to = checkHandlePosition(proposals, handleNumber, proposals[handleNumber] + proposal, b[o], f[o], false);
 
 				// Stop if one of the handles can't move.
 				if ( to === false ) {
@@ -1514,13 +1623,13 @@ function closure ( target, options, originalOptions ){
 
 		// Remove cursor styles and text-selection events bound to the body.
 		if ( event.cursor ) {
-			document.body.style.cursor = '';
-			document.body.removeEventListener('selectstart', document.body.noUiListener);
+			scope_Body.style.cursor = '';
+			scope_Body.removeEventListener('selectstart', preventDefault);
 		}
 
 		// Unbind the move and end events, which are added on 'start'.
-		document.documentElement.noUiListeners.forEach(function( c ) {
-			document.documentElement.removeEventListener(c[0], c[1]);
+		scope_Listeners.forEach(function( c ) {
+			scope_DocumentElement.removeEventListener(c[0], c[1]);
 		});
 
 		// Remove dragging class.
@@ -1529,8 +1638,8 @@ function closure ( target, options, originalOptions ){
 		setZindex();
 
 		data.handleNumbers.forEach(function(handleNumber){
-			fireEvent('set', handleNumber);
 			fireEvent('change', handleNumber);
+			fireEvent('set', handleNumber);
 			fireEvent('end', handleNumber);
 		});
 	}
@@ -1552,14 +1661,11 @@ function closure ( target, options, originalOptions ){
 			addClass(scope_ActiveHandle, options.cssClasses.active);
 		}
 
-		// Fix #551, where a handle gets selected instead of dragged.
-		event.preventDefault();
-
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
 
 		// Attach the move and end events.
-		var moveEvent = attachEvent(actions.move, document.documentElement, eventMove, {
+		var moveEvent = attachEvent(actions.move, scope_DocumentElement, eventMove, {
 			startCalcPoint: event.calcPoint,
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
@@ -1568,36 +1674,35 @@ function closure ( target, options, originalOptions ){
 			locations: scope_Locations.slice()
 		});
 
-		var endEvent = attachEvent(actions.end, document.documentElement, eventEnd, {
+		var endEvent = attachEvent(actions.end, scope_DocumentElement, eventEnd, {
 			handleNumbers: data.handleNumbers
 		});
 
-		var outEvent = attachEvent("mouseout", document.documentElement, documentLeave, {
+		var outEvent = attachEvent("mouseout", scope_DocumentElement, documentLeave, {
 			handleNumbers: data.handleNumbers
 		});
 
-		document.documentElement.noUiListeners = moveEvent.concat(endEvent, outEvent);
+		scope_Listeners = moveEvent.concat(endEvent, outEvent);
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
 		if ( event.cursor ) {
 
 			// Prevent the 'I' cursor and extend the range-drag cursor.
-			document.body.style.cursor = getComputedStyle(event.target).cursor;
+			scope_Body.style.cursor = getComputedStyle(event.target).cursor;
 
 			// Mark the target with a dragging state.
 			if ( scope_Handles.length > 1 ) {
 				addClass(scope_Target, options.cssClasses.drag);
 			}
 
-			var f = function(){
-				return false;
-			};
-
-			document.body.noUiListener = f;
-
 			// Prevent text selection when dragging the handles.
-			document.body.addEventListener('selectstart', f, false);
+			// In noUiSlider <= 9.2.0, this was handled by calling preventDefault on mouse/touch start/move,
+			// which is scroll blocking. The selectstart event is supported by FireFox starting from version 52,
+			// meaning the only holdout is iOS Safari. This doesn't matter: text selection isn't triggered there.
+			// The 'cursor' flag is false.
+			// See: http://caniuse.com/#search=selectstart
+			scope_Body.addEventListener('selectstart', preventDefault, false);
 		}
 
 		data.handleNumbers.forEach(function(handleNumber){
@@ -1630,9 +1735,9 @@ function closure ( target, options, originalOptions ){
 		setZindex();
 
 		fireEvent('slide', handleNumber, true);
-		fireEvent('set', handleNumber, true);
-		fireEvent('change', handleNumber, true);
 		fireEvent('update', handleNumber, true);
+		fireEvent('change', handleNumber, true);
+		fireEvent('set', handleNumber, true);
 
 		if ( options.events.snap ) {
 			eventStart(event, { handleNumbers: [handleNumber] });
@@ -1718,7 +1823,7 @@ function closure ( target, options, originalOptions ){
 
 
 	// Split out the handle positioning logic so the Move event can use it, too
-	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward ) {
+	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward, getValue ) {
 
 		// For sliders with multiple handles, limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
@@ -1766,7 +1871,7 @@ function closure ( target, options, originalOptions ){
 		to = limit(to);
 
 		// Return false if handle can't move
-		if ( to === reference[handleNumber] ) {
+		if ( to === reference[handleNumber] && !getValue ) {
 			return false;
 		}
 
@@ -1819,7 +1924,7 @@ function closure ( target, options, originalOptions ){
 	// Test suggested values and apply margin, step.
 	function setHandle ( handleNumber, to, lookBackward, lookForward ) {
 
-		to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward);
+		to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
 
 		if ( to === false ) {
 			return false;
@@ -2039,7 +2144,7 @@ function closure ( target, options, originalOptions ){
 	function updateOptions ( optionsToUpdate, fireSetEvent ) {
 
 		// Spectrum is created using the range, snap, direction and step options.
-		// 'snap' and 'step' can be updated, 'direction' cannot, due to event binding.
+		// 'snap' and 'step' can be updated.
 		// If 'snap' and 'step' are not passed, they should remain unchanged.
 		var v = valueGet();
 
@@ -2061,15 +2166,17 @@ function closure ( target, options, originalOptions ){
 			}
 		});
 
-		// Save current spectrum direction as testOptions in testRange call
-		// doesn't rely on current direction
-		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
 		// Limit, margin and padding depend on the spectrum but are stored outside of it. (#677)
 		options.margin = newOptions.margin;
 		options.limit = newOptions.limit;
 		options.padding = newOptions.padding;
+
+		// Update pips, removes existing.
+		if ( options.pips ) {
+			pips(options.pips);
+		}
 
 		// Invalidate the current positioning so valueSet forces an update.
 		scope_Locations = [];
@@ -2099,6 +2206,7 @@ function closure ( target, options, originalOptions ){
 		options: originalOptions, // Issue #600, #678
 		updateOptions: updateOptions,
 		target: scope_Target, // Issue #597
+		removePips: removePips,
 		pips: pips // Issue #594
 	};
 
@@ -2116,6 +2224,8 @@ function closure ( target, options, originalOptions ){
 		tooltips();
 	}
 
+	aria();
+
 	return scope_Self;
 
 }
@@ -2124,8 +2234,8 @@ function closure ( target, options, originalOptions ){
 	// Run the standard initializer
 	function initialize ( target, originalOptions ) {
 
-		if ( !target.nodeName ) {
-			throw new Error("noUiSlider (" + VERSION + "): create requires a single element.");
+		if ( !target || !target.nodeName ) {
+			throw new Error("noUiSlider (" + VERSION + "): create requires a single element, got: " + target);
 		}
 
 		// Test the options and create the slider environment;

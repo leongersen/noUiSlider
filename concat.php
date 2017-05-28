@@ -10,6 +10,7 @@
 	require 'src/js/scope_start.js';
 	require 'src/js/structure.js';
 	require 'src/js/tooltips.js';
+	require 'src/js/aria.js';
 	require 'src/js/pips.js';
 	require 'src/js/scope_helpers.js';
 	require 'src/js/scope_events.js';

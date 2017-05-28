@@ -27,6 +27,18 @@ npm [(package)](https://www.npmjs.com/package/nouislider)
 Changelog
 ---------
 
+### 10.0.0 (*2017-05-28*)
+- Change: Change event listeners to be passive (#785);
+- Fixed: Pips are now updated when calling `updateOptions` (#669);
+- Fixed: Content Security Policy issue with pips;
+- Added: `removePips` method;
+- Added: aria support (#685);
+- Added: `ariaFormat` option (controls `aria-valuetext`); 
+- Fixed: throw a better error when mistakenly trying to initialize noUiSlider with `null` (#658);
+- Fixed: Made order of events consistent and documented it (#775);
+- Fixed: Border radius of connect bar, white space wrapping of tooltips (#773, #774);
+- Fixed: Slider now uses `ownerDocument` instead of `document` (#767);
+
 ### 9.2.0 (*2017-01-17*)
 - Added: Version number to exceptions;
 - Added: `noUiSlider.version` holds current version number;

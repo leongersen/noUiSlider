@@ -38,13 +38,13 @@
 
 		// Remove cursor styles and text-selection events bound to the body.
 		if ( event.cursor ) {
-			document.body.style.cursor = '';
-			document.body.removeEventListener('selectstart', document.body.noUiListener);
+			scope_Body.style.cursor = '';
+			scope_Body.removeEventListener('selectstart', preventDefault);
 		}
 
 		// Unbind the move and end events, which are added on 'start'.
-		document.documentElement.noUiListeners.forEach(function( c ) {
-			document.documentElement.removeEventListener(c[0], c[1]);
+		scope_Listeners.forEach(function( c ) {
+			scope_DocumentElement.removeEventListener(c[0], c[1]);
 		});
 
 		// Remove dragging class.
@@ -53,8 +53,8 @@
 		setZindex();
 
 		data.handleNumbers.forEach(function(handleNumber){
-			fireEvent('set', handleNumber);
 			fireEvent('change', handleNumber);
+			fireEvent('set', handleNumber);
 			fireEvent('end', handleNumber);
 		});
 	}
@@ -76,14 +76,11 @@
 			addClass(scope_ActiveHandle, options.cssClasses.active);
 		}
 
-		// Fix #551, where a handle gets selected instead of dragged.
-		event.preventDefault();
-
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
 
 		// Attach the move and end events.
-		var moveEvent = attachEvent(actions.move, document.documentElement, eventMove, {
+		var moveEvent = attachEvent(actions.move, scope_DocumentElement, eventMove, {
 			startCalcPoint: event.calcPoint,
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
@@ -92,36 +89,35 @@
 			locations: scope_Locations.slice()
 		});
 
-		var endEvent = attachEvent(actions.end, document.documentElement, eventEnd, {
+		var endEvent = attachEvent(actions.end, scope_DocumentElement, eventEnd, {
 			handleNumbers: data.handleNumbers
 		});
 
-		var outEvent = attachEvent("mouseout", document.documentElement, documentLeave, {
+		var outEvent = attachEvent("mouseout", scope_DocumentElement, documentLeave, {
 			handleNumbers: data.handleNumbers
 		});
 
-		document.documentElement.noUiListeners = moveEvent.concat(endEvent, outEvent);
+		scope_Listeners = moveEvent.concat(endEvent, outEvent);
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
 		if ( event.cursor ) {
 
 			// Prevent the 'I' cursor and extend the range-drag cursor.
-			document.body.style.cursor = getComputedStyle(event.target).cursor;
+			scope_Body.style.cursor = getComputedStyle(event.target).cursor;
 
 			// Mark the target with a dragging state.
 			if ( scope_Handles.length > 1 ) {
 				addClass(scope_Target, options.cssClasses.drag);
 			}
 
-			var f = function(){
-				return false;
-			};
-
-			document.body.noUiListener = f;
-
 			// Prevent text selection when dragging the handles.
-			document.body.addEventListener('selectstart', f, false);
+			// In noUiSlider <= 9.2.0, this was handled by calling preventDefault on mouse/touch start/move,
+			// which is scroll blocking. The selectstart event is supported by FireFox starting from version 52,
+			// meaning the only holdout is iOS Safari. This doesn't matter: text selection isn't triggered there.
+			// The 'cursor' flag is false.
+			// See: http://caniuse.com/#search=selectstart
+			scope_Body.addEventListener('selectstart', preventDefault, false);
 		}
 
 		data.handleNumbers.forEach(function(handleNumber){
@@ -154,9 +150,9 @@
 		setZindex();
 
 		fireEvent('slide', handleNumber, true);
-		fireEvent('set', handleNumber, true);
-		fireEvent('change', handleNumber, true);
 		fireEvent('update', handleNumber, true);
+		fireEvent('change', handleNumber, true);
+		fireEvent('set', handleNumber, true);
 
 		if ( options.events.snap ) {
 			eventStart(event, { handleNumbers: [handleNumber] });
