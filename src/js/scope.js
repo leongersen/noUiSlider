@@ -1,6 +1,6 @@
 
 	// Split out the handle positioning logic so the Move event can use it, too
-	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward ) {
+	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward, getValue ) {
 
 		// For sliders with multiple handles, limit movement to the other handle.
 		// Apply the margin option by adding it to the handle positions.
@@ -48,7 +48,7 @@
 		to = limit(to);
 
 		// Return false if handle can't move
-		if ( to === reference[handleNumber] ) {
+		if ( to === reference[handleNumber] && !getValue ) {
 			return false;
 		}
 
@@ -101,7 +101,7 @@
 	// Test suggested values and apply margin, step.
 	function setHandle ( handleNumber, to, lookBackward, lookForward ) {
 
-		to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward);
+		to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
 
 		if ( to === false ) {
 			return false;
@@ -397,5 +397,7 @@
 	if ( options.tooltips ) {
 		tooltips();
 	}
+
+	aria();
 
 	return scope_Self;

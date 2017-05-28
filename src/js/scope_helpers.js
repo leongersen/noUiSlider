@@ -167,7 +167,7 @@
 
 			handleNumbers.forEach(function(handleNumber, o) {
 
-				var to = checkHandlePosition(proposals, handleNumber, proposals[handleNumber] + proposal, b[o], f[o]);
+				var to = checkHandlePosition(proposals, handleNumber, proposals[handleNumber] + proposal, b[o], f[o], false);
 
 				// Stop if one of the handles can't move.
 				if ( to === false ) {

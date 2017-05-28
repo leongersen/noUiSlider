@@ -7,6 +7,12 @@
 
 		handle.setAttribute('data-handle', handleNumber);
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+		// 0 = focusable and reachable
+		handle.setAttribute('tabindex', '0');
+		handle.setAttribute('role', 'slider');
+		handle.setAttribute('aria-orientation', options.ort ? 'vertical' : 'horizontal');
+
 		if ( handleNumber === 0 ) {
 			addClass(handle, options.cssClasses.handleLower);
 		}

@@ -1,4 +1,8 @@
 
+	function isValidFormatter ( entry ) {
+		return typeof entry === 'object' && typeof entry.to === 'function' && typeof entry.from === 'function';
+	}
+
 	function removeElement ( el ) {
 		el.parentElement.removeChild(el);
 	}
