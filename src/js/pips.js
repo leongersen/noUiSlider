@@ -251,6 +251,11 @@
 		var format = grid.format || {
 			to: Math.round
 		};
+		var pips = scope_Target.querySelector('.'+options.cssClasses.pips);
+		
+		if(pips){
+			scope_Target.removeChild(pips);
+		}
 
 		scope_Pips = scope_Target.appendChild(addMarking(
 			spread,
