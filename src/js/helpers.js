@@ -30,7 +30,7 @@
 		var rect = elem.getBoundingClientRect();
 		var doc = elem.ownerDocument;
 		var docElem = doc.documentElement;
-		var pageOffset = getPageOffset(document);
+		var pageOffset = getPageOffset(doc);
 
 		// getBoundingClientRect contains left scroll in Chrome on Android.
 		// I haven't found a feature detection that proves this. Worst case
