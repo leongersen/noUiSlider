@@ -53,7 +53,7 @@
 			throw new Error("noUiSlider (" + VERSION + "): 'range' 'min' and 'max' cannot be equal.");
 		}
 
-		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.dir, parsed.singleStep);
+		parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.singleStep);
 	}
 
 	function testStart ( parsed, entry ) {

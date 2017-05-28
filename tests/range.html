@@ -20,7 +20,7 @@
 			var subject = new Spectrum({
 				min: 0,
 				max: 100
-			}, false, false);
+			}, false);
 
 			equal(subject.convert(0), 0);
 			equal(subject.convert(10), 10);
@@ -46,7 +46,7 @@
 			var subject = new Spectrum({
 				min: 0,
 				max: 100
-			}, false, false, 15);
+			}, false, 15);
 
 			equal(subject.convert(0), 0);
 			equal(subject.convert(10), 15);
