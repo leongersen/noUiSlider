@@ -262,6 +262,14 @@
 		};
 	}
 
+	function testMultitouch ( parsed, entry ) {
+		parsed.multitouch = entry;
+
+		if ( typeof entry !== 'boolean' ){
+			throw new Error("noUiSlider (" + VERSION + "): 'multitouch' option must be a boolean.");
+		}
+	}
+
 	function testTooltips ( parsed, entry ) {
 
 		if ( entry === false ) {
@@ -371,6 +379,7 @@
 			'limit': { r: false, t: testLimit },
 			'padding': { r: false, t: testPadding },
 			'behaviour': { r: true, t: testBehaviour },
+			'multitouch': { r: true, t: testMultitouch },
 			'ariaFormat': { r: false, t: testAriaFormat },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
@@ -383,6 +392,7 @@
 			'connect': false,
 			'direction': 'ltr',
 			'behaviour': 'tap',
+			'multitouch': false,
 			'orientation': 'horizontal',
 			'cssPrefix' : 'noUi-',
 			'cssClasses': {
