@@ -67,13 +67,14 @@
 		if ( data.handleNumbers.length === 1 ) {
 
 			var handleOrigin = scope_Handles[data.handleNumbers[0]];
-			handle = handleOrigin.children[0];
-			scope_ActiveHandlesCount += 1;
 
 			// Ignore 'disabled' handles
 			if ( handleOrigin.hasAttribute('disabled') ) {
 				return false;
 			}
+
+			handle = handleOrigin.children[0];
+			scope_ActiveHandlesCount += 1;
 
 			// Mark the handle as 'active' so it can be styled.
 			addClass(handle, options.cssClasses.active);
