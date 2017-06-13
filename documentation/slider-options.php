@@ -387,3 +387,34 @@
 	</div>
 
 </section>
+
+
+<?php sect('multitouch'); ?>
+
+<h2>Multitouch</h2>
+
+<section>
+	<div class="view">
+		<p>Set the multitouch option to <code>true</code> to allow simultaneous interaction with a slider and other content on the page (e.g. another slider). It is even possible to simultaneously control several handles of the same slider.</p>
+
+		<div class="example" style="margin: 0;">
+			<div class="sliders" id="slider-multitouch-1" style="margin-bottom: 20px"></div>
+			<div class="sliders" id="slider-multitouch-2" style="margin-bottom: 20px"></div>
+			<div class="sliders" id="slider-multitouch-3"></div>
+			<?php run('multitouch'); ?>
+		</div>
+
+		<div class="options">
+			<strong>Default</strong>
+			<div><code>false</code></div>
+
+			<strong>Accepted values</strong>
+			<div><code>true</code>, <code>false</code></div>
+		</div>
+
+	</div>
+
+	<div class="side">
+		<?php code('multitouch'); ?>
+	</div>
+</section>
