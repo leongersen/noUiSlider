@@ -76,9 +76,14 @@
 	left: 100%;
 }
 .@{noUi-css-prefix}-value-vertical {
-	-webkit-transform: translate3d(0,50%,0);
-	transform: translate3d(0,50%,0);
+	-webkit-transform: translate3d(0,-50%,0);
+	transform: translate3d(0,-50%,0);
 	padding-left: 25px;
+	
+	.@{noUi-css-prefix}-rtl & {
+		-webkit-transform: translate3d(0,50%,0);
+		transform: translate3d(0,50%,0);
+	}
 }
 
 .@{noUi-css-prefix}-marker-vertical.@{noUi-css-prefix}-marker {
