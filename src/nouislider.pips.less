@@ -52,6 +52,11 @@
 .@{noUi-css-prefix}-value-horizontal {
 	-webkit-transform: translate3d(-50%,50%,0);
 	transform: translate3d(-50%,50%,0);
+	
+	.@{noUi-css-prefix}-rtl & {
+		-webkit-transform: translate3d(50%,50%,0);
+		transform: translate3d(50%,50%,0);
+	}
 }
 
 .@{noUi-css-prefix}-marker-horizontal.@{noUi-css-prefix}-marker {
