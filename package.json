@@ -1,6 +1,6 @@
 {
   "name": "nouislider",
-  "version": "10.0.0",
+  "version": "10.1.0",
   "main": "distribute/nouislider",
   "style": "distribute/nouislider.min.css",
   "license": "WTFPL",

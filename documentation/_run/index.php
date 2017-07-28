@@ -13,8 +13,8 @@
 	<link href="/nouislider/documentation/assets/prism.css" rel="stylesheet">
 	<script src="/nouislider/documentation/assets/wNumb.js"></script>
 
-	<link href="<?php echo $distribute; ?>/nouislider.css?v=1000" rel="stylesheet">
-	<script src="<?php echo $distribute; ?>/nouislider.js?v=1000"></script>
+	<link href="<?php echo $distribute; ?>/nouislider.css?v=1010" rel="stylesheet">
+	<script src="<?php echo $distribute; ?>/nouislider.js?v=1010"></script>
 	<?php /* <script src="/nouislider/concat.php"></script> */ ?>
 
 </head>

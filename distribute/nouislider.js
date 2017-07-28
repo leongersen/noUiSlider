@@ -1,4 +1,4 @@
-/*! nouislider - 10.0.0 - 2017-05-28 14:52:48 */
+/*! nouislider - 10.1.0 - 2017-07-28 13:09:54 */
 
 (function (factory) {
 
@@ -22,7 +22,7 @@
 
 	'use strict';
 
-	var VERSION = '10.0.0';
+	var VERSION = '10.1.0';
 
 
 	function isValidFormatter ( entry ) {
@@ -723,6 +723,14 @@
 		};
 	}
 
+	function testMultitouch ( parsed, entry ) {
+		parsed.multitouch = entry;
+
+		if ( typeof entry !== 'boolean' ){
+			throw new Error("noUiSlider (" + VERSION + "): 'multitouch' option must be a boolean.");
+		}
+	}
+
 	function testTooltips ( parsed, entry ) {
 
 		if ( entry === false ) {
@@ -832,6 +840,7 @@
 			'limit': { r: false, t: testLimit },
 			'padding': { r: false, t: testPadding },
 			'behaviour': { r: true, t: testBehaviour },
+			'multitouch': { r: true, t: testMultitouch },
 			'ariaFormat': { r: false, t: testAriaFormat },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
@@ -844,6 +853,7 @@
 			'connect': false,
 			'direction': 'ltr',
 			'behaviour': 'tap',
+			'multitouch': false,
 			'orientation': 'horizontal',
 			'cssPrefix' : 'noUi-',
 			'cssClasses': {
@@ -931,14 +941,13 @@ function closure ( target, options, originalOptions ){
 	var scope_Base;
 	var scope_Handles;
 	var scope_HandleNumbers = [];
-	var scope_ActiveHandle = false;
+	var scope_ActiveHandlesCount = 0;
 	var scope_Connects;
 	var scope_Spectrum = options.spectrum;
 	var scope_Values = [];
 	var scope_Events = {};
 	var scope_Self;
 	var scope_Pips;
-	var scope_Listeners = null;
 	var scope_Document = target.ownerDocument;
 	var scope_DocumentElement = scope_Document.documentElement;
 	var scope_Body = scope_Document.body;
@@ -1376,7 +1385,7 @@ function closure ( target, options, originalOptions ){
 				return false;
 			}
 
-			e = fixEvent(e, data.pageOffset);
+			e = fixEvent(e, data.pageOffset, data.target || element);
 
 			// Handle reject of multitouch
 			if ( !e ) {
@@ -1420,7 +1429,7 @@ function closure ( target, options, originalOptions ){
 	}
 
 	// Provide a clean event with standardized offset values.
-	function fixEvent ( e, pageOffset ) {
+	function fixEvent ( e, pageOffset, target ) {
 
 		// Filter the event to register the type, which can be
 		// touch, mouse or pointer. Offset changes need to be
@@ -1437,8 +1446,35 @@ function closure ( target, options, originalOptions ){
 			pointer = true;
 		}
 
-		if ( touch ) {
 
+		// In the event that multitouch is activated, the only thing one handle should be concerned
+		// about is the touches that originated on top of it.
+		if ( touch && options.multitouch ) {
+			// Returns true if a touch originated on the target.
+			var isTouchOnTarget = function (touch) {
+				return touch.target === target || target.contains(touch.target);
+			};
+			// In the case of touchstart events, we need to make sure there is still no more than one
+			// touch on the target so we look amongst all touches.
+			if (e.type === 'touchstart') {
+				var targetTouches = Array.prototype.filter.call(e.touches, isTouchOnTarget);
+				// Do not support more than one touch per handle.
+				if ( targetTouches.length > 1 ) {
+					return false;
+				}
+				x = targetTouches[0].pageX;
+				y = targetTouches[0].pageY;
+			} else {
+			// In the other cases, find on changedTouches is enough.
+				var targetTouch = Array.prototype.find.call(e.changedTouches, isTouchOnTarget);
+				// Cancel if the target touch has not moved.
+				if ( !targetTouch ) {
+					return false;
+				}
+				x = targetTouch.pageX;
+				y = targetTouch.pageY;
+			}
+		} else if ( touch ) {
 			// Fix bug when user touches with two or more fingers on mobile devices.
 			// It's useful when you have two or more sliders on one page,
 			// that can be touched simultaneously.
@@ -1616,26 +1652,27 @@ function closure ( target, options, originalOptions ){
 	function eventEnd ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		if ( scope_ActiveHandle ) {
-			removeClass(scope_ActiveHandle, options.cssClasses.active);
-			scope_ActiveHandle = false;
-		}
-
-		// Remove cursor styles and text-selection events bound to the body.
-		if ( event.cursor ) {
-			scope_Body.style.cursor = '';
-			scope_Body.removeEventListener('selectstart', preventDefault);
+		if ( data.handle ) {
+			removeClass(data.handle, options.cssClasses.active);
+			scope_ActiveHandlesCount -= 1;
 		}
 
 		// Unbind the move and end events, which are added on 'start'.
-		scope_Listeners.forEach(function( c ) {
+		data.listeners.forEach(function( c ) {
 			scope_DocumentElement.removeEventListener(c[0], c[1]);
 		});
 
-		// Remove dragging class.
-		removeClass(scope_Target, options.cssClasses.drag);
+		if ( scope_ActiveHandlesCount === 0 ) {
+			// Remove dragging class.
+			removeClass(scope_Target, options.cssClasses.drag);
+			setZindex();
 
-		setZindex();
+			// Remove cursor styles and text-selection events bound to the body.
+			if ( event.cursor ) {
+				scope_Body.style.cursor = '';
+				scope_Body.removeEventListener('selectstart', preventDefault);
+			}
+		}
 
 		data.handleNumbers.forEach(function(handleNumber){
 			fireEvent('change', handleNumber);
@@ -1647,25 +1684,36 @@ function closure ( target, options, originalOptions ){
 	// Bind move events on document.
 	function eventStart ( event, data ) {
 
+		var handle;
 		if ( data.handleNumbers.length === 1 ) {
 
-			var handle = scope_Handles[data.handleNumbers[0]];
+			var handleOrigin = scope_Handles[data.handleNumbers[0]];
 
 			// Ignore 'disabled' handles
-			if ( handle.hasAttribute('disabled') ) {
+			if ( handleOrigin.hasAttribute('disabled') ) {
 				return false;
 			}
 
+			handle = handleOrigin.children[0];
+			scope_ActiveHandlesCount += 1;
+
 			// Mark the handle as 'active' so it can be styled.
-			scope_ActiveHandle = handle.children[0];
-			addClass(scope_ActiveHandle, options.cssClasses.active);
+			addClass(handle, options.cssClasses.active);
 		}
 
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
 
+		// Record the event listeners.
+		var listeners = [];
+
 		// Attach the move and end events.
 		var moveEvent = attachEvent(actions.move, scope_DocumentElement, eventMove, {
+			// The event target has changed so we need to propagate the original one so that we keep
+			// relying on it to extract target touches.
+			target: event.target,
+			handle: handle,
+			listeners: listeners,
 			startCalcPoint: event.calcPoint,
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
@@ -1675,14 +1723,22 @@ function closure ( target, options, originalOptions ){
 		});
 
 		var endEvent = attachEvent(actions.end, scope_DocumentElement, eventEnd, {
+			target: event.target,
+			handle: handle,
+			listeners: listeners,
 			handleNumbers: data.handleNumbers
 		});
 
 		var outEvent = attachEvent("mouseout", scope_DocumentElement, documentLeave, {
+			target: event.target,
+			handle: handle,
+			listeners: listeners,
 			handleNumbers: data.handleNumbers
 		});
 
-		scope_Listeners = moveEvent.concat(endEvent, outEvent);
+		// We want to make sure we pushed the listeners in the listener list rather than creating
+		// a new one as it has already been passed to the event handlers.
+		listeners.push.apply(listeners, moveEvent.concat(endEvent, outEvent));
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
