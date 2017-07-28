@@ -11,14 +11,13 @@ function closure ( target, options, originalOptions ){
 	var scope_Base;
 	var scope_Handles;
 	var scope_HandleNumbers = [];
-	var scope_ActiveHandle = false;
+	var scope_ActiveHandlesCount = 0;
 	var scope_Connects;
 	var scope_Spectrum = options.spectrum;
 	var scope_Values = [];
 	var scope_Events = {};
 	var scope_Self;
 	var scope_Pips;
-	var scope_Listeners = null;
 	var scope_Document = target.ownerDocument;
 	var scope_DocumentElement = scope_Document.documentElement;
 	var scope_Body = scope_Document.body;

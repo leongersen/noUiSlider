@@ -31,26 +31,27 @@
 	function eventEnd ( event, data ) {
 
 		// The handle is no longer active, so remove the class.
-		if ( scope_ActiveHandle ) {
-			removeClass(scope_ActiveHandle, options.cssClasses.active);
-			scope_ActiveHandle = false;
-		}
-
-		// Remove cursor styles and text-selection events bound to the body.
-		if ( event.cursor ) {
-			scope_Body.style.cursor = '';
-			scope_Body.removeEventListener('selectstart', preventDefault);
+		if ( data.handle ) {
+			removeClass(data.handle, options.cssClasses.active);
+			scope_ActiveHandlesCount -= 1;
 		}
 
 		// Unbind the move and end events, which are added on 'start'.
-		scope_Listeners.forEach(function( c ) {
+		data.listeners.forEach(function( c ) {
 			scope_DocumentElement.removeEventListener(c[0], c[1]);
 		});
 
-		// Remove dragging class.
-		removeClass(scope_Target, options.cssClasses.drag);
+		if ( scope_ActiveHandlesCount === 0 ) {
+			// Remove dragging class.
+			removeClass(scope_Target, options.cssClasses.drag);
+			setZindex();
 
-		setZindex();
+			// Remove cursor styles and text-selection events bound to the body.
+			if ( event.cursor ) {
+				scope_Body.style.cursor = '';
+				scope_Body.removeEventListener('selectstart', preventDefault);
+			}
+		}
 
 		data.handleNumbers.forEach(function(handleNumber){
 			fireEvent('change', handleNumber);
@@ -62,25 +63,36 @@
 	// Bind move events on document.
 	function eventStart ( event, data ) {
 
+		var handle;
 		if ( data.handleNumbers.length === 1 ) {
 
-			var handle = scope_Handles[data.handleNumbers[0]];
+			var handleOrigin = scope_Handles[data.handleNumbers[0]];
 
 			// Ignore 'disabled' handles
-			if ( handle.hasAttribute('disabled') ) {
+			if ( handleOrigin.hasAttribute('disabled') ) {
 				return false;
 			}
 
+			handle = handleOrigin.children[0];
+			scope_ActiveHandlesCount += 1;
+
 			// Mark the handle as 'active' so it can be styled.
-			scope_ActiveHandle = handle.children[0];
-			addClass(scope_ActiveHandle, options.cssClasses.active);
+			addClass(handle, options.cssClasses.active);
 		}
 
 		// A drag should never propagate up to the 'tap' event.
 		event.stopPropagation();
 
+		// Record the event listeners.
+		var listeners = [];
+
 		// Attach the move and end events.
 		var moveEvent = attachEvent(actions.move, scope_DocumentElement, eventMove, {
+			// The event target has changed so we need to propagate the original one so that we keep
+			// relying on it to extract target touches.
+			target: event.target,
+			handle: handle,
+			listeners: listeners,
 			startCalcPoint: event.calcPoint,
 			baseSize: baseSize(),
 			pageOffset: event.pageOffset,
@@ -90,14 +102,22 @@
 		});
 
 		var endEvent = attachEvent(actions.end, scope_DocumentElement, eventEnd, {
+			target: event.target,
+			handle: handle,
+			listeners: listeners,
 			handleNumbers: data.handleNumbers
 		});
 
 		var outEvent = attachEvent("mouseout", scope_DocumentElement, documentLeave, {
+			target: event.target,
+			handle: handle,
+			listeners: listeners,
 			handleNumbers: data.handleNumbers
 		});
 
-		scope_Listeners = moveEvent.concat(endEvent, outEvent);
+		// We want to make sure we pushed the listeners in the listener list rather than creating
+		// a new one as it has already been passed to the event handlers.
+		listeners.push.apply(listeners, moveEvent.concat(endEvent, outEvent));
 
 		// Text selection isn't an issue on touch devices,
 		// so adding cursor styles can be skipped.
