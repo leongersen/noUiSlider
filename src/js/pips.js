@@ -8,21 +8,19 @@
 
 		if ( mode === 'count' ) {
 
-			var intervals = values - 1;
-
-			if ( intervals < 1 ) {
+			if ( values < 2 ) {
 				throw new Error("noUiSlider (" + VERSION + "): 'values' (>= 2) required for mode 'count'.");
 			}
 
 			// Divide 0 - 100 in 'count' parts.
-			var spread = ( 100 / intervals );
+			var interval = values - 1;
+			var spread = ( 100 / interval );
 
-			var i = 0;
 			values = [];
 
 			// List these parts and have them handled as 'positions'.
-			while ( i < intervals ) {
-				values.push(i++ * spread);
+			while ( interval-- ) {
+				values[ interval ] = ( interval * spread );
 			}
 
 			values.push(100);
