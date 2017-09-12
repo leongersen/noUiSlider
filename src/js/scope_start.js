@@ -20,5 +20,5 @@ function closure ( target, options, originalOptions ){
 	var scope_Pips;
 	var scope_Listeners = null;
 	var scope_Document = target.ownerDocument;
-	var scope_DocumentElement = scope_Document.documentElement;
+	var scope_DocumentElement = options.documentElement === 'target' ? scope_Target : options.documentElement || scope_Document.documentElement;
 	var scope_Body = scope_Document.body;
