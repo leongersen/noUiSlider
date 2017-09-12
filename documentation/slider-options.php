@@ -387,3 +387,29 @@
 	</div>
 
 </section>
+
+
+<?php sect('documentElement'); ?>
+<h2>documentElement</h2>
+
+<section>
+	
+	<div class="view">
+		
+		<p>This is an advanced option to adjust the scope of noUiSlider. By default the whole document is the scope but dependant on your environment you might want to limit the scope. In such a case you can define here an element or use the string <code>target</code> to limit the scope to the slider itself.</p>
+
+		<div class="options">
+			<strong>Default</strong>
+			<div><code>null</code></div>
+
+			<strong>Accepted values</strong>
+			<div><code>object</code>, <code>string</code></div>
+		</div>
+
+	</div>
+
+	<div class="side">
+		<?php code('document-element'); ?>
+	</div>
+
+</section>
