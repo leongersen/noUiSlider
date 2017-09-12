@@ -1,4 +1,4 @@
-/*! nouislider - 10.0.0 - 2017-05-28 14:52:48 */
+/*! nouislider - 10.0.0 - 2017-09-12 17:29:19 */
 
 (function (factory) {
 
@@ -800,6 +800,14 @@
 		}
 	}
 
+	function testDocumentElement ( parsed, entry ) {
+		if ( typeof entry === 'object' || entry === 'target' ) {
+			parsed.documentElement = entry;
+		} else {
+			throw new Error("noUiSlider (" + VERSION + "): 'documentElement' option should be null (default) or an element.");
+		}
+	}
+
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
 
@@ -837,7 +845,8 @@
 			'tooltips': { r: false, t: testTooltips },
 			'cssPrefix': { r: false, t: testCssPrefix },
 			'cssClasses': { r: false, t: testCssClasses },
-			'useRequestAnimationFrame': { r: false, t: testUseRaf }
+			'useRequestAnimationFrame': { r: false, t: testUseRaf },
+			'documentElement': { r: false, t: testDocumentElement }
 		};
 
 		var defaults = {
@@ -880,7 +889,8 @@
 				valueLarge: 'value-large',
 				valueSub: 'value-sub'
 			},
-			'useRequestAnimationFrame': true
+			'useRequestAnimationFrame': true,
+			'documentElement': null
 		};
 
 		// AriaFormat defaults to regular format, if any.
@@ -940,7 +950,7 @@ function closure ( target, options, originalOptions ){
 	var scope_Pips;
 	var scope_Listeners = null;
 	var scope_Document = target.ownerDocument;
-	var scope_DocumentElement = scope_Document.documentElement;
+	var scope_DocumentElement = options.documentElement === 'target' ? scope_Target : options.documentElement || scope_Document.documentElement;
 	var scope_Body = scope_Document.body;
 
 
