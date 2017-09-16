@@ -1,4 +1,3 @@
-
 	// Split out the handle positioning logic so the Move event can use it, too
 	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward, getValue ) {
 
@@ -177,7 +176,7 @@
 
 		// Now that all base values are set, apply constraints
 		scope_HandleNumbers.forEach(function(handleNumber){
-			setHandle(handleNumber, scope_Locations[handleNumber], true, false);
+			setHandle(handleNumber, scope_Locations[handleNumber], true, true);
 		});
 
 		setZindex();
