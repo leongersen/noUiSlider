@@ -8,6 +8,6 @@ noUiSlider.create(slider, {
 	cssClasses: {
 		// Full list of classnames to override. Does NOT extend the default classes.
 		// Have a look at the source for the full, current list:
-		// https://github.com/leongersen/noUiSlider/blob/master/src/js/options.js#L316
+		// https://github.com/leongersen/noUiSlider/blob/master/src/js/options.js#L398
 	}
 });
