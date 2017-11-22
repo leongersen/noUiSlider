@@ -1,4 +1,4 @@
-/*! nouislider - 10.1.0 - 2017-07-28 13:09:54 */
+/*! nouislider - 10.1.0 - 2017-11-22 12:08:52 */
 
 (function (factory) {
 
@@ -1844,17 +1844,19 @@ function closure ( target, options, originalOptions ){
 		}
 
 		// Make the range draggable.
-		if ( behaviour.drag ){
+		if (behaviour.drag) {
 
-			scope_Connects.forEach(function( connect, index ){
+			scope_Connects.forEach(function (connect, index) {
 
-				if ( connect === false || index === 0 || index === scope_Connects.length - 1 ) {
+				if (connect === false || index === 0 || index === scope_Connects.length - 1) {
 					return;
 				}
 
 				var handleBefore = scope_Handles[index - 1];
 				var handleAfter = scope_Handles[index];
 				var eventHolders = [connect];
+				var handlesToDrag = [handleBefore, handleAfter];
+				var handleNumbersToDrag = [index - 1, index];
 
 				addClass(connect, options.cssClasses.draggable);
 
@@ -1862,15 +1864,26 @@ function closure ( target, options, originalOptions ){
 				// be dragged by the handles. The handle in the first
 				// origin will propagate the start event upward,
 				// but it needs to be bound manually on the other.
-				if ( behaviour.fixed ) {
+				if (behaviour.fixed) {
 					eventHolders.push(handleBefore.children[0]);
 					eventHolders.push(handleAfter.children[0]);
 				}
 
-				eventHolders.forEach(function( eventHolder ) {
-					attachEvent ( actions.start, eventHolder, eventStart, {
-						handles: [handleBefore, handleAfter],
-						handleNumbers: [index - 1, index]
+				// Check for the option dragAllHandles to see if
+				// must drag all handles at the same time
+				if (originalOptions.dragAllHandles) {
+					handlesToDrag = scope_Handles;
+					handleNumbersToDrag = [0];
+					while (handleNumbersToDrag.length < scope_Handles.length)
+					{
+						handleNumbersToDrag.push(handleNumbersToDrag.length);
+					}
+				}
+
+				eventHolders.forEach(function (eventHolder) {
+					attachEvent(actions.start, eventHolder, eventStart, {
+						handles: handlesToDrag,
+						handleNumbers: handleNumbersToDrag
 					});
 				});
 			});
