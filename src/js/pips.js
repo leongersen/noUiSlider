@@ -129,7 +129,7 @@
 				steps = pctDifference / density;
 				realSteps = Math.round(steps);
 
-				// This ratio represents the ammount of percentage-space a point indicates.
+				// This ratio represents the amount of percentage-space a point indicates.
 				// For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-devided.
 				// Round the percentage offset to an even number, then divide by two
 				// to spread the offset on both sides of the range.
