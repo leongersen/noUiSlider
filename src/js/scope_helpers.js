@@ -13,19 +13,22 @@
 
 		var method = function ( e ){
 
-			if ( scope_Target.hasAttribute('disabled') ) {
+			e = fixEvent(e, data.pageOffset, data.target || element);
+
+			// fixEvent returns false if this event has a different target
+			// when handling (multi-) touch events;
+			if ( !e ) {
+				return false;
+			}
+
+			// doNotReject is passed by all end events to make sure released touches
+			// are not rejected, leaving the slider "stuck" to the cursor;
+			if ( scope_Target.hasAttribute('disabled') && !data.doNotReject ) {
 				return false;
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( hasClass(scope_Target, options.cssClasses.tap) ) {
-				return false;
-			}
-
-			e = fixEvent(e, data.pageOffset, data.target || element);
-
-			// Handle reject of multitouch
-			if ( !e ) {
+			if ( hasClass(scope_Target, options.cssClasses.tap) && !data.doNotReject ) {
 				return false;
 			}
 
