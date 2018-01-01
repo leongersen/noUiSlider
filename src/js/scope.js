@@ -81,7 +81,8 @@
 
 		if ( supportsCSSTransform ) {
 			var rule = 'translate(' + inRuleOrder(toPct(transformDirection(to, 0)), '0') + ')';
-			scope_Handles[handleNumber].style[options.transformRule] = rule;
+			var layerRule = 'translate3d(0,0,0)';
+			scope_Handles[handleNumber].style[options.transformRule] = rule + ' ' + layerRule;
 		} else {
 			scope_Handles[handleNumber].style[options.style] = toPct(to);
 		}
@@ -144,8 +145,9 @@
 			var connectWidth = h - l;
 			var translateRule = 'translate(' + inRuleOrder(toPct(transformDirection(l, connectWidth)), '0') + ')';
 			var scaleRule = 'scale(' + inRuleOrder(connectWidth, '1') + ')';
+			var layerRule = 'translate3d(0,0,0)';
 
-			scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
+			scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule + ' ' + layerRule;
 
 		} else {
 

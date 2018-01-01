@@ -387,6 +387,7 @@
 				vertical: 'vertical',
 				background: 'background',
 				connect: 'connect',
+				connects: 'connects',
 				ltr: 'ltr',
 				rtl: 'rtl',
 				draggable: 'draggable',
