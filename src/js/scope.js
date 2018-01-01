@@ -80,9 +80,8 @@
 		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
 		if ( supportsCSSTransform ) {
-			var rule = 'translate(' + inRuleOrder(toPct(transformDirection(to, 0)), '0') + ')';
-			var layerRule = 'translate3d(0,0,0)';
-			scope_Handles[handleNumber].style[options.transformRule] = rule + ' ' + layerRule;
+			var rule = 'translate3d(' + inRuleOrder(toPct(transformDirection(to, 0)), '0') + ', 0)';
+			scope_Handles[handleNumber].style[options.transformRule] = rule;
 		} else {
 			scope_Handles[handleNumber].style[options.style] = toPct(to);
 		}
@@ -143,11 +142,10 @@
 		if ( supportsCSSTransform ) {
 
 			var connectWidth = h - l;
-			var translateRule = 'translate(' + inRuleOrder(toPct(transformDirection(l, connectWidth)), '0') + ')';
+			var translateRule = 'translate3d(' + inRuleOrder(toPct(transformDirection(l, connectWidth)), '0') + ', 0)';
 			var scaleRule = 'scale(' + inRuleOrder(connectWidth, '1') + ')';
-			var layerRule = 'translate3d(0,0,0)';
 
-			scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule + ' ' + layerRule;
+			scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
 
 		} else {
 

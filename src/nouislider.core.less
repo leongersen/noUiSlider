@@ -33,18 +33,18 @@
 }
 .@{noUi-css-prefix}-connect {
 	position: absolute;
-	right: 0;
 	top: 0;
 	left: 0;
-	bottom: 0;
 	-webkit-transform-origin: 0 0;
 	transform-origin: 0 0;
 }
 .@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-connect {
 	height: 1%;
+	width: 100%;
 }
 .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-connect {
 	width: 1%;
+	height: 100%;
 }
 
 .@{noUi-css-prefix}-origin {
@@ -52,17 +52,20 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	height: 1%;
-	width: 1%;
-
-	background: red;
 }
+.@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-origin {
+	height: 1%;
+}
+.@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin {
+	width: 1%;
+}
+
 .@{noUi-css-prefix}-handle {
 	position: relative;
 	z-index: 1;
 }
-.@{noUi-css-prefix}-connect,
-.@{noUi-css-prefix}-origin {
+.@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-connect,
+.@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-origin {
 -webkit-transition: transform 0.3s;
 	transition: transform 0.3s;
 }
@@ -102,7 +105,6 @@
 }
 .@{noUi-css-prefix}-connect {
 	background: #3FB8AF;
-	box-shadow: inset 0 0 3px rgba(51,51,51,0.45);
 }
 
 /* Handles and cursors;
@@ -114,8 +116,6 @@
 	cursor: ns-resize;
 }
 .@{noUi-css-prefix}-handle {
-	opacity: 0.3;
-
 	border: 1px solid #D9D9D9;
 	border-radius: 3px;
 	background: #FFF;
