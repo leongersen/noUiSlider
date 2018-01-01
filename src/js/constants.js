@@ -44,3 +44,7 @@
 	function getSupportsTouchActionNone ( ) {
 		return window.CSS && CSS.supports && CSS.supports('touch-action', 'none');
 	}
+
+	function getSupportsCSSTransform ( ) {
+		return window.CSS && CSS.supports && CSS.supports('transform','translate(0,0) scale(0,0)');
+	}
