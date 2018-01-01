@@ -55,6 +55,7 @@
 		return to;
 	}
 
+	// Uses slider orientation to create CSS rules. a = base value;
 	function inRuleOrder ( v, a ) {
 		var o = options.ort;
 		return (o?a:v) + ', ' + (o?v:a);
@@ -75,10 +76,11 @@
 
 		// Called synchronously or on the next animationFrame
 		var stateUpdate = function() {
-		//	scope_Handles[handleNumber].style[options.style] = toPct(to);
 			
 			if ( supportsCSSTransform ) {
-				scope_Handles[handleNumber].style.transform = 'translate(' + inRuleOrder(toPct(100 * to), '0') + ')';
+				scope_Handles[handleNumber].style[options.transformRule] = 'translate(' + inRuleOrder(toPct(100 * to), '0') + ')';
+			} else {
+				scope_Handles[handleNumber].style[options.style] = toPct(to);
 			}
 			
 			updateConnect(handleNumber);
@@ -141,15 +143,22 @@
 			h = scope_Locations[index];
 		}
 
-		//scope_Connects[index].style[options.style] = toPct(l);
-		//scope_Connects[index].style[options.styleOposite] = toPct(100 - h);
-		
+		// If we've determined the browser can use CSS transforms, we use two rules:
+		// 'translate' to change the left/top offset;
+		// 'scale' to change the width of the element;
+		// As the element has a width of 1%, a translation of 100% is equal to 1% of the parent (.noUi-base)
 		if ( supportsCSSTransform ) {
 			
 			var translateRule = 'translate(' + inRuleOrder(toPct(100 * l), '0') + ')';
 			var scaleRule = 'scale(' + inRuleOrder(h - l, '1') + ')';
 
-			scope_Connects[index].style.transform = translateRule + ' ' + scaleRule;
+			scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
+			
+		} else {
+
+			// Fall back to absolute positioning
+			scope_Connects[index].style[options.style] = toPct(l);
+			scope_Connects[index].style[options.styleOposite] = toPct(100 - h);
 		}
 	}
 

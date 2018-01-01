@@ -463,6 +463,7 @@
 		// Pre-define the styles.
 		parsed.style = styles[parsed.dir][parsed.ort];
 		parsed.styleOposite = styles[parsed.dir?0:1][parsed.ort];
+		parsed.transformRule = 'transform'; // todo add -webkit- if needed
 
 		return parsed;
 	}
