@@ -262,14 +262,6 @@
 		};
 	}
 
-	function testMultitouch ( parsed, entry ) {
-		parsed.multitouch = entry;
-
-		if ( typeof entry !== 'boolean' ){
-			throw new Error("noUiSlider (" + VERSION + "): 'multitouch' option must be a boolean.");
-		}
-	}
-
 	function testTooltips ( parsed, entry ) {
 
 		if ( entry === false ) {
@@ -339,14 +331,6 @@
 		}
 	}
 
-	function testUseRaf ( parsed, entry ) {
-		if ( entry === true || entry === false ) {
-			parsed.useRequestAnimationFrame = entry;
-		} else {
-			throw new Error("noUiSlider (" + VERSION + "): 'useRequestAnimationFrame' option should be true (default) or false.");
-		}
-	}
-
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
 
@@ -379,20 +363,17 @@
 			'limit': { r: false, t: testLimit },
 			'padding': { r: false, t: testPadding },
 			'behaviour': { r: true, t: testBehaviour },
-			'multitouch': { r: true, t: testMultitouch },
 			'ariaFormat': { r: false, t: testAriaFormat },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
 			'cssPrefix': { r: false, t: testCssPrefix },
-			'cssClasses': { r: false, t: testCssClasses },
-			'useRequestAnimationFrame': { r: false, t: testUseRaf }
+			'cssClasses': { r: false, t: testCssClasses }
 		};
 
 		var defaults = {
 			'connect': false,
 			'direction': 'ltr',
 			'behaviour': 'tap',
-			'multitouch': false,
 			'orientation': 'horizontal',
 			'cssPrefix' : 'noUi-',
 			'cssClasses': {
@@ -428,8 +409,7 @@
 				valueNormal: 'value-normal',
 				valueLarge: 'value-large',
 				valueSub: 'value-sub'
-			},
-			'useRequestAnimationFrame': true
+			}
 		};
 
 		// AriaFormat defaults to regular format, if any.

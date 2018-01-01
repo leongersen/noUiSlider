@@ -86,44 +86,40 @@
 
 		// In the event that multitouch is activated, the only thing one handle should be concerned
 		// about is the touches that originated on top of it.
-		if ( touch && options.multitouch ) {
+		if ( touch ) {
+
 			// Returns true if a touch originated on the target.
 			var isTouchOnTarget = function (touch) {
 				return touch.target === target || target.contains(touch.target);
 			};
+
 			// In the case of touchstart events, we need to make sure there is still no more than one
 			// touch on the target so we look amongst all touches.
 			if (e.type === 'touchstart') {
+
 				var targetTouches = Array.prototype.filter.call(e.touches, isTouchOnTarget);
+
 				// Do not support more than one touch per handle.
 				if ( targetTouches.length > 1 ) {
 					return false;
 				}
+
 				x = targetTouches[0].pageX;
 				y = targetTouches[0].pageY;
+
 			} else {
-			// In the other cases, find on changedTouches is enough.
+
+				// In the other cases, find on changedTouches is enough.
 				var targetTouch = Array.prototype.find.call(e.changedTouches, isTouchOnTarget);
+
 				// Cancel if the target touch has not moved.
 				if ( !targetTouch ) {
 					return false;
 				}
+
 				x = targetTouch.pageX;
 				y = targetTouch.pageY;
 			}
-		} else if ( touch ) {
-			// Fix bug when user touches with two or more fingers on mobile devices.
-			// It's useful when you have two or more sliders on one page,
-			// that can be touched simultaneously.
-			// #649, #663, #668
-			if ( e.touches.length > 1 ) {
-				return false;
-			}
-
-			// noUiSlider supports one movement at a time,
-			// so we can select the first 'changedTouch'.
-			x = e.changedTouches[0].pageX;
-			y = e.changedTouches[0].pageY;
 		}
 
 		pageOffset = pageOffset || getPageOffset(scope_Document);

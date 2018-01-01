@@ -74,28 +74,14 @@
 		// Convert the value to the slider stepping/range.
 		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-		// Called synchronously or on the next animationFrame
-		var stateUpdate = function() {
-			
-			if ( supportsCSSTransform ) {
-				scope_Handles[handleNumber].style[options.transformRule] = 'translate(' + inRuleOrder(toPct(100 * to), '0') + ')';
-			} else {
-				scope_Handles[handleNumber].style[options.style] = toPct(to);
-			}
-			
-			updateConnect(handleNumber);
-			updateConnect(handleNumber + 1);
-		};
-
-		// Set the handle to the new position.
-		// Use requestAnimationFrame for efficient painting.
-		// No significant effect in Chrome, Edge sees dramatic performace improvements.
-		// Option to disable is useful for unit tests, and single-step debugging.
-		if ( window.requestAnimationFrame && options.useRequestAnimationFrame ) {
-			window.requestAnimationFrame(stateUpdate);
+		if ( supportsCSSTransform ) {
+			scope_Handles[handleNumber].style[options.transformRule] = 'translate(' + inRuleOrder(toPct(100 * to), '0') + ')';
 		} else {
-			stateUpdate();
+			scope_Handles[handleNumber].style[options.style] = toPct(to);
 		}
+
+		updateConnect(handleNumber);
+		updateConnect(handleNumber + 1);
 	}
 
 	function setZindex ( ) {
@@ -148,12 +134,12 @@
 		// 'scale' to change the width of the element;
 		// As the element has a width of 1%, a translation of 100% is equal to 1% of the parent (.noUi-base)
 		if ( supportsCSSTransform ) {
-			
+
 			var translateRule = 'translate(' + inRuleOrder(toPct(100 * l), '0') + ')';
 			var scaleRule = 'scale(' + inRuleOrder(h - l, '1') + ')';
 
 			scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
-			
+
 		} else {
 
 			// Fall back to absolute positioning
