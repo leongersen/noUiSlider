@@ -65,6 +65,11 @@
 		return pct + '%';
 	}
 
+	// Takes a base value and an offset. This offset is used for the connect bar size.
+	function transformDirection ( a, b ) {
+		return 100 * (options.dir ? 100 - a - b : a);
+	}
+
 	// Updates scope_Locations and scope_Values, updates visual state
 	function updateHandlePosition ( handleNumber, to ) {
 
@@ -75,7 +80,8 @@
 		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
 		if ( supportsCSSTransform ) {
-			scope_Handles[handleNumber].style[options.transformRule] = 'translate(' + inRuleOrder(toPct(100 * to), '0') + ')';
+			var rule = 'translate(' + inRuleOrder(toPct(transformDirection(to, 0)), '0') + ')';
+			scope_Handles[handleNumber].style[options.transformRule] = rule;
 		} else {
 			scope_Handles[handleNumber].style[options.style] = toPct(to);
 		}
@@ -135,8 +141,9 @@
 		// As the element has a width of 1%, a translation of 100% is equal to 1% of the parent (.noUi-base)
 		if ( supportsCSSTransform ) {
 
-			var translateRule = 'translate(' + inRuleOrder(toPct(100 * l), '0') + ')';
-			var scaleRule = 'scale(' + inRuleOrder(h - l, '1') + ')';
+			var connectWidth = h - l;
+			var translateRule = 'translate(' + inRuleOrder(toPct(transformDirection(l, connectWidth)), '0') + ')';
+			var scaleRule = 'scale(' + inRuleOrder(connectWidth, '1') + ')';
 
 			scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
 
