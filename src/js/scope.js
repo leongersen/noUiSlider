@@ -66,8 +66,11 @@
 	}
 
 	// Takes a base value and an offset. This offset is used for the connect bar size.
+	// In the initial design for this feature, the origin element was 1% wide.
+	// Unfortunately, a rounding bug in Chrome makes it impossible to implement this feature
+	// in this manner: https://bugs.chromium.org/p/chromium/issues/detail?id=798223
 	function transformDirection ( a, b ) {
-		return 100 * (options.dir ? 100 - a - b : a);
+		return options.dir ? 100 - a - b : a;
 	}
 
 	// Updates scope_Locations and scope_Values, updates visual state
@@ -98,7 +101,7 @@
 			// [[7] [8] .......... | .......... [5] [4]
 			var dir = (scope_Locations[handleNumber] > 50 ? -1 : 1);
 			var zIndex = 3 + (scope_Handles.length + (dir * handleNumber));
-			scope_Handles[handleNumber].childNodes[0].style.zIndex = zIndex;
+			scope_Handles[handleNumber].style.zIndex = zIndex;
 		});
 	}
 
@@ -143,7 +146,7 @@
 
 			var connectWidth = h - l;
 			var translateRule = 'translate3d(' + inRuleOrder(toPct(transformDirection(l, connectWidth)), '0') + ', 0)';
-			var scaleRule = 'scale(' + inRuleOrder(connectWidth, '1') + ')';
+			var scaleRule = 'scale(' + inRuleOrder(connectWidth / 100, '1') + ')';
 
 			scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
 

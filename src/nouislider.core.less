@@ -25,43 +25,41 @@
 	width: 100%;
 	height: 100%;
 	position: relative;
-	z-index: 1; /* Fix 401 */
+	z-index: 1;
 }
+/* Wrapper for all connect elements.
+ */
 .@{noUi-css-prefix}-connects {
 	overflow: hidden;
-	z-index: -1;
+	z-index: 0;
+	border-radius: 3px;
 }
-.@{noUi-css-prefix}-connect {
+.@{noUi-css-prefix}-connect,
+.@{noUi-css-prefix}-origin {
+	will-change: transform;
 	position: absolute;
+	z-index: 1;
 	top: 0;
 	left: 0;
+	height: 100%;
+	width: 100%;
 	-webkit-transform-origin: 0 0;
 	transform-origin: 0 0;
 }
-.@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-connect {
-	height: 1%;
-	width: 100%;
-}
-.@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-connect {
-	width: 1%;
-	height: 100%;
-}
 
-.@{noUi-css-prefix}-origin {
-	/*will-change: transform; Causes a bunch of bugs */
-	position: absolute;
-	top: 0;
-	left: 0;
-}
+/* Give origins 0 height/width so they don't interfere with clicking the
+ * connect elements.
+ */
 .@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-origin {
-	height: 1%;
+	width: 0;
 }
 .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin {
-	width: 1%;
+	height: 0;
 }
 
+
 .@{noUi-css-prefix}-handle {
-	position: relative;
+	position: absolute;
 	z-index: 1;
 }
 .@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-connect,
