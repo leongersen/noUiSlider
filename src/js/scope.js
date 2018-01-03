@@ -1,3 +1,4 @@
+
 	// Split out the handle positioning logic so the Move event can use it, too
 	function checkHandlePosition ( reference, handleNumber, to, lookBackward, lookForward, getValue ) {
 
