@@ -9,6 +9,7 @@
 		<li><a href="#section-html5">Working with HTML5 input types</a></li>
 		<li><a href="#section-non-linear">Using non linear ranges</a></li>
 		<li><a href="#section-lock">Locking two sliders together</a></li>
+		<li><a href="#section-hiding-tooltips">Only showing tooltips when sliding handles</a></li>
 		<li><a href="#section-colored-connect">Colored connect elements</a></li>
 		<li><a href="#section-keypress">Changing the slider value by keypress</a></li>
 		<li><a href="#section-skipping">Skipping values on a slider</a></li>
@@ -214,6 +215,29 @@
 		<div class="viewer-content">
 			<?php code('locked-link'); ?>
 		</div>
+	</div>
+</section>
+
+
+<?php sect('hiding-tooltips'); ?>
+<h1>Only showing tooltips when sliding handles</h1>
+
+<section>
+
+	<div class="view">
+
+		<p><a href="https://github.com/leongersen/noUiSlider/issues/836">Issue #836</a> requested a way to toggle tooltips after slider creation. This effect can be achieved by using the <code>.noUi-active</code> class to show and hide the tooltips. No additional JavaScript is involved.</p>
+
+		<div class="example">
+			<div class="slider" id="slider-hide"></div>
+
+			<?php run('hiding-tooltips'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<?php loadShowCSS('hiding-tooltips'); ?>
 	</div>
 </section>
 
