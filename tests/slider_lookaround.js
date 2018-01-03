@@ -31,32 +31,26 @@
 		assert.deepEqual( slider.noUiSlider.get(), ['20.00', '23.00']);
 
 		up();
-
 		assert.deepEqual( slider.noUiSlider.get(), ['21.00', '24.00']);
 
 		up();
-
 		assert.deepEqual( slider.noUiSlider.get(), ['22.00', '25.00'], 'Highest possible values');
 
 		up();
-
 		assert.deepEqual( slider.noUiSlider.get(), ['22.00', '25.00'], 'Nothing should have happened');
 
 		down();
-
 		assert.deepEqual( slider.noUiSlider.get(), ['21.00', '24.00']);
 
 		down();
-
 		assert.deepEqual( slider.noUiSlider.get(), ['20.00', '23.00']);
 
 		slider.noUiSlider.set([10, 12]);
-
 		assert.deepEqual( slider.noUiSlider.get(), ['15.00', '18.00'], 'lower bound by padding, upper by margin');
 
 		slider.noUiSlider.set([15, 17]);
-
 		assert.deepEqual( slider.noUiSlider.get(), ['15.00', '18.00'], 'lower bound ok, but apply margin');
+
 
 
 

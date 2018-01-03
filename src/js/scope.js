@@ -158,27 +158,28 @@
 		}
 	}
 
-	// ...
-	function setValue ( to, handleNumber ) {
+	function resolveToValue ( to, handleNumber ) {
 
 		// Setting with null indicates an 'ignore'.
 		// Inputting 'false' is invalid.
-		if ( to === null || to === false ) {
-			return;
+		if ( to === null || to === false || to === undefined ) {
+			return scope_Locations[handleNumber];
 		}
 
-		// If a formatted number was passed, attemt to decode it.
+		// If a formatted number was passed, attempt to decode it.
 		if ( typeof to === 'number' ) {
 			to = String(to);
 		}
 
 		to = options.format.from(to);
+		to = scope_Spectrum.toStepping(to);
 
-		// Request an update for all links if the value was invalid.
-		// Do so too if setting the handle fails.
-		if ( to !== false && !isNaN(to) ) {
-			setHandle(handleNumber, scope_Spectrum.toStepping(to), false, false);
+		// If parsing the number failed, use the current value.
+		if ( to === false || isNaN(to) ) {
+			return scope_Locations[handleNumber];
 		}
+
+		return to;
 	}
 
 	// Set the slider value.
@@ -190,13 +191,16 @@
 		// Event fires by default
 		fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
 
-		values.forEach(setValue);
-
 		// Animation is optional.
 		// Make sure the initial values were set before using animated placement.
 		if ( options.animate && !isInit ) {
 			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
 		}
+
+		// First pass, without lookAhead. Values are set from left to right.
+		scope_HandleNumbers.forEach(function(handleNumber){
+			setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
+		});
 
 		// Now that all base values are set, apply constraints
 		scope_HandleNumbers.forEach(function(handleNumber){
