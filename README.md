@@ -31,6 +31,19 @@ npm [(package)](https://www.npmjs.com/package/nouislider)
 Changelog
 ---------
 
+### 11.0.0 (t.b.a)
+noUiSlider 11 doesn't include any breaking API changes.
+Unless major changes were made to the stylesheet or you specifically dependend
+on the handle/connect order in the DOM, there should be no issues upgrading.
+- Change: Use CSS transforms for handle movement, resulting in a massive performance improvement (#718);
+- Change: Support multitouch by default.
+- Added: `.noUi-connects` element holding all `.noUi-connect` elements;
+- Removed: `useRequestAnimationFrame` option. No longer needed with CSS transforms;
+- Removed: `multitouch` option. Now enabled by default;
+- Fixed: Slider could ignore end events it should handle (#704, #805, #834);
+- Fixed: Stop depending on array type (#801);
+- Fixed: `set` method might bypass margin option (#823);
+
 ### 10.1.0 (*2017-07-26*)
 - Added: `multitouch` option (#793);
 
@@ -40,7 +53,7 @@ Changelog
 - Fixed: Content Security Policy issue with pips;
 - Added: `removePips` method;
 - Added: aria support (#685);
-- Added: `ariaFormat` option (controls `aria-valuetext`); 
+- Added: `ariaFormat` option (controls `aria-valuetext`);
 - Fixed: throw a better error when mistakenly trying to initialize noUiSlider with `null` (#658);
 - Fixed: Made order of events consistent and documented it (#775);
 - Fixed: Border radius of connect bar, white space wrapping of tooltips (#773, #774);
@@ -121,18 +134,4 @@ noUiSlider.create(slider, {
     max: 100
   }
 });
-```
-
-Browser support
----------------
-
-All major browsers are supported. **To support IE8** you'll need to shim several ES5 features.
-
-You can use [polyfill.io](https://cdn.polyfill.io/v2/docs/) to easily do so:
-
-```html
-<meta http-equiv="X-UA-Compatible" content="IE=Edge">
-<!--[if lte IE 8]>
-<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
-<![endif]-->
 ```

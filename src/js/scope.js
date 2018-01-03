@@ -141,7 +141,7 @@
 		// If we've determined the browser can use CSS transforms, we use two rules:
 		// 'translate' to change the left/top offset;
 		// 'scale' to change the width of the element;
-		// As the element has a width of 1%, a translation of 100% is equal to 1% of the parent (.noUi-base)
+		// As the element has a width of 100%, a translation of 100% is equal to 100% of the parent (.noUi-base)
 		if ( supportsCSSTransform ) {
 
 			var connectWidth = h - l;
@@ -158,6 +158,7 @@
 		}
 	}
 
+	// Parses value passed to .set method. Returns current value if not parseable.
 	function resolveToValue ( to, handleNumber ) {
 
 		// Setting with null indicates an 'ignore'.
@@ -197,12 +198,12 @@
 			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
 		}
 
-		// First pass, without lookAhead. Values are set from left to right.
+		// First pass, without lookAhead but with lookBackward. Values are set from left to right.
 		scope_HandleNumbers.forEach(function(handleNumber){
 			setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
 		});
 
-		// Now that all base values are set, apply constraints
+		// Second pass. Now that all base values are set, apply constraints
 		scope_HandleNumbers.forEach(function(handleNumber){
 			setHandle(handleNumber, scope_Locations[handleNumber], true, true);
 		});
