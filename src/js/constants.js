@@ -46,5 +46,5 @@
 	}
 
 	function getSupportsCSSTransform ( ) {
-		return window.CSS && CSS.supports && CSS.supports('transform','translate3d(0,0,0) scale(0,0)');
+		return window.CSS && CSS.supports && CSS.supports('transform','translate(0,0) scale(0,0)');
 	}
