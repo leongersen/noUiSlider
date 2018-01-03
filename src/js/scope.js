@@ -200,7 +200,7 @@
 
 		// Now that all base values are set, apply constraints
 		scope_HandleNumbers.forEach(function(handleNumber){
-			setHandle(handleNumber, scope_Locations[handleNumber], true, false);
+			setHandle(handleNumber, scope_Locations[handleNumber], true, true);
 		});
 
 		setZindex();
