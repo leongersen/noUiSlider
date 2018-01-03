@@ -43,6 +43,7 @@ on the handle/connect order in the DOM, there should be no issues upgrading.
 - Fixed: Slider could ignore end events it should handle (#704, #805, #834);
 - Fixed: Stop depending on array type (#801);
 - Fixed: `set` method might bypass margin option (#823);
+- Fixed: Alignment of pips for RTL sliders (#795);
 
 ### 10.1.0 (*2017-07-26*)
 - Added: `multitouch` option (#793);
