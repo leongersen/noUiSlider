@@ -217,6 +217,7 @@
 			if ( values[1] ) {
 				node = addNodeTo(element, false);
 				node.className = getClasses(values[1], options.cssClasses.value);
+				node.setAttribute('data-value', values[0]);
 				node.style[options.style] = offset + '%';
 				node.innerText = formatter.to(values[0]);
 			}
