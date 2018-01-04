@@ -33,17 +33,20 @@ Changelog
 
 ### 11.0.0 (t.b.a)
 noUiSlider 11 doesn't include any breaking API changes.
-Unless major changes were made to the stylesheet or you specifically dependend
+Unless major changes were made to the stylesheet or you specifically depend
 on the handle/connect order in the DOM, there should be no issues upgrading.
 - Change: Use CSS transforms for handle movement, resulting in a massive performance improvement (#718);
-- Change: Support multitouch by default.
-- Added: `.noUi-connects` element holding all `.noUi-connect` elements;
+- Change: Support multitouch by default;
+- Change: Handle stacking is now on `.noUi-origin` instead of `.noUi-handle`;
+- Added: A `.noUi-connects` element holding all `.noUi-connect` elements;
+- Added: `[data-value]` property for `.noUi-value` in pips (#733);
 - Removed: `useRequestAnimationFrame` option. No longer needed with CSS transforms;
 - Removed: `multitouch` option. Now enabled by default;
 - Fixed: Slider could ignore end events it should handle (#704, #805, #834);
 - Fixed: Stop depending on array type (#801);
 - Fixed: `set` method might bypass margin option (#823);
 - Fixed: Alignment of pips for RTL sliders (#795);
+- Fixed: Several issues regarding pips (#812, #826, #832);
 
 ### 10.1.0 (*2017-07-26*)
 - Added: `multitouch` option (#793);

@@ -439,12 +439,15 @@
 		// Forward pips options
 		parsed.pips = options.pips;
 
-		var styles = [['left', 'top'], ['right', 'bottom']];
+		// All recent browsers accept unprefixed transform.
+		// We need -ms- for IE9 and -webkit- for older Android;
+		// Assume use of -webkit- if unprefixed and -ms- are not supported.
+		// https://caniuse.com/#feat=transforms2d
+		var d = document.createElement("div");
+		var msPrefix = d.style.msTransform !== undefined;
+		var noPrefix = d.style.transform !== undefined;
 
-		// Pre-define the styles.
-		parsed.style = styles[parsed.dir][parsed.ort];
-		parsed.styleOposite = styles[parsed.dir?0:1][parsed.ort];
-		parsed.transformRule = 'transform'; // todo add -webkit- if needed
+		parsed.transformRule = noPrefix ? 'transform' : (msPrefix ? 'msTransform' : 'webkitTransform');
 
 		return parsed;
 	}

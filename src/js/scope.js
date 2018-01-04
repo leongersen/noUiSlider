@@ -82,12 +82,8 @@
 		// Convert the value to the slider stepping/range.
 		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-		if ( supportsCSSTransform ) {
-			var rule = 'translate(' + inRuleOrder(toPct(transformDirection(to, 0)), '0') + ')';
-			scope_Handles[handleNumber].style[options.transformRule] = rule;
-		} else {
-			scope_Handles[handleNumber].style[options.style] = toPct(to);
-		}
+		var rule = 'translate(' + inRuleOrder(toPct(transformDirection(to, 0)), '0') + ')';
+		scope_Handles[handleNumber].style[options.transformRule] = rule;
 
 		updateConnect(handleNumber);
 		updateConnect(handleNumber + 1);
@@ -138,24 +134,15 @@
 			h = scope_Locations[index];
 		}
 
-		// If we've determined the browser can use CSS transforms, we use two rules:
+		// We use two rules:
 		// 'translate' to change the left/top offset;
 		// 'scale' to change the width of the element;
 		// As the element has a width of 100%, a translation of 100% is equal to 100% of the parent (.noUi-base)
-		if ( supportsCSSTransform ) {
+		var connectWidth = h - l;
+		var translateRule = 'translate(' + inRuleOrder(toPct(transformDirection(l, connectWidth)), '0') + ')';
+		var scaleRule = 'scale(' + inRuleOrder(connectWidth / 100, '1') + ')';
 
-			var connectWidth = h - l;
-			var translateRule = 'translate(' + inRuleOrder(toPct(transformDirection(l, connectWidth)), '0') + ')';
-			var scaleRule = 'scale(' + inRuleOrder(connectWidth / 100, '1') + ')';
-
-			scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
-
-		} else {
-
-			// Fall back to absolute positioning
-			scope_Connects[index].style[options.style] = toPct(l);
-			scope_Connects[index].style[options.styleOposite] = toPct(100 - h);
-		}
+		scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
 	}
 
 	// Parses value passed to .set method. Returns current value if not parseable.
