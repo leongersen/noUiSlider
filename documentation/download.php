@@ -49,7 +49,7 @@
 
 	<div class="view">
 
-		<p>You can also visit the repository: <a data-category="convert" data-action="gitHub" href="https://github.com/leongersen/noUiSlider/">noUiSlider on gitHub</a>. If you need help implementing noUiSlider in your website, or if you'd like to see a new feature, feel free to ask me on twitter: <a data-category="convert" data-action="twitter" href="https://twitter.com/LeonGersen">@LeonGersen</a>.</p>
+		<p>You can visit the repository: <a data-category="convert" data-action="gitHub" href="https://github.com/leongersen/noUiSlider/">noUiSlider on gitHub</a>. If you need help implementing noUiSlider in your website, or if you'd like to see a new feature, feel free to ask me on twitter: <a data-category="convert" data-action="twitter" href="https://twitter.com/LeonGersen">@LeonGersen</a>.</p>
 	</div>
 </section>
 

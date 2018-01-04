@@ -1,5 +1,5 @@
-var updateSlider = document.getElementById('slider-update'),
-	updateSliderValue = document.getElementById('slider-update-value');
+var updateSlider = document.getElementById('slider-update');
+var updateSliderValue = document.getElementById('slider-update-value');
 
 noUiSlider.create(updateSlider, {
 	range: {
