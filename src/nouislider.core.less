@@ -32,7 +32,6 @@
 .@{noUi-css-prefix}-connects {
 	overflow: hidden;
 	z-index: 0;
-	border-radius: 3px;
 }
 .@{noUi-css-prefix}-connect,
 .@{noUi-css-prefix}-origin {
@@ -56,11 +55,8 @@
 .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin {
 	height: 0;
 }
-
-
 .@{noUi-css-prefix}-handle {
-	position: absolute;
-	z-index: 1;
+	position: relative;
 }
 .@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-connect,
 .@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-origin {
@@ -100,6 +96,9 @@
 	border-radius: 4px;
 	border: 1px solid #D3D3D3;
 	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
+}
+.@{noUi-css-prefix}-connects {
+	border-radius: 3px;
 }
 .@{noUi-css-prefix}-connect {
 	background: #3FB8AF;

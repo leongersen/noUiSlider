@@ -449,5 +449,10 @@
 
 		parsed.transformRule = noPrefix ? 'transform' : (msPrefix ? 'msTransform' : 'webkitTransform');
 
+		// Pips don't move, so we can place them using left/top.
+		var styles = [['left', 'top'], ['right', 'bottom']];
+
+		parsed.style = styles[parsed.dir][parsed.ort];
+
 		return parsed;
 	}
