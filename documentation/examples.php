@@ -5,7 +5,7 @@
 
 <section>
 	<ul>
-		<li><a href="#section-colorpicker">Colorpicker</a></li>
+		<li><a href="#section-colorpicker">Color Picker</a></li>
 		<li><a href="#section-html5">Working with HTML5 input types</a></li>
 		<li><a href="#section-non-linear">Using non linear ranges</a></li>
 		<li><a href="#section-lock">Locking two sliders together</a></li>
@@ -87,10 +87,7 @@
 <section>
 
 	<div class="view">
-		<p>noUiSlider is perfectly fine serializing values to any element with a <code>.val()</code> method, so lets try using <code>type="number"</code> and <code>&lt;select&gt;</code>.</p>
-		<p>Note that if your browser doesn't support an input type, it will just assume <code>"text"</code>. If you'd like to know more, consider reading <a href="http://html5doctor.com/html5-forms-input-types/">this article</a>.</p>
-
-		<p>We'll append <code>&lt;option&gt;</code> elements to the <code>&lt;select&gt;</code> dynamically.</p>
+		<p>noUiSlider's <code>'update'</code> method is useful for synchronizing with other elements, such as <code>&lt;input&gt;</code> (<code>type="number"</code>) and <code>&lt;select&gt;</code>.</p>
 
 		<div class="example">
 			<div id="html5"></div>
@@ -116,7 +113,7 @@
 			<?php code('html5-slider'); ?>
 		</div>
 
-		<div class="viewer-header">Linking the <code>&lt;select&gt;</code> and <code>&lt;input&gt;</code></div>
+		<div class="viewer-header">Updating the <code>&lt;select&gt;</code> and <code>&lt;input&gt;</code></div>
 
 		<div class="viewer-content">
 			<?php code('html5-link'); ?>
@@ -138,7 +135,7 @@
 
 	<div class="view">
 
-		<p>One of noUiSlider's core features is the ability to divide the range in a non-linear fashion. Stepping can be applied, too! The example on the right shows where the handles are on the slider range in values and percentages.</p>
+		<p>One of noUiSlider's core features is the ability to divide the range in a non-linear fashion. Stepping can be applied. The example on the right shows where the handles are on the slider range in values and percentages.</p>
 
 		<div class="example">
 			<div id="nonlinear"></div>
@@ -284,11 +281,19 @@
 
 		<div class="example">
 			<div class="slider" id="slider-color"></div>
+			<?php run('colored-setup'); ?>
 			<?php run('colored'); ?>
 		</div>
 	</div>
 
 	<div class="side">
+
+		<div class="viewer-header">Slider setup</div>
+
+		<div class="viewer-content">
+			<?php code('colored-setup'); ?>
+		</div>
+
 		<?php code('colored'); ?>
 		<?php loadShowCSS('colored'); ?>
 	</div>

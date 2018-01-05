@@ -7,7 +7,7 @@ function clickOnPip ( ) {
 
 for ( var i = 0; i < pips.length; i++ ) {
 
-    // For the this example. Do this in CSS!
+    // For this example. Do this in CSS!
     pips[i].style.cursor = 'pointer';
     pips[i].addEventListener('click', clickOnPip);
 }
