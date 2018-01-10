@@ -123,6 +123,29 @@ noUiSlider.create(slider, {
 });
 ```
 
+Webpack
+-------
+In order to use this with webpack, the easiest way to work with it is by using the [`ProvidePlugin`](https://webpack.js.org/plugins/provide-plugin/):
+
+```javascript
+// webpack.config.js
+var webpack = require('webpack');
+...
+plugins: [
+	new webpack.ProvidePlugin({
+		noUiSlider: 'nouislider'
+	})
+]
+...
+```
+
+If you're using ES6 imports, a simple [import with side effect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Import_a_module_for_its_side_effects_only)
+is enough:
+
+```
+import 'nouislider';
+```
+
 Browser support
 ---------------
 
