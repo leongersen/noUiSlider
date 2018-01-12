@@ -143,9 +143,11 @@
 	<div class="view">
 		<p>Styling noUiSlider is easy. The default stylesheet contains helpful comments to get a head start.</p>
 
-		<p>It is <strong>strongly</strong> recommended to use the default stylesheet, overriding where necessary, as a starting point when re-styling noUiSlider.</p>
+		<p>It is recommended to use the default stylesheet, overriding where necessary, as a starting point when re-styling noUiSlider.</p>
 
 		<p>If your styling system doesn't match the convention in noUiSlider, you can use the <code>cssPrefix</code> and <code>cssClasses</code> options to reconfigure the markup.</p>
+
+		<p>noUiSlider listens to events on the <code>.noUi-base</code> element. To add padding on the <code>.noUi-target</code> element and contain handles within the slider width, <code>.noUi-base</code> needs to be extended. This can be done using CSS <code>:before</code> and <code>:after</code> pseudo-elements. An example is included to the right.</p>
 	</div>
 
 	<div class="side">
@@ -194,10 +196,16 @@
 			</table>
 		</div>
 
+		<div class="viewer-header">Add padding to slider base</div>
+
+		<div class="viewer-content">
+			<?php showCSS('padding'); ?>
+		</div>
+
 		<div class="viewer-header">Overriding classes</div>
 
 		<div class="viewer-content">
-<pre><code><?php include 'more/classes.js'; ?></code></pre>
+			<?php code('classes'); ?>
 		</div>
 
 	</div>
