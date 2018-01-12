@@ -3,14 +3,10 @@
 noUiSlider is lightweight JavaScript range slider.
 
 - **No dependencies**
-- All modern browsers and [IE9+](#browser-support) are supported
+- All modern browsers and IE > 9 are supported
 - Fully **responsive**
 - **Touch support** on Android, iOS and Windows devices
 - Tons of [examples](https://refreshless.com/nouislider/examples) and answered [Stack Overflow questions](https://stackoverflow.com/questions/tagged/nouislider)
-
---------
-**Quick note:** I'm out of town for a while, so support will be slower than usual. Apologies in advance.
---------
 
 License
 -------
@@ -40,6 +36,7 @@ on the handle/connect order in the DOM, there should be no issues upgrading.
 - Change: Handle stacking is now on `.noUi-origin` instead of `.noUi-handle`;
 - Added: A `.noUi-connects` element holding all `.noUi-connect` elements;
 - Added: `[data-value]` property for `.noUi-value` in pips (#733);
+- Added: `padding` option can now take an array for different padding values at both sides of a slider (#822);
 - Removed: `useRequestAnimationFrame` option. No longer needed with CSS transforms;
 - Removed: `multitouch` option. Now enabled by default;
 - Fixed: Slider could ignore end events it should handle (#704, #805, #834);
