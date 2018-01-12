@@ -27,7 +27,7 @@ npm [(package)](https://www.npmjs.com/package/nouislider)
 Changelog
 ---------
 
-### 11.0.0 (t.b.a)
+### 11.0.0 (*2018-01-12*)
 noUiSlider 11 doesn't include any breaking API changes.
 Unless major changes were made to the stylesheet or you specifically depend
 on the handle/connect order in the DOM, there should be no issues upgrading.
@@ -135,4 +135,27 @@ noUiSlider.create(slider, {
     max: 100
   }
 });
+```
+
+Webpack
+-------
+In order to use this with webpack, the easiest way to work with it is by using the [`ProvidePlugin`](https://webpack.js.org/plugins/provide-plugin/):
+
+```javascript
+// webpack.config.js
+var webpack = require('webpack');
+...
+plugins: [
+	new webpack.ProvidePlugin({
+		noUiSlider: 'nouislider'
+	})
+]
+...
+```
+
+If you're using ES6 imports, a simple [import with side effect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Import_a_module_for_its_side_effects_only)
+is enough:
+
+```
+import 'nouislider';
 ```
