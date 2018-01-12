@@ -1,4 +1,4 @@
-/*! nouislider - 10.1.0 - 2017-07-28 13:09:54 */
+/*! nouislider - 11.0.0 - 2018-01-12 20:37:52 */
 
 (function (factory) {
 
@@ -22,7 +22,7 @@
 
 	'use strict';
 
-	var VERSION = '10.1.0';
+	var VERSION = '11.0.0';
 
 
 	function isValidFormatter ( entry ) {
@@ -305,7 +305,7 @@
 		}
 
 		// Reject any invalid input, by testing whether value is an array.
-		if ( Object.prototype.toString.call( value ) !== '[object Array]' ){
+		if ( !Array.isArray(value) ){
 			throw new Error("noUiSlider (" + VERSION + "): 'range' contains invalid value.");
 		}
 
@@ -649,25 +649,34 @@
 
 	function testPadding ( parsed, entry ) {
 
-		if ( !isNumeric(entry) ){
-			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric.");
+		if ( !isNumeric(entry) && !Array.isArray(entry) ){
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers.");
+		}
+
+		if ( Array.isArray(entry) && !(entry.length == 2 || isNumeric(entry[0]) || isNumeric(entry[1])) ) {
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers.");
 		}
 
 		if ( entry === 0 ) {
 			return;
 		}
 
-		parsed.padding = parsed.spectrum.getMargin(entry);
+		if ( !Array.isArray(entry) ) {
+			entry = [entry, entry];
+		}
 
-		if ( !parsed.padding ) {
+		// 'getMargin' returns false for invalid values.
+		parsed.padding = [parsed.spectrum.getMargin(entry[0]), parsed.spectrum.getMargin(entry[1])];
+
+		if ( parsed.padding[0] === false || parsed.padding[1] === false ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option is only supported on linear sliders.");
 		}
 
-		if ( parsed.padding < 0 ) {
-			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number.");
+		if ( parsed.padding[0] < 0 || parsed.padding[1] < 0 ) {
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
 		}
 
-		if ( parsed.padding >= 50 ) {
+		if ( parsed.padding[0] >= 50 || parsed.padding[1] >= 50 ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be less than half the range.");
 		}
 	}
@@ -721,14 +730,6 @@
 			snap: snap,
 			hover: hover
 		};
-	}
-
-	function testMultitouch ( parsed, entry ) {
-		parsed.multitouch = entry;
-
-		if ( typeof entry !== 'boolean' ){
-			throw new Error("noUiSlider (" + VERSION + "): 'multitouch' option must be a boolean.");
-		}
 	}
 
 	function testTooltips ( parsed, entry ) {
@@ -800,14 +801,6 @@
 		}
 	}
 
-	function testUseRaf ( parsed, entry ) {
-		if ( entry === true || entry === false ) {
-			parsed.useRequestAnimationFrame = entry;
-		} else {
-			throw new Error("noUiSlider (" + VERSION + "): 'useRequestAnimationFrame' option should be true (default) or false.");
-		}
-	}
-
 	// Test all developer settings and parse to assumption-safe values.
 	function testOptions ( options ) {
 
@@ -840,20 +833,17 @@
 			'limit': { r: false, t: testLimit },
 			'padding': { r: false, t: testPadding },
 			'behaviour': { r: true, t: testBehaviour },
-			'multitouch': { r: true, t: testMultitouch },
 			'ariaFormat': { r: false, t: testAriaFormat },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
 			'cssPrefix': { r: false, t: testCssPrefix },
-			'cssClasses': { r: false, t: testCssClasses },
-			'useRequestAnimationFrame': { r: false, t: testUseRaf }
+			'cssClasses': { r: false, t: testCssClasses }
 		};
 
 		var defaults = {
 			'connect': false,
 			'direction': 'ltr',
 			'behaviour': 'tap',
-			'multitouch': false,
 			'orientation': 'horizontal',
 			'cssPrefix' : 'noUi-',
 			'cssClasses': {
@@ -867,6 +857,7 @@
 				vertical: 'vertical',
 				background: 'background',
 				connect: 'connect',
+				connects: 'connects',
 				ltr: 'ltr',
 				rtl: 'rtl',
 				draggable: 'draggable',
@@ -889,8 +880,7 @@
 				valueNormal: 'value-normal',
 				valueLarge: 'value-large',
 				valueSub: 'value-sub'
-			},
-			'useRequestAnimationFrame': true
+			}
 		};
 
 		// AriaFormat defaults to regular format, if any.
@@ -919,11 +909,20 @@
 		// Forward pips options
 		parsed.pips = options.pips;
 
+		// All recent browsers accept unprefixed transform.
+		// We need -ms- for IE9 and -webkit- for older Android;
+		// Assume use of -webkit- if unprefixed and -ms- are not supported.
+		// https://caniuse.com/#feat=transforms2d
+		var d = document.createElement("div");
+		var msPrefix = d.style.msTransform !== undefined;
+		var noPrefix = d.style.transform !== undefined;
+
+		parsed.transformRule = noPrefix ? 'transform' : (msPrefix ? 'msTransform' : 'webkitTransform');
+
+		// Pips don't move, so we can place them using left/top.
 		var styles = [['left', 'top'], ['right', 'bottom']];
 
-		// Pre-define the styles.
 		parsed.style = styles[parsed.dir][parsed.ort];
-		parsed.styleOposite = styles[parsed.dir?0:1][parsed.ort];
 
 		return parsed;
 	}
@@ -1005,10 +1004,12 @@ function closure ( target, options, originalOptions ){
 	// Add handles to the slider base.
 	function addElements ( connectOptions, base ) {
 
+		var connectBase = addNodeTo(base, options.cssClasses.connects);
+
 		scope_Handles = [];
 		scope_Connects = [];
 
-		scope_Connects.push(addConnect(base, connectOptions[0]));
+		scope_Connects.push(addConnect(connectBase, connectOptions[0]));
 
 		// [::::O====O====O====]
 		// connectOptions = [0, 1, 1, 1]
@@ -1017,7 +1018,7 @@ function closure ( target, options, originalOptions ){
 			// Keep a list of all added handles.
 			scope_Handles.push(addOrigin(base, i));
 			scope_HandleNumbers[i] = i;
-			scope_Connects.push(addConnect(base, connectOptions[i + 1]));
+			scope_Connects.push(addConnect(connectBase, connectOptions[i + 1]));
 		}
 	}
 
@@ -1108,21 +1109,22 @@ function closure ( target, options, originalOptions ){
 
 		if ( mode === 'count' ) {
 
-			if ( !values ) {
-				throw new Error("noUiSlider (" + VERSION + "): 'values' required for mode 'count'.");
+			if ( values < 2 ) {
+				throw new Error("noUiSlider (" + VERSION + "): 'values' (>= 2) required for mode 'count'.");
 			}
 
 			// Divide 0 - 100 in 'count' parts.
-			var spread = ( 100 / (values - 1) );
-			var v;
-			var i = 0;
+			var interval = values - 1;
+			var spread = ( 100 / interval );
 
 			values = [];
 
 			// List these parts and have them handled as 'positions'.
-			while ( (v = i++ * spread) <= 100 ) {
-				values.push(v);
+			while ( interval-- ) {
+				values[ interval ] = ( interval * spread );
 			}
+
+			values.push(100);
 
 			mode = 'positions';
 		}
@@ -1229,7 +1231,7 @@ function closure ( target, options, originalOptions ){
 				steps = pctDifference / density;
 				realSteps = Math.round(steps);
 
-				// This ratio represents the ammount of percentage-space a point indicates.
+				// This ratio represents the amount of percentage-space a point indicates.
 				// For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-devided.
 				// Round the percentage offset to an even number, then divide by two
 				// to spread the offset on both sides of the range.
@@ -1316,6 +1318,7 @@ function closure ( target, options, originalOptions ){
 			if ( values[1] ) {
 				node = addNodeTo(element, false);
 				node.className = getClasses(values[1], options.cssClasses.value);
+				node.setAttribute('data-value', values[0]);
 				node.style[options.style] = offset + '%';
 				node.innerText = formatter.to(values[0]);
 			}
@@ -1376,19 +1379,22 @@ function closure ( target, options, originalOptions ){
 
 		var method = function ( e ){
 
-			if ( scope_Target.hasAttribute('disabled') ) {
+			e = fixEvent(e, data.pageOffset, data.target || element);
+
+			// fixEvent returns false if this event has a different target
+			// when handling (multi-) touch events;
+			if ( !e ) {
+				return false;
+			}
+
+			// doNotReject is passed by all end events to make sure released touches
+			// are not rejected, leaving the slider "stuck" to the cursor;
+			if ( scope_Target.hasAttribute('disabled') && !data.doNotReject ) {
 				return false;
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( hasClass(scope_Target, options.cssClasses.tap) ) {
-				return false;
-			}
-
-			e = fixEvent(e, data.pageOffset, data.target || element);
-
-			// Handle reject of multitouch
-			if ( !e ) {
+			if ( hasClass(scope_Target, options.cssClasses.tap) && !data.doNotReject ) {
 				return false;
 			}
 
@@ -1449,44 +1455,40 @@ function closure ( target, options, originalOptions ){
 
 		// In the event that multitouch is activated, the only thing one handle should be concerned
 		// about is the touches that originated on top of it.
-		if ( touch && options.multitouch ) {
+		if ( touch ) {
+
 			// Returns true if a touch originated on the target.
 			var isTouchOnTarget = function (touch) {
 				return touch.target === target || target.contains(touch.target);
 			};
+
 			// In the case of touchstart events, we need to make sure there is still no more than one
 			// touch on the target so we look amongst all touches.
 			if (e.type === 'touchstart') {
+
 				var targetTouches = Array.prototype.filter.call(e.touches, isTouchOnTarget);
+
 				// Do not support more than one touch per handle.
 				if ( targetTouches.length > 1 ) {
 					return false;
 				}
+
 				x = targetTouches[0].pageX;
 				y = targetTouches[0].pageY;
+
 			} else {
-			// In the other cases, find on changedTouches is enough.
+
+				// In the other cases, find on changedTouches is enough.
 				var targetTouch = Array.prototype.find.call(e.changedTouches, isTouchOnTarget);
+
 				// Cancel if the target touch has not moved.
 				if ( !targetTouch ) {
 					return false;
 				}
+
 				x = targetTouch.pageX;
 				y = targetTouch.pageY;
 			}
-		} else if ( touch ) {
-			// Fix bug when user touches with two or more fingers on mobile devices.
-			// It's useful when you have two or more sliders on one page,
-			// that can be touched simultaneously.
-			// #649, #663, #668
-			if ( e.touches.length > 1 ) {
-				return false;
-			}
-
-			// noUiSlider supports one movement at a time,
-			// so we can select the first 'changedTouch'.
-			x = e.changedTouches[0].pageX;
-			y = e.changedTouches[0].pageY;
 		}
 
 		pageOffset = pageOffset || getPageOffset(scope_Document);
@@ -1726,6 +1728,7 @@ function closure ( target, options, originalOptions ){
 			target: event.target,
 			handle: handle,
 			listeners: listeners,
+			doNotReject: true,
 			handleNumbers: data.handleNumbers
 		});
 
@@ -1733,6 +1736,7 @@ function closure ( target, options, originalOptions ){
 			target: event.target,
 			handle: handle,
 			listeners: listeners,
+			doNotReject: true,
 			handleNumbers: data.handleNumbers
 		});
 
@@ -1913,11 +1917,11 @@ function closure ( target, options, originalOptions ){
 		if ( options.padding ) {
 
 			if ( handleNumber === 0 ) {
-				to = Math.max(to, options.padding);
+				to = Math.max(to, options.padding[0]);
 			}
 
 			if ( handleNumber === scope_Handles.length - 1 ) {
-				to = Math.min(to, 100 - options.padding);
+				to = Math.min(to, 100 - options.padding[1]);
 			}
 		}
 
@@ -1934,8 +1938,22 @@ function closure ( target, options, originalOptions ){
 		return to;
 	}
 
+	// Uses slider orientation to create CSS rules. a = base value;
+	function inRuleOrder ( v, a ) {
+		var o = options.ort;
+		return (o?a:v) + ', ' + (o?v:a);
+	}
+
 	function toPct ( pct ) {
 		return pct + '%';
+	}
+
+	// Takes a base value and an offset. This offset is used for the connect bar size.
+	// In the initial design for this feature, the origin element was 1% wide.
+	// Unfortunately, a rounding bug in Chrome makes it impossible to implement this feature
+	// in this manner: https://bugs.chromium.org/p/chromium/issues/detail?id=798223
+	function transformDirection ( a, b ) {
+		return options.dir ? 100 - a - b : a;
 	}
 
 	// Updates scope_Locations and scope_Values, updates visual state
@@ -1947,22 +1965,11 @@ function closure ( target, options, originalOptions ){
 		// Convert the value to the slider stepping/range.
 		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-		// Called synchronously or on the next animationFrame
-		var stateUpdate = function() {
-			scope_Handles[handleNumber].style[options.style] = toPct(to);
-			updateConnect(handleNumber);
-			updateConnect(handleNumber + 1);
-		};
+		var rule = 'translate(' + inRuleOrder(toPct(transformDirection(to, 0)), '0') + ')';
+		scope_Handles[handleNumber].style[options.transformRule] = rule;
 
-		// Set the handle to the new position.
-		// Use requestAnimationFrame for efficient painting.
-		// No significant effect in Chrome, Edge sees dramatic performace improvements.
-		// Option to disable is useful for unit tests, and single-step debugging.
-		if ( window.requestAnimationFrame && options.useRequestAnimationFrame ) {
-			window.requestAnimationFrame(stateUpdate);
-		} else {
-			stateUpdate();
-		}
+		updateConnect(handleNumber);
+		updateConnect(handleNumber + 1);
 	}
 
 	function setZindex ( ) {
@@ -1973,7 +1980,7 @@ function closure ( target, options, originalOptions ){
 			// [[7] [8] .......... | .......... [5] [4]
 			var dir = (scope_Locations[handleNumber] > 50 ? -1 : 1);
 			var zIndex = 3 + (scope_Handles.length + (dir * handleNumber));
-			scope_Handles[handleNumber].childNodes[0].style.zIndex = zIndex;
+			scope_Handles[handleNumber].style.zIndex = zIndex;
 		});
 	}
 
@@ -2010,31 +2017,40 @@ function closure ( target, options, originalOptions ){
 			h = scope_Locations[index];
 		}
 
-		scope_Connects[index].style[options.style] = toPct(l);
-		scope_Connects[index].style[options.styleOposite] = toPct(100 - h);
+		// We use two rules:
+		// 'translate' to change the left/top offset;
+		// 'scale' to change the width of the element;
+		// As the element has a width of 100%, a translation of 100% is equal to 100% of the parent (.noUi-base)
+		var connectWidth = h - l;
+		var translateRule = 'translate(' + inRuleOrder(toPct(transformDirection(l, connectWidth)), '0') + ')';
+		var scaleRule = 'scale(' + inRuleOrder(connectWidth / 100, '1') + ')';
+
+		scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
 	}
 
-	// ...
-	function setValue ( to, handleNumber ) {
+	// Parses value passed to .set method. Returns current value if not parseable.
+	function resolveToValue ( to, handleNumber ) {
 
 		// Setting with null indicates an 'ignore'.
 		// Inputting 'false' is invalid.
-		if ( to === null || to === false ) {
-			return;
+		if ( to === null || to === false || to === undefined ) {
+			return scope_Locations[handleNumber];
 		}
 
-		// If a formatted number was passed, attemt to decode it.
+		// If a formatted number was passed, attempt to decode it.
 		if ( typeof to === 'number' ) {
 			to = String(to);
 		}
 
 		to = options.format.from(to);
+		to = scope_Spectrum.toStepping(to);
 
-		// Request an update for all links if the value was invalid.
-		// Do so too if setting the handle fails.
-		if ( to !== false && !isNaN(to) ) {
-			setHandle(handleNumber, scope_Spectrum.toStepping(to), false, false);
+		// If parsing the number failed, use the current value.
+		if ( to === false || isNaN(to) ) {
+			return scope_Locations[handleNumber];
 		}
+
+		return to;
 	}
 
 	// Set the slider value.
@@ -2046,17 +2062,20 @@ function closure ( target, options, originalOptions ){
 		// Event fires by default
 		fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
 
-		values.forEach(setValue);
-
 		// Animation is optional.
 		// Make sure the initial values were set before using animated placement.
 		if ( options.animate && !isInit ) {
 			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
 		}
 
-		// Now that all base values are set, apply constraints
+		// First pass, without lookAhead but with lookBackward. Values are set from left to right.
 		scope_HandleNumbers.forEach(function(handleNumber){
-			setHandle(handleNumber, scope_Locations[handleNumber], true, false);
+			setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
+		});
+
+		// Second pass. Now that all base values are set, apply constraints
+		scope_HandleNumbers.forEach(function(handleNumber){
+			setHandle(handleNumber, scope_Locations[handleNumber], true, true);
 		});
 
 		setZindex();

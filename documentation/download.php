@@ -11,7 +11,7 @@
 
 		<p>noUiSlider is open source, and you can use it <strong>for free</strong> in any personal or commercial product. No attribution required. Both the uncompressed and compressed version of noUiSlider are available in a <code>.zip</code> release, which is hosted by Github and available over <code>https</code>.</p>
 
-		<a class="button" href="https://github.com/leongersen/noUiSlider/releases/download/10.1.0/noUiSlider.10.1.0.zip" data-category="convert" data-action="download">Download noUiSlider from Github</a>
+		<a class="button" href="https://github.com/leongersen/noUiSlider/releases/download/11.0.0/noUiSlider.11.0.0.zip" data-category="convert" data-action="download">Download noUiSlider from Github</a>
 
 		<div class="share">
 			<iframe src="https://ghbtns.com/github-btn.html?user=leongersen&repo=noUiSlider&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
@@ -49,7 +49,7 @@
 
 	<div class="view">
 
-		<p>You can also visit the repository: <a data-category="convert" data-action="gitHub" href="https://github.com/leongersen/noUiSlider/">noUiSlider on gitHub</a>. If you need help implementing noUiSlider in your website, or if you'd like to see a new feature, feel free to ask me on twitter: <a data-category="convert" data-action="twitter" href="https://twitter.com/LeonGersen">@LeonGersen</a>.</p>
+		<p>You can visit the repository: <a data-category="convert" data-action="gitHub" href="https://github.com/leongersen/noUiSlider/">noUiSlider on gitHub</a>. If you need help implementing noUiSlider in your website, or if you'd like to see a new feature, feel free to ask me on twitter: <a data-category="convert" data-action="twitter" href="https://twitter.com/LeonGersen">@LeonGersen</a>.</p>
 	</div>
 </section>
 

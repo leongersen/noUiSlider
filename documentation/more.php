@@ -1,9 +1,16 @@
 <?php
 	$title = "noUiSlider - Disabling, Updating and Styling";
-	$description = "noUiSlider comes with a beautiful theme. You can temporarily disable a slider element.";
+	$description = "In-dept details on disabling slider handles, updating options and styling noUiSlider.";
 ?>
 
-<h1>More...</h1>
+<section>
+	<ul>
+		<li><a href="#section-disable">Disabling a slider or handles</a></li>
+		<li><a href="#section-update">Updating slider options</a></li>
+		<li><a href="#section-styling">Styling noUiSlider</a></li>
+	</ul>
+</section>
+
 
 <?php sect('disable'); ?>
 <h2>Disabling a slider</h2>
@@ -12,13 +19,15 @@
 
 	<div class="view">
 
-		<p>Disabling a slider is identical to disabling a checkbox or textarea; simply set the <code class="language-markup">disabled</code> attribute.</p>
+		<p>Disabling a slider is identical to disabling a checkbox or textarea; add the <code class="language-markup">disabled</code> attribute.</p>
 
-		<p>A disabled slider can't be changed by sliding, click or touching, but you can still change its value using the <code>.set()</code> method. You can use CSS to show the disabled state. The default theme also sets a <code>not-allowed</code> cursor.</p>
+		<p>A disabled slider can't be changed by user interaction (sliding, clicking or touching), but you can still change its value using the <code>.set()</code> method.</p>
 
-		<p>The slider below is disabled when the checkbox gets checked, and re-enabled when it is unchecked.</p>
+		<p>CSS can be used to show the disabled state. The default stylesheet also sets a <code>not-allowed</code> cursor.</p>
 
-		<p>Individual handles can also be disabled by setting the <code>disabled</code> attribute on a <code>.noUi-origin</code> element.</p>
+		<p>The slider below is disabled when the checkbox is checked, and re-enabled when it is unchecked.</p>
+
+		<p>Individual handles can be disabled by adding a <code>disabled</code> attribute to a <code>.noUi-origin</code> element.</p>
 
 		<div class="example">
 			<div id="disable1"></div>
@@ -63,9 +72,15 @@
 
 	<div class="view">
 
-		<p>noUiSlider has an <code>updateOptions(newOptions, fireSetEvent)</code> method that can change the <code>'margin'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'animate'</code> and <code>'snap'</code> options. All other options require changes to the slider's HTML or event bindings.</p>
+		<p>noUiSlider has an update method that can change the <code>'margin'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'animate'</code> and <code>'snap'</code> options.</p>
 
-		<p>To update any other option, destroy the slider using <code>slider.noUiSlider.destroy()</code> and create a new one. Note that events are <strong>not</strong> unbound when destroying a slider.</p>
+		<p>All other options require changes to the slider's HTML or event bindings.</p>
+
+		<p>To update any other option, destroy the slider using <code>slider.noUiSlider.destroy()</code> and create a new one. Events are unbound when destroying a slider.</p>
+
+		<p>The update method can be called as <code>slider.noUiSlider.updateOptions(newOptions, [fireSetEvent])</code>.</p>
+
+		<p>Options that can not be updated will be ignored without errors.</p>
 
 		<p>The <code>'update'</code> event fires after updating the slider.</p>
 
@@ -73,8 +88,10 @@
 
 		<p>The <code>'set'</code> event fires when the slider values are restored. If this is unwanted, you can pass <code>false</code> as the second parameter, <code>fireSetEvent</code>.</p>
 
-		<p>Options can be read from the slider using the <code>slider.noUiSlider.options</code> property. This property contains a <strong>reference</strong> to the options object passed when creating the slider. This object is <strong>modified</strong> when calling <code>updateOptions</code>. Note that if you initiate multiple sliders using the same options object and update a subset of them later, this <em>will</em> move the <code>options</code> property out of sync with the actual slider options.</p>
-		
+		<p>Options can be read from the slider using the <code>slider.noUiSlider.options</code> property. This property contains a <strong>reference</strong> to the options object passed when creating the slider. This object is <strong>modified</strong> when calling <code>updateOptions</code>.</p>
+
+		<p>Note that if you initiate multiple sliders using the same options object and update a subset of them later, this <em>will</em> move the <code>options</code> property out of sync with the actual slider options.</p>
+
 		<div class="example">
 			<div id="slider-update"></div>
 			<span class="example-val" id="slider-update-value"></span>
@@ -89,7 +106,7 @@
 
 	<div class="side">
 
-		<div class="viewer-header">The HTML for this example</div>
+		<div class="viewer-header">HTML for this example</div>
 
 		<div class="viewer-content">
 
@@ -128,17 +145,13 @@
 <section>
 
 	<div class="view">
-		<p>Styling noUiSlider is easy. The default stylesheet contains helpful comments to get a head start. I <strong>strongly</strong> recommend using the default stylesheet as a starting point when re-styling noUiSlider.</p>
+		<p>Styling noUiSlider is easy. The default stylesheet contains helpful comments to get a head start.</p>
+
+		<p>It is recommended to use the default stylesheet, overriding where necessary, as a starting point when re-styling noUiSlider.</p>
 
 		<p>If your styling system doesn't match the convention in noUiSlider, you can use the <code>cssPrefix</code> and <code>cssClasses</code> options to reconfigure the markup.</p>
-		
-		<h3>Things to watch out for</h3>
 
-		<ul style="margin: 20px">
-			<li>If you want the handles to stay within the slider bar (instead of the default overlap), have a look at the CSS detailed to the right. Add the styles to your stylesheet and give your element the <code>noUi-extended</code> class for this effect.</li>
-			<li>The <code>.noUi-connect</code> and <code>.noUi-background</code> classes are applied to various elements.</a>
-			<li>To position your handles on the center of its relative position, it should have a <strong>negative offset</strong> of half the handle width. See the default theme for reference.</li>
-		</ul>
+		<p>noUiSlider listens to events on the <code>.noUi-base</code> element. To add padding on the <code>.noUi-target</code> element and contain handles within the slider width, <code>.noUi-base</code> needs to be extended. This can be done using CSS <code>:before</code> and <code>:after</code> pseudo-elements. An example is included to the right.</p>
 	</div>
 
 	<div class="side">
@@ -187,23 +200,18 @@
 			</table>
 		</div>
 
+		<div class="viewer-header">Add padding to slider base</div>
+
+		<div class="viewer-content">
+			<?php showCSS('padding'); ?>
+		</div>
+
 		<div class="viewer-header">Overriding classes</div>
 
 		<div class="viewer-content">
-<pre><code><?php include 'more/classes.js'; ?></code></pre>
+			<?php code('classes'); ?>
 		</div>
 
-		<div class="viewer-header">Containing handles within the slider bar (horizontal)</div>
-
-		<div class="viewer-content">
-<pre><code><?php include 'more/horizontal-contain.css'; ?></code></pre>
-		</div>
-
-		<div class="viewer-header">Containing handles within the slider bar (vertical)</div>
-
-		<div class="viewer-content">
-<pre><code><?php include 'more/vertical-contain.css'; ?></code></pre>
-		</div>
 	</div>
 
 </section>

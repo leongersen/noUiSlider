@@ -10,7 +10,6 @@
 			start: [ 0, 10 ],
 			behaviour: 'drag',
 			connect: true,
-			useRequestAnimationFrame: false,
 			format: {
 				to: function(x){
 					return x.toFixed(1);

@@ -5,10 +5,12 @@
 
 <section>
 	<ul>
-		<li><a href="#section-colorpicker">Colorpicker</a></li>
+		<li><a href="#section-colorpicker">Color Picker</a></li>
 		<li><a href="#section-html5">Working with HTML5 input types</a></li>
 		<li><a href="#section-non-linear">Using non linear ranges</a></li>
 		<li><a href="#section-lock">Locking two sliders together</a></li>
+		<li><a href="#section-click-pips">Moving the slider by clicking pips</a></li>
+		<li><a href="#section-hiding-tooltips">Only showing tooltips when sliding handles</a></li>
 		<li><a href="#section-colored-connect">Colored connect elements</a></li>
 		<li><a href="#section-keypress">Changing the slider value by keypress</a></li>
 		<li><a href="#section-skipping">Skipping values on a slider</a></li>
@@ -85,10 +87,7 @@
 <section>
 
 	<div class="view">
-		<p>noUiSlider is perfectly fine serializing values to any element with a <code>.val()</code> method, so lets try using <code>type="number"</code> and <code>&lt;select&gt;</code>.</p>
-		<p>Note that if your browser doesn't support an input type, it will just assume <code>"text"</code>. If you'd like to know more, consider reading <a href="http://html5doctor.com/html5-forms-input-types/">this article</a>.</p>
-
-		<p>We'll append <code>&lt;option&gt;</code> elements to the <code>&lt;select&gt;</code> dynamically.</p>
+		<p>noUiSlider's <code>'update'</code> method is useful for synchronizing with other elements, such as <code>&lt;input&gt;</code> (<code>type="number"</code>) and <code>&lt;select&gt;</code>.</p>
 
 		<div class="example">
 			<div id="html5"></div>
@@ -114,7 +113,7 @@
 			<?php code('html5-slider'); ?>
 		</div>
 
-		<div class="viewer-header">Linking the <code>&lt;select&gt;</code> and <code>&lt;input&gt;</code></div>
+		<div class="viewer-header">Updating the <code>&lt;select&gt;</code> and <code>&lt;input&gt;</code></div>
 
 		<div class="viewer-content">
 			<?php code('html5-link'); ?>
@@ -136,7 +135,7 @@
 
 	<div class="view">
 
-		<p>One of noUiSlider's core features is the ability to divide the range in a non-linear fashion. Stepping can be applied, too! The example on the right shows where the handles are on the slider range in values and percentages.</p>
+		<p>One of noUiSlider's core features is the ability to divide the range in a non-linear fashion. Stepping can be applied. The example on the right shows where the handles are on the slider range in values and percentages.</p>
 
 		<div class="example">
 			<div id="nonlinear"></div>
@@ -218,6 +217,59 @@
 </section>
 
 
+<?php sect('click-pips'); ?>
+<h1>Moving the slider by clicking pips</h1>
+
+<section>
+
+	<div class="view">
+
+		<p><a href="https://github.com/leongersen/noUiSlider/issues/733">Issue #733</a> asks about clicking pips to move the slider to their value. noUiSlider 11 adds a <code>data-value</code> attribute to all <code>.noUi-value</code> elements that makes this easy.</code></code></p>
+
+		<div class="example">
+			<div class="slider" id="slider-pips"></div>
+
+			<?php run('click-pips-setup'); ?>
+			<?php run('click-pips'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<div class="viewer-header">Setup</div>
+
+		<div class="viewer-content">
+			<?php code('click-pips-setup'); ?>
+		</div>
+
+		<?php code('click-pips'); ?>
+	</div>
+</section>
+
+
+<?php sect('hiding-tooltips'); ?>
+<h1>Only showing tooltips when sliding handles</h1>
+
+<section>
+
+	<div class="view">
+
+		<p><a href="https://github.com/leongersen/noUiSlider/issues/836">Issue #836</a> requested a way to toggle tooltips after slider creation. This effect can be achieved by using the <code>.noUi-active</code> class to show and hide the tooltips. No additional JavaScript is involved.</p>
+
+		<div class="example">
+			<div class="slider" id="slider-hide"></div>
+
+			<?php run('hiding-tooltips'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<?php loadShowCSS('hiding-tooltips'); ?>
+	</div>
+</section>
+
+
 <?php sect('colored-connect'); ?>
 <h1>Colored Connect Elements</h1>
 
@@ -229,11 +281,19 @@
 
 		<div class="example">
 			<div class="slider" id="slider-color"></div>
+			<?php run('colored-setup'); ?>
 			<?php run('colored'); ?>
 		</div>
 	</div>
 
 	<div class="side">
+
+		<div class="viewer-header">Slider setup</div>
+
+		<div class="viewer-content">
+			<?php code('colored-setup'); ?>
+		</div>
+
 		<?php code('colored'); ?>
 		<?php loadShowCSS('colored'); ?>
 	</div>

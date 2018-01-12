@@ -9,8 +9,26 @@
 
 	<div class="double">
 
-		<p>noUiSlider can be configured with a wide variety of options, which can be use to customize the slider in to doing exactly what you want. For options regarding the slider range, see <a href="/nouislider/slider-values/"> slider values</a>.</p>
+		<p>noUiSlider can be configured with a wide variety of options, which can be use to customize a slider's behaviour.</p>
+
+		<p>For options regarding the slider range, see <a href="/nouislider/slider-values/"> slider values</a>.</p>
 	</div>
+</section>
+
+
+<section>
+	<ul>
+		<li><a href="#section-start">Start</a></li>
+		<li><a href="#section-connect">Connect</a></li>
+		<li><a href="#section-margin">Margin</a></li>
+		<li><a href="#section-limit">Limit</a></li>
+		<li><a href="#section-padding">Padding</a></li>
+		<li><a href="#section-step">Step</a></li>
+		<li><a href="#section-orientation">Orientation</a></li>
+		<li><a href="#section-direction">Direction</a></li>
+		<li><a href="#section-tooltips">Tooltips</a></li>
+		<li><a href="#section-animate">Animate</a></li>
+	</ul>
 </section>
 
 
@@ -21,7 +39,9 @@
 
 	<div class="view">
 
-		<p>The start option sets the number of handles and corresponding start positions, relative to <code>range</code>.</p>
+		<p>The start option sets the number of handles and corresponding start positions.</p>
+
+		<p>The start option uses the slider's <code>'format'</code> option to decode the input. Number input will be cast to string and decoded.</p>
 
 		<div class="example">
 			<div id="slider-start"></div>
@@ -33,9 +53,9 @@
 			<div><em>none</em></div>
 
 			<strong>Accepted values</strong>
-			<div><code>number</code>,<br>
-				<code>array[number]</code>,<br>
-				<code>array[number, number, ...]</code>
+			<div><code>'string'</code>,<br>
+				<code>array['string']</code>,<br>
+				<code>array['string', 'string', ...]</code>
 			</div>
 		</div>
 	</div>
@@ -54,7 +74,7 @@
 
 	<div class="view">
 
-		<p>The connect setting can be used to control the (green) bar between the handles, or the edges of the slider.</p>
+		<p>The connect option can be used to control the bar between the handles or the edges of the slider.</p>
 
 		<p>Pass an <code>array</code> with a <code>boolean</code> for every connecting element, including the edges of the slider. The length of this array must match the handle count + 1.</p>
 
@@ -192,7 +212,10 @@
 			<div><em>0</em></div>
 
 			<strong>Accepted values</strong>
-			<div><code>number</code></div>
+			<div><code>number</code>,<br>
+				<code>array[number]</code>,<br>
+				<code>array[number, number]</code>
+			</div>
 		</div>
 	</div>
 
@@ -209,14 +232,13 @@
 </section>
 
 
-
 <?php sect('step'); ?>
 <h2>Step</h2>
 
 <section>
 
 	<div class="view">
-		<p>By default, the slider slides fluently. In order to make the handles jump between intervals, you can use this option. The step option is relative to the values provided to <code>range</code>.</p>
+		<p>By default, the slider slides fluently. In order to make the handles jump between intervals, you can use the step option.</p>
 
 		<div class="example">
 			<div id="slider-step"></div>
@@ -318,7 +340,7 @@
 
 	<div class="view">
 
-		<p>noUiSlider can provide a basic tooltip without using its events system. Set the <code>tooltips</code> option to <code>true</code> to enable. This option can also accept <a href="/nouislider/slider-read-write/#section-formatting">formatting options</a> to format the tooltips content. In that case, pass an <code>array</code> with a formatter for each handle, <code>true</code> to use the default or <code>false</code> to display no tooltip.</p>
+		<p>noUiSlider can provide a basic tooltip using the <code>tooltips</code> option. This option can also accept <a href="/nouislider/slider-read-write/#section-formatting">formatting options</a> to format the tooltips content. In that case, pass an <code>array</code> with a formatter for each handle, <code>true</code> to use the default or <code>false</code> to display no tooltip.</p>
 
 		<div class="example overflow">
 			<div id="slider-tooltips"></div>
@@ -330,7 +352,7 @@
 			<div><code>false</code></div>
 
 			<strong>Accepted values</strong>
-			<div><code>false</code>, <code>true</code>, <code><em>formatter</em></code>, <code>array[<em>formatter</em> or false]</code></div>
+			<div><code>false</code>, <code>true</code>, <code>formatter</code>, <code>array[formatter or true or false, ...]</code></div>
 		</div>
 	</div>
 
@@ -371,7 +393,7 @@
 
 		<br>
 
-		<p>The <code>animationDuration</code> option can be used to set the animation speed assumed by the slider library. In <strong>addition</strong> to this, you must <strong>manually</strong> set the CSS <code>(-webkit-)transition</code> property for the <code>.noUi-state-tap .noUi-origin</code> selector.</p>
+		<p>The <code>animationDuration</code> option can be used to set the animation speed assumed by the slider library. In <strong>addition</strong> to this, you must <strong>manually</strong> alter the CSS <code>(-webkit-)transition</code> property for the <code>.noUi-state-tap .noUi-origin</code> selector.</p>
 
 		<div class="options">
 			<strong>Default</strong>
@@ -386,35 +408,4 @@
 		<?php code('animate'); ?>
 	</div>
 
-</section>
-
-
-<?php sect('multitouch'); ?>
-
-<h2>Multitouch</h2>
-
-<section>
-	<div class="view">
-		<p>Set the multitouch option to <code>true</code> to allow simultaneous interaction with a slider and other content on the page (e.g. another slider). It is even possible to simultaneously control several handles of the same slider.</p>
-
-		<div class="example" style="margin: 0;">
-			<div class="sliders" id="slider-multitouch-1" style="margin-bottom: 20px"></div>
-			<div class="sliders" id="slider-multitouch-2" style="margin-bottom: 20px"></div>
-			<div class="sliders" id="slider-multitouch-3"></div>
-			<?php run('multitouch'); ?>
-		</div>
-
-		<div class="options">
-			<strong>Default</strong>
-			<div><code>false</code></div>
-
-			<strong>Accepted values</strong>
-			<div><code>true</code>, <code>false</code></div>
-		</div>
-
-	</div>
-
-	<div class="side">
-		<?php code('multitouch'); ?>
-	</div>
 </section>

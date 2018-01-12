@@ -147,11 +147,9 @@
 
 		<p>Nested namespaces ('slide.something.else') are not supported, and are threated as a single namespace (so '.a.b' isn't related to '.a').</p>
 
-		<p>Event callbacks receive three arguments. <code>values</code> is <strong>always an array</strong>, for both one-handle and two-handle sliders. It contains the current slider values, with formatting applied. <code>handle</code> is <code>0</code> or <code>1</code> and indicates the handle that caused the event. <code>values[handle]</code> gives the value for the current handle. Should you need it, <code>unencodedValues</code> contains the slider values without any formatting.</p>
+		<p>Event callbacks receive three arguments. <code>values</code> is <strong>always an array</strong>, for both one-handle and two-handle sliders. It contains the current slider values, with formatting applied. <code>handle</code> is the index of the handle that caused the event, starting at zero. <code>values[handle]</code> gives the value for the handle that triggered the event. <code>unencodedValues</code> contains the slider values without any formatting.</p>
 
 		<p>For all events, <code>this</code> is set to the current slider's public API, containing (among others) the <code>'get'</code> and <code>'set'</code> methods.</p>
-
-		<p><strong style="color:#DD4A68">Quick note:</strong> When any of the events fire, the slider state has updated. However, it's <strong>visual</strong> <em>might</em> not have been updated yet. This happens <strong>asynchronically</strong> to increase paint performance.</p>
 	</div>
 
 	<?php code('binding'); ?>

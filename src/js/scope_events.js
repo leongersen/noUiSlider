@@ -105,6 +105,7 @@
 			target: event.target,
 			handle: handle,
 			listeners: listeners,
+			doNotReject: true,
 			handleNumbers: data.handleNumbers
 		});
 
@@ -112,6 +113,7 @@
 			target: event.target,
 			handle: handle,
 			listeners: listeners,
+			doNotReject: true,
 			handleNumbers: data.handleNumbers
 		});
 

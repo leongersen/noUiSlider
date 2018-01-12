@@ -49,8 +49,7 @@
 				'max': [20]
 			},
 			animate: false,
-			animationDuration: 0,
-			useRequestAnimationFrame: false
+			animationDuration: 0
 		});
 
 		var handles2 = slider2.querySelectorAll('.noUi-handle'),
@@ -62,7 +61,7 @@
 			rightmostHandlePos = rightmostHandle.getBoundingClientRect();
 
 		assert.deepEqual(middleHandlePos, rightmostHandlePos, "Two handles in the same location should have the same on-screen position");
-		assert.notDeepEqual(middleHandlePos, leftmostHandlePos, "Handles at different ends of the slider should have different positions. This might mean requestAnimationFrame is waiting for a repaint before moving the handles, or the box you're drawing into is off screen.");
+		assert.notDeepEqual(middleHandlePos, leftmostHandlePos, "Handles at different ends of the slider should have different positions.");
 
 		var middleHandleX = (middleHandlePos.right+middleHandlePos.left)/2,
 			middleHandleY = (middleHandlePos.top+middleHandlePos.bottom)/2,
@@ -79,7 +78,7 @@
 			clickY = middleHandleY,
 			click1x = leftmostHandlePos.right*0.75+middleHandlePos.left*0.25,
 			click2x = leftmostHandlePos.right*0.25+middleHandlePos.left*0.75;
-			
+
 		assert.deepEqual(slider2.noUiSlider.get(), [ "10.00", "20.00", "20.00" ], "Checking initial state");
 
 		simulateMousedown(clickTarget, click1x, clickY);

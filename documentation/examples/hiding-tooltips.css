@@ -1,0 +1,6 @@
+.noUi-tooltip {
+    display: none;
+}
+.noUi-active .noUi-tooltip {
+    display: block;
+}
