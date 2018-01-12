@@ -16,6 +16,22 @@
 </section>
 
 
+<section>
+	<ul>
+		<li><a href="#section-start">Start</a></li>
+		<li><a href="#section-connect">Connect</a></li>
+		<li><a href="#section-margin">Margin</a></li>
+		<li><a href="#section-limit">Limit</a></li>
+		<li><a href="#section-padding">Padding</a></li>
+		<li><a href="#section-step">Step</a></li>
+		<li><a href="#section-orientation">Orientation</a></li>
+		<li><a href="#section-direction">Direction</a></li>
+		<li><a href="#section-tooltips">Tooltips</a></li>
+		<li><a href="#section-animate">Animate</a></li>
+	</ul>
+</section>
+
+
 <?php sect('start'); ?>
 <h2>Start</h2>
 
@@ -196,7 +212,10 @@
 			<div><em>0</em></div>
 
 			<strong>Accepted values</strong>
-			<div><code>number</code></div>
+			<div><code>number</code>,<br>
+				<code>array[number]</code>,<br>
+				<code>array[number, number]</code>
+			</div>
 		</div>
 	</div>
 
@@ -211,7 +230,6 @@
 	</div>
 
 </section>
-
 
 
 <?php sect('step'); ?>
