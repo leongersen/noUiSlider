@@ -30,5 +30,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/leongersen/noUiSlider.git"
-  }
+  },
+  "files": [
+    "distribute"
+  ]
 }
