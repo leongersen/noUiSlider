@@ -204,9 +204,10 @@
 			entry = [entry, entry];
 		}
 
+		// 'getMargin' returns false for invalid values.
 		parsed.padding = [parsed.spectrum.getMargin(entry[0]), parsed.spectrum.getMargin(entry[1])];
 
-		if ( !parsed.padding[0] || !parsed.padding[1] ) {
+		if ( parsed.padding[0] === false || parsed.padding[1] === false ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option is only supported on linear sliders.");
 		}
 
