@@ -61,7 +61,7 @@
 			rightmostHandlePos = rightmostHandle.getBoundingClientRect();
 
 		assert.deepEqual(middleHandlePos, rightmostHandlePos, "Two handles in the same location should have the same on-screen position");
-		assert.notDeepEqual(middleHandlePos, leftmostHandlePos, "Handles at different ends of the slider should have different positions. This might mean requestAnimationFrame is waiting for a repaint before moving the handles, or the box you're drawing into is off screen.");
+		assert.notDeepEqual(middleHandlePos, leftmostHandlePos, "Handles at different ends of the slider should have different positions.");
 
 		var middleHandleX = (middleHandlePos.right+middleHandlePos.left)/2,
 			middleHandleY = (middleHandlePos.top+middleHandlePos.bottom)/2,
