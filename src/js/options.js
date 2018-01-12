@@ -188,25 +188,33 @@
 
 	function testPadding ( parsed, entry ) {
 
-		if ( !isNumeric(entry) ){
-			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric.");
+		if ( !isNumeric(entry) && !Array.isArray(entry) ){
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers.");
+		}
+
+		if ( Array.isArray(entry) && !(entry.length == 2 || isNumeric(entry[0]) || isNumeric(entry[1])) ) {
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers.");
 		}
 
 		if ( entry === 0 ) {
 			return;
 		}
 
-		parsed.padding = parsed.spectrum.getMargin(entry);
+		if ( !Array.isArray(entry) ) {
+			entry = [entry, entry];
+		}
 
-		if ( !parsed.padding ) {
+		parsed.padding = [parsed.spectrum.getMargin(entry[0]), parsed.spectrum.getMargin(entry[1])];
+
+		if ( !parsed.padding[0] || !parsed.padding[1] ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option is only supported on linear sliders.");
 		}
 
-		if ( parsed.padding < 0 ) {
-			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number.");
+		if ( parsed.padding[0] < 0 || parsed.padding[1] < 0 ) {
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
 		}
 
-		if ( parsed.padding >= 50 ) {
+		if ( parsed.padding[0] >= 50 || parsed.padding[1] >= 50 ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be less than half the range.");
 		}
 	}
