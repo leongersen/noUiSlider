@@ -143,6 +143,13 @@
 	function calcPointToPercentage ( calcPoint ) {
 		var location = calcPoint - offset(scope_Base, options.ort);
 		var proposal = ( location * 100 ) / baseSize();
+
+		// If a .noUi-base pseudo-element is clicked (e.g. for contained handles), 
+		// the proposed percentage should never exceed 100. (see #842)
+		if ( proposal > 100 ) {
+			proposal = 100;
+		}
+
 		return options.dir ? 100 - proposal : proposal;
 	}
 
@@ -161,7 +168,7 @@
 
 			var pos = Math.abs(scope_Locations[index] - proposal);
 
-			if ( pos < closest ) {
+			if ( pos < closest || (pos === 100 && closest === 100) ) {
 				handleNumber = index;
 				closest = pos;
 			}
