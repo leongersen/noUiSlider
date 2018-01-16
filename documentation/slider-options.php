@@ -67,7 +67,7 @@
 </section>
 
 
-<?php sect('Connect'); ?>
+<?php sect('connect'); ?>
 <h2>Connect</h2>
 
 <section>
