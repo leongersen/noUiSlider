@@ -60,4 +60,8 @@
 		simulateMousedown(base, rect.x + rect.width - 1, midY);
 		assert.strictEqual(slider.noUiSlider.get(), '100.00', 'Click near right edge should update value to 100');
 
+		// Click leftmost edge again
+		simulateMousedown(base, rect.x + 1, midY);
+		assert.strictEqual(slider.noUiSlider.get(), '0.00', 'Click near left edge should update value to 0');
+
 	});

@@ -144,11 +144,10 @@
 		var location = calcPoint - offset(scope_Base, options.ort);
 		var proposal = ( location * 100 ) / baseSize();
 
-		// If a .noUi-base pseudo-element is clicked (e.g. for contained handles), 
-		// the proposed percentage should never exceed 100. (see #842)
-		if ( proposal > 100 ) {
-			proposal = 100;
-		}
+		// Clamp proposal between 0% and 100%
+		// Out-of-bound coordinates may occur when .noUi-base pseudo-elements 
+		// are used (e.g. contained handles feature)
+		proposal = Math.max(0, Math.min(100, proposal));
 
 		return options.dir ? 100 - proposal : proposal;
 	}
