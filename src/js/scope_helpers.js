@@ -147,7 +147,7 @@
 		// Clamp proposal between 0% and 100%
 		// Out-of-bound coordinates may occur when .noUi-base pseudo-elements 
 		// are used (e.g. contained handles feature)
-		proposal = Math.max(0, Math.min(100, proposal));
+		proposal = limit(proposal);
 
 		return options.dir ? 100 - proposal : proposal;
 	}
