@@ -1,4 +1,4 @@
-/*! nouislider - 11.0.1 - 2018-01-20 18:00:49 */
+/*! nouislider - 11.0.2 - 2018-01-20 18:05:29 */
 
 (function (factory) {
 
@@ -22,7 +22,7 @@
 
 	'use strict';
 
-	var VERSION = '11.0.1';
+	var VERSION = '11.0.2';
 
 
 	function isValidFormatter ( entry ) {
@@ -951,6 +951,10 @@ function closure ( target, options, originalOptions ){
 	var scope_DocumentElement = scope_Document.documentElement;
 	var scope_Body = scope_Document.body;
 
+	// For horizontal sliders in standard ltr documents,
+	// make .noUi-origin overflow to the left so the document doesn't scroll.
+	var scope_DirOffset = (scope_Document.dir === 'rtl') || (options.ort === 1) ? 0 : 100;
+
 
 	// Creates a node, adds it to target, returns the new node.
 	function addNodeTo ( target, className ) {
@@ -1509,6 +1513,12 @@ function closure ( target, options, originalOptions ){
 	function calcPointToPercentage ( calcPoint ) {
 		var location = calcPoint - offset(scope_Base, options.ort);
 		var proposal = ( location * 100 ) / baseSize();
+
+		// Clamp proposal between 0% and 100%
+		// Out-of-bound coordinates may occur when .noUi-base pseudo-elements 
+		// are used (e.g. contained handles feature)
+		proposal = limit(proposal);
+
 		return options.dir ? 100 - proposal : proposal;
 	}
 
@@ -1527,7 +1537,7 @@ function closure ( target, options, originalOptions ){
 
 			var pos = Math.abs(scope_Locations[index] - proposal);
 
-			if ( pos < closest ) {
+			if ( pos < closest || (pos === 100 && closest === 100) ) {
 				handleNumber = index;
 				closest = pos;
 			}
@@ -1965,7 +1975,7 @@ function closure ( target, options, originalOptions ){
 		// Convert the value to the slider stepping/range.
 		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-		var rule = 'translate(' + inRuleOrder(toPct(transformDirection(to, 0)), '0') + ')';
+		var rule = 'translate(' + inRuleOrder(toPct(transformDirection(to, 0) - scope_DirOffset), '0') + ')';
 		scope_Handles[handleNumber].style[options.transformRule] = rule;
 
 		updateConnect(handleNumber);
