@@ -1,4 +1,4 @@
-/*! nouislider - 11.0.0 - 2018-01-12 20:37:52 */
+/*! nouislider - 11.0.1 - 2018-01-20 18:00:49 */
 
 (function (factory) {
 
@@ -22,7 +22,7 @@
 
 	'use strict';
 
-	var VERSION = '11.0.0';
+	var VERSION = '11.0.1';
 
 
 	function isValidFormatter ( entry ) {
