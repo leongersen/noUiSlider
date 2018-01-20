@@ -45,6 +45,12 @@
 	-webkit-transform-origin: 0 0;
 	transform-origin: 0 0;
 }
+/* Offset direction
+ */
+html:not([dir="rtl"]) .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin {
+	left: auto;
+	right: 0;
+}
 
 /* Give origins 0 height/width so they don't interfere with clicking the
  * connect elements.
@@ -56,7 +62,7 @@
 	height: 0;
 }
 .@{noUi-css-prefix}-handle {
-	position: relative;
+	position: absolute;
 }
 .@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-connect,
 .@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-origin {
@@ -86,6 +92,10 @@
 	height: 34px;
 	left: -6px;
 	top: -17px;
+}
+html:not([dir="rtl"]) .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-handle {
+	right: -17px;
+	left: auto;
 }
 
 /* Styling;

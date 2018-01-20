@@ -21,3 +21,7 @@ function closure ( target, options, originalOptions ){
 	var scope_Document = target.ownerDocument;
 	var scope_DocumentElement = scope_Document.documentElement;
 	var scope_Body = scope_Document.body;
+
+	// For horizontal sliders in standard ltr documents,
+	// make .noUi-origin overflow to the left so the document doesn't scroll.
+	var scope_DirOffset = (scope_Document.dir === 'rtl') || (options.ort === 1) ? 0 : 100;
