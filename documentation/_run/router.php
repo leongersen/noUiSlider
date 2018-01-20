@@ -23,6 +23,10 @@
 	$title = "";
 	$description = "";
 
+	$package = json_decode(file_get_contents('./../package.json'));
+	$version = $package->version;
+	$plain_version = str_replace('.', '', $version);
+
 	ob_start();
 
 	include $file;
