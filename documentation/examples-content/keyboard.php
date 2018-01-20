@@ -5,7 +5,7 @@
 
 	<div class="view">
 
-		<p>Much like the keypress example, handles can be made keyboard-focusable.</p>
+		<p>Handles can be focused, but noUiSlider does not offer keyboard support by default. It can be added by adding a <code>keypress</code> listener on a handle.</p>
 
 		<div class="example">
 			<input placeholder="Hit tab to focus on the handle." style="width: 100%">
@@ -27,12 +27,6 @@
 
 		<div class="viewer-content">
 			<?php code('keyboard'); ?>
-		</div>
-
-		<div class="viewer-header">CSS</div>
-
-		<div class="viewer-content">
-			<?php loadShowCSS('keyboard'); ?>
 		</div>
 
 	</div>

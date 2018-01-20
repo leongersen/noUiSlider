@@ -1,6 +1,6 @@
-var slider = document.getElementById('keyboard');
+var keyboardSlider = document.getElementById('keyboard');
 
-noUiSlider.create(slider, {
+noUiSlider.create(keyboardSlider, {
 	start: 10,
 	step: 10,
 	range: {

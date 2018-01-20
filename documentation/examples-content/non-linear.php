@@ -5,7 +5,7 @@
 
 	<div class="view">
 
-		<p>One of noUiSlider's core features is the ability to divide the range in a non-linear fashion. Stepping can be applied. The example on the right shows where the handles are on the slider range in values and percentages.</p>
+		<p>One of noUiSlider's core features is the ability to divide the range in a non-linear fashion. Stepping can be applied. This example shows where the handles are on the slider range in values and percentages.</p>
 
 		<div class="example">
 			<div id="nonlinear"></div>
