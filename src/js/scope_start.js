@@ -1,11 +1,11 @@
 
-function closure ( target, options, originalOptions ){
+function scope ( target, options, originalOptions ){
 
 	var actions = getActions();
 	var supportsTouchActionNone = getSupportsTouchActionNone();
 	var supportsPassive = supportsTouchActionNone && getSupportsPassive();
 
-	// All variables local to 'closure' are prefixed with 'scope_'
+	// All variables local to 'scope' are prefixed with 'scope_'
 	var scope_Target = target;
 	var scope_Locations = [];
 	var scope_Base;
@@ -21,6 +21,7 @@ function closure ( target, options, originalOptions ){
 	var scope_Document = target.ownerDocument;
 	var scope_DocumentElement = scope_Document.documentElement;
 	var scope_Body = scope_Document.body;
+
 
 	// For horizontal sliders in standard ltr documents,
 	// make .noUi-origin overflow to the left so the document doesn't scroll.

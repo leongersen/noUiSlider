@@ -27,6 +27,9 @@ npm [(package)](https://www.npmjs.com/package/nouislider)
 Changelog
 ---------
 
+### 11.0.3 (*2018-01-21*)
+Refactor of source code. There are no meaningful changes in the distributed files;
+
 ### 11.0.2 (*2018-01-20*)
 - Fixed: Slider ignores clicks on `.noUi-target` outside of `.noUi-base` (#842);
 - Fixed: `.noUi-origin` moving out of the page causes horizontal scrolling (#852);
