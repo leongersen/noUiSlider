@@ -17,9 +17,11 @@ module.exports = function(grunt) {
 			'src/js/tooltips.js',
 			'src/js/aria.js',
 			'src/js/pips.js',
-			'src/js/scope_helpers.js',
 			'src/js/scope_events.js',
-			'src/js/scope.js',
+			'src/js/scope_event_binding.js',
+			'src/js/scope_core.js',
+			'src/js/scope_api.js',
+			'src/js/scope_run.js',
 			'src/js/scope_end.js',
 			'src/js/interface.js',
 			'src/js/outro.js'
@@ -78,9 +80,34 @@ module.exports = function(grunt) {
 				latedef: true,
 				undef: true,
 				unused: true,
+				shadow: "outer",
+				eqeqeq: true,
+				forin: true,
+				freeze: true,
 				globals: { module: true, define: true, __dirname: true, require: true }
 			},
 			basic: ['distribute/nouislider.js']
+		},
+		eslint: {
+			options: {
+				configFile: 'eslint.json'
+			},
+			
+			// Only lint files containing solely function definitions
+			target: [
+				'src/js/helpers.js',
+				'src/js/constants.js',
+				'src/js/range.js',
+				'src/js/options.js',
+				'src/js/structure.js',
+				'src/js/tooltips.js',
+				'src/js/aria.js',
+				'src/js/pips.js',
+				'src/js/scope_events.js',
+				'src/js/scope_event_binding.js',
+				'src/js/scope_core.js',
+				'src/js/scope_api.js'
+			]
 		},
 		uglify: {
 			all: {
@@ -130,6 +157,9 @@ module.exports = function(grunt) {
 
 	// https://github.com/gruntjs/grunt-contrib-qunit
 	grunt.loadNpmTasks('grunt-contrib-qunit');
+
+	// https://www.npmjs.com/package/grunt-eslint
+	grunt.loadNpmTasks('grunt-eslint');
 
 	grunt.registerTask('default', ['concat', 'less', 'jshint']);
 	grunt.registerTask('test', ['concat', 'less', 'jshint', 'qunit']);

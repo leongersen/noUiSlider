@@ -144,14 +144,14 @@
 		// Set orientation to an a numerical value for easy
 		// array selection.
 		switch ( entry ){
-		  case 'horizontal':
-			parsed.ort = 0;
-			break;
-		  case 'vertical':
-			parsed.ort = 1;
-			break;
-		  default:
-			throw new Error("noUiSlider (" + VERSION + "): 'orientation' option is invalid.");
+			case 'horizontal':
+				parsed.ort = 0;
+				break;
+			case 'vertical':
+				parsed.ort = 1;
+				break;
+			default:
+				throw new Error("noUiSlider (" + VERSION + "): 'orientation' option is invalid.");
 		}
 	}
 
@@ -192,7 +192,7 @@
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers.");
 		}
 
-		if ( Array.isArray(entry) && !(entry.length == 2 || isNumeric(entry[0]) || isNumeric(entry[1])) ) {
+		if ( Array.isArray(entry) && !(entry.length === 2 || isNumeric(entry[0]) || isNumeric(entry[1])) ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers.");
 		}
 
@@ -226,14 +226,14 @@
 		// Invert connection for RTL sliders, so that the proper
 		// handles get the connect/background classes.
 		switch ( entry ) {
-		  case 'ltr':
-			parsed.dir = 0;
-			break;
-		  case 'rtl':
-			parsed.dir = 1;
-			break;
-		  default:
-			throw new Error("noUiSlider (" + VERSION + "): 'direction' option was not recognized.");
+			case 'ltr':
+				parsed.dir = 0;
+				break;
+			case 'rtl':
+				parsed.dir = 1;
+				break;
+			default:
+				throw new Error("noUiSlider (" + VERSION + "): 'direction' option was not recognized.");
 		}
 	}
 

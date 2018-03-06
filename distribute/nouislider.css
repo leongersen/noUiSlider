@@ -1,4 +1,4 @@
-/*! nouislider - 11.0.0 - 2018-01-12 20:37:52 */
+/*! nouislider - 11.0.3 - 2018-01-21 14:04:07 */
 /* Functional styling;
  * These styles are required for noUiSlider to function.
  * You don't need to change these rules to apply your design.
@@ -45,6 +45,12 @@
   -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
 }
+/* Offset direction
+ */
+html:not([dir="rtl"]) .noUi-horizontal .noUi-origin {
+  left: auto;
+  right: 0;
+}
 /* Give origins 0 height/width so they don't interfere with clicking the
  * connect elements.
  */
@@ -55,7 +61,7 @@
   height: 0;
 }
 .noUi-handle {
-  position: relative;
+  position: absolute;
 }
 .noUi-state-tap .noUi-connect,
 .noUi-state-tap .noUi-origin {
@@ -84,6 +90,10 @@
   height: 34px;
   left: -6px;
   top: -17px;
+}
+html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
+  right: -17px;
+  left: auto;
 }
 /* Styling;
  * Giving the connect element a border radius causes issues with using transform: scale

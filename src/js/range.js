@@ -44,12 +44,11 @@
 			return 100;
 		}
 
-		var j = getJ( value, xVal ), va, vb, pa, pb;
-
-		va = xVal[j-1];
-		vb = xVal[j];
-		pa = xPct[j-1];
-		pb = xPct[j];
+		var j = getJ( value, xVal );
+		var va = xVal[j-1];
+		var vb = xVal[j];
+		var pa = xPct[j-1];
+		var pb = xPct[j];
 
 		return pa + (toPercentage([va, vb], value) / subRangeRatio (pa, pb));
 	}
@@ -62,12 +61,11 @@
 			return xVal.slice(-1)[0];
 		}
 
-		var j = getJ( value, xPct ), va, vb, pa, pb;
-
-		va = xVal[j-1];
-		vb = xVal[j];
-		pa = xPct[j-1];
-		pb = xPct[j];
+		var j = getJ( value, xPct );
+		var va = xVal[j-1];
+		var vb = xVal[j];
+		var pa = xPct[j-1];
+		var pb = xPct[j];
 
 		return isPercentage([va, vb], (value - pa) * subRangeRatio (pa, pb));
 	}
@@ -79,13 +77,12 @@
 			return value;
 		}
 
-		var j = getJ( value, xPct ), a, b;
+		var j = getJ( value, xPct );
+		var a = xPct[j-1];
+		var b = xPct[j];
 
 		// If 'snap' is set, steps are used as fixed points on the slider.
 		if ( snap ) {
-
-			a = xPct[j-1];
-			b = xPct[j];
 
 			// Find the closest position, a or b.
 			if ((value - a) > ((b-a)/2)){
@@ -162,12 +159,7 @@
 		}
 
 		// Factor to range ratio
-		that.xSteps[i] = fromPercentage([
-			 that.xVal[i]
-			,that.xVal[i+1]
-		], n) / subRangeRatio (
-			that.xPct[i],
-			that.xPct[i+1] );
+		that.xSteps[i] = fromPercentage([that.xVal[i], that.xVal[i+1]], n) / subRangeRatio(that.xPct[i], that.xPct[i+1]);
 
 		var totalSteps = (that.xVal[i+1] - that.xVal[i]) / that.xNumSteps[i];
 		var highestStep = Math.ceil(Number(totalSteps.toFixed(3)) - 1);
@@ -189,7 +181,8 @@
 
 		this.snap = snap;
 
-		var index, ordered = [ /* [0, 'min'], [1, '50%'], [2, 'max'] */ ];
+		var index;
+		var ordered = []; // [0, 'min'], [1, '50%'], [2, 'max']
 
 		// Map the object keys to an array.
 		for ( index in entry ) {
@@ -265,7 +258,7 @@
 	Spectrum.prototype.countStepDecimals = function () {
 		var stepDecimals = this.xNumSteps.map(countDecimals);
 		return Math.max.apply(null, stepDecimals);
- 	};
+	};
 
 	// Outside testing
 	Spectrum.prototype.convert = function ( value ) {

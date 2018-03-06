@@ -1,9 +1,10 @@
-var resultElement = document.getElementById('result'),
-	sliders = document.getElementsByClassName('sliders');
+var resultElement = document.getElementById('result');
+var sliders = document.getElementsByClassName('sliders');
+var colors = [0,0,0];
 
-for ( var i = 0; i < sliders.length; i++ ) {
+[].slice.call(sliders).forEach(function( slider, index ){
 
-	noUiSlider.create(sliders[i], {
+	noUiSlider.create(slider, {
 		start: 127,
 		connect: [true, false],
 		orientation: "vertical",
@@ -15,8 +16,15 @@ for ( var i = 0; i < sliders.length; i++ ) {
 			decimals: 0
 		})
 	});
+	
+	// Bind the color changing function to the update event.
+	slider.noUiSlider.on('update', function ( ) {
+		
+		colors[index] = slider.noUiSlider.get();
+		
+		var color = 'rgb(' + colors.join(',') + ')';
 
-	// Bind the color changing function
-	// to the slide event.
-	sliders[i].noUiSlider.on('slide', setColor);
-}
+		resultElement.style.background = color;
+		resultElement.style.color = color;
+	});
+});

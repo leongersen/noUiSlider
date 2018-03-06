@@ -1,6 +1,7 @@
+/*! In this file: Construction of DOM elements; */
 
 	// Creates a node, adds it to target, returns the new node.
-	function addNodeTo ( target, className ) {
+	function addNodeTo ( addTarget, className ) {
 
 		var div = scope_Document.createElement('div');
 
@@ -8,7 +9,7 @@
 			addClass(div, className);
 		}
 
-		target.appendChild(div);
+		addTarget.appendChild(div);
 
 		return div;
 	}
@@ -70,22 +71,22 @@
 	}
 
 	// Initialize a single slider.
-	function addSlider ( target ) {
+	function addSlider ( addTarget ) {
 
 		// Apply classes and data to the target.
-		addClass(target, options.cssClasses.target);
+		addClass(addTarget, options.cssClasses.target);
 
 		if ( options.dir === 0 ) {
-			addClass(target, options.cssClasses.ltr);
+			addClass(addTarget, options.cssClasses.ltr);
 		} else {
-			addClass(target, options.cssClasses.rtl);
+			addClass(addTarget, options.cssClasses.rtl);
 		}
 
 		if ( options.ort === 0 ) {
-			addClass(target, options.cssClasses.horizontal);
+			addClass(addTarget, options.cssClasses.horizontal);
 		} else {
-			addClass(target, options.cssClasses.vertical);
+			addClass(addTarget, options.cssClasses.vertical);
 		}
 
-		scope_Base = addNodeTo(target, options.cssClasses.base);
+		scope_Base = addNodeTo(addTarget, options.cssClasses.base);
 	}
