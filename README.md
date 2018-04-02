@@ -1,6 +1,6 @@
 # noUiSlider
 
-noUiSlider is lightweight JavaScript range slider.
+noUiSlider is a lightweight JavaScript range slider.
 
 - **No dependencies**
 - All modern browsers and IE > 9 are supported
@@ -12,17 +12,9 @@ License
 -------
 noUiSlider is licensed [WTFPL](http://www.wtfpl.net/about/). You can use it **for free** and **without any attribution**, in any personal or commercial project. You may also fork the project and re-release it under another license you prefer.
 
-Documentation
+[Documentation](https://refreshless.com/nouislider/)
 -------
 An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](https://refreshless.com/nouislider/).
-
-Bower
------
-`bower install nouislider --save`
-
-npm [(package)](https://www.npmjs.com/package/nouislider)
----
-`npm install nouislider --save`
 
 Changelog
 ---------
@@ -130,25 +122,6 @@ Devices/browsers tested:
 	+ IE11
 	+ IE10 (Emulated)
 	+ IE9 (Emulated)
-
-Browserify
-----------
-This library is [UMD](https://github.com/umdjs/umd) compatible, so you can use it in this way:
-
-```javascript
-var noUiSlider = require('nouislider');
-
-var slider = document.getElementById('slider');
-
-noUiSlider.create(slider, {
-  start: 40,
-  connect: "lower",
-  range: {
-    min: 0,
-    max: 100
-  }
-});
-```
 
 Webpack
 -------
