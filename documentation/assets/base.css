@@ -248,9 +248,12 @@
 	}
 
 	.events-table {
-		width: 100%;
+		margin: 0 auto;
 		table-layout: fixed;
 		text-align: center;
+	}
+	.events-table td {
+		vertical-align: middle;
 	}
 	.events-no {
 		color: #fff;
