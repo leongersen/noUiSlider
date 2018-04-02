@@ -4,7 +4,7 @@
 
 	$url = strtolower($_SERVER['REQUEST_URI']);
 
-	if ( strpos($url, '.js') || strpos($url, '.css') ) {
+	if ( strpos($url, '.js') || strpos($url, '.css') || strpos($url, '.html') ) {
 		return false;
 	}
 
