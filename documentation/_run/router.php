@@ -1,8 +1,14 @@
 <?php
 
-	chdir('../');
+	chdir(__DIR__.'/..');
 
-	$request = parse_url(strtolower($_SERVER['REQUEST_URI']));
+	$url = strtolower($_SERVER['REQUEST_URI']);
+
+	if ( strpos($url, '.js') || strpos($url, '.css') ) {
+		return false;
+	}
+
+	$request = parse_url($url);
 	$page = rtrim(substr($request['path'], strlen('/nouislider/')), '/');
 
 	if ( !$page ) {
