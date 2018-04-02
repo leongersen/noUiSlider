@@ -27,6 +27,11 @@ npm [(package)](https://www.npmjs.com/package/nouislider)
 Changelog
 ---------
 
+### 11.1.0 (*2018-04-02*)
+- Change: `null` options are now handled consistently (#856);
+- Fixed: Missing transform origin in IE9 (#870);
+- Fixed: `padding` on one side of the slider could not exceed `50%` (#865);
+
 ### 11.0.3 (*2018-01-21*)
 Refactor of source code. There are no meaningful changes in the distributed files;
 
