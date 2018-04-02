@@ -97,6 +97,17 @@
 
 		assert.throws(function(){
 			noUiSlider.create(slider, {
+				start: 10,
+				padding: [50, 51],
+				range: {
+					'min': 0,
+					'max': 10
+				}
+			});
+		}, "Padding exceeds 100%.");
+
+		assert.throws(function(){
+			noUiSlider.create(slider, {
 				start: 0,
 				limit: 10,
 				step: 20,
