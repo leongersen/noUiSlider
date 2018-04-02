@@ -214,6 +214,10 @@
 		if ( parsed.padding[0] < 0 || parsed.padding[1] < 0 ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
 		}
+
+		if ( parsed.padding[0] + parsed.padding[1] >= 100 ) {
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must not exceed 100% of the range.");
+		}
 	}
 
 	function testDirection ( parsed, entry ) {
@@ -310,7 +314,7 @@
 
 	function testCssPrefix ( parsed, entry ) {
 
-		if ( entry !== undefined && typeof entry !== 'string' && entry !== false ) {
+		if ( typeof entry !== 'string' && entry !== false ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'cssPrefix' must be a string or `false`.");
 		}
 
@@ -319,7 +323,7 @@
 
 	function testCssClasses ( parsed, entry ) {
 
-		if ( entry !== undefined && typeof entry !== 'object' ) {
+		if ( typeof entry !== 'object' ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'cssClasses' must be an object.");
 		}
 
@@ -371,8 +375,8 @@
 			'ariaFormat': { r: false, t: testAriaFormat },
 			'format': { r: false, t: testFormat },
 			'tooltips': { r: false, t: testTooltips },
-			'cssPrefix': { r: false, t: testCssPrefix },
-			'cssClasses': { r: false, t: testCssClasses }
+			'cssPrefix': { r: true, t: testCssPrefix },
+			'cssClasses': { r: true, t: testCssClasses }
 		};
 
 		var defaults = {
@@ -429,7 +433,7 @@
 		Object.keys(tests).forEach(function( name ){
 
 			// If the option isn't set, but it is required, throw an error.
-			if ( options[name] === undefined && defaults[name] === undefined ) {
+			if ( !isSet(options[name]) && defaults[name] === undefined ) {
 
 				if ( tests[name].r ) {
 					throw new Error("noUiSlider (" + VERSION + "): '" + name + "' is required.");
@@ -438,7 +442,7 @@
 				return true;
 			}
 
-			tests[name].t( parsed, options[name] === undefined ? defaults[name] : options[name] );
+			tests[name].t( parsed, !isSet(options[name]) ? defaults[name] : options[name] );
 		});
 
 		// Forward pips options

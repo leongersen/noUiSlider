@@ -7,6 +7,10 @@
 		el.parentElement.removeChild(el);
 	}
 
+	function isSet ( value ) {
+		return value !== null && value !== undefined;
+	}
+
 	// Bindable version
 	function preventDefault ( e ) {
 		e.preventDefault();
