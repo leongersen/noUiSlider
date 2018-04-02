@@ -33,8 +33,10 @@
 				<div id="slider"></div>
 				<?php run('minimal'); ?>
 				<?php code('minimal'); ?>
+<pre><code class="language-console">npm <span class="token function">install</span> <span class="token keyword">nouislider</span></code></pre>
+<pre><code class="language-console">yarn <span class="token function">add</span> <span class="token keyword">nouislider</span></code></pre>
 
-				<a href="/nouislider/download/" class="index-demo-dl">Download noUiSlider</a>
+			<iframe style="margin: 30px auto 0; display: block;" src="https://ghbtns.com/github-btn.html?user=leongersen&repo=noUiSlider&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
 			</div>
 		</div>
 

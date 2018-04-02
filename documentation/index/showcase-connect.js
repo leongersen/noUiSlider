@@ -1,3 +1,7 @@
+// Give the slider dimensions
+range.style.height = '400px';
+range.style.margin = '0 auto 30px';
+
 var valuesDivs = [
 	document.getElementById('range-value-1'),
 	document.getElementById('range-value-2'),
