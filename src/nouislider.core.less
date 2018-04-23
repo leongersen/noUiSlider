@@ -20,44 +20,51 @@
 	position: relative;
 	direction: ltr;
 }
-.@{noUi-css-prefix}-base {
+.@{noUi-css-prefix}-base,
+.@{noUi-css-prefix}-connects {
 	width: 100%;
 	height: 100%;
 	position: relative;
-	z-index: 1; /* Fix 401 */
+	z-index: 1;
 }
-.@{noUi-css-prefix}-connect {
+/* Wrapper for all connect elements.
+ */
+.@{noUi-css-prefix}-connects {
+	overflow: hidden;
+	z-index: 0;
+}
+.@{noUi-css-prefix}-connect,
+.@{noUi-css-prefix}-origin {
+	will-change: transform;
 	position: absolute;
-	right: 0;
+	z-index: 1;
 	top: 0;
 	left: 0;
-	bottom: 0;
+	height: 100%;
+	width: 100%;
+	-webkit-transform-origin: 0 0;
+	transform-origin: 0 0;
 }
-.@{noUi-css-prefix}-origin {
-	position: absolute;
-	height: 0;
+
+/* Give origins 0 height/width so they don't interfere with clicking the
+ * connect elements.
+ */
+.@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-origin {
 	width: 0;
+}
+.@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin {
+	height: 0;
 }
 .@{noUi-css-prefix}-handle {
 	position: relative;
-	z-index: 1;
 }
 .@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-connect,
 .@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-origin {
--webkit-transition: top 0.3s, right 0.3s, bottom 0.3s, left 0.3s;
-	transition: top 0.3s, right 0.3s, bottom 0.3s, left 0.3s;
+-webkit-transition: transform 0.3s;
+	transition: transform 0.3s;
 }
 .@{noUi-css-prefix}-state-drag * {
 	cursor: inherit !important;
-}
-
-/* Painting and performance;
- * Browsers can paint handles in their own layer.
- */
-.@{noUi-css-prefix}-base,
-.@{noUi-css-prefix}-handle {
-	-webkit-transform: translate3d(0,0,0);
-	transform: translate3d(0,0,0);
 }
 
 /* Slider size and handle placement;
@@ -82,6 +89,7 @@
 }
 
 /* Styling;
+ * Giving the connect element a border radius causes issues with using transform: scale
  */
 .@{noUi-css-prefix}-target {
 	background: #FAFAFA;
@@ -89,12 +97,11 @@
 	border: 1px solid #D3D3D3;
 	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
 }
+.@{noUi-css-prefix}-connects {
+	border-radius: 3px;
+}
 .@{noUi-css-prefix}-connect {
 	background: #3FB8AF;
-	border-radius: 4px;
-	box-shadow: inset 0 0 3px rgba(51,51,51,0.45);
--webkit-transition: background 450ms;
-	transition: background 450ms;
 }
 
 /* Handles and cursors;

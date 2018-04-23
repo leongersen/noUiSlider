@@ -27,6 +27,13 @@
 		'<pre class="language-css"><code>' . $content . '</code></pre>';
 	}
 
+	function showCSS ( $name ) {
+
+		$content = fgc($name . '.css');
+
+		echo "\r\n".'<pre class="language-css"><code>' . $content . '</code></pre>';
+	}
+
 	function sect ( $title ) {
 		echo '<a href="#section-' . $title . '" id="section-' . $title . '" class="section-link">&sect;</a>';
 	}

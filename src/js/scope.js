@@ -34,11 +34,11 @@
 		if ( options.padding ) {
 
 			if ( handleNumber === 0 ) {
-				to = Math.max(to, options.padding);
+				to = Math.max(to, options.padding[0]);
 			}
 
 			if ( handleNumber === scope_Handles.length - 1 ) {
-				to = Math.min(to, 100 - options.padding);
+				to = Math.min(to, 100 - options.padding[1]);
 			}
 		}
 
@@ -55,8 +55,22 @@
 		return to;
 	}
 
+	// Uses slider orientation to create CSS rules. a = base value;
+	function inRuleOrder ( v, a ) {
+		var o = options.ort;
+		return (o?a:v) + ', ' + (o?v:a);
+	}
+
 	function toPct ( pct ) {
 		return pct + '%';
+	}
+
+	// Takes a base value and an offset. This offset is used for the connect bar size.
+	// In the initial design for this feature, the origin element was 1% wide.
+	// Unfortunately, a rounding bug in Chrome makes it impossible to implement this feature
+	// in this manner: https://bugs.chromium.org/p/chromium/issues/detail?id=798223
+	function transformDirection ( a, b ) {
+		return options.dir ? 100 - a - b : a;
 	}
 
 	// Updates scope_Locations and scope_Values, updates visual state
@@ -68,22 +82,11 @@
 		// Convert the value to the slider stepping/range.
 		scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-		// Called synchronously or on the next animationFrame
-		var stateUpdate = function() {
-			scope_Handles[handleNumber].style[options.style] = toPct(to);
-			updateConnect(handleNumber);
-			updateConnect(handleNumber + 1);
-		};
+		var rule = 'translate(' + inRuleOrder(toPct(transformDirection(to, 0)), '0') + ')';
+		scope_Handles[handleNumber].style[options.transformRule] = rule;
 
-		// Set the handle to the new position.
-		// Use requestAnimationFrame for efficient painting.
-		// No significant effect in Chrome, Edge sees dramatic performace improvements.
-		// Option to disable is useful for unit tests, and single-step debugging.
-		if ( window.requestAnimationFrame && options.useRequestAnimationFrame ) {
-			window.requestAnimationFrame(stateUpdate);
-		} else {
-			stateUpdate();
-		}
+		updateConnect(handleNumber);
+		updateConnect(handleNumber + 1);
 	}
 
 	function setZindex ( ) {
@@ -94,7 +97,7 @@
 			// [[7] [8] .......... | .......... [5] [4]
 			var dir = (scope_Locations[handleNumber] > 50 ? -1 : 1);
 			var zIndex = 3 + (scope_Handles.length + (dir * handleNumber));
-			scope_Handles[handleNumber].childNodes[0].style.zIndex = zIndex;
+			scope_Handles[handleNumber].style.zIndex = zIndex;
 		});
 	}
 
@@ -131,31 +134,40 @@
 			h = scope_Locations[index];
 		}
 
-		scope_Connects[index].style[options.style] = toPct(l);
-		scope_Connects[index].style[options.styleOposite] = toPct(100 - h);
+		// We use two rules:
+		// 'translate' to change the left/top offset;
+		// 'scale' to change the width of the element;
+		// As the element has a width of 100%, a translation of 100% is equal to 100% of the parent (.noUi-base)
+		var connectWidth = h - l;
+		var translateRule = 'translate(' + inRuleOrder(toPct(transformDirection(l, connectWidth)), '0') + ')';
+		var scaleRule = 'scale(' + inRuleOrder(connectWidth / 100, '1') + ')';
+
+		scope_Connects[index].style[options.transformRule] = translateRule + ' ' + scaleRule;
 	}
 
-	// ...
-	function setValue ( to, handleNumber ) {
+	// Parses value passed to .set method. Returns current value if not parseable.
+	function resolveToValue ( to, handleNumber ) {
 
 		// Setting with null indicates an 'ignore'.
 		// Inputting 'false' is invalid.
-		if ( to === null || to === false ) {
-			return;
+		if ( to === null || to === false || to === undefined ) {
+			return scope_Locations[handleNumber];
 		}
 
-		// If a formatted number was passed, attemt to decode it.
+		// If a formatted number was passed, attempt to decode it.
 		if ( typeof to === 'number' ) {
 			to = String(to);
 		}
 
 		to = options.format.from(to);
+		to = scope_Spectrum.toStepping(to);
 
-		// Request an update for all links if the value was invalid.
-		// Do so too if setting the handle fails.
-		if ( to !== false && !isNaN(to) ) {
-			setHandle(handleNumber, scope_Spectrum.toStepping(to), false, false);
+		// If parsing the number failed, use the current value.
+		if ( to === false || isNaN(to) ) {
+			return scope_Locations[handleNumber];
 		}
+
+		return to;
 	}
 
 	// Set the slider value.
@@ -167,17 +179,20 @@
 		// Event fires by default
 		fireSetEvent = (fireSetEvent === undefined ? true : !!fireSetEvent);
 
-		values.forEach(setValue);
-
 		// Animation is optional.
 		// Make sure the initial values were set before using animated placement.
 		if ( options.animate && !isInit ) {
 			addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
 		}
 
-		// Now that all base values are set, apply constraints
+		// First pass, without lookAhead but with lookBackward. Values are set from left to right.
 		scope_HandleNumbers.forEach(function(handleNumber){
-			setHandle(handleNumber, scope_Locations[handleNumber], true, false);
+			setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
+		});
+
+		// Second pass. Now that all base values are set, apply constraints
+		scope_HandleNumbers.forEach(function(handleNumber){
+			setHandle(handleNumber, scope_Locations[handleNumber], true, true);
 		});
 
 		setZindex();

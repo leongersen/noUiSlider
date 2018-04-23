@@ -13,19 +13,22 @@
 
 		var method = function ( e ){
 
-			if ( scope_Target.hasAttribute('disabled') ) {
+			e = fixEvent(e, data.pageOffset, data.target || element);
+
+			// fixEvent returns false if this event has a different target
+			// when handling (multi-) touch events;
+			if ( !e ) {
+				return false;
+			}
+
+			// doNotReject is passed by all end events to make sure released touches
+			// are not rejected, leaving the slider "stuck" to the cursor;
+			if ( scope_Target.hasAttribute('disabled') && !data.doNotReject ) {
 				return false;
 			}
 
 			// Stop if an active 'tap' transition is taking place.
-			if ( hasClass(scope_Target, options.cssClasses.tap) ) {
-				return false;
-			}
-
-			e = fixEvent(e, data.pageOffset);
-
-			// Handle reject of multitouch
-			if ( !e ) {
+			if ( hasClass(scope_Target, options.cssClasses.tap) && !data.doNotReject ) {
 				return false;
 			}
 
@@ -66,7 +69,7 @@
 	}
 
 	// Provide a clean event with standardized offset values.
-	function fixEvent ( e, pageOffset ) {
+	function fixEvent ( e, pageOffset, target ) {
 
 		// Filter the event to register the type, which can be
 		// touch, mouse or pointer. Offset changes need to be
@@ -83,20 +86,43 @@
 			pointer = true;
 		}
 
+
+		// In the event that multitouch is activated, the only thing one handle should be concerned
+		// about is the touches that originated on top of it.
 		if ( touch ) {
 
-			// Fix bug when user touches with two or more fingers on mobile devices.
-			// It's useful when you have two or more sliders on one page,
-			// that can be touched simultaneously.
-			// #649, #663, #668
-			if ( e.touches.length > 1 ) {
-				return false;
-			}
+			// Returns true if a touch originated on the target.
+			var isTouchOnTarget = function (touch) {
+				return touch.target === target || target.contains(touch.target);
+			};
 
-			// noUiSlider supports one movement at a time,
-			// so we can select the first 'changedTouch'.
-			x = e.changedTouches[0].pageX;
-			y = e.changedTouches[0].pageY;
+			// In the case of touchstart events, we need to make sure there is still no more than one
+			// touch on the target so we look amongst all touches.
+			if (e.type === 'touchstart') {
+
+				var targetTouches = Array.prototype.filter.call(e.touches, isTouchOnTarget);
+
+				// Do not support more than one touch per handle.
+				if ( targetTouches.length > 1 ) {
+					return false;
+				}
+
+				x = targetTouches[0].pageX;
+				y = targetTouches[0].pageY;
+
+			} else {
+
+				// In the other cases, find on changedTouches is enough.
+				var targetTouch = Array.prototype.find.call(e.changedTouches, isTouchOnTarget);
+
+				// Cancel if the target touch has not moved.
+				if ( !targetTouch ) {
+					return false;
+				}
+
+				x = targetTouch.pageX;
+				y = targetTouch.pageY;
+			}
 		}
 
 		pageOffset = pageOffset || getPageOffset(scope_Document);

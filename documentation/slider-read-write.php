@@ -20,7 +20,7 @@
 
 		<?php code('read'); ?>
 
-		<p>For one-handle sliders, calling <code>.get()</code> will return the value. For two-handle sliders, an <code>array[value, value]</code> will be returned.</p>
+		<p>For one-handle sliders, calling <code>.get()</code> will return the value as a <code>'string'</code>. For multi-handle sliders, an <code>array['string', 'string', ...]</code> will be returned.</p>
 	</div>
 </section>
 
@@ -38,7 +38,7 @@
 
 		<p>Within an array, you can set one position to <code>null</code> if you want to leave a handle unchanged.</p>
 
-		<p>To return to the initial slider values, you can use the <code>.reset()</code> method. This will <strong>only</strong> reset the slider values.</p>
+		<p>To return to the initial slider values, you can use the <code>.reset()</code> method. This will <strong>only</strong> reset the slider <i>values</i>.</p>
 	</div>
 
 	<div class="side">

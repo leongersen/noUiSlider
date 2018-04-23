@@ -24,7 +24,7 @@
 
 	// RANGE
 
-	QUnit.test( "Range", function( assert ){
+	QUnit.test( "Pips: Range", function( assert ){
 
 		var slider = test_slider({
 			mode: 'range',
@@ -45,7 +45,7 @@
 		assert.equal( Q.querySelector('.noUi-value').innerHTML, '0.00' );
 	});
 
-	QUnit.test( "Steps", function( assert ){
+	QUnit.test( "Pips: Steps", function( assert ){
 
 		var slider = test_slider({
 			mode: 'steps',
@@ -60,7 +60,7 @@
 
 	});
 
-	QUnit.test( "Positions", function( assert ){
+	QUnit.test( "Pips: Positions", function( assert ){
 
 		var slider = test_slider({
 			mode: 'positions',
@@ -81,7 +81,7 @@
 
 	});
 
-	QUnit.test( "Positions, stepped", function( assert ){
+	QUnit.test( "Pips: Positions, stepped", function( assert ){
 
 		expect(0); // TODO
 
@@ -94,27 +94,36 @@
 	// POSITIONS (STEPPED)
 	});
 
-	QUnit.test( "Count", function( assert ){
+	QUnit.test( "Pips: Count", function( assert ){
 
 		var slider = test_slider({
 			mode: 'count',
-			values: 8
+			values: 12
 		});
 
 	// COUNT
 
-		assert.equal( Q.querySelectorAll('.noUi-value').length, 8, 'Placed requested number of values' );
+		assert.equal( Q.querySelectorAll('.noUi-value').length, 12, 'Placed requested number of values' );
 
 		var pos2 = [];
 		Array.prototype.forEach.call(Q.querySelectorAll('.noUi-value'), function( el ){
 			pos2.push(parseInt(el.style.left));
 		});
 
-		assert.deepEqual(pos2, [0, Math.floor((100/7)*1), Math.floor((100/7)*2), Math.floor((100/7)*3), Math.floor((100/7)*4), Math.floor((100/7)*5), Math.floor((100/7)*6), 100], 'Values spread evenly');
+		assert.deepEqual( pos2, [0, Math.floor( (100 / 11) * 1 ), Math.floor( (100 / 11) * 2 ), Math.floor( (100 / 11) * 3 ), Math.floor( (100 / 11) * 4 ), Math.floor( (100 / 11) * 5 ), Math.floor( (100 / 11) * 6 ), Math.floor( (100 / 11) * 7 ), Math.floor( (100 / 11) * 8 ), Math.floor( (100 / 11) * 9 ), Math.floor( (100 / 11) * 10 ), 100], 'Values spread evenly' );
+
+	} );
+
+	QUnit.test( "Pips: Count, values >= 2", function (assert) {
+
+		assert.throws( function() { test_slider( {
+			mode: 'count',
+			values: 1
+		} ) }, 'Checks minimum number of values' );
 
 	});
 
-	QUnit.test( "Count, stepped", function( assert ){
+	QUnit.test( "Pips: Count, stepped", function( assert ){
 
 		expect(0); // TODO
 
@@ -127,7 +136,7 @@
 
 	// VALUES
 
-	QUnit.test( "Values", function( assert ){
+	QUnit.test( "Pips: Values", function( assert ){
 
 		// #357
 		var slider = test_slider({
@@ -140,7 +149,7 @@
 
 	// VALUES (STEPPED)
 
-	QUnit.test( "Values, stepped", function( assert ){
+	QUnit.test( "Pips: Values, stepped", function( assert ){
 
 		var slider = test_slider({
 			mode: 'values',
@@ -153,7 +162,7 @@
 
 
 	// #528, #532
-	QUnit.test( "Values, stepped", function( assert ){
+	QUnit.test( "Pips: Values, stepped", function( assert ){
 
 		Q.innerHTML = '<div class="slider"></div>';
 		var slider = Q.querySelector('.slider');

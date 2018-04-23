@@ -188,25 +188,34 @@
 
 	function testPadding ( parsed, entry ) {
 
-		if ( !isNumeric(entry) ){
-			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric.");
+		if ( !isNumeric(entry) && !Array.isArray(entry) ){
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers.");
+		}
+
+		if ( Array.isArray(entry) && !(entry.length == 2 || isNumeric(entry[0]) || isNumeric(entry[1])) ) {
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers.");
 		}
 
 		if ( entry === 0 ) {
 			return;
 		}
 
-		parsed.padding = parsed.spectrum.getMargin(entry);
+		if ( !Array.isArray(entry) ) {
+			entry = [entry, entry];
+		}
 
-		if ( !parsed.padding ) {
+		// 'getMargin' returns false for invalid values.
+		parsed.padding = [parsed.spectrum.getMargin(entry[0]), parsed.spectrum.getMargin(entry[1])];
+
+		if ( parsed.padding[0] === false || parsed.padding[1] === false ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option is only supported on linear sliders.");
 		}
 
-		if ( parsed.padding < 0 ) {
-			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number.");
+		if ( parsed.padding[0] < 0 || parsed.padding[1] < 0 ) {
+			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
 		}
 
-		if ( parsed.padding >= 50 ) {
+		if ( parsed.padding[0] >= 50 || parsed.padding[1] >= 50 ) {
 			throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be less than half the range.");
 		}
 	}
@@ -405,6 +414,7 @@
 				vertical: 'vertical',
 				background: 'background',
 				connect: 'connect',
+				connects: 'connects',
 				ltr: 'ltr',
 				rtl: 'rtl',
 				draggable: 'draggable',
@@ -458,11 +468,20 @@
 		// Forward pips options
 		parsed.pips = options.pips;
 
+		// All recent browsers accept unprefixed transform.
+		// We need -ms- for IE9 and -webkit- for older Android;
+		// Assume use of -webkit- if unprefixed and -ms- are not supported.
+		// https://caniuse.com/#feat=transforms2d
+		var d = document.createElement("div");
+		var msPrefix = d.style.msTransform !== undefined;
+		var noPrefix = d.style.transform !== undefined;
+
+		parsed.transformRule = noPrefix ? 'transform' : (msPrefix ? 'msTransform' : 'webkitTransform');
+
+		// Pips don't move, so we can place them using left/top.
 		var styles = [['left', 'top'], ['right', 'bottom']];
 
-		// Pre-define the styles.
 		parsed.style = styles[parsed.dir][parsed.ort];
-		parsed.styleOposite = styles[parsed.dir?0:1][parsed.ort];
 
 		return parsed;
 	}

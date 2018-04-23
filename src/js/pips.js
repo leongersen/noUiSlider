@@ -8,21 +8,22 @@
 
 		if ( mode === 'count' ) {
 
-			if ( !values ) {
-				throw new Error("noUiSlider (" + VERSION + "): 'values' required for mode 'count'.");
+			if ( values < 2 ) {
+				throw new Error("noUiSlider (" + VERSION + "): 'values' (>= 2) required for mode 'count'.");
 			}
 
 			// Divide 0 - 100 in 'count' parts.
-			var spread = ( 100 / (values - 1) );
-			var v;
-			var i = 0;
+			var interval = values - 1;
+			var spread = ( 100 / interval );
 
 			values = [];
 
 			// List these parts and have them handled as 'positions'.
-			while ( (v = i++ * spread) <= 100 ) {
-				values.push(v);
+			while ( interval-- ) {
+				values[ interval ] = ( interval * spread );
 			}
+
+			values.push(100);
 
 			mode = 'positions';
 		}
@@ -129,7 +130,7 @@
 				steps = pctDifference / density;
 				realSteps = Math.round(steps);
 
-				// This ratio represents the ammount of percentage-space a point indicates.
+				// This ratio represents the amount of percentage-space a point indicates.
 				// For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-devided.
 				// Round the percentage offset to an even number, then divide by two
 				// to spread the offset on both sides of the range.
@@ -216,6 +217,7 @@
 			if ( values[1] ) {
 				node = addNodeTo(element, false);
 				node.className = getClasses(values[1], options.cssClasses.value);
+				node.setAttribute('data-value', values[0]);
 				node.style[options.style] = offset + '%';
 				node.innerText = formatter.to(values[0]);
 			}

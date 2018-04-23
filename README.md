@@ -3,7 +3,7 @@
 noUiSlider is lightweight JavaScript range slider.
 
 - **No dependencies**
-- All modern browsers and [IE9+](#browser-support) are supported
+- All modern browsers and IE > 9 are supported
 - Fully **responsive**
 - **Touch support** on Android, iOS and Windows devices
 - Tons of [examples](https://refreshless.com/nouislider/examples) and answered [Stack Overflow questions](https://stackoverflow.com/questions/tagged/nouislider)
@@ -27,13 +27,34 @@ npm [(package)](https://www.npmjs.com/package/nouislider)
 Changelog
 ---------
 
+### 11.0.0 (*2018-01-12*)
+noUiSlider 11 doesn't include any breaking API changes.
+Unless major changes were made to the stylesheet or you specifically depend
+on the handle/connect order in the DOM, there should be no issues upgrading.
+- Change: Use CSS transforms for handle movement, resulting in a massive performance improvement (#718);
+- Change: Support multitouch by default;
+- Change: Handle stacking is now on `.noUi-origin` instead of `.noUi-handle`;
+- Added: A `.noUi-connects` element holding all `.noUi-connect` elements;
+- Added: `[data-value]` property for `.noUi-value` in pips (#733);
+- Added: `padding` option can now take an array for different padding values at both sides of a slider (#822);
+- Removed: `useRequestAnimationFrame` option. No longer needed with CSS transforms;
+- Removed: `multitouch` option. Now enabled by default;
+- Fixed: Slider could ignore end events it should handle (#704, #805, #834);
+- Fixed: Stop depending on array type (#801);
+- Fixed: `set` method might bypass margin option (#823);
+- Fixed: Alignment of pips for RTL sliders (#795);
+- Fixed: Several issues regarding pips (#812, #826, #832);
+
+### 10.1.0 (*2017-07-26*)
+- Added: `multitouch` option (#793);
+
 ### 10.0.0 (*2017-05-28*)
 - Change: Change event listeners to be passive (#785);
 - Fixed: Pips are now updated when calling `updateOptions` (#669);
 - Fixed: Content Security Policy issue with pips;
 - Added: `removePips` method;
 - Added: aria support (#685);
-- Added: `ariaFormat` option (controls `aria-valuetext`); 
+- Added: `ariaFormat` option (controls `aria-valuetext`);
 - Fixed: throw a better error when mistakenly trying to initialize noUiSlider with `null` (#658);
 - Fixed: Made order of events consistent and documented it (#775);
 - Fixed: Border radius of connect bar, white space wrapping of tooltips (#773, #774);
@@ -116,16 +137,25 @@ noUiSlider.create(slider, {
 });
 ```
 
-Browser support
----------------
+Webpack
+-------
+In order to use this with webpack, the easiest way to work with it is by using the [`ProvidePlugin`](https://webpack.js.org/plugins/provide-plugin/):
 
-All major browsers are supported. **To support IE8** you'll need to shim several ES5 features.
+```javascript
+// webpack.config.js
+var webpack = require('webpack');
+...
+plugins: [
+	new webpack.ProvidePlugin({
+		noUiSlider: 'nouislider'
+	})
+]
+...
+```
 
-You can use [polyfill.io](https://cdn.polyfill.io/v2/docs/) to easily do so:
+If you're using ES6 imports, a simple [import with side effect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Import_a_module_for_its_side_effects_only)
+is enough:
 
-```html
-<meta http-equiv="X-UA-Compatible" content="IE=Edge">
-<!--[if lte IE 8]>
-<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
-<![endif]-->
+```
+import 'nouislider';
 ```

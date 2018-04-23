@@ -12,6 +12,8 @@
 		<p>This feature allows you to generate points along the slider.</p>
 		<p>Five options can be set: <code>mode</code> to determine where to place pips, <code>values</code> as additional options for <code>mode</code>, <code>stepped</code> to round pip values to the slider stepping, <code>density</code> to pre-scale the number of pips, and <code>filter</code> to manually modify pip size.</p>
 
+		<p>The <code>density</code> value controls how many pips are placed on one percent of the slider range. With the default value of <code>1</code>, there is one pip per percent. For a value of <code>2</code>, a pip is placed for every 2 percent. A value below one will place more than one pip per percentage.</p>
+
 		<p>All sliders on the page use the same range, as displayed to the right.</p>
 
 	</div>

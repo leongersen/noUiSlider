@@ -76,17 +76,6 @@
 
 		assert.throws(function(){
 			noUiSlider.create(slider, {
-				start: [ 1 ],
-				range: {
-					'min': 0,
-					'max': 10
-				},
-				useRequestAnimationFrame: 'Hello'
-			});
-		}, "Should error if useRequestAnimationFrame not a boolean.");
-
-		assert.throws(function(){
-			noUiSlider.create(slider, {
 				start: 10,
 				range: {
 					'min': 10,

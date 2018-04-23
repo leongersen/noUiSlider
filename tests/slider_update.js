@@ -17,7 +17,7 @@
 
 		slider.noUiSlider.destroy();
 
-		equal(slider.innerHTML, '', 'Slider was cleared');
+		assert.equal(slider.innerHTML, '', 'Slider was cleared');
 
 		var settings = {
 			range: { min: 30, max: 70 },
@@ -35,14 +35,14 @@
 		slider.noUiSlider.set(40);
 		assert.deepEqual(slider.noUiSlider.get(), ['40', '70']);
 
-		equal ( slider.querySelectorAll('.noUi-connect').length, 0, 'Slider uses no connection' );
+		assert.equal ( slider.querySelectorAll('.noUi-connect').length, 0, 'Slider uses no connection' );
 
 		settings.connect = true;
 		slider.noUiSlider.destroy();
 
 		noUiSlider.create(slider, settings);
 
-		equal ( slider.querySelectorAll('.noUi-connect').length, 1, 'Slider now connects' );
+		assert.equal ( slider.querySelectorAll('.noUi-connect').length, 1, 'Slider now connects' );
 
 		assert.deepEqual(slider.noUiSlider.get(), ['30', '60'], 'Value was unchanged');
 

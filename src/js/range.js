@@ -118,7 +118,7 @@
 		}
 
 		// Reject any invalid input, by testing whether value is an array.
-		if ( Object.prototype.toString.call( value ) !== '[object Array]' ){
+		if ( !Array.isArray(value) ){
 			throw new Error("noUiSlider (" + VERSION + "): 'range' contains invalid value.");
 		}
 
