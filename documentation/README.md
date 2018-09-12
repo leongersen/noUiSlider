@@ -4,12 +4,14 @@ Clone the project (for example, in `C:/Web`):
 
 ```git clone https://github.com/leongersen/noUiSlider nouislider```
 
-Add a `.htaccess` file to send requests to the documentation:
-
 In your root (e.g. `C:/Web`), start the server:
 
 ```php -S localhost:80 nouislider/documentation/_run/router.php```
 
 You can now access the documentation at `http://localhost/nouislider/`.
+
+To install Grunt globally:
+
+```npm install grunt-cli -g```
 
 The documentation uses noUiSlider from the `distribute` folder, so you can test any changes you've made to the main source in the documentation after running `grunt`.
