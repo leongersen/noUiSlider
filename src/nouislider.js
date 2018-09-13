@@ -1224,7 +1224,7 @@
                     realSteps = Math.round(steps);
 
                     // This ratio represents the amount of percentage-space a point indicates.
-                    // For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-devided.
+                    // For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-divided.
                     // Round the percentage offset to an even number, then divide by two
                     // to spread the offset on both sides of the range.
                     stepSize = pctDifference / realSteps;
@@ -1806,7 +1806,7 @@
                             scope_Values.map(options.format.to),
                             // Handle index, 0 or 1
                             handleNumber,
-                            // Unformatted slider values
+                            // Un-formatted slider values
                             scope_Values.slice(),
                             // Event is fired by tap, true or false
                             tap || false,
@@ -1838,7 +1838,7 @@
 
             // The limit option has the opposite effect, limiting handles to a
             // maximum distance from another. Limit must be > 0, as otherwise
-            // handles would be unmoveable.
+            // handles would be unmovable.
             if (scope_Handles.length > 1 && options.limit) {
                 if (lookBackward && handleNumber > 0) {
                     to = Math.min(to, reference[handleNumber - 1] + options.limit);
