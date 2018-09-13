@@ -177,6 +177,7 @@
 
     // https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
     // Issue #785
+    /* eslint-disable */
     function getSupportsPassive() {
         var supportsPassive = false;
 
@@ -192,6 +193,7 @@
 
         return supportsPassive;
     }
+    /* eslint-enable */
 
     function getSupportsTouchActionNone() {
         return (
@@ -457,9 +459,9 @@
                 highestStep: this.xHighestCompleteStep[j - 1]
             },
             stepAfter: {
-                startValue: this.xVal[j - 0],
-                step: this.xNumSteps[j - 0],
-                highestStep: this.xHighestCompleteStep[j - 0]
+                startValue: this.xVal[j],
+                step: this.xNumSteps[j],
+                highestStep: this.xHighestCompleteStep[j]
             }
         };
     };
@@ -822,7 +824,9 @@
     function testTooltips(parsed, entry) {
         if (entry === false) {
             return;
-        } else if (entry === true) {
+        }
+
+        if (entry === true) {
             parsed.tooltips = [];
 
             for (var i = 0; i < parsed.handles; i++) {
