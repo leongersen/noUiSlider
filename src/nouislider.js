@@ -1,6 +1,7 @@
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
+        // noinspection JSUnresolvedFunction
         define([], factory);
     } else if (typeof exports === "object") {
         // Node/CommonJS
@@ -2187,6 +2188,7 @@
         // Use the public value method to set the start values.
         valueSet(options.start);
 
+        // noinspection JSUnusedGlobalSymbols
         scope_Self = {
             destroy: destroy,
             steps: getCurrentStep,
