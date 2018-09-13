@@ -1,7 +1,6 @@
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
-        // noinspection JSUnresolvedFunction
         define([], factory);
     } else if (typeof exports === "object") {
         // Node/CommonJS
@@ -172,10 +171,10 @@
 
     // https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
     // Issue #785
-    /* eslint-disable */
     function getSupportsPassive() {
         var supportsPassive = false;
 
+        /* eslint-disable */
         try {
             var opts = Object.defineProperty({}, "passive", {
                 get: function() {
@@ -185,11 +184,10 @@
 
             window.addEventListener("test", null, opts);
         } catch (e) {}
+        /* eslint-enable */
 
         return supportsPassive;
     }
-
-    /* eslint-enable */
 
     function getSupportsTouchActionNone() {
         return window.CSS && CSS.supports && CSS.supports("touch-action", "none");
