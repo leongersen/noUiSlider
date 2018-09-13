@@ -2590,6 +2590,8 @@
 
     // Use an object instead of a function for future expandability;
     return {
+        // Exposed for unit testing, don't use this in your application.
+        __spectrum: Spectrum,
         version: VERSION,
         create: initialize
     };

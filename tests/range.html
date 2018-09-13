@@ -5,8 +5,7 @@
 	<link href="http://code.jquery.com/qunit/qunit-1.12.0.css" rel="stylesheet">
 	<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
 
-	<script src="../src/js/helpers.js"></script>
-	<script src="../src/js/range.js"></script>
+	<script src="../src/nouislider.js"></script>
 </head>
 
 <body>
@@ -17,7 +16,7 @@
 
 		test( "Standard range", function(){
 
-			var subject = new Spectrum({
+			var subject = new noUiSlider.__spectrum({
 				min: 0,
 				max: 100
 			}, false);
@@ -27,23 +26,10 @@
 			equal(subject.convert(50.2), 50.2);
 			equal(subject.convert(100), 100);
 		});
-/*
-		test( "Standard RTL", function(){
 
-			var subject = new Spectrum({
-				min: 0,
-				max: 100
-			}, false, true);
-
-			equal(subject.convert(0), 100);
-			equal(subject.convert(10), 90);
-			equal(subject.convert(50.2), 49.8);
-			equal(subject.convert(100), 0);
-		});
-*/
 		test( "Standard step", function(){
 
-			var subject = new Spectrum({
+			var subject = new noUiSlider.__spectrum({
 				min: 0,
 				max: 100
 			}, false, 15);
@@ -54,20 +40,6 @@
 			equal(subject.convert(95), 90);
 			equal(subject.convert(100), 100);
 		});
-/*
-		test( "Standard step RTL", function(){
 
-			var subject = new Spectrum({
-				min: 0,
-				max: 100
-			}, false, true, 15);
-
-			equal(subject.convert(0), 100 - 0);
-			equal(subject.convert(10), 100 - 15);
-			equal(subject.convert(50.2), 100 - 45);
-			equal(subject.convert(95), 100 - 90);
-			equal(subject.convert(100), 100 - 100);
-		});
-*/
 	</script>
 </body>
