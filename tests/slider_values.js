@@ -1,27 +1,26 @@
+QUnit.test("Values", function (assert) {
 
-	QUnit.test( "Values", function( assert ){
+    Q.innerHTML = '<div class="slider"></div>';
 
-		Q.innerHTML = '<div class="slider"></div>';
+    var slider = Q.querySelector('.slider');
 
-		var slider = Q.querySelector('.slider');
+    noUiSlider.create(slider, {
+        start: [50, 100],
+        connect: true,
+        format: TEST_ROUND_FORMAT,
+        range: {
+            'min': 30,
+            'max': 986
+        }
+    });
 
-		noUiSlider.create(slider, {
-			start: [ 50, 100 ],
-			connect: true,
-			format: TEST_ROUND_FORMAT,
-			range: {
-				'min': 30,
-				'max': 986
-			}
-		});
+    assert.deepEqual(slider.noUiSlider.get(), ['50', '100'], 'Values where set');
 
-		assert.deepEqual( slider.noUiSlider.get(), ['50', '100'], 'Values where set' );
+    slider.noUiSlider.set([150, 600]);
 
-		slider.noUiSlider.set( [ 150, 600 ] );
+    assert.deepEqual(slider.noUiSlider.get(), ['150', '600'], 'Slider correctly overstepped limits.');
 
-		assert.deepEqual( slider.noUiSlider.get(), ['150', '600'], 'Slider correctly overstepped limits.' );
-
-	});
+});
 
 /*	The two tests show some problems with enormous numbers in JavaScript.
 	I've decided not the attempt to work around these issues, instead documenting

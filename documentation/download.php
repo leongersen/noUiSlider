@@ -20,5 +20,5 @@
 <section>
 	<a href="/nouislider/contact/">Help and contact</a>
 	<br>
-	Run the unit tests: <a href="/nouislider/tests/range.html">range</a> and <a href="/nouislider/tests/slider.html">slider</a>.
+	<a href="/nouislider/tests/slider.html">Run the unit tests!</a>
 </section>
