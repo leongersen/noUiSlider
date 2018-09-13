@@ -11,7 +11,7 @@ function simulateMousedown(clickTarget, x, y) {
 
 QUnit.test("Slider with three or more handles", function (assert) {
 
-    Q.innerHTML = '\
+    document.getElementById('qunit-fixture').innerHTML = '\
 			<div id="slider1"></div>\
 			<div id="slider2" style="position: fixed; left: 10px; top: 10px;" ></div>\
 		';

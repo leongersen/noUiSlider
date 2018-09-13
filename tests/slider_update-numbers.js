@@ -2,9 +2,9 @@ QUnit.test("RTL single handle handleNumber", function (assert) {
 
     assert.expect(12);
 
-    Q.innerHTML = '<div class="slider"></div><div class="slider"></div><div class="slider"></div><div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div><div class="slider"></div><div class="slider"></div><div class="slider"></div>';
 
-    var sliders = Q.getElementsByClassName('slider');
+    var sliders = document.getElementById('qunit-fixture').getElementsByClassName('slider');
 
 
     // --

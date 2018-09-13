@@ -1,13 +1,17 @@
 QUnit.test("Values", function (assert) {
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
-    var slider = Q.querySelector('.slider');
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, {
         start: [50, 100],
         connect: true,
-        format: TEST_ROUND_FORMAT,
+        format: {
+            to: function (x) {
+                return Math.round(x).toString();
+            }, from: Number
+        },
         range: {
             'min': 30,
             'max': 986
@@ -28,14 +32,14 @@ QUnit.test("Values", function (assert) {
 
 	QUnit.test( "Values, Accuracy With Large Numbers 1", function( assert ){
 
-		Q.innerHTML = '<div class="slider"></div>';
+		document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
-		var slider = Q.getElementsByClassName('slider')[0];
+		var slider = document.getElementById('qunit-fixture').getElementsByClassName('slider')[0];
 
 		noUiSlider.create(slider, {
 			start: [ 1, 8301034833169290000 ],
 			connect: true,
-			format: TEST_ROUND_FORMAT,
+			format: { 			to: function(x){ 				return Math.round(x).toString(); 			}, 			from: Number 		},
 			range: {
 				'min': 1,
 				'max': 8301034833169290000
@@ -48,14 +52,14 @@ QUnit.test("Values", function (assert) {
 
 	QUnit.test( "Values, Accuracy With Large Numbers 2", function( assert ){
 
-		Q.innerHTML = '<div class="slider"></div>';
+		document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
-		var slider = Q.getElementsByClassName('slider')[0];
+		var slider = document.getElementById('qunit-fixture').getElementsByClassName('slider')[0];
 
 		noUiSlider.create(slider, {
 			start: [ 1, 10000000000000005 ],
 			connect: true,
-			format: TEST_ROUND_FORMAT,
+			format: { 			to: function(x){ 				return Math.round(x).toString(); 			}, 			from: Number 		},
 			range: {
 				'min': 1,
 				'max': 10000000000000005

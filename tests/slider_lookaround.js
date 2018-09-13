@@ -1,10 +1,10 @@
 QUnit.test("Padding and margin (lookaround)", function (assert) {
 
-    Q.innerHTML = '<div id="slider1"></div><div id="slider2"></div><div id="slider3"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div id="slider1"></div><div id="slider2"></div><div id="slider3"></div>';
 
-    var slider = Q.querySelector('#slider1');
-    var slider2 = Q.querySelector('#slider2');
-    var slider3 = Q.querySelector('#slider3');
+    var slider = document.getElementById('qunit-fixture').querySelector('#slider1');
+    var slider2 = document.getElementById('qunit-fixture').querySelector('#slider2');
+    var slider3 = document.getElementById('qunit-fixture').querySelector('#slider3');
 
     noUiSlider.create(slider, {
         start: [20, 23],

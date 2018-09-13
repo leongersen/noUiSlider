@@ -1,6 +1,6 @@
 QUnit.test("Padding option", function (assert) {
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
     var settings = {
         start: [0, 10],
@@ -11,7 +11,7 @@ QUnit.test("Padding option", function (assert) {
         }
     };
 
-    var slider = Q.querySelector('.slider');
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, settings);
 
@@ -37,7 +37,7 @@ QUnit.test("Padding option", function (assert) {
 
 QUnit.test("Padding option", function (assert) {
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
     var settings = {
         start: [0, 100],
@@ -48,7 +48,7 @@ QUnit.test("Padding option", function (assert) {
         }
     };
 
-    var slider = Q.querySelector('.slider');
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, settings);
 

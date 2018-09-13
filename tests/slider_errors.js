@@ -1,8 +1,8 @@
 QUnit.test("Errors", function (assert) {
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
-    var sliders = Q.querySelectorAll('.slider');
+    var sliders = document.getElementById('qunit-fixture').querySelectorAll('.slider');
     var slider = sliders[0];
 
     assert.throws(function () {

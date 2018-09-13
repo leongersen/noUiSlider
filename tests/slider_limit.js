@@ -1,6 +1,6 @@
 QUnit.test("Limit option", function (assert) {
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
     var settings = {
         start: [50, 100],
@@ -11,7 +11,7 @@ QUnit.test("Limit option", function (assert) {
         }
     };
 
-    var slider = Q.querySelector('.slider');
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, settings);
 

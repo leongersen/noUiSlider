@@ -1,15 +1,19 @@
 QUnit.test("Testing update method", function (assert) {
 
-    Q.innerHTML = '\
+    document.getElementById('qunit-fixture').innerHTML = '\
 			<div class="slider"></div>\
 			<input class="input">';
 
-    var slider = Q.querySelector('.slider');
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, {
         range: {min: 20, max: 140},
         start: 50,
-        format: TEST_ROUND_FORMAT
+        format: {
+            to: function (x) {
+                return Math.round(x).toString();
+            }, from: Number
+        }
     });
 
     assert.deepEqual(slider.noUiSlider.get(), '50');
@@ -21,7 +25,11 @@ QUnit.test("Testing update method", function (assert) {
     var settings = {
         range: {min: 30, max: 70},
         start: [30, 60],
-        format: TEST_ROUND_FORMAT
+        format: {
+            to: function (x) {
+                return Math.round(x).toString();
+            }, from: Number
+        }
     };
 
     noUiSlider.create(slider, settings);

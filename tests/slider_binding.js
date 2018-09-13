@@ -2,9 +2,9 @@ QUnit.test("Binding", function (assert) {
 
     assert.expect(10);
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
-    var sliders = Q.querySelectorAll('.slider');
+    var sliders = document.getElementById('qunit-fixture').querySelectorAll('.slider');
 
     var slider = sliders[0];
 

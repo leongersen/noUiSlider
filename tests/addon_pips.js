@@ -4,8 +4,8 @@ function filter500(value, type) {
 
 function test_slider(pips, first) {
 
-    Q.innerHTML = '<div class="slider"></div>';
-    var slider = Q.querySelector('.slider');
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, {
         range: {
@@ -35,13 +35,13 @@ QUnit.test("Pips: Range", function (assert) {
         }
     });
 
-    assert.ok(Q.querySelectorAll('.noUi-pips').length, 'Pips where created');
+    assert.ok(document.getElementById('qunit-fixture').querySelectorAll('.noUi-pips').length, 'Pips where created');
 
-    var markers = Q.querySelectorAll('.noUi-marker');
+    var markers = document.getElementById('qunit-fixture').querySelectorAll('.noUi-marker');
     assert.ok(markers.length >= 32 && markers.length <= 34, 'Density of 1/3 was applied');
 
     // Test formatter
-    assert.equal(Q.querySelector('.noUi-value').innerHTML, '0.00');
+    assert.equal(document.getElementById('qunit-fixture').querySelector('.noUi-value').innerHTML, '0.00');
 });
 
 QUnit.test("Pips: Steps", function (assert) {
@@ -54,7 +54,7 @@ QUnit.test("Pips: Steps", function (assert) {
 
     // STEPS
 
-    var markers = Q.querySelectorAll('.noUi-marker').length;
+    var markers = document.getElementById('qunit-fixture').querySelectorAll('.noUi-marker').length;
     assert.ok(markers >= 49 && markers <= 51, 'Density of 1/2 was applied');
 
 });
@@ -68,11 +68,11 @@ QUnit.test("Pips: Positions", function (assert) {
 
     // POSITIONS
 
-    assert.equal(Q.querySelectorAll('.noUi-marker-large').length, 5, 'Large markers added for all values');
-    assert.equal(Q.querySelectorAll('.noUi-value').length, 5);
+    assert.equal(document.getElementById('qunit-fixture').querySelectorAll('.noUi-marker-large').length, 5, 'Large markers added for all values');
+    assert.equal(document.getElementById('qunit-fixture').querySelectorAll('.noUi-value').length, 5);
 
     var pos = [];
-    Array.prototype.forEach.call(Q.querySelectorAll('.noUi-value'), function (el) {
+    Array.prototype.forEach.call(document.getElementById('qunit-fixture').querySelectorAll('.noUi-value'), function (el) {
         pos.push(parseInt(el.style.left));
     });
 
@@ -102,10 +102,10 @@ QUnit.test("Pips: Count", function (assert) {
 
     // COUNT
 
-    assert.equal(Q.querySelectorAll('.noUi-value').length, 12, 'Placed requested number of values');
+    assert.equal(document.getElementById('qunit-fixture').querySelectorAll('.noUi-value').length, 12, 'Placed requested number of values');
 
     var pos2 = [];
-    Array.prototype.forEach.call(Q.querySelectorAll('.noUi-value'), function (el) {
+    Array.prototype.forEach.call(document.getElementById('qunit-fixture').querySelectorAll('.noUi-value'), function (el) {
         pos2.push(parseInt(el.style.left));
     });
 
@@ -145,7 +145,7 @@ QUnit.test("Pips: Values", function (assert) {
         values: [50, 552, 750, 940, 5000, 6080, 9000]
     }, 1);
 
-    assert.equal(Q.querySelectorAll('.noUi-value').length, 7, 'Placed requested number of values');
+    assert.equal(document.getElementById('qunit-fixture').querySelectorAll('.noUi-value').length, 7, 'Placed requested number of values');
 });
 
 // VALUES (STEPPED)
@@ -158,15 +158,15 @@ QUnit.test("Pips: Values, stepped", function (assert) {
         stepped: true
     });
 
-    assert.equal(Q.querySelectorAll('.noUi-value').length, 6, 'Removed duplicate in step');
+    assert.equal(document.getElementById('qunit-fixture').querySelectorAll('.noUi-value').length, 6, 'Removed duplicate in step');
 });
 
 
 // #528, #532
 QUnit.test("Pips: Values, stepped", function (assert) {
 
-    Q.innerHTML = '<div class="slider"></div>';
-    var slider = Q.querySelector('.slider');
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, {
         start: -12,
@@ -180,7 +180,7 @@ QUnit.test("Pips: Values, stepped", function (assert) {
         }
     });
 
-    var pips = Q.querySelectorAll('.noUi-value');
+    var pips = document.getElementById('qunit-fixture').querySelectorAll('.noUi-value');
 
     assert.ok(pips[pips.length - 1].getAttribute('style').indexOf('left: 100') === 0, 'Last pip is on the right.');
 });

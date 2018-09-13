@@ -1,8 +1,8 @@
 QUnit.test("RTL slider multiple value set.", function (assert) {
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
-    var slider = Q.querySelector('.slider');
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, {
         range: {min: 0.201, max: 1},

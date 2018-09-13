@@ -1,14 +1,18 @@
 QUnit.test("Testing handling of odd-numbered steps", function (assert) {
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
-    var slider = Q.querySelector('.slider');
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, {
         range: {min: 3, max: 106},
         start: [20, 50],
         step: 10,
-        format: TEST_ROUND_FORMAT
+        format: {
+            to: function (x) {
+                return Math.round(x).toString();
+            }, from: Number
+        }
     });
 
     assert.deepEqual(slider.noUiSlider.get(), ['23', '53']);

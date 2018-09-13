@@ -10,7 +10,7 @@ QUnit.test("Step API", function (assert) {
         assert.deepEqual(slider.noUiSlider.steps(), steps);
     }
 
-    Q.innerHTML = '\
+    document.getElementById('qunit-fixture').innerHTML = '\
 			<div id="slider1"></div>\
 			<div id="slider2"></div>\
 			<div id="slider3"></div>\

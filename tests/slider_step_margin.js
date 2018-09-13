@@ -2,7 +2,7 @@ QUnit.test("Margin divisible by step", function (assert) {
 
     expect(0);
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
     var settings = {
         start: 10,
@@ -14,7 +14,7 @@ QUnit.test("Margin divisible by step", function (assert) {
         }
     };
 
-    var slider = Q.querySelector('.slider');
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     // Should not throw on divisibility
     noUiSlider.create(slider, settings);

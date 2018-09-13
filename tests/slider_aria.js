@@ -1,14 +1,18 @@
 QUnit.test("Aria", function (assert) {
 
-    Q.innerHTML = '<div class="slider"></div>';
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
-    var slider = Q.querySelector('.slider');
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, {
         start: [50, 100],
         connect: true,
         margin: 50,
-        ariaFormat: TEST_ROUND_FORMAT,
+        ariaFormat: {
+            to: function (x) {
+                return Math.round(x).toString();
+            }, from: Number
+        },
         range: {
             'min': 50,
             'max': 1050

@@ -1,12 +1,12 @@
 QUnit.test("Testing ltr and rtl non-linear", function (assert) {
 
-    Q.innerHTML = '\
+    document.getElementById('qunit-fixture').innerHTML = '\
 			<div class="sliderRTL"></div>\
 			<div class="sliderLTR"></div>\
 		';
 
-    var sliderRTL = Q.querySelector('.sliderRTL');
-    var sliderLTR = Q.querySelector('.sliderLTR');
+    var sliderRTL = document.getElementById('qunit-fixture').querySelector('.sliderRTL');
+    var sliderLTR = document.getElementById('qunit-fixture').querySelector('.sliderLTR');
 
     noUiSlider.create(sliderRTL, {
         range: {
@@ -17,7 +17,11 @@ QUnit.test("Testing ltr and rtl non-linear", function (assert) {
         },
         start: 44,
         direction: 'rtl',
-        format: TEST_ROUND_FORMAT
+        format: {
+            to: function (x) {
+                return Math.round(x).toString();
+            }, from: Number
+        }
     });
 
     noUiSlider.create(sliderLTR, {
@@ -28,7 +32,11 @@ QUnit.test("Testing ltr and rtl non-linear", function (assert) {
             'max': 50
         },
         start: 44,
-        format: TEST_ROUND_FORMAT
+        format: {
+            to: function (x) {
+                return Math.round(x).toString();
+            }, from: Number
+        }
     });
 
     equal(sliderRTL.noUiSlider.get(), '40', 'Start stepping on rtl works');

@@ -11,7 +11,7 @@ function simulateMousedown(clickTarget, x, y) {
 
 QUnit.test("Slider with contained handles", function (assert) {
 
-    Q.innerHTML = '\
+    document.getElementById('qunit-fixture').innerHTML = '\
         <div id="slider1" class="contained-handles"></div>\
         <style>\
         .noUi-target {\
