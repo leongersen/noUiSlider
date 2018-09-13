@@ -20,8 +20,11 @@ Changelog
 ---------
 
 ### 12.0.0 (*unreleased*)
-- License changed to MIT;
-- Build process is now based on NPM scripts, phasing out the Grunt task runner.
+noUiSlider 12 does not include any breaking API changes.
+Unless you depend on specifics of the build process, there should be no issues upgrading.
+- Change: License changed to MIT;
+- Change: Build process is now based on NPM scripts, phasing out the Grunt task runner.
+- Fixed: Aria values are now as per spec (#889);
 - Change: Pips formatting are now written as HTML (#875);
 - Change: The `filter` option is now called for all pips (#754);
 - Added: The `filter` option can now return `-1` to hide a pip (#754);
@@ -42,7 +45,7 @@ Refactor of source code. There are no meaningful changes in the distributed file
 - Fixed: Relative `.noUi-handle` has unintended margin (#854);
 
 ### 11.0.0 (*2018-01-12*)
-noUiSlider 11 doesn't include any breaking API changes.
+noUiSlider 11 does not include any breaking API changes.
 Unless major changes were made to the stylesheet or you specifically depend
 on the handle/connect order in the DOM, there should be no issues upgrading.
 - Change: Use CSS transforms for handle movement, resulting in a massive performance improvement (#718);

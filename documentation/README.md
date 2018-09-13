@@ -10,8 +10,4 @@ In your root (e.g. `C:/Web`), start the server:
 
 You can now access the documentation at `http://localhost/nouislider/`.
 
-To install Grunt globally:
-
-```npm install grunt-cli -g```
-
-The documentation uses noUiSlider from the `distribute` folder, so you can test any changes you've made to the main source in the documentation after running `grunt`.
+The documentation uses noUiSlider from the `distribute` folder, so you can test any changes you've made to the main source in the documentation after running ` npm run build`.
