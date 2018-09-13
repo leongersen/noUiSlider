@@ -1,4 +1,7 @@
 function filter500( value, type ){
+	if ( type === 0 ) {
+		return -1;
+	}
 	return value % 1000 ? 2 : 1;
 }
 

@@ -21,6 +21,8 @@ Changelog
 
 ### 12.0.0 (*unreleased*)
 - Fixed: Pips formatting are now written as HTML (#875);
+- Change: The `filter` option is now called for all pips (#754);
+- Added: The `filter` option can now return `-1` to hide a pip (#754);
 
 ### 11.1.0 (*2018-04-02*)
 - Change: `null` options are now handled consistently (#856);

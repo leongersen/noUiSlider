@@ -94,7 +94,18 @@
 
 		<p>Like <code>range</code>, the <code>steps</code> mode uses the slider range. In <code>steps</code> mode, a pip is generated for every step. The <code>filter</code> option can be used to filter the generated pips.</p>
 
-		<p>The <code>filter</code> function must return <code>0</code> (no value), <code>1</code> (large value) or <code>2</code> (small value).</p>
+        <p>The <code>filter</code> function must return:</p>
+        <ul>
+            <li><code>-1</code> (no pip at all)</li>
+            <li><code>0</code> (no value)</li>
+            <li><code>1</code> (large value)</li>
+            <li><code>2</code> (small value)</li>
+        </ul>
+
+        <br>
+
+        <p>Arguments to the <code>filter</code> function are the value (which is <code>null</code> for value-less pips) and the default type (<code>-1</code>, <code>0</code>, <code>1</code> or <code>2</code> like above).</p>
+
 		<p>Here, we'll use large values for every step matching a thousand (<code>1000</code>, <code>2000</code>, <code>3000</code>), and small values for every step matching 500 (<code>2500</code>, <code>3500</code>, <code>4500</code>).</p>
 
 		<p>The Pips add-on supports <code>format</code> in the same way the slider itself does.</p>

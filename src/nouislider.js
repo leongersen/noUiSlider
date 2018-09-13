@@ -928,6 +928,12 @@
         var scope_DocumentElement = scope_Document.documentElement;
         var scope_Body = scope_Document.body;
 
+        // Pips constants
+        var PIPS_NONE = -1;
+        var PIPS_NO_VALUE = 0;
+        var PIPS_LARGE_VALUE = 1;
+        var PIPS_SMALL_VALUE = 2;
+
         // For horizontal sliders in standard ltr documents,
         // make .noUi-origin overflow to the left so the document doesn't scroll.
         var scope_DirOffset = scope_Document.dir === "rtl" || options.ort === 1 ? 0 : 100;
@@ -1157,7 +1163,7 @@
                 var type;
                 var steps;
                 var realSteps;
-                var stepsize;
+                var stepSize;
 
                 // When using 'steps' mode, use the provided steps.
                 // Otherwise, we'll step on to the next subrange.
@@ -1193,7 +1199,7 @@
                     // For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-devided.
                     // Round the percentage offset to an even number, then divide by two
                     // to spread the offset on both sides of the range.
-                    stepsize = pctDifference / realSteps;
+                    stepSize = pctDifference / realSteps;
 
                     // Divide all points evenly, adding the correct number to this subrange.
                     // Run up to <= so that 100% gets a point, event if ignoreLast is set.
@@ -1202,12 +1208,13 @@
                         // Correct the percentage offset by the number of points
                         // per subrange. density = 1 will result in 100 points on the
                         // full range, 2 for 50, 4 for 25, etc.
-                        pctPos = prevPct + q * stepsize;
-                        indexes[pctPos.toFixed(5)] = ["x", 0];
+                        pctPos = prevPct + q * stepSize;
+                        indexes[pctPos.toFixed(5)] = [null, 0];
                     }
 
                     // Determine the point type.
-                    type = group.indexOf(i) > -1 ? 1 : mode === "steps" ? 2 : 0;
+                    type =
+                        group.indexOf(i) > -1 ? PIPS_LARGE_VALUE : mode === "steps" ? PIPS_SMALL_VALUE : PIPS_NO_VALUE;
 
                     // Enforce the 'ignoreFirst' option by overwriting the type for 0.
                     if (!index && ignoreFirst) {
@@ -1230,16 +1237,16 @@
         function addMarking(spread, filterFunc, formatter) {
             var element = scope_Document.createElement("div");
 
-            var valueSizeClasses = [
-                options.cssClasses.valueNormal,
-                options.cssClasses.valueLarge,
-                options.cssClasses.valueSub
-            ];
-            var markerSizeClasses = [
-                options.cssClasses.markerNormal,
-                options.cssClasses.markerLarge,
-                options.cssClasses.markerSub
-            ];
+            var valueSizeClasses = [];
+            valueSizeClasses[PIPS_NO_VALUE] = options.cssClasses.valueNormal;
+            valueSizeClasses[PIPS_LARGE_VALUE] = options.cssClasses.valueLarge;
+            valueSizeClasses[PIPS_SMALL_VALUE] = options.cssClasses.valueSub;
+
+            var markerSizeClasses = [];
+            markerSizeClasses[PIPS_NO_VALUE] = options.cssClasses.markerNormal;
+            markerSizeClasses[PIPS_LARGE_VALUE] = options.cssClasses.markerLarge;
+            markerSizeClasses[PIPS_SMALL_VALUE] = options.cssClasses.markerSub;
+
             var valueOrientationClasses = [options.cssClasses.valueHorizontal, options.cssClasses.valueVertical];
             var markerOrientationClasses = [options.cssClasses.markerHorizontal, options.cssClasses.markerVertical];
 
@@ -1254,28 +1261,32 @@
                 return source + " " + orientationClasses[options.ort] + " " + sizeClasses[type];
             }
 
-            function addSpread(offset, values) {
+            function addSpread(offset, value, type) {
                 // Apply the filter function, if it is set.
-                values[1] = values[1] && filterFunc ? filterFunc(values[0], values[1]) : values[1];
+                type = filterFunc ? filterFunc(value, type) : type;
+
+                if (type === PIPS_NONE) {
+                    return;
+                }
 
                 // Add a marker for every point
                 var node = addNodeTo(element, false);
-                node.className = getClasses(values[1], options.cssClasses.marker);
+                node.className = getClasses(type, options.cssClasses.marker);
                 node.style[options.style] = offset + "%";
 
                 // Values are only appended for points marked '1' or '2'.
-                if (values[1]) {
+                if (type > PIPS_NO_VALUE) {
                     node = addNodeTo(element, false);
-                    node.className = getClasses(values[1], options.cssClasses.value);
-                    node.setAttribute("data-value", values[0]);
+                    node.className = getClasses(type, options.cssClasses.value);
+                    node.setAttribute("data-value", value);
                     node.style[options.style] = offset + "%";
-                    node.innerHTML = formatter.to(values[0]);
+                    node.innerHTML = formatter.to(value);
                 }
             }
 
             // Append all points.
-            Object.keys(spread).forEach(function(a) {
-                addSpread(a, spread[a]);
+            Object.keys(spread).forEach(function(offset) {
+                addSpread(offset, spread[offset][0], spread[offset][1]);
             });
 
             return element;
