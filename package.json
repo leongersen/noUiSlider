@@ -12,9 +12,12 @@
     "_write_css": "lessc src/nouislider.less distribute/nouislider.css",
     "_write_css_compress": "lessc src/nouislider.less distribute/nouislider.min.css --clean-css",
     "_build_js": "npm run format && npm run _write_js && npm run _write_js_compress",
-    "_build_css": "npm run _write_css && npm run _write_css_compress"
+    "_build_css": "npm run _write_css && npm run _write_css_compress",
+    "_banner": "bannerize distribute/* --banner=banner.ejs",
+    "build":  "npm run _build_js && npm run _build_css && npm run _banner"
   },
   "devDependencies": {
+    "bannerize": "^1.1.3",
     "eslint": "^5.5.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.14.0",
