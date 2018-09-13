@@ -4,5 +4,10 @@
         "no-unused-vars": "off",
         "no-undef": "off",
         "one-var": ["error", "never"]
+    },
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "amd": true
     }
 }

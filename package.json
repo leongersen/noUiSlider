@@ -5,6 +5,8 @@
   "style": "distribute/nouislider.min.css",
   "license": "WTFPL",
   "scripts": {
+    "format": "prettier src/nouislider.js --write",
+    "lint": "eslint src/nouislider.js"
   },
   "devDependencies": {
     "eslint": "^5.5.0",
