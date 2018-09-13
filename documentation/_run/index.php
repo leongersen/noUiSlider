@@ -15,7 +15,6 @@
 
 	<link href="<?php echo $distribute; ?>/nouislider.css?v=<?php echo $plain_version; ?>" rel="stylesheet">
 	<script src="<?php echo $distribute; ?>/nouislider.js?v=<?php echo $plain_version; ?>"></script>
-	<?php /* <script src="/nouislider/concat.php"></script> */ ?>
 
 </head>
 

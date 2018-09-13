@@ -422,6 +422,9 @@
 
         <p>Handles in the slider can receive keyboard focus by default. This can be turned off.</p>
 
+        <p><a href="/nouislider/examples/#section-keyboard">Example: Adding keyboard support</a></p>
+        <p><a href="/nouislider/examples/#section-keypress">Example: Using the <code>.steps()</code> API to determine the next step value</a></p>
+
         <div class="example overflow">
             <div id="slider-keyboard"></div>
             <?php run('keyboard-support'); ?>
