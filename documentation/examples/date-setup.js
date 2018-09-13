@@ -11,10 +11,10 @@ noUiSlider.create(dateSlider, {
     step: 7 * 24 * 60 * 60 * 1000,
 
 // Two more timestamps indicate the handle starting positions.
-    start: [ timestamp('2011'), timestamp('2015') ],
+    start: [timestamp('2011'), timestamp('2015')],
 
 // No decimals
-	format: wNumb({
-		decimals: 0
-	})
+    format: wNumb({
+        decimals: 0
+    })
 });
