@@ -1061,7 +1061,6 @@
         // make .noUi-origin overflow to the left so the document doesn't scroll.
         var scope_DirOffset =
             scope_Document.dir === "rtl" || options.ort === 1 ? 0 : 100;
-        /*! In this file: Construction of DOM elements; */
 
         // Creates a node, adds it to target, returns the new node.
         function addNodeTo(addTarget, className) {
@@ -1515,7 +1514,6 @@
 
             return scope_Pips;
         }
-        /*! In this file: Browser events (not slider events like slide, change); */
 
         // Shorthand for base dimensions.
         function baseSize() {
@@ -2006,7 +2004,6 @@
                 });
             }
         }
-        /*! In this file: Slider events (not browser events); */
 
         // Attach an event to this slider, possibly including a namespace
         function bindEvent(namespacedEvent, callback) {
@@ -2064,7 +2061,6 @@
                 }
             });
         }
-        /*! In this file: Mechanics for slider operation */
 
         function toPct(pct) {
             return pct + "%";
@@ -2306,7 +2302,6 @@
             scope_Connects[index].style[options.transformRule] =
                 translateRule + " " + scaleRule;
         }
-        /*! In this file: All methods eventually exposed in slider.noUiSlider... */
 
         // Parses value passed to .set method. Returns current value if not parse-able.
         function resolveToValue(to, handleNumber) {
@@ -2518,7 +2513,6 @@
             scope_Locations = [];
             valueSet(optionsToUpdate.start || v, fireSetEvent);
         }
-        /*! In this file: Calls to functions. All other scope_ files define functions only; */
 
         // Create the base element, initialize HTML and set classes.
         // Add handles and connect elements.
