@@ -99,6 +99,8 @@
 
 		<p>The Pips add-on supports <code>format</code> in the same way the slider itself does.</p>
 
+        <p>Pips are written as HTML. If you are using user-supplied values in the format option, you may want to escape them.</p>
+
 	</div>
 
 	<div class="side">

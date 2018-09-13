@@ -13,7 +13,7 @@ noUiSlider.create(pipsSteps, {
 		filter: filter500,
 		format: wNumb({
 			decimals: 2,
-			prefix: '$'
+			prefix: '&euro;'
 		})
 	}
 });

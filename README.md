@@ -19,6 +19,9 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changelog
 ---------
 
+### 12.0.0 (*unreleased*)
+- Fixed: Pips formatting are now written as HTML (#875);
+
 ### 11.1.0 (*2018-04-02*)
 - Change: `null` options are now handled consistently (#856);
 - Fixed: Missing transform origin in IE9 (#870);
