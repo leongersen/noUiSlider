@@ -7,9 +7,12 @@
   "scripts": {
     "format": "prettier src/nouislider.js --write --print-width=120",
     "lint": "eslint src/nouislider.js",
-    "_write": "uglifyjs src/nouislider.js --output distribute/nouislider.js",
-    "_write-compress": "uglifyjs src/nouislider.js --compress --mangle --output distribute/nouislider.min.js",
-    "_build_js": "npm run format && npm run _write && npm run _write-compress"
+    "_write_js": "uglifyjs src/nouislider.js --output distribute/nouislider.js",
+    "_write_js_compress": "uglifyjs src/nouislider.js --compress --mangle --output distribute/nouislider.min.js",
+    "_write_css": "lessc src/nouislider.less distribute/nouislider.css",
+    "_write_css_compress": "lessc src/nouislider.less distribute/nouislider.min.css --clean-css",
+    "_build_js": "npm run format && npm run _write_js && npm run _write_js_compress",
+    "_build_css": "npm run _write_css && npm run _write_css_compress"
   },
   "devDependencies": {
     "eslint": "^5.5.0",
@@ -18,6 +21,8 @@
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
+    "less": "^3.8.1",
+    "less-plugin-clean-css": "^1.5.1",
     "prettier": "^1.14.2",
     "simulant": "0.1.5",
     "uglify-js": "^3.4.9"
