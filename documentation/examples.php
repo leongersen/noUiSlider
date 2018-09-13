@@ -19,6 +19,7 @@
 		<li><a href="#section-huge-numbers">Working with huge numbers</a></li>
 		<li><a href="#section-toggle">Create a toggle</a></li>
 		<li><a href="#section-soft-limits">Block the edges of a slider</a></li>
+		<li><a href="#section-from-center">Connect to the center of a slider</a></li>
 	</ul>
 </section>
 
@@ -36,3 +37,4 @@
 <?php include 'examples-content/huge-numbers.php'; ?>
 <?php include 'examples-content/toggle.php'; ?>
 <?php include 'examples-content/soft-limits.php'; ?>
+<?php include 'examples-content/from-center.php'; ?>
