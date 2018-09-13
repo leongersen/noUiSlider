@@ -18,11 +18,11 @@ QUnit.test("RTL slider multiple value set.", function (assert) {
         }
     });
 
-    equal(slider.noUiSlider.get(), 0.4);
+    assert.equal(slider.noUiSlider.get(), 0.4);
 
     slider.noUiSlider.set(0.201);
-    equal(slider.noUiSlider.get(), 0.2);
+    assert.equal(slider.noUiSlider.get(), 0.2);
 
     slider.noUiSlider.set(0.201);
-    equal(slider.noUiSlider.get(), 0.2);
+    assert.equal(slider.noUiSlider.get(), 0.2);
 });

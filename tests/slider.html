@@ -1,66 +1,60 @@
 <!DOCTYPE html>
 
 <head>
-	<title>Testing</title>
+    <title>Testing</title>
 
-	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 
-	<style>
+    <style>
 
-		.noUi-horizontal {
-			width: 300px;
-		}
-		.noUi-vertical {
-			height: 150px;
-		}
+        .noUi-horizontal {
+            width: 300px;
+        }
 
-	</style>
+        .noUi-vertical {
+            height: 150px;
+        }
 
-	<link href="../distribute/nouislider.css" rel="stylesheet">
+    </style>
 
-	<link href="https://code.jquery.com/qunit/qunit-1.18.0.css" rel="stylesheet">
+    <link href="https://code.jquery.com/qunit/qunit-2.6.2.css" rel="stylesheet">
+    <link href="../distribute/nouislider.css" rel="stylesheet">
 
-	<script src="https://code.jquery.com/qunit/qunit-1.18.0.js"></script>
-	<script src="../node_modules/simulant/dist/simulant.js"></script>
-	<script>if (window.simulant === undefined) document.write('<script src="https://cdn.rawgit.com/Rich-Harris/simulant/v0.1.4/dist/simulant.js">\x3C/script>');</script>
-	<script src="../distribute/nouislider.js" data-cover></script>
+    <script src="../src/nouislider.js" data-cover></script>
 
-
-
+    <script src="https://code.jquery.com/qunit/qunit-2.6.2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsdom-simulant@1.1.2/dist/jsdom-simulant.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blanket.js/1.1.4/blanket.js"></script>
 </head>
 
 <body>
 
-	<div id="qunit"></div>
-	<div id="qunit-fixture"></div>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
 
-	<script src="range.js"></script>
+<script src="range.js"></script>
 
-	<script src="slider_values.js"></script>
-	<script src="slider_limit.js"></script>
-	<script src="slider_step.js"></script>
-	<script src="slider_step_margin.js"></script>
-	<script src="slider_aria.js"></script>
-	<script src="slider_rtl.js"></script>
-	<script src="slider_rtl2.js"></script>
-	<script src="slider_rtl_update_options.js"></script>
-	<script src="slider_non-linear-rtl.js"></script>
-	<script src="slider_padding.js"></script>
-	<script src="slider_setting-getting.js"></script>
-	<script src="slider_update.js"></script>
-	<script src="slider_get-step.js"></script>
-	<script src="slider_unordered.js"></script>
-	<script src="slider_errors.js"></script>
-	<script src="slider_binding.js"></script>
-	<script src="slider_update-numbers.js"></script>
-	<script src="slider_three_or_more_handles.js"></script>
-	<script src="slider_contained_handles.js"></script>
-	<script src="slider_lookaround.js"></script>
+<script src="slider_values.js"></script>
+<script src="slider_limit.js"></script>
+<script src="slider_step.js"></script>
+<script src="slider_step_margin.js"></script>
+<script src="slider_aria.js"></script>
+<script src="slider_rtl.js"></script>
+<script src="slider_rtl2.js"></script>
+<script src="slider_rtl_update_options.js"></script>
+<script src="slider_non-linear-rtl.js"></script>
+<script src="slider_padding.js"></script>
+<script src="slider_setting-getting.js"></script>
+<script src="slider_update.js"></script>
+<script src="slider_get-step.js"></script>
+<script src="slider_unordered.js"></script>
+<script src="slider_errors.js"></script>
+<script src="slider_binding.js"></script>
+<script src="slider_update-numbers.js"></script>
+<script src="slider_three_or_more_handles.js"></script>
+<script src="slider_contained_handles.js"></script>
+<script src="slider_lookaround.js"></script>
 
-	<script src="addon_pips.js"></script>
+<script src="addon_pips.js"></script>
 
-	<!-- No blanket.js support in IE < 9 -->
-	<!--[if gt IE 8]><!-->
-	<script src="../node_modules/blanket/dist/qunit/blanket.min.js"></script>
-	<!--<![endif]-->
 </body>

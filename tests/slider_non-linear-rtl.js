@@ -39,18 +39,18 @@ QUnit.test("Testing ltr and rtl non-linear", function (assert) {
         }
     });
 
-    equal(sliderRTL.noUiSlider.get(), '40', 'Start stepping on rtl works');
-    equal(sliderLTR.noUiSlider.get(), '40', 'Start stepping on ltr works');
+    assert.equal(sliderRTL.noUiSlider.get(), '40', 'Start stepping on rtl works');
+    assert.equal(sliderLTR.noUiSlider.get(), '40', 'Start stepping on ltr works');
 
     sliderRTL.noUiSlider.set(42);
     sliderLTR.noUiSlider.set(42);
 
-    equal(sliderRTL.noUiSlider.get(), '40', 'RTL slider stepped by 10 in upper half.');
-    equal(sliderLTR.noUiSlider.get(), '40', 'LTR slider stepped by 10 in upper half.');
+    assert.equal(sliderRTL.noUiSlider.get(), '40', 'RTL slider stepped by 10 in upper half.');
+    assert.equal(sliderLTR.noUiSlider.get(), '40', 'LTR slider stepped by 10 in upper half.');
 
     sliderRTL.noUiSlider.set(6);
     sliderLTR.noUiSlider.set(6);
 
-    equal(sliderRTL.noUiSlider.get(), '6', 'RTL slider didn\'t step in lower half.');
-    equal(sliderLTR.noUiSlider.get(), '6', 'LTR slider didn\'t step in lower half.');
+    assert.equal(sliderRTL.noUiSlider.get(), '6', 'RTL slider didn\'t step in lower half.');
+    assert.equal(sliderLTR.noUiSlider.get(), '6', 'LTR slider didn\'t step in lower half.');
 });

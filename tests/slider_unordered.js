@@ -20,11 +20,11 @@ QUnit.test("Unordered slider range", function (assert) {
     });
 
     slider.noUiSlider.set(11);
-    equal(slider.noUiSlider.get(), 11);
+    assert.equal(slider.noUiSlider.get(), 11);
 
     slider.noUiSlider.set(12);
-    equal(slider.noUiSlider.get(), 12);
+    assert.equal(slider.noUiSlider.get(), 12);
 
     slider.noUiSlider.set(16);
-    equal(slider.noUiSlider.get(), 16);
+    assert.equal(slider.noUiSlider.get(), 16);
 });

@@ -82,7 +82,7 @@ QUnit.test("Pips: Positions", function (assert) {
 
 QUnit.test("Pips: Positions, stepped", function (assert) {
 
-    expect(0); // TODO
+    assert.expect(0); // TODO
 
     var slider = test_slider({
         mode: 'positions',
@@ -126,7 +126,7 @@ QUnit.test("Pips: Count, values >= 2", function (assert) {
 
 QUnit.test("Pips: Count, stepped", function (assert) {
 
-    expect(0); // TODO
+    assert.expect(0); // TODO
 
     var slider = test_slider({
         mode: 'count',

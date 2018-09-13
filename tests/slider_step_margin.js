@@ -1,6 +1,6 @@
 QUnit.test("Margin divisible by step", function (assert) {
 
-    expect(0);
+    assert.expect(0);
 
     document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
