@@ -1152,7 +1152,7 @@
                 addClass(addTarget, options.cssClasses.vertical);
             }
 
-            scope_Base = addNodeTo(addTarget, options.cssClasses.base);
+            return addNodeTo(addTarget, options.cssClasses.base);
         }
 
         function addTooltip(handle, handleNumber) {
@@ -2520,7 +2520,7 @@
 
         // Create the base element, initialize HTML and set classes.
         // Add handles and connect elements.
-        addSlider(scope_Target);
+        scope_Base = addSlider(scope_Target);
         addElements(options.connect, scope_Base);
 
         // Attach user events.
