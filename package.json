@@ -3,7 +3,7 @@
   "version": "11.1.0",
   "main": "distribute/nouislider",
   "style": "distribute/nouislider.min.css",
-  "license": "WTFPL",
+  "license": "MIT",
   "scripts": {
     "format": "prettier src/nouislider.js --write --print-width=120",
     "lint": "eslint src/nouislider.js",

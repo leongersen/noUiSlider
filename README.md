@@ -10,7 +10,7 @@ noUiSlider is a lightweight JavaScript range slider.
 
 License
 -------
-noUiSlider is licensed [WTFPL](http://www.wtfpl.net/about/). You can use it **for free** and **without any attribution**, in any personal or commercial project. You may also fork the project and re-release it under another license you prefer.
+As of release 12.0.0, noUiSlider is licensed [MIT](https://choosealicense.com/licenses/mit/). You can use it **for free** and **without any attribution**, in any personal or commercial project.
 
 [Documentation](https://refreshless.com/nouislider/)
 -------
@@ -20,7 +20,9 @@ Changelog
 ---------
 
 ### 12.0.0 (*unreleased*)
-- Fixed: Pips formatting are now written as HTML (#875);
+- License changed to MIT;
+- Build process is now based on NPM scripts, phasing out the Grunt task runner.
+- Change: Pips formatting are now written as HTML (#875);
 - Change: The `filter` option is now called for all pips (#754);
 - Added: The `filter` option can now return `-1` to hide a pip (#754);
 - Added: `keyboardSupport` option (#867, #895);
