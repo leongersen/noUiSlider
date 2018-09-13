@@ -5,8 +5,11 @@
   "style": "distribute/nouislider.min.css",
   "license": "WTFPL",
   "scripts": {
-    "format": "prettier src/nouislider.js --write",
-    "lint": "eslint src/nouislider.js"
+    "format": "prettier src/nouislider.js --write --print-width=120",
+    "lint": "eslint src/nouislider.js",
+    "_write": "uglifyjs src/nouislider.js --output distribute/nouislider.js",
+    "_write-compress": "uglifyjs src/nouislider.js --compress --mangle --output distribute/nouislider.min.js",
+    "_build_js": "npm run format && npm run _write && npm run _write-compress"
   },
   "devDependencies": {
     "eslint": "^5.5.0",
