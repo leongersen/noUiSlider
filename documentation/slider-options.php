@@ -28,6 +28,8 @@
 		<li><a href="#section-direction">Direction</a></li>
 		<li><a href="#section-tooltips">Tooltips</a></li>
 		<li><a href="#section-animate">Animate</a></li>
+		<li><a href="#section-keyboard-support">Keyboard Support</a></li>
+		<li><a href="#section-document-element">Document Element <small>(advanced)</small></a></li>
 	</ul>
 </section>
 
@@ -411,7 +413,7 @@
 </section>
 
 
-<?php sect('keyboard'); ?>
+<?php sect('keyboard-support'); ?>
 <h2>Keyboard Support</h2>
 
 <section>
@@ -437,6 +439,34 @@
     <div class="side">
 
         <?php code('keyboard-support'); ?>
+    </div>
+
+</section>
+
+
+<?php sect('document-element'); ?>
+<h2>Document Element</h2>
+
+<section>
+
+    <div class="view">
+
+        <p>When moving the slider through documents, or in other advanced scenarios, the <code>documentElement</code> that events are bound to can be changed.</p>
+
+        <p>See <a href="https://github.com/leongersen/noUiSlider/pull/821">this pull request</a> for more information.</p>
+
+        <div class="options">
+            <strong>Default</strong>
+            <div>The document the slider is in</div>
+
+            <strong>Accepted values</strong>
+            <div>Any other document element</div>
+        </div>
+    </div>
+
+    <div class="side">
+
+        <?php code('document-element'); ?>
     </div>
 
 </section>

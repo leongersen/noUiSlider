@@ -766,6 +766,11 @@
         }
     }
 
+    function testDocumentElement(parsed, entry) {
+        // This is an advanced option. Passed values are used without validation.
+        parsed.documentElement = entry;
+    }
+
     function testCssPrefix(parsed, entry) {
         if (typeof entry !== "string" && entry !== false) {
             throw new Error("noUiSlider (" + VERSION + "): 'cssPrefix' must be a string or `false`.");
@@ -829,6 +834,7 @@
             format: { r: false, t: testFormat },
             tooltips: { r: false, t: testTooltips },
             keyboardSupport: { r: true, t: testKeyboardSupport },
+            documentElement: { r: false, t: testDocumentElement },
             cssPrefix: { r: true, t: testCssPrefix },
             cssClasses: { r: true, t: testCssClasses }
         };
@@ -938,7 +944,7 @@
         var scope_Self;
         var scope_Pips;
         var scope_Document = target.ownerDocument;
-        var scope_DocumentElement = scope_Document.documentElement;
+        var scope_DocumentElement = options.documentElement || scope_Document.documentElement;
         var scope_Body = scope_Document.body;
 
         // Pips constants
