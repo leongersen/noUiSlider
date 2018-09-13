@@ -453,6 +453,7 @@
     Spectrum.prototype.convert = function(value) {
         return this.getStep(this.toStepping(value));
     };
+
     /*	Every input option is tested and parsed. This'll prevent
         endless validation in internal methods. These tests are
         structured with an item for every option available. An
@@ -1080,11 +1081,18 @@
                     var max = checkHandlePosition(scope_Locations, index, 100, true, true, true);
 
                     var now = positions[index];
+
+                    // Formatted value for display
                     var text = options.ariaFormat.to(unencoded[index]);
 
-                    handle.children[0].setAttribute("aria-valuemin", min.toFixed(1));
-                    handle.children[0].setAttribute("aria-valuemax", max.toFixed(1));
-                    handle.children[0].setAttribute("aria-valuenow", now.toFixed(1));
+                    // Map to slider range values
+                    min = scope_Spectrum.fromStepping(min).toFixed(1);
+                    max = scope_Spectrum.fromStepping(max).toFixed(1);
+                    now = scope_Spectrum.fromStepping(now).toFixed(1);
+
+                    handle.children[0].setAttribute("aria-valuemin", min);
+                    handle.children[0].setAttribute("aria-valuemax", max);
+                    handle.children[0].setAttribute("aria-valuenow", now);
                     handle.children[0].setAttribute("aria-valuetext", text);
                 });
             });

@@ -7,6 +7,9 @@ noUiSlider.create(sliderFormat, {
         'min': [20000],
         'max': [80000]
     },
+    ariaFormat: wNumb({
+        decimals: 3
+    }),
     format: wNumb({
         decimals: 3,
         thousand: '.',

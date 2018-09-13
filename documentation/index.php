@@ -12,6 +12,7 @@
 		<ul class="pro-list">
 			<li>Responsive design friendly</li>
 			<li>Touch support for iOS, Android &amp; Windows (phone)</li>
+            <li>ARIA support</li>
 			<li>No dependencies!</li>
 			<li>Tested in IE9 - IE11, Edge, Chrome, Opera, Firefox &amp; Safari</li>
 		</ul>

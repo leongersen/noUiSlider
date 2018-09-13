@@ -5,7 +5,7 @@ QUnit.test("Aria", function (assert) {
     var slider = document.getElementById('qunit-fixture').querySelector('.slider');
 
     noUiSlider.create(slider, {
-        start: [50, 100],
+        start: [50, 150],
         connect: true,
         margin: 50,
         ariaFormat: {
@@ -24,15 +24,14 @@ QUnit.test("Aria", function (assert) {
 
     assert.equal(handle0.getAttribute('role'), 'slider');
 
-    assert.equal(handle0.getAttribute('aria-valuemin'), '0.0', 'Handle0 min');
-    assert.equal(handle0.getAttribute('aria-valuemax'), '0.0', 'Handle0 max');
-    assert.equal(handle0.getAttribute('aria-valuenow'), '0.0', 'Handle0 now');
+    assert.equal(handle0.getAttribute('aria-valuemin'), '50.0', 'Handle0 min');
+    assert.equal(handle0.getAttribute('aria-valuemax'), '100.0', 'Handle0 max');
+    assert.equal(handle0.getAttribute('aria-valuenow'), '50.0', 'Handle0 now');
     assert.equal(handle0.getAttribute('aria-valuetext'), '50', 'Handle0 txt');
 
-    assert.equal(handle1.getAttribute('aria-valuemin'), '5.0', 'Handle1 min');
-    assert.equal(handle1.getAttribute('aria-valuemax'), '100.0', 'Handle1 max');
-    assert.equal(handle1.getAttribute('aria-valuenow'), '5.0', 'Handle1 now');
-    assert.equal(handle1.getAttribute('aria-valuetext'), '100', 'Handle1 txt');
+    assert.equal(handle1.getAttribute('aria-valuemin'), '100.0', 'Handle1 min');
+    assert.equal(handle1.getAttribute('aria-valuemax'), '1050.0', 'Handle1 max');
+    assert.equal(handle1.getAttribute('aria-valuenow'), '150.0', 'Handle1 now');
+    assert.equal(handle1.getAttribute('aria-valuetext'), '150', 'Handle1 txt');
 
 });
-

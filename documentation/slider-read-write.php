@@ -93,11 +93,13 @@
 
 		<p>Manual formatting can be error-prone, so noUiSlider has support for <a href="/wnumb">the wNumb formatting library</a>. wNumb offers a wide range of options and provides number validation.</p>
 
+        <p>Formatting can also be used for the <code>aria-valuenow</code> accessibility attribute using the <code>ariaFormat</code> option.</p>
+
 		<p>Note that if the <code>.to()</code> method returns a <code>Number</code>, noUiSlider's <code>.get()</code> will also return <code>Number</code>s. See <a href="https://github.com/leongersen/noUiSlider/issues/813">this issue </a> for more details.
 		
 		<div class="example">
 			<div id="slider-format"></div>
-			<input id="input-format">
+			<input title="Formatted number" id="input-format">
 			<?php run('wnumb'); ?>
 			<?php run('format-link'); ?>
 		</div>
