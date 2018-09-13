@@ -144,6 +144,7 @@
             y: y
         };
     }
+
     // we provide a function to compute constants instead
     // of accessing window.* as soon as the module needs it
     // so that we do not compute anything if not needed
@@ -187,6 +188,7 @@
 
         return supportsPassive;
     }
+
     /* eslint-enable */
 
     function getSupportsTouchActionNone() {
@@ -756,6 +758,14 @@
         validateFormat(entry);
     }
 
+    function testKeyboardSupport(parsed, entry) {
+        parsed.keyboardSupport = entry;
+
+        if (typeof entry !== "boolean") {
+            throw new Error("noUiSlider (" + VERSION + "): 'keyboardSupport' option must be a boolean.");
+        }
+    }
+
     function testCssPrefix(parsed, entry) {
         if (typeof entry !== "string" && entry !== false) {
             throw new Error("noUiSlider (" + VERSION + "): 'cssPrefix' must be a string or `false`.");
@@ -818,6 +828,7 @@
             ariaFormat: { r: false, t: testAriaFormat },
             format: { r: false, t: testFormat },
             tooltips: { r: false, t: testTooltips },
+            keyboardSupport: { r: true, t: testKeyboardSupport },
             cssPrefix: { r: true, t: testCssPrefix },
             cssClasses: { r: true, t: testCssClasses }
         };
@@ -827,6 +838,7 @@
             direction: "ltr",
             behaviour: "tap",
             orientation: "horizontal",
+            keyboardSupport: true,
             cssPrefix: "noUi-",
             cssClasses: {
                 target: "target",
@@ -959,9 +971,12 @@
 
             handle.setAttribute("data-handle", handleNumber);
 
-            // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
-            // 0 = focusable and reachable
-            handle.setAttribute("tabindex", "0");
+            if (options.keyboardSupport) {
+                // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+                // 0 = focusable and reachable
+                handle.setAttribute("tabindex", "0");
+            }
+
             handle.setAttribute("role", "slider");
             handle.setAttribute("aria-orientation", options.ort ? "vertical" : "horizontal");
 

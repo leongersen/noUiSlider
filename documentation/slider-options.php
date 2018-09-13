@@ -409,3 +409,34 @@
 	</div>
 
 </section>
+
+
+<?php sect('keyboard'); ?>
+<h2>Keyboard Support</h2>
+
+<section>
+
+    <div class="view">
+
+        <p>Handles in the slider can receive keyboard focus by default. This can be turned off.</p>
+
+        <div class="example overflow">
+            <div id="slider-keyboard"></div>
+            <?php run('keyboard-support'); ?>
+        </div>
+
+        <div class="options">
+            <strong>Default</strong>
+            <div><code>true</code></div>
+
+            <strong>Accepted values</strong>
+            <div><code>true</code>, <code>false</code></div>
+        </div>
+    </div>
+
+    <div class="side">
+
+        <?php code('keyboard-support'); ?>
+    </div>
+
+</section>
