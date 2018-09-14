@@ -1192,10 +1192,11 @@
                 var steps;
                 var realSteps;
                 var stepSize;
+                var isSteps = mode === "steps";
 
                 // When using 'steps' mode, use the provided steps.
                 // Otherwise, we'll step on to the next subrange.
-                if (mode === "steps") {
+                if (isSteps) {
                     step = scope_Spectrum.xNumSteps[index];
                 }
 
@@ -1237,12 +1238,11 @@
                         // per subrange. density = 1 will result in 100 points on the
                         // full range, 2 for 50, 4 for 25, etc.
                         pctPos = prevPct + q * stepSize;
-                        indexes[pctPos.toFixed(5)] = [null, 0];
+                        indexes[pctPos.toFixed(5)] = [scope_Spectrum.fromStepping(pctPos), 0];
                     }
 
                     // Determine the point type.
-                    type =
-                        group.indexOf(i) > -1 ? PIPS_LARGE_VALUE : mode === "steps" ? PIPS_SMALL_VALUE : PIPS_NO_VALUE;
+                    type = group.indexOf(i) > -1 ? PIPS_LARGE_VALUE : isSteps ? PIPS_SMALL_VALUE : PIPS_NO_VALUE;
 
                     // Enforce the 'ignoreFirst' option by overwriting the type for 0.
                     if (!index && ignoreFirst) {

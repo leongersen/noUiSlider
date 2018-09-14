@@ -19,9 +19,7 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changelog
 ---------
 
-### 12.0.0 (*unreleased*)
-noUiSlider 12 does not include any breaking API changes.
-Unless you depend on specifics of the build process, there should be no issues upgrading.
+### 12.0.0 (*unreleased*) 
 - Change: License changed to MIT;
 - Change: Build process is now based on NPM scripts, phasing out the Grunt task runner.
 - Fixed: Aria values are now as per spec (#889);

@@ -104,7 +104,7 @@
 
         <br>
 
-        <p>Arguments to the <code>filter</code> function are the value (which is <code>null</code> for value-less pips) and the default type (<code>-1</code>, <code>0</code>, <code>1</code> or <code>2</code> like above).</p>
+        <p>Arguments to the <code>filter</code> function are the value (<code>number</code>) and the type (<code>0</code>, <code>1</code> or <code>2</code> like above).</p>
 
 		<p>Here, we'll use large values for every step matching a thousand (<code>1000</code>, <code>2000</code>, <code>3000</code>), and small values for every step matching 500 (<code>2500</code>, <code>3500</code>, <code>4500</code>).</p>
 
