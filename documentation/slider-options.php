@@ -15,6 +15,9 @@
 	</div>
 </section>
 
+<section>
+    <div class="notice">For a complete overview of all slider options, method and properties, see <a href="/nouislider/reference/"> reference</a>.</div>
+</section>
 
 <section>
 	<ul>

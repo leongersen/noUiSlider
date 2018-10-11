@@ -23,6 +23,10 @@
 	</ul>
 </section>
 
+<section>
+    <div class="notice">Can't find something? See the full <a href="/nouislider/reference/">options reference</a>.</div>
+</section>
+
 <?php include 'examples-content/colorpicker.php'; ?>
 <?php include 'examples-content/keyboard.php'; ?>
 <?php include 'examples-content/dates.php'; ?>
