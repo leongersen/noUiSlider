@@ -699,6 +699,7 @@
         var fixed = entry.indexOf("fixed") >= 0;
         var snap = entry.indexOf("snap") >= 0;
         var hover = entry.indexOf("hover") >= 0;
+        var unconstrained = entry.indexOf("unconstrained") >= 0;
 
         if (fixed) {
             if (parsed.handles !== 2) {
@@ -709,12 +710,19 @@
             testMargin(parsed, parsed.start[1] - parsed.start[0]);
         }
 
+        if (unconstrained && (parsed.margin || parsed.limit)) {
+            throw new Error(
+                "noUiSlider (" + VERSION + "): 'unconstrained' behaviour cannot be used with margin or limit"
+            );
+        }
+
         parsed.events = {
             tap: tap || snap,
             drag: drag,
             fixed: fixed,
             snap: snap,
-            hover: hover
+            hover: hover,
+            unconstrained: unconstrained
         };
     }
 
@@ -1432,8 +1440,7 @@
                 pointer = true;
             }
 
-            // In the event that multitouch is activated, the only thing one handle should be concerned
-            // about is the touches that originated on top of it.
+            // The only thing one handle should be concerned about is the touches that originated on top of it.
             if (touch) {
                 // Returns true if a touch originated on the target.
                 var isTouchOnTarget = function(checkTouch) {
@@ -1826,7 +1833,7 @@
         function checkHandlePosition(reference, handleNumber, to, lookBackward, lookForward, getValue) {
             // For sliders with multiple handles, limit movement to the other handle.
             // Apply the margin option by adding it to the handle positions.
-            if (scope_Handles.length > 1) {
+            if (scope_Handles.length > 1 && !options.events.unconstrained) {
                 if (lookBackward && handleNumber > 0) {
                     to = Math.max(to, reference[handleNumber - 1] + options.margin);
                 }
@@ -2081,6 +2088,26 @@
             valueSet(options.start, fireSetEvent);
         }
 
+        // Set value for a single handle
+        function valueSetHandle(handleNumber, value, fireSetEvent) {
+            var values = [];
+
+            // Ensure numeric input
+            handleNumber = Number(handleNumber);
+
+            if (!(handleNumber >= 0 && handleNumber < scope_HandleNumbers.length)) {
+                throw new Error("noUiSlider (" + VERSION + "): invalid handle number, got: " + handleNumber);
+            }
+
+            for (var i = 0; i < scope_HandleNumbers.length; i++) {
+                values[i] = null;
+            }
+
+            values[handleNumber] = value;
+
+            valueSet(values, fireSetEvent);
+        }
+
         // Get the slider value.
         function valueGet() {
             var values = scope_Values.map(options.format.to);
@@ -2223,6 +2250,7 @@
             off: removeEvent,
             get: valueGet,
             set: valueSet,
+            setHandle: valueSetHandle,
             reset: valueReset,
             // Exposed for unit testing, don't use this in your application.
             __moveHandles: function(a, b, c) {

@@ -49,4 +49,16 @@ QUnit.test("Value setting/getting", function (assert) {
     slider.noUiSlider.set(false);
     assert.deepEqual(slider.noUiSlider.get(), ["30.0", "30.0"]);
 
+    slider.noUiSlider.setHandle(0, 20);
+    assert.deepEqual(slider.noUiSlider.get(), ["20.0", "30.0"]);
+
+    slider.noUiSlider.setHandle(1, 40);
+    assert.deepEqual(slider.noUiSlider.get(), ["20.0", "40.0"]);
+
+    slider.noUiSlider.setHandle(1, 15);
+    assert.deepEqual(slider.noUiSlider.get(), ["20.0", "20.0"]);
+
+    slider.noUiSlider.setHandle(1, null);
+    assert.deepEqual(slider.noUiSlider.get(), ["20.0", "20.0"]);
+
 });

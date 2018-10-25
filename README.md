@@ -19,6 +19,11 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changelog
 ---------
 
+### 12.1.0 (*2018-10-25*)
+- Added: `unconstrained` behaviour (#747, #815, #913)
+- Added: `setHandle` API (#917)
+- Changed: point to `nouislider.js` in `package.json`.`main` (#921)
+
 ### 12.0.0 (*2018-09-14*) 
 - Change: License changed to MIT;
 - Change: Build process is now based on NPM scripts, phasing out the Grunt task runner.

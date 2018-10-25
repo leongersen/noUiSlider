@@ -32,11 +32,17 @@
 
 	<div class="view">
 
-		<p>noUiSlider will keep your values within the slider range, which saves you a bunch of validation.</p>
+        <p>If you have configured the slider to use one handle, you can change the current value by passing a number to the <code>.set()</code> method.</p>
 
-		<p>If you have configured the slider to use one handle, you can change the current value by passing a number to the <code>.set()</code> method. If you have two handles, pass an array. One-handled sliders will also accept arrays.</p>
+        <p>For sliders with multiple handles, pass an array. One-handled sliders will also accept arrays.</p>
 
-		<p>Within an array, you can set one position to <code>null</code> if you want to leave a handle unchanged.</p>
+		<p>Within an array, you can set any position to <code>null</code> to you leave a handle unchanged.</p>
+
+        <p>noUiSlider will always limit values to the slider range.</p>
+
+        <p>To set a single slider handle, the <code>setHandle</code> method can be used. This method accepts a zero-indexed handle number, a value and optionally a 'fire set event' boolean.</p>
+
+        <p>Passing <code>null</code> as the value to <code>setHandle</code> will leave the handle unchanged.</p>
 
 		<p>To return to the initial slider values, you can use the <code>.reset()</code> method. This will <strong>only</strong> reset the slider <i>values</i>.</p>
 	</div>

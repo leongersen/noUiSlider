@@ -194,7 +194,12 @@ $description = "Full reference of all options, methods, properties and events in
             <tr>
                 <td><a href="/nouislider/slider-read-write/#section-setting">set</a></td>
                 <td><code>slider.noUiSlider.set(...)</code></td>
-                <td><em>[...]</em></td>
+                <td><em>[...]</em>, <code>boolean</code></td>
+            </tr>
+            <tr>
+                <td><a href="/nouislider/slider-read-write/#section-setting">setHandle</a></td>
+                <td><code>slider.noUiSlider.setHandle(..., ..., ...)</code></td>
+                <td><code>"number"</code>, <code>"string"</code>, <code>boolean</code></td>
             </tr>
             <tr>
                 <td><a href="/nouislider/slider-read-write/#section-setting">reset</a></td>

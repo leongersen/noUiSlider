@@ -107,6 +107,18 @@ QUnit.test("Errors", function (assert) {
 
     assert.throws(function () {
         noUiSlider.create(slider, {
+            start: 10,
+            margin: 5,
+            behaviour: "unconstrained",
+            range: {
+                'min': 0,
+                'max': 10
+            }
+        });
+    }, "Unconstrained can't work with margin.");
+
+    assert.throws(function () {
+        noUiSlider.create(slider, {
             start: 0,
             limit: 10,
             step: 20,
@@ -118,7 +130,7 @@ QUnit.test("Errors", function (assert) {
     }, "Limit must be divisible by step.");
 
     noUiSlider.create(slider, {
-        start: 1,
+        start: [1, 2, 3],
         margin: 0, // Does not throw, issue #582
         cssPrefix: null, // #856
         step: null,
@@ -127,6 +139,14 @@ QUnit.test("Errors", function (assert) {
             'max': 10
         }
     });
+
+    assert.throws(function () {
+        slider.noUiSlider.setHandle(-1, 5);
+    }, "Out of bounds handle number");
+
+    assert.throws(function () {
+        slider.noUiSlider.setHandle(4, 5);
+    }, "Out of bounds handle number");
 
     assert.throws(function () {
         noUiSlider.create(slider, {

@@ -1,14 +1,8 @@
-function setSliderHandle(i, value) {
-    var r = [null, null];
-    r[i] = value;
-    keypressSlider.noUiSlider.set(r);
-}
-
 // Listen to keydown events on the input field.
 inputs.forEach(function (input, handle) {
 
     input.addEventListener('change', function () {
-        setSliderHandle(handle, this.value);
+        keypressSlider.noUiSlider.setHandle(handle, this.value);
     });
 
     input.addEventListener('keydown', function (e) {
@@ -30,7 +24,7 @@ inputs.forEach(function (input, handle) {
         switch (e.which) {
 
             case 13:
-                setSliderHandle(handle, this.value);
+                keypressSlider.noUiSlider.setHandle(handle, this.value);
                 break;
 
             case 38:
@@ -45,7 +39,7 @@ inputs.forEach(function (input, handle) {
 
                 // null = edge of slider
                 if (position !== null) {
-                    setSliderHandle(handle, value + position);
+                    keypressSlider.noUiSlider.setHandle(handle, value + position);
                 }
 
                 break;
@@ -59,7 +53,7 @@ inputs.forEach(function (input, handle) {
                 }
 
                 if (position !== null) {
-                    setSliderHandle(handle, value - position);
+                    keypressSlider.noUiSlider.setHandle(handle, value - position);
                 }
 
                 break;

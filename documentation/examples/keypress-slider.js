@@ -6,7 +6,6 @@ var inputs = [input0, input1];
 noUiSlider.create(keypressSlider, {
     start: [20, 80],
     connect: true,
-    direction: 'rtl',
     tooltips: [true, wNumb({decimals: 1})],
     range: {
         'min': [0],
