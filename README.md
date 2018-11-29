@@ -5,7 +5,7 @@ noUiSlider is a lightweight JavaScript range slider.
 - **No dependencies**
 - All modern browsers and IE > 9 are supported
 - Fully **responsive**
-- **Touch support** on Android, iOS and Windows devices
+- **Multi-touch support** on Android, iOS and Windows devices
 - Tons of [examples](https://refreshless.com/nouislider/examples) and answered [Stack Overflow questions](https://stackoverflow.com/questions/tagged/nouislider)
 
 License
