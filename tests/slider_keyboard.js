@@ -17,6 +17,7 @@ QUnit.test("Keyboard support", function (assert) {
         connect: true,
         range: {
             'min': 50,
+            '10%': 100,
             '30%': [500, 50],
             '60%': [1000, 10],
             '90%': 1250,
@@ -26,23 +27,25 @@ QUnit.test("Keyboard support", function (assert) {
 
     var handle0 = slider.querySelector('[data-handle="0"]');
 
+    assert.equal(slider.noUiSlider.get(), '165.00');
+
     down(handle0);
-    assert.equal(slider.noUiSlider.get(), '120.00');
+    assert.equal(slider.noUiSlider.get(), '125.00');
+
+    down(handle0);
+    assert.equal(slider.noUiSlider.get(), '85.00');
+
+    down(handle0);
+    assert.equal(slider.noUiSlider.get(), '80.00');
 
     down(handle0);
     assert.equal(slider.noUiSlider.get(), '75.00');
 
-    down(handle0);
-    assert.equal(slider.noUiSlider.get(), '50.00');
-
-    down(handle0);
-    assert.equal(slider.noUiSlider.get(), '50.00');
+    up(handle0);
+    assert.equal(slider.noUiSlider.get(), '80.00');
 
     up(handle0);
-    assert.equal(slider.noUiSlider.get(), '95.00');
-
-    up(handle0);
-    assert.equal(slider.noUiSlider.get(), '140.00');
+    assert.equal(slider.noUiSlider.get(), '85.00');
 
     slider.noUiSlider.set(600);
 
@@ -53,7 +56,7 @@ QUnit.test("Keyboard support", function (assert) {
     assert.equal(slider.noUiSlider.get(), '500.00');
 
     down(handle0);
-    assert.equal(slider.noUiSlider.get(), '455.00');
+    assert.equal(slider.noUiSlider.get(), '460.00');
 
     slider.noUiSlider.set(1000);
 

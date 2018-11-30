@@ -426,7 +426,7 @@
         var j = getJ(value, this.xPct);
 
         // When at the top or stepping down, look at the previous sub-range
-        if (value === 100 || isDown) {
+        if (value === 100 || (isDown && value === this.xPct[j - 1])) {
             j = Math.max(j - 1, 1);
         }
 
