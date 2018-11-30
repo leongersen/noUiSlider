@@ -6,6 +6,7 @@ noUiSlider is a lightweight JavaScript range slider.
 - All modern browsers and IE > 9 are supported
 - Fully **responsive**
 - **Multi-touch support** on Android, iOS and Windows devices
+- Accessible with `aria` and keyboard support
 - Tons of [examples](https://refreshless.com/nouislider/examples) and answered [Stack Overflow questions](https://stackoverflow.com/questions/tagged/nouislider)
 
 License
@@ -18,6 +19,13 @@ An extensive documentation, including **examples**, **options** and **configurat
 
 Changelog
 ---------
+
+### 13.0.0 (*???*)
+noUiSlider 13 does not include any breaking API changes.
+Keyboard support is now built-in, so any custom implementations should be removed when upgrading.
+Alternatively, built-in keyboard support can be disabled using `keyboardSupport: false`.
+- Added: Built-in keyboard support (#724)
+- Fixed: Incorrect CSS transform in pips (#931)
 
 ### 12.1.0 (*2018-10-25*)
 - Added: `unconstrained` behaviour (#747, #815, #913)

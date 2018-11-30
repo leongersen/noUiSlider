@@ -2,16 +2,16 @@
 inputs.forEach(function (input, handle) {
 
     input.addEventListener('change', function () {
-        keypressSlider.noUiSlider.setHandle(handle, this.value);
+        stepsSlider.noUiSlider.setHandle(handle, this.value);
     });
 
     input.addEventListener('keydown', function (e) {
 
-        var values = keypressSlider.noUiSlider.get();
+        var values = stepsSlider.noUiSlider.get();
         var value = Number(values[handle]);
 
         // [[handle0_down, handle0_up], [handle1_down, handle1_up]]
-        var steps = keypressSlider.noUiSlider.steps();
+        var steps = stepsSlider.noUiSlider.steps();
 
         // [down, up]
         var step = steps[handle];
@@ -24,7 +24,7 @@ inputs.forEach(function (input, handle) {
         switch (e.which) {
 
             case 13:
-                keypressSlider.noUiSlider.setHandle(handle, this.value);
+                stepsSlider.noUiSlider.setHandle(handle, this.value);
                 break;
 
             case 38:
@@ -39,7 +39,7 @@ inputs.forEach(function (input, handle) {
 
                 // null = edge of slider
                 if (position !== null) {
-                    keypressSlider.noUiSlider.setHandle(handle, value + position);
+                    stepsSlider.noUiSlider.setHandle(handle, value + position);
                 }
 
                 break;
@@ -53,7 +53,7 @@ inputs.forEach(function (input, handle) {
                 }
 
                 if (position !== null) {
-                    keypressSlider.noUiSlider.setHandle(handle, value - position);
+                    stepsSlider.noUiSlider.setHandle(handle, value - position);
                 }
 
                 break;

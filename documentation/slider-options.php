@@ -423,10 +423,12 @@
 
     <div class="view">
 
-        <p>Handles in the slider can receive keyboard focus by default. This can be turned off.</p>
+        <p>Handles in the slider can receive keyboard focus and be moved by arrow keys.</p>
 
-        <p><a href="/nouislider/examples/#section-keyboard">Example: Adding keyboard support</a></p>
-        <p><a href="/nouislider/examples/#section-keypress">Example: Using the <code>.steps()</code> API to determine the next step value</a></p>
+        <p>When moved by the arrow keys on a keyboard, handles obey the <code>step</code> value for the range they are in.
+            When moving in a range that has no <code>step</code> value set, handles move by 10% of the range they are in.</p>
+
+        <p>Keyboard support can be disabled:</p>
 
         <div class="example overflow">
             <div id="slider-keyboard"></div>

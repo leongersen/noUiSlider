@@ -422,6 +422,17 @@
         return value;
     };
 
+    Spectrum.prototype.getDefaultStep = function(value, isDown, size) {
+        var j = getJ(value, this.xPct);
+
+        // When at the top or stepping down, look at the previous sub-range
+        if (value === 100 || isDown) {
+            j = Math.max(j - 1, 1);
+        }
+
+        return (this.xVal[j] - this.xVal[j - 1]) / size;
+    };
+
     Spectrum.prototype.getNearbySteps = function(value) {
         var j = getJ(value, this.xPct);
 
@@ -988,6 +999,9 @@
                 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
                 // 0 = focusable and reachable
                 handle.setAttribute("tabindex", "0");
+                handle.addEventListener("keydown", function(event) {
+                    return eventKeydown(event, handleNumber);
+                });
             }
 
             handle.setAttribute("role", "slider");
@@ -1714,6 +1728,51 @@
             });
         }
 
+        // Handles keydown on focused handles
+        // Don't move the document when pressing arrow keys on focused handles
+        function eventKeydown(event, handleNumber) {
+            var horizontalKeys = ["ArrowLeft", "ArrowRight"];
+            var verticalKeys = ["ArrowDown", "ArrowUp"];
+
+            if (options.dir) {
+                // On an right-to-left slider, the left and right keys act inverted
+                horizontalKeys.reverse();
+            } else if (options.ort) {
+                // On a top-to-bottom slider, the up and down keys act inverted
+                verticalKeys.reverse();
+            }
+
+            var isDown = event.key === verticalKeys[0] || event.key === horizontalKeys[0];
+            var isUp = event.key === verticalKeys[1] || event.key === horizontalKeys[1];
+
+            if (!isDown && !isUp) {
+                return true;
+            }
+
+            event.preventDefault();
+
+            var direction = isDown ? 0 : 1;
+            var steps = getNextStepsForHandle(handleNumber);
+            var step = steps[direction];
+
+            // At the edge of a slider, do nothing
+            if (step === null) {
+                return false;
+            }
+
+            // No step set, use the default of 10% of the sub-range
+            if (step === false) {
+                step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown, 10);
+            }
+
+            // Decrement for down steps
+            step = (isDown ? -1 : 1) * step;
+
+            valueSetHandle(handleNumber, scope_Values[handleNumber] + step, true);
+
+            return false;
+        }
+
         // Attach events to several slider parts.
         function bindSliderEvents(behaviour) {
             // Attach the standard drag event to the handles.
@@ -2136,57 +2195,58 @@
             delete scope_Target.noUiSlider;
         }
 
+        function getNextStepsForHandle(handleNumber) {
+            var location = scope_Locations[handleNumber];
+            var nearbySteps = scope_Spectrum.getNearbySteps(location);
+            var value = scope_Values[handleNumber];
+            var increment = nearbySteps.thisStep.step;
+            var decrement = null;
+
+            // If the next value in this step moves into the next step,
+            // the increment is the start of the next step - the current value
+            if (increment !== false) {
+                if (value + increment > nearbySteps.stepAfter.startValue) {
+                    increment = nearbySteps.stepAfter.startValue - value;
+                }
+            }
+
+            // If the value is beyond the starting point
+            if (value > nearbySteps.thisStep.startValue) {
+                decrement = nearbySteps.thisStep.step;
+            } else if (nearbySteps.stepBefore.step === false) {
+                decrement = false;
+            }
+
+            // If a handle is at the start of a step, it always steps back into the previous step first
+            else {
+                decrement = value - nearbySteps.stepBefore.highestStep;
+            }
+
+            // Now, if at the slider edges, there is no in/decrement
+            if (location === 100) {
+                increment = null;
+            } else if (location === 0) {
+                decrement = null;
+            }
+
+            // As per #391, the comparison for the decrement step can have some rounding issues.
+            var stepDecimals = scope_Spectrum.countStepDecimals();
+
+            // Round per #391
+            if (increment !== null && increment !== false) {
+                increment = Number(increment.toFixed(stepDecimals));
+            }
+
+            if (decrement !== null && decrement !== false) {
+                decrement = Number(decrement.toFixed(stepDecimals));
+            }
+
+            return [decrement, increment];
+        }
+
         // Get the current step size for the slider.
-        function getCurrentStep() {
-            // Check all locations, map them to their stepping point.
-            // Get the step point, then find it in the input list.
-            return scope_Locations.map(function(location, index) {
-                var nearbySteps = scope_Spectrum.getNearbySteps(location);
-                var value = scope_Values[index];
-                var increment = nearbySteps.thisStep.step;
-                var decrement = null;
-
-                // If the next value in this step moves into the next step,
-                // the increment is the start of the next step - the current value
-                if (increment !== false) {
-                    if (value + increment > nearbySteps.stepAfter.startValue) {
-                        increment = nearbySteps.stepAfter.startValue - value;
-                    }
-                }
-
-                // If the value is beyond the starting point
-                if (value > nearbySteps.thisStep.startValue) {
-                    decrement = nearbySteps.thisStep.step;
-                } else if (nearbySteps.stepBefore.step === false) {
-                    decrement = false;
-                }
-
-                // If a handle is at the start of a step, it always steps back into the previous step first
-                else {
-                    decrement = value - nearbySteps.stepBefore.highestStep;
-                }
-
-                // Now, if at the slider edges, there is not in/decrement
-                if (location === 100) {
-                    increment = null;
-                } else if (location === 0) {
-                    decrement = null;
-                }
-
-                // As per #391, the comparison for the decrement step can have some rounding issues.
-                var stepDecimals = scope_Spectrum.countStepDecimals();
-
-                // Round per #391
-                if (increment !== null && increment !== false) {
-                    increment = Number(increment.toFixed(stepDecimals));
-                }
-
-                if (decrement !== null && decrement !== false) {
-                    decrement = Number(decrement.toFixed(stepDecimals));
-                }
-
-                return [decrement, increment];
-            });
+        function getNextSteps() {
+            return scope_HandleNumbers.map(getNextStepsForHandle);
         }
 
         // Updateable: margin, limit, padding, step, range, animate, snap
@@ -2245,7 +2305,7 @@
         // noinspection JSUnusedGlobalSymbols
         scope_Self = {
             destroy: destroy,
-            steps: getCurrentStep,
+            steps: getNextSteps,
             on: bindEvent,
             off: removeEvent,
             get: valueGet,
