@@ -2196,7 +2196,7 @@
             // If 'snap' and 'step' are not passed, they should remain unchanged.
             var v = valueGet();
 
-            var updateAble = ["margin", "limit", "padding", "range", "animate", "snap", "step", "format"];
+            var updateAble = ["margin", "limit", "padding", "range", "animate", "snap", "step", "format", "pips"];
 
             // Only change options that we're actually passed to update.
             updateAble.forEach(function(name) {
