@@ -949,18 +949,26 @@
         var supportsPassive = supportsTouchActionNone && getSupportsPassive();
 
         // All variables local to 'scope' are prefixed with 'scope_'
+
+        // Slider DOM Nodes
         var scope_Target = target;
-        var scope_Locations = [];
         var scope_Base;
         var scope_Handles;
-        var scope_HandleNumbers = [];
-        var scope_ActiveHandlesCount = 0;
         var scope_Connects;
+        var scope_Pips;
+
+        // Slider state values
         var scope_Spectrum = options.spectrum;
         var scope_Values = [];
+        var scope_Locations = [];
+        var scope_HandleNumbers = [];
+        var scope_ActiveHandlesCount = 0;
         var scope_Events = {};
+
+        // Exposed API
         var scope_Self;
-        var scope_Pips;
+
+        // Document Nodes
         var scope_Document = target.ownerDocument;
         var scope_DocumentElement = options.documentElement || scope_Document.documentElement;
         var scope_Body = scope_Document.body;
@@ -2291,16 +2299,32 @@
             valueSet(optionsToUpdate.start || v, fireSetEvent);
         }
 
-        // Create the base element, initialize HTML and set classes.
-        // Add handles and connect elements.
-        scope_Base = addSlider(scope_Target);
-        addElements(options.connect, scope_Base);
+        // Initialization steps
+        function setupSlider() {
+            // Create the base element, initialize HTML and set classes.
+            // Add handles and connect elements.
+            scope_Base = addSlider(scope_Target);
 
-        // Attach user events.
-        bindSliderEvents(options.events);
+            addElements(options.connect, scope_Base);
 
-        // Use the public value method to set the start values.
-        valueSet(options.start);
+            // Attach user events.
+            bindSliderEvents(options.events);
+
+            // Use the public value method to set the start values.
+            valueSet(options.start);
+
+            if (options.pips) {
+                pips(options.pips);
+            }
+
+            if (options.tooltips) {
+                tooltips();
+            }
+
+            aria();
+        }
+
+        setupSlider();
 
         // noinspection JSUnusedGlobalSymbols
         scope_Self = {
@@ -2322,16 +2346,6 @@
             removePips: removePips,
             pips: pips // Issue #594
         };
-
-        if (options.pips) {
-            pips(options.pips);
-        }
-
-        if (options.tooltips) {
-            tooltips();
-        }
-
-        aria();
 
         return scope_Self;
     }
