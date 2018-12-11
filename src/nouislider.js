@@ -1742,7 +1742,7 @@
             var horizontalKeys = ["ArrowLeft", "ArrowRight"];
             var verticalKeys = ["ArrowDown", "ArrowUp"];
 
-            if (options.dir) {
+            if (options.dir && !options.ort) {
                 // On an right-to-left slider, the left and right keys act inverted
                 horizontalKeys.reverse();
             } else if (options.ort) {
@@ -1892,10 +1892,6 @@
             });
         }
 
-        function toPct(pct) {
-            return pct + "%";
-        }
-
         // Split out the handle positioning logic so the Move event can use it, too
         function checkHandlePosition(reference, handleNumber, to, lookBackward, lookForward, getValue) {
             // For sliders with multiple handles, limit movement to the other handle.
@@ -2030,7 +2026,7 @@
             // Convert the value to the slider stepping/range.
             scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-            var rule = "translate(" + inRuleOrder(toPct(transformDirection(to, 0) - scope_DirOffset), "0") + ")";
+            var rule = "translate(" + inRuleOrder(transformDirection(to, 0) - scope_DirOffset + "%", "0") + ")";
             scope_Handles[handleNumber].style[options.transformRule] = rule;
 
             updateConnect(handleNumber);
@@ -2084,7 +2080,7 @@
             // 'scale' to change the width of the element;
             // As the element has a width of 100%, a translation of 100% is equal to 100% of the parent (.noUi-base)
             var connectWidth = h - l;
-            var translateRule = "translate(" + inRuleOrder(toPct(transformDirection(l, connectWidth)), "0") + ")";
+            var translateRule = "translate(" + inRuleOrder(transformDirection(l, connectWidth) + "%", "0") + ")";
             var scaleRule = "scale(" + inRuleOrder(connectWidth / 100, "1") + ")";
 
             scope_Connects[index].style[options.transformRule] = translateRule + " " + scaleRule;
