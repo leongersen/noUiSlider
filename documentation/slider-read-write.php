@@ -32,11 +32,17 @@
 
 	<div class="view">
 
-		<p>noUiSlider will keep your values within the slider range, which saves you a bunch of validation.</p>
+        <p>If you have configured the slider to use one handle, you can change the current value by passing a number to the <code>.set()</code> method.</p>
 
-		<p>If you have configured the slider to use one handle, you can change the current value by passing a number to the <code>.set()</code> method. If you have two handles, pass an array. One-handled sliders will also accept arrays.</p>
+        <p>For sliders with multiple handles, pass an array. One-handled sliders will also accept arrays.</p>
 
-		<p>Within an array, you can set one position to <code>null</code> if you want to leave a handle unchanged.</p>
+		<p>Within an array, you can set any position to <code>null</code> to you leave a handle unchanged.</p>
+
+        <p>noUiSlider will always limit values to the slider range.</p>
+
+        <p>To set a single slider handle, the <code>setHandle</code> method can be used. This method accepts a zero-indexed handle number, a value and optionally a 'fire set event' boolean.</p>
+
+        <p>Passing <code>null</code> as the value to <code>setHandle</code> will leave the handle unchanged.</p>
 
 		<p>To return to the initial slider values, you can use the <code>.reset()</code> method. This will <strong>only</strong> reset the slider <i>values</i>.</p>
 	</div>
@@ -91,11 +97,15 @@
 
 		<p>By default, noUiSlider will format output with <strong>2 decimals</strong>.</p>
 
-		<p>Manual formatting can be very tedious, so noUiSlider has support for <a href="/wnumb">the wNumb formatting library</a>. wNumb offers a wide range of options and provides number validation.</p>
+		<p>Manual formatting can be error-prone, so noUiSlider has support for <a href="/wnumb">the wNumb formatting library</a>. wNumb offers a wide range of options and provides number validation.</p>
 
+        <p>Formatting can also be used for the <code>aria-valuenow</code> accessibility attribute using the <code>ariaFormat</code> option.</p>
+
+		<p>Note that if the <code>.to()</code> method returns a <code>Number</code>, noUiSlider's <code>.get()</code> will also return <code>Number</code>s. See <a href="https://github.com/leongersen/noUiSlider/issues/813">this issue </a> for more details.
+		
 		<div class="example">
 			<div id="slider-format"></div>
-			<input id="input-format">
+			<input title="Formatted number" id="input-format">
 			<?php run('wnumb'); ?>
 			<?php run('format-link'); ?>
 		</div>

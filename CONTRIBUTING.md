@@ -7,6 +7,6 @@ While I'm happy to help if you can't figure something out, please note this: I w
 
 # Pull requests
 - Detail (in the pull request comment) what your changes do.
-- When applicable, include new unit tests. I **won't** merge any untested changes.
-- If you are introducing a new feature, update the **documentation**. I'd be happy to do this if you provide the required info.
-- **Do NOT** commit `/distribute/*` files, I'll do that upon release.
+- When applicable, include new unit tests.
+- If you are introducing a new feature, update the **documentation**.
+- Do not commit `/distribute/*` files, I'll do that upon release.

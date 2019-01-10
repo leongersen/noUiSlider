@@ -15,6 +15,9 @@
 	</div>
 </section>
 
+<section>
+    <div class="notice">For a complete overview of all slider options, method and properties, see <a href="/nouislider/reference/"> reference</a>.</div>
+</section>
 
 <section>
 	<ul>
@@ -28,6 +31,8 @@
 		<li><a href="#section-direction">Direction</a></li>
 		<li><a href="#section-tooltips">Tooltips</a></li>
 		<li><a href="#section-animate">Animate</a></li>
+		<li><a href="#section-keyboard-support">Keyboard Support</a></li>
+		<li><a href="#section-document-element">Document Element <small>(advanced)</small></a></li>
 	</ul>
 </section>
 
@@ -407,5 +412,67 @@
 	<div class="side">
 		<?php code('animate'); ?>
 	</div>
+
+</section>
+
+
+<?php sect('keyboard-support'); ?>
+<h2>Keyboard Support</h2>
+
+<section>
+
+    <div class="view">
+
+        <p>Handles in the slider can receive keyboard focus by default. This can be turned off.</p>
+
+        <p><a href="/nouislider/examples/#section-keyboard">Example: Adding keyboard support</a></p>
+        <p><a href="/nouislider/examples/#section-keypress">Example: Using the <code>.steps()</code> API to determine the next step value</a></p>
+
+        <div class="example overflow">
+            <div id="slider-keyboard"></div>
+            <?php run('keyboard-support'); ?>
+        </div>
+
+        <div class="options">
+            <strong>Default</strong>
+            <div><code>true</code></div>
+
+            <strong>Accepted values</strong>
+            <div><code>true</code>, <code>false</code></div>
+        </div>
+    </div>
+
+    <div class="side">
+
+        <?php code('keyboard-support'); ?>
+    </div>
+
+</section>
+
+
+<?php sect('document-element'); ?>
+<h2>Document Element</h2>
+
+<section>
+
+    <div class="view">
+
+        <p>When moving the slider through documents, or in other advanced scenarios, the <code>documentElement</code> that events are bound to can be changed.</p>
+
+        <p>See <a href="https://github.com/leongersen/noUiSlider/pull/821">this pull request</a> for more information.</p>
+
+        <div class="options">
+            <strong>Default</strong>
+            <div>The document the slider is in</div>
+
+            <strong>Accepted values</strong>
+            <div>Any other document element</div>
+        </div>
+    </div>
+
+    <div class="side">
+
+        <?php code('document-element'); ?>
+    </div>
 
 </section>

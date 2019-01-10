@@ -1,31 +1,43 @@
 # noUiSlider
 
-noUiSlider is lightweight JavaScript range slider.
+noUiSlider is a lightweight JavaScript range slider.
 
 - **No dependencies**
 - All modern browsers and IE > 9 are supported
 - Fully **responsive**
-- **Touch support** on Android, iOS and Windows devices
+- **Multi-touch support** on Android, iOS and Windows devices
 - Tons of [examples](https://refreshless.com/nouislider/examples) and answered [Stack Overflow questions](https://stackoverflow.com/questions/tagged/nouislider)
 
 License
 -------
-noUiSlider is licensed [WTFPL](http://www.wtfpl.net/about/). You can use it **for free** and **without any attribution**, in any personal or commercial project. You may also fork the project and re-release it under another license you prefer.
+As of release 12.0.0, noUiSlider is licensed [MIT](https://choosealicense.com/licenses/mit/). You can use it **for free** and **without any attribution**, in any personal or commercial project.
 
-Documentation
+[Documentation](https://refreshless.com/nouislider/)
 -------
 An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](https://refreshless.com/nouislider/).
 
-Bower
------
-`bower install nouislider --save`
-
-npm [(package)](https://www.npmjs.com/package/nouislider)
----
-`npm install nouislider --save`
-
 Changelog
 ---------
+
+### 12.1.0 (*2018-10-25*)
+- Added: `unconstrained` behaviour (#747, #815, #913)
+- Added: `setHandle` API (#917)
+- Changed: point to `nouislider.js` in `package.json`.`main` (#921)
+
+### 12.0.0 (*2018-09-14*) 
+- Change: License changed to MIT;
+- Change: Build process is now based on NPM scripts, phasing out the Grunt task runner.
+- Fixed: Aria values are now as per spec (#889);
+- Change: Pips formatting are now written as HTML (#875);
+- Change: The `filter` option is now called for all pips (#754);
+- Added: The `filter` option can now return `-1` to hide a pip (#754);
+- Added: `keyboardSupport` option (#867, #895);
+- Added: `documentElement` option (#821);
+
+### 11.1.0 (*2018-04-02*)
+- Change: `null` options are now handled consistently (#856);
+- Fixed: Missing transform origin in IE9 (#870);
+- Fixed: `padding` on one side of the slider could not exceed `50%` (#865);
 
 ### 11.0.3 (*2018-01-21*)
 Refactor of source code. There are no meaningful changes in the distributed files;
@@ -36,7 +48,7 @@ Refactor of source code. There are no meaningful changes in the distributed file
 - Fixed: Relative `.noUi-handle` has unintended margin (#854);
 
 ### 11.0.0 (*2018-01-12*)
-noUiSlider 11 doesn't include any breaking API changes.
+noUiSlider 11 does not include any breaking API changes.
 Unless major changes were made to the stylesheet or you specifically depend
 on the handle/connect order in the DOM, there should be no issues upgrading.
 - Change: Use CSS transforms for handle movement, resulting in a massive performance improvement (#718);
@@ -125,25 +137,6 @@ Devices/browsers tested:
 	+ IE11
 	+ IE10 (Emulated)
 	+ IE9 (Emulated)
-
-Browserify
-----------
-This library is [UMD](https://github.com/umdjs/umd) compatible, so you can use it in this way:
-
-```javascript
-var noUiSlider = require('nouislider');
-
-var slider = document.getElementById('slider');
-
-noUiSlider.create(slider, {
-  start: 40,
-  connect: "lower",
-  range: {
-    min: 0,
-    max: 100
-  }
-});
-```
 
 Webpack
 -------

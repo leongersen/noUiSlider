@@ -10,7 +10,7 @@ var slider1Value = document.getElementById('slider1-span');
 var slider2Value = document.getElementById('slider2-span');
 
 // When the button is clicked, the locked state is inverted.
-lockButton.addEventListener('click', function(){
-	lockedState = !lockedState;
-	this.textContent = lockedState ? 'unlock' : 'lock';
+lockButton.addEventListener('click', function () {
+    lockedState = !lockedState;
+    this.textContent = lockedState ? 'unlock' : 'lock';
 });

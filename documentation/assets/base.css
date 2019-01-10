@@ -248,9 +248,12 @@
 	}
 
 	.events-table {
-		width: 100%;
+		margin: 0 auto;
 		table-layout: fixed;
 		text-align: center;
+	}
+	.events-table td {
+		vertical-align: middle;
 	}
 	.events-no {
 		color: #fff;
@@ -338,6 +341,27 @@
 	.noUi-tooltip {
 		font: 700 12px/12px Arial;
 	}
+
+	.notice {
+		background-color: #d1ecf1;
+		border: 1px solid #bee5eb;
+		border-radius: 4px;
+		color: #0c5460;
+		padding: 5px 15px;
+	}
+
+	.reference-table {
+		width: 100%;
+		border-spacing: 0;
+		border-collapse: collapse;
+	}
+	.reference-table th,
+	.reference-table td {
+		text-align: left;
+		border: 1px solid #ccc;
+		padding: 5px;
+	}
+
 
 @media ( min-width: 800px ) {
 

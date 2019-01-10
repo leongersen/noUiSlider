@@ -11,7 +11,13 @@
 
 		<p>noUiSlider offers several ways to listen to interaction: <code>'update'</code>, <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time. There are also the <code>'start'</code> and <code>'end'</code> events, that fire when a drag is started or ended.</p>
 
-		<p>Events always fire in the order <code>'start'</code> &gt; <code>'slide'</code> &gt; <code>'update'</code> &gt; <code>'change'</code> &gt; <code>'set'</code> &gt; <code>'end'</code>.</p>
+		<p>Events always fire in the following order:</p>
+		
+		<p><code>'start'</code> &gt; <code>'slide'</code> &gt; <code>'update'</code> &gt; <code>'change'</code> &gt; <code>'set'</code> &gt; <code>'end'</code></p>
+
+	</div>
+
+	<div class="side">
 
 		<div class="example">
 
@@ -36,104 +42,81 @@
 			<?php run('buttoninput'); ?>
 			<?php run('binding-events'); ?>
 		</div>
-
-		<style>.events-table td { vertical-align: middle; }</style>
-
-		<table class="data-table events-table">
-			<thead>
-				<tr>
-					<th>&nbsp;</th>
-					<th width="65">Update</th>
-					<th width="65">Slide</th>
-					<th width="65">Set</th>
-					<th width="65">Change</th>
-					<th width="65">Start</th>
-					<th width="65">End</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><span>A handle is <strong>activated</strong>, starting dragging</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-no"><span>Yes</span></td>
-				</tr>
-				<tr>
-					<td><span>A handle is <strong>released</strong> after dragging</span></td>
-					<td class="events-no"><span>no</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-				</tr>
-				<tr>
-					<td><span>A slider is moved by <strong>tapping</strong> it</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-				</tr>
-				<tr>
-					<td><span>A handle moves while <strong>dragging</strong></span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-				</tr>
-				<tr>
-					<td><span>The <strong><code>.set()</code></strong> method is called</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-				</tr>
-				<tr>
-					<td><span>When bound using the <strong><code>.on()</code></strong> method</span></td>
-					<td class="events-yes"><span>Yes</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-					<td class="events-no"><span>No</span></td>
-				</tr>
-			</tbody>
-		</table>
 	</div>
-
-	<div class="side">
-
-		<div class="viewer-header">Temporary set a class</div>
-
-		<div class="viewer-content">
-			<?php code('class'); ?>
-		</div>
-
-		<div class="viewer-header">Setting up the slider</div>
-
-		<div class="viewer-content">
-			<?php code('demo'); ?>
-		</div>
+</section>
 
 
-		<div class="viewer-header">Bind button and input</div>
+<section>
 
-		<div class="viewer-content">
-			<?php code('buttoninput'); ?>
-		</div>
-
-		<?php code('binding-events'); ?>
-
-	</div>
+	<table class="data-table events-table">
+		<thead>
+			<tr>
+				<th>&nbsp;</th>
+				<th width="65">Update</th>
+				<th width="65">Slide</th>
+				<th width="65">Set</th>
+				<th width="65">Change</th>
+				<th width="65">Start</th>
+				<th width="65">End</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><span>A handle is <strong>activated</strong>, starting dragging</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-no"><span>Yes</span></td>
+			</tr>
+			<tr>
+				<td><span>A handle is <strong>released</strong> after dragging</span></td>
+				<td class="events-no"><span>no</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+			</tr>
+			<tr>
+				<td><span>A slider is moved by <strong>tapping</strong> it</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+			</tr>
+			<tr>
+				<td><span>A handle moves while <strong>dragging</strong></span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+			</tr>
+			<tr>
+				<td><span>The <strong><code>.set()</code></strong> method is called</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+			</tr>
+			<tr>
+				<td><span>When bound using the <strong><code>.on()</code></strong> method</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+			</tr>
+		</tbody>
+	</table>
 </section>
 
 
@@ -143,13 +126,15 @@
 <section>
 
 	<div class="view">
-		<p>noUiSlider uses a custom binding model with support for namespaces. The event system looks similar to jQuery's. There are two methods, <code>.on( eventName, callback )</code> and <code>.off( eventName )</code>. Events can be namespaced by appending a period ('.') and an identifier to the event name.</p>
+		<p>noUiSlider uses a custom binding model with support for namespaces. There are two methods, <code>.on(eventName, callback)</code> and <code>.off(eventName)</code>. Events can be namespaced by appending a period ('.') and an identifier to the event name.</p>
 
-		<p>Nested namespaces ('slide.something.else') are not supported, and are threated as a single namespace (so '.a.b' isn't related to '.a').</p>
+		<p>Nested namespaces (<code>'slide.something.else'</code>) are not supported, and are threated as a single namespace (so <code>'.a.b'</code> isn't related to <code>'.a'</code>).</p>
 
-		<p>Event callbacks receive three arguments. <code>values</code> is <strong>always an array</strong>, for both one-handle and two-handle sliders. It contains the current slider values, with formatting applied. <code>handle</code> is the index of the handle that caused the event, starting at zero. <code>values[handle]</code> gives the value for the handle that triggered the event. <code>unencodedValues</code> contains the slider values without any formatting.</p>
+		<p><code>values</code> is an array containing the current slider values, with formatting applied. <code>handle</code> is the index of the handle that caused the event, starting at zero. <code>values[handle]</code> gives the value for the handle that triggered the event.</p>
+		
+		<p><code>unencoded</code> contains the slider values without any formatting. </p>
 
-		<p>For all events, <code>this</code> is set to the current slider's public API, containing (among others) the <code>'get'</code> and <code>'set'</code> methods.</p>
+		<p>For all events, <code>this</code> is set to the current slider's API, containing (among others) the <code>.get()</code> and <code>.set()</code> methods.</p>
 	</div>
 
 	<?php code('binding'); ?>
@@ -163,7 +148,7 @@
 <section>
 
 	<div class="view">
-		<p>Use this event when synchronising the slider value to another element, such as an <code>&lt;input&gt;</code>. It fires every time the slider values are <strong>changed</strong>, either by a user or by calling API methods. Additionally, it fires <strong>immediately</strong> when bound. In most cases, this event should be more convenient than the <code>'slide'</code> event.</p>
+		<p>Use this event when synchronizing the slider value to another element, such as an <code>&lt;input&gt;</code>. It fires every time the slider values are <strong>changed</strong>, either by a user or by calling API methods. Additionally, it fires <strong>immediately</strong> when bound. In most cases, this event should be more convenient than the <code>'slide'</code> event.</p>
 	</div>
 </section>
 
@@ -218,6 +203,6 @@
 <section>
 
 	<div class="view">
-		<p>This event is the opposite of the <code>'start'</code> event. If fires when a handle is released (<code>mouseup</code> etc), or when a slide is cancelled due to other reasons (such as mouse cursor leaving the browser window).</p>
+		<p>This event is the opposite of the <code>'start'</code> event. If fires when a handle is released (<code>mouseup</code> etc), or when a slide is canceled due to other reasons (such as mouse cursor leaving the browser window).</p>
 	</div>
 </section>

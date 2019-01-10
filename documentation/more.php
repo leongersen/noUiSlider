@@ -72,19 +72,24 @@
 
 	<div class="view">
 
-		<p>noUiSlider has an update method that can change the <code>'margin'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'animate'</code> and <code>'snap'</code> options.</p>
+		<p>noUiSlider has an update method that can change the <code>'margin'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'pips'</code>, <code>'animate'</code> and <code>'snap'</code> options.</p>
 
 		<p>All other options require changes to the slider's HTML or event bindings.</p>
 
 		<p>To update any other option, destroy the slider using <code>slider.noUiSlider.destroy()</code> and create a new one. Events are unbound when destroying a slider.</p>
 
-		<p>The update method can be called as <code>slider.noUiSlider.updateOptions(newOptions, [fireSetEvent])</code>.</p>
+		<p>The update method can be called as:</p>
+		
+<pre><code>slider.noUiSlider.updateOptions(
+	newOptions, // Object
+	true // Boolean 'fireSetEvent'
+);</code></pre>
 
 		<p>Options that can not be updated will be ignored without errors.</p>
 
 		<p>The <code>'update'</code> event fires after updating the slider.</p>
 
-		<p>By default, the sliders <strong>values remain unchanged</strong>. To update the slider values, <code>newOptions</code> may also contain a <code>start</code> property</a> that matches the signature of the <a href="/nouislider/slider-read-write/#section-setting"><code>set</code></a> method.</p>
+		<p>By default, the sliders <strong>values remain unchanged</strong>. To update the slider values, <code>newOptions</code> may also contain a <code>start</code> property</a> that matches the signature of the <a href="/nouislider/slider-read-write/#section-setting"><code>.set()</code></a> method.</p>
 
 		<p>The <code>'set'</code> event fires when the slider values are restored. If this is unwanted, you can pass <code>false</code> as the second parameter, <code>fireSetEvent</code>.</p>
 

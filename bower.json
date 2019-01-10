@@ -18,8 +18,8 @@
 		"**/.*",
 		"**/*.json"
 	],
-	"license": "WTFPL",
-	"homepage": "http://refreshless.com/nouislider/",
+	"license": "MIT",
+	"homepage": "https://refreshless.com/nouislider/",
 	"author": {
 		"name": "Leon Gersen"
 	}

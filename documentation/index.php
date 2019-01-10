@@ -7,10 +7,19 @@
 
 	<div class="view">
 
-		<h3>noUiSlider: lightweight JavaScript range slider</h3>
-		<br>
+		<h3 class="quotable">noUiSlider: lightweight JavaScript range slider with full touch support</h3>
 
-		<p>noUiSlider is a range slider <strong>without bloat</strong>. It offers a ton off <strong>features</strong>, and it is as small, <strong>lightweight</strong> and minimal as possible, which is great for mobile use on the many supported <strong>devices</strong>, including iPhone, iPad, Android devices &amp; Windows (Phone) 8 desktops, tablets and all-in-ones. It works on desktops too, of course!</p>
+		<ul class="pro-list">
+			<li>Responsive design friendly</li>
+			<li>Touch support for iOS, Android &amp; Windows (phone)</li>
+            <li>ARIA support</li>
+			<li>No dependencies!</li>
+			<li>Tested in IE9 - IE11, Edge, Chrome, Opera, Firefox &amp; Safari</li>
+		</ul>
+
+		<a href="/nouislider/download/" class="button">Download noUiSlider</a>
+
+		<p>noUiSlider is a <strong>lightweight</strong> range slider with full touch support and a ton of <strong>features</strong>. It works with pretty much any device, whether it has a mouse, touchscreen or both, and it'll work great in <strong>responsive designs</strong>. Have you tried this documentation on your phone?</p>
 
 		<div class="example" id="showcase" style="margin: 0 20px;">
 
@@ -40,49 +49,5 @@
 		<div class="viewer-content">
 			<?php code('showcase-connect'); ?>
 		</div>
-	</div>
-</section>
-
-
-<section>
-
-	<div class="view">
-
-		<h3 class="quotable">"Lightweight JavaScript range slider with full touch support."</h3>
-
-		<ul class="pro-list">
-			<li>Responsive design friendly</li>
-			<li>Touch support for iOS, Android &amp; Windows (phone)</li>
-			<li>Draggable range</li>
-			<li><strong>No jQuery, jQueryUI or other dependencies</strong></li>
-			<li>Tested in IE9 - IE11, Edge, Chrome, Opera, Firefox &amp; Safari</li>
-		</ul>
-
-		<p>noUiSlider works with pretty much any device, mouse, touchscreen or both, and it'll work beautifully in <strong>responsive designs</strong>. Have you tried this documentation on your phone?</p>
-	</div>
-
-	<div class="side">
-
-		<?php sect('getting-started'); ?>
-		<h2>Getting started</h2>
-
-		<p>noUiSlider has no dependencies, so you don't need jQuery, jQuery UI, Zepto, etc. to use it.</p>
-
-		<p>Putting all your scripts in the page <code>&lt;head&gt;</code> will slow down your site. If you'd like to know why, consider reading <a href="http://developer.yahoo.com/performance/rules.html#js_bottom">this article by Yahoo!</a>. Put the slider CSS in your <code>&lt;head&gt;</code>, and the script at the end of the <code>&lt;body&gt;</code>.</p>
-
-		<p>To create a slider, call <code>noUiSlider.create()</code> with an element and your options.</p>
-
-<pre class="language-markup"><code>&lt;!-- In &lt;head&gt; --&gt;
-&lt;link href="nouislider.min.css" rel="stylesheet"&gt;
-
-&lt;!-- In &lt;body&gt; --&gt;
-&lt;script src="nouislider.min.js"&gt;&lt;/script&gt;</code></pre>
-
-
-		<?php sect('browser-support'); ?>
-		<h2>Browser support</h2>
-
-		<p>noUiSlider supports <strong>IE9 and up</strong>, and the latest versions of <strong>Edge</strong>, <strong>Chrome</strong>, <strong>Safari</strong>, <strong>Firefox</strong> and <strong>Opera</strong>.</p>
-
 	</div>
 </section>

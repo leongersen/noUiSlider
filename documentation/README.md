@@ -1,18 +1,13 @@
-If you'd like to contribute to the noUiSlider documentation (yes please!), you can run it locally:
+If you'd like to contribute to the noUiSlider documentation (yes please!), you can run it locally using PHP's built in web server:
 
-On any apache+php setup, clone the project (for example, in the root):
+Clone the project (for example, in `C:/Web`):
 
-```git clone https://github.com/leongersen/noUiSlider```
+```git clone https://github.com/leongersen/noUiSlider nouislider```
 
-Add a `.htaccess` file to send requests to the documentation:
+In your root (e.g. `C:/Web`), start the server:
 
-```
-RewriteEngine on
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} ^/nouislider
-RewriteRule ^.+$ noUiSlider/documentation/_run/router.php [L]
-```
+```php -S localhost:80 nouislider/documentation/_run/router.php```
 
-You can access the documentation at `http://localhost/nouislider/`.
+You can now access the documentation at `http://localhost/nouislider/`.
 
-The documentation uses noUiSlider from the `distribute` folder, so you can test any changes you've made to the main source in the documentation after running `grunt`.
+The documentation uses noUiSlider from the `distribute` folder, so you can test any changes you've made to the main source in the documentation after running ` npm run build`.

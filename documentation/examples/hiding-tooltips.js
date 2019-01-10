@@ -5,6 +5,6 @@ noUiSlider.create(hidingTooltipSlider, {
         min: 0,
         max: 100
     },
-    start: [ 20, 80 ],
+    start: [20, 80],
     tooltips: true
 });

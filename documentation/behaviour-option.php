@@ -11,7 +11,7 @@
 
 		<p>noUiSlider offers several ways to handle user interaction. The range can be set to drag, and handles can move to taps. All these effects are optional, and can be enable by adding their keyword to the <code>behaviour</code> option.</p>
 
-		<p>This option accepts a <code>"-"</code> separated list of <code>"drag"</code>, <code>"tap"</code>, <code>"fixed"</code>, <code>"snap"</code> or <code>"none"</code>.</p>
+		<p>This option accepts a <code>"-"</code> separated list of <code>"drag"</code>, <code>"tap"</code>, <code>"fixed"</code>, <code>"snap"</code>, <code>"unconstrained"</code> or <code>"none"</code>.</p>
 
 		<div class="example">
 			<div id="behaviour"></div>
@@ -58,6 +58,12 @@
 
 		<pre><code>behaviour: "hover"</code></pre>
 		<p>Fire <code>hover</code> events when a user with a mouse or pen hovers over the slider.</p>
+	</div>
+
+	<div class="double">
+
+		<pre><code>behaviour: "unconstrained-tap"</code></pre>
+		<p>Allow handles to move past each other.</p>
 	</div>
 
 	<div class="double">
@@ -161,6 +167,27 @@
 
 	<div class="side">
 		<?php code('hover'); ?>
+	</div>
+</section>
+
+
+<?php sect('unconstrained'); ?>
+<h2>Unconstrained</h2>
+
+<section>
+
+	<div class="view">
+		<p>With this option set, handles are allowed to move past each other. The <code>limit</code> and <code>margin</code> options cannot be used with this behaviour.</p>
+        <p>All APIs will return slider values in the original handle order, regardless of whether handles have changed places.</p>
+		<div class="example">
+			<div id="unconstrained"></div>
+            <span class="example-val" id="unconstrained-values"></span>
+			<?php run('unconstrained'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('unconstrained'); ?>
 	</div>
 </section>
 
