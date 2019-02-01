@@ -871,6 +871,7 @@
                 handle: "handle",
                 handleLower: "handle-lower",
                 handleUpper: "handle-upper",
+                touchArea: "touch-area",
                 horizontal: "horizontal",
                 vertical: "vertical",
                 background: "background",
@@ -1000,6 +1001,8 @@
         function addOrigin(base, handleNumber) {
             var origin = addNodeTo(base, options.cssClasses.origin);
             var handle = addNodeTo(origin, options.cssClasses.handle);
+
+            addNodeTo(handle, options.cssClasses.touchArea);
 
             handle.setAttribute("data-handle", handleNumber);
 
