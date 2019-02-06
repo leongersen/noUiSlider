@@ -26,6 +26,7 @@ Keyboard support is now built-in, so any custom implementations should be remove
 Alternatively, built-in keyboard support can be disabled using `keyboardSupport: false`.
 - Added: Built-in keyboard support (#724)
 - Added: `.noUi-touch-area` element (#924)
+- Fixed: Dragging a range does not check for handle disabled state (#938)
 - Fixed: Incorrect CSS transform in pips (#931)
 
 ### 12.1.0 (*2018-10-25*)
