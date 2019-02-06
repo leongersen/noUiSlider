@@ -1087,6 +1087,12 @@
             return addNodeTo(handle.firstChild, options.cssClasses.tooltip);
         }
 
+        // Disable the slider dragging if any handle is disabled
+        function isHandleDisabled(handleNumber) {
+            var handleOrigin = scope_Handles[handleNumber];
+            return handleOrigin.hasAttribute("disabled");
+        }
+
         // The tooltips option is a shorthand for using the 'update' event.
         function tooltips() {
             // Tooltips are added with options.tooltips in original order.
@@ -1535,7 +1541,7 @@
 
             scope_Handles.forEach(function(handle, index) {
                 // Disabled handles are ignored
-                if (handle.hasAttribute("disabled")) {
+                if (isHandleDisabled(index)) {
                     return;
                 }
 
@@ -1611,23 +1617,15 @@
 
         // Bind move events on document.
         function eventStart(event, data) {
-            var handle;
-            // Disable the slider dragging if any handle is disabled
-            var isAnyHandleDisabled = function (handleNumber) {
-                var handleOrigin = scope_Handles[handleNumber];
-                return handleOrigin.hasAttribute("disabled");
-            }
             // Ignore event if any handle is disabled
-            if (data.handleNumbers.some(isAnyHandleDisabled)) {
+            if (data.handleNumbers.some(isHandleDisabled)) {
                 return false;
             }
+
+            var handle;
+
             if (data.handleNumbers.length === 1) {
                 var handleOrigin = scope_Handles[data.handleNumbers[0]];
-
-                // Ignore 'disabled' handles
-                if (handleOrigin.hasAttribute("disabled")) {
-                    return false;
-                }
 
                 handle = handleOrigin.children[0];
                 scope_ActiveHandlesCount += 1;
@@ -1754,6 +1752,10 @@
         // Handles keydown on focused handles
         // Don't move the document when pressing arrow keys on focused handles
         function eventKeydown(event, handleNumber) {
+            if (isHandleDisabled(handleNumber)) {
+                return false;
+            }
+
             var horizontalKeys = ["ArrowLeft", "ArrowRight"];
             var verticalKeys = ["ArrowDown", "ArrowUp"];
 
