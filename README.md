@@ -11,7 +11,7 @@ noUiSlider is a lightweight JavaScript range slider.
 
 License
 -------
-As of release 12.0.0, noUiSlider is licensed [MIT](https://choosealicense.com/licenses/mit/). You can use it **for free** and **without any attribution**, in any personal or commercial project.
+noUiSlider is licensed [MIT](https://choosealicense.com/licenses/mit/). You can use it **for free** and **without any attribution**, in any personal or commercial project.
 
 [Documentation](https://refreshless.com/nouislider/)
 -------
@@ -20,7 +20,7 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changelog
 ---------
 
-### 13.0.0 (*???*)
+### 13.0.0 (*2018-02-06*)
 noUiSlider 13 does not include any breaking API changes.
 Keyboard support is now built-in, so any custom implementations should be removed when upgrading.
 Alternatively, built-in keyboard support can be disabled using `keyboardSupport: false`.
