@@ -1,4 +1,4 @@
-/*! nouislider - 12.1.0 - 10/25/2018 */
+/*! nouislider - 12.1.0 - 2/6/2019 */
 /* Functional styling;
  * These styles are required for noUiSlider to function.
  * You don't need to change these rules to apply your design.
@@ -63,6 +63,10 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-origin {
 }
 .noUi-handle {
   position: absolute;
+}
+.noUi-touch-area {
+  height: 100%;
+  width: 100%;
 }
 .noUi-state-tap .noUi-connect,
 .noUi-state-tap .noUi-origin {
@@ -242,7 +246,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 .noUi-value-vertical {
   -webkit-transform: translate(0, -50%);
-  transform: translate(0, -50%, 0);
+  transform: translate(0, -50%);
   padding-left: 25px;
 }
 .noUi-rtl .noUi-value-vertical {

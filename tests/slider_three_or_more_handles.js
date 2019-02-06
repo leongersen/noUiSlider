@@ -1,14 +1,3 @@
-function simulateMousedown(clickTarget, x, y) {
-    // Based on https://stackoverflow.com/a/19570419/1367431
-    var clickEvent = document.createEvent('MouseEvents');
-    clickEvent.initMouseEvent(
-        'mousedown', true, true, window, 0,
-        0, 0, x, y, false, false,
-        false, false, 0, null
-    );
-    clickTarget.dispatchEvent(clickEvent);
-}
-
 QUnit.test("Slider with three or more handles", function (assert) {
 
     document.getElementById('qunit-fixture').innerHTML = '\
@@ -64,8 +53,8 @@ QUnit.test("Slider with three or more handles", function (assert) {
 
     var middleHandleX = (middleHandlePos.right + middleHandlePos.left) / 2;
     var middleHandleY = (middleHandlePos.top + middleHandlePos.bottom) / 2;
-    var selectedByClick = document.elementFromPoint(middleHandleX, middleHandleY);
-    assert.strictEqual(selectedByClick, middleHandle, "Middle handle should be selected by click as rightmost handle is unmovable move")
+    var selectedByClick = document.elementFromPoint(middleHandleX, middleHandleY).parentElement;
+    assert.strictEqual(selectedByClick, middleHandle, "Middle handle should be selected by click as rightmost handle is unmovable move");
 
 
     // xnakos also spotted a bug where clicking

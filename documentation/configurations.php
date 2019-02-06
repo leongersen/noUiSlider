@@ -25,6 +25,8 @@ $description = "";
 
 </style>
 
+<input placeholder="Test for focus">
+
 <div class="configuration">
     <h2>Horizontal - LTR</h2>
     <div id="horizontal-ltr"></div>

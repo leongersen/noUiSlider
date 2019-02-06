@@ -1756,8 +1756,8 @@
                 return false;
             }
 
-            var horizontalKeys = ["ArrowLeft", "ArrowRight"];
-            var verticalKeys = ["ArrowDown", "ArrowUp"];
+            var horizontalKeys = ["Left", "Right"];
+            var verticalKeys = ["Down", "Up"];
 
             if (options.dir && !options.ort) {
                 // On an right-to-left slider, the left and right keys act inverted
@@ -1767,8 +1767,10 @@
                 verticalKeys.reverse();
             }
 
-            var isDown = event.key === verticalKeys[0] || event.key === horizontalKeys[0];
-            var isUp = event.key === verticalKeys[1] || event.key === horizontalKeys[1];
+            // Strip "Arrow" for IE compatibility. https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+            var key = event.key.replace("Arrow", "");
+            var isDown = key === verticalKeys[0] || key === horizontalKeys[0];
+            var isUp = key === verticalKeys[1] || key === horizontalKeys[1];
 
             if (!isDown && !isUp) {
                 return true;

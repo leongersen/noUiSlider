@@ -23,7 +23,18 @@
     <script src="../distribute/nouislider.js" data-cover></script>
 
     <script src="https://code.jquery.com/qunit/qunit-2.6.2.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsdom-simulant@1.1.2/dist/jsdom-simulant.umd.min.js"></script>
+    <script>
+        function simulateMousedown(clickTarget, x, y) {
+            // Based on https://stackoverflow.com/a/19570419/1367431
+            var clickEvent = document.createEvent('MouseEvents');
+            clickEvent.initMouseEvent(
+                'mousedown', true, true, window, 0,
+                0, 0, x, y, false, false,
+                false, false, 0, null
+            );
+            clickTarget.dispatchEvent(clickEvent);
+        }
+    </script>
 </head>
 
 <body>
