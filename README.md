@@ -25,6 +25,7 @@ noUiSlider 13 does not include any breaking API changes.
 Keyboard support is now built-in, so any custom implementations should be removed when upgrading.
 Alternatively, built-in keyboard support can be disabled using `keyboardSupport: false`.
 - Added: Built-in keyboard support (#724)
+- Added: `.noUi-touch-area` element (#924)
 - Fixed: Incorrect CSS transform in pips (#931)
 
 ### 12.1.0 (*2018-10-25*)
@@ -167,4 +168,5 @@ is enough:
 
 ```
 import 'nouislider';
+import 'nouislider/distribute/nouislider.css';
 ```

@@ -958,6 +958,9 @@
         var scope_Connects;
         var scope_Pips;
 
+        // Override for the 'animate' option
+        var scope_ShouldAnimate = true;
+
         // Slider state values
         var scope_Spectrum = options.spectrum;
         var scope_Values = [];
@@ -1748,7 +1751,7 @@
             if (options.dir && !options.ort) {
                 // On an right-to-left slider, the left and right keys act inverted
                 horizontalKeys.reverse();
-            } else if (options.ort) {
+            } else if (options.ort && !options.dir) {
                 // On a top-to-bottom slider, the up and down keys act inverted
                 verticalKeys.reverse();
             }
@@ -1779,7 +1782,11 @@
             // Decrement for down steps
             step = (isDown ? -1 : 1) * step;
 
+            scope_ShouldAnimate = false;
+
             valueSetHandle(handleNumber, scope_Values[handleNumber] + step, true);
+
+            scope_ShouldAnimate = true;
 
             return false;
         }
@@ -2123,7 +2130,7 @@
 
             // Animation is optional.
             // Make sure the initial values were set before using animated placement.
-            if (options.animate && !isInit) {
+            if (options.animate && !isInit && scope_ShouldAnimate) {
                 addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
             }
 
