@@ -1,4 +1,4 @@
-/*! nouislider - 12.1.0 - 10/25/2018 */
+/*! nouislider - 12.1.0 - 2/6/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -421,6 +421,17 @@
         value = getStep(this.xPct, this.xSteps, this.snap, value);
 
         return value;
+    };
+
+    Spectrum.prototype.getDefaultStep = function(value, isDown, size) {
+        var j = getJ(value, this.xPct);
+
+        // When at the top or stepping down, look at the previous sub-range
+        if (value === 100 || (isDown && value === this.xPct[j - 1])) {
+            j = Math.max(j - 1, 1);
+        }
+
+        return (this.xVal[j] - this.xVal[j - 1]) / size;
     };
 
     Spectrum.prototype.getNearbySteps = function(value) {
@@ -861,6 +872,7 @@
                 handle: "handle",
                 handleLower: "handle-lower",
                 handleUpper: "handle-upper",
+                touchArea: "touch-area",
                 horizontal: "horizontal",
                 vertical: "vertical",
                 background: "background",
@@ -939,18 +951,29 @@
         var supportsPassive = supportsTouchActionNone && getSupportsPassive();
 
         // All variables local to 'scope' are prefixed with 'scope_'
+
+        // Slider DOM Nodes
         var scope_Target = target;
-        var scope_Locations = [];
         var scope_Base;
         var scope_Handles;
-        var scope_HandleNumbers = [];
-        var scope_ActiveHandlesCount = 0;
         var scope_Connects;
+        var scope_Pips;
+
+        // Override for the 'animate' option
+        var scope_ShouldAnimate = true;
+
+        // Slider state values
         var scope_Spectrum = options.spectrum;
         var scope_Values = [];
+        var scope_Locations = [];
+        var scope_HandleNumbers = [];
+        var scope_ActiveHandlesCount = 0;
         var scope_Events = {};
+
+        // Exposed API
         var scope_Self;
-        var scope_Pips;
+
+        // Document Nodes
         var scope_Document = target.ownerDocument;
         var scope_DocumentElement = options.documentElement || scope_Document.documentElement;
         var scope_Body = scope_Document.body;
@@ -983,12 +1006,17 @@
             var origin = addNodeTo(base, options.cssClasses.origin);
             var handle = addNodeTo(origin, options.cssClasses.handle);
 
+            addNodeTo(handle, options.cssClasses.touchArea);
+
             handle.setAttribute("data-handle", handleNumber);
 
             if (options.keyboardSupport) {
                 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
                 // 0 = focusable and reachable
                 handle.setAttribute("tabindex", "0");
+                handle.addEventListener("keydown", function(event) {
+                    return eventKeydown(event, handleNumber);
+                });
             }
 
             handle.setAttribute("role", "slider");
@@ -1058,6 +1086,12 @@
             }
 
             return addNodeTo(handle.firstChild, options.cssClasses.tooltip);
+        }
+
+        // Disable the slider dragging if any handle is disabled
+        function isHandleDisabled(handleNumber) {
+            var handleOrigin = scope_Handles[handleNumber];
+            return handleOrigin.hasAttribute("disabled");
         }
 
         // The tooltips option is a shorthand for using the 'update' event.
@@ -1508,7 +1542,7 @@
 
             scope_Handles.forEach(function(handle, index) {
                 // Disabled handles are ignored
-                if (handle.hasAttribute("disabled")) {
+                if (isHandleDisabled(index)) {
                     return;
                 }
 
@@ -1584,14 +1618,15 @@
 
         // Bind move events on document.
         function eventStart(event, data) {
+            // Ignore event if any handle is disabled
+            if (data.handleNumbers.some(isHandleDisabled)) {
+                return false;
+            }
+
             var handle;
+
             if (data.handleNumbers.length === 1) {
                 var handleOrigin = scope_Handles[data.handleNumbers[0]];
-
-                // Ignore 'disabled' handles
-                if (handleOrigin.hasAttribute("disabled")) {
-                    return false;
-                }
 
                 handle = handleOrigin.children[0];
                 scope_ActiveHandlesCount += 1;
@@ -1715,6 +1750,61 @@
             });
         }
 
+        // Handles keydown on focused handles
+        // Don't move the document when pressing arrow keys on focused handles
+        function eventKeydown(event, handleNumber) {
+            if (isHandleDisabled(handleNumber)) {
+                return false;
+            }
+
+            var horizontalKeys = ["Left", "Right"];
+            var verticalKeys = ["Down", "Up"];
+
+            if (options.dir && !options.ort) {
+                // On an right-to-left slider, the left and right keys act inverted
+                horizontalKeys.reverse();
+            } else if (options.ort && !options.dir) {
+                // On a top-to-bottom slider, the up and down keys act inverted
+                verticalKeys.reverse();
+            }
+
+            // Strip "Arrow" for IE compatibility. https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+            var key = event.key.replace("Arrow", "");
+            var isDown = key === verticalKeys[0] || key === horizontalKeys[0];
+            var isUp = key === verticalKeys[1] || key === horizontalKeys[1];
+
+            if (!isDown && !isUp) {
+                return true;
+            }
+
+            event.preventDefault();
+
+            var direction = isDown ? 0 : 1;
+            var steps = getNextStepsForHandle(handleNumber);
+            var step = steps[direction];
+
+            // At the edge of a slider, do nothing
+            if (step === null) {
+                return false;
+            }
+
+            // No step set, use the default of 10% of the sub-range
+            if (step === false) {
+                step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown, 10);
+            }
+
+            // Decrement for down steps
+            step = (isDown ? -1 : 1) * step;
+
+            scope_ShouldAnimate = false;
+
+            valueSetHandle(handleNumber, scope_Values[handleNumber] + step, true);
+
+            scope_ShouldAnimate = true;
+
+            return false;
+        }
+
         // Attach events to several slider parts.
         function bindSliderEvents(behaviour) {
             // Attach the standard drag event to the handles.
@@ -1824,10 +1914,6 @@
                     });
                 }
             });
-        }
-
-        function toPct(pct) {
-            return pct + "%";
         }
 
         // Split out the handle positioning logic so the Move event can use it, too
@@ -1964,7 +2050,7 @@
             // Convert the value to the slider stepping/range.
             scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-            var rule = "translate(" + inRuleOrder(toPct(transformDirection(to, 0) - scope_DirOffset), "0") + ")";
+            var rule = "translate(" + inRuleOrder(transformDirection(to, 0) - scope_DirOffset + "%", "0") + ")";
             scope_Handles[handleNumber].style[options.transformRule] = rule;
 
             updateConnect(handleNumber);
@@ -2018,7 +2104,7 @@
             // 'scale' to change the width of the element;
             // As the element has a width of 100%, a translation of 100% is equal to 100% of the parent (.noUi-base)
             var connectWidth = h - l;
-            var translateRule = "translate(" + inRuleOrder(toPct(transformDirection(l, connectWidth)), "0") + ")";
+            var translateRule = "translate(" + inRuleOrder(transformDirection(l, connectWidth) + "%", "0") + ")";
             var scaleRule = "scale(" + inRuleOrder(connectWidth / 100, "1") + ")";
 
             scope_Connects[index].style[options.transformRule] = translateRule + " " + scaleRule;
@@ -2058,7 +2144,7 @@
 
             // Animation is optional.
             // Make sure the initial values were set before using animated placement.
-            if (options.animate && !isInit) {
+            if (options.animate && !isInit && scope_ShouldAnimate) {
                 addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
             }
 
@@ -2137,57 +2223,58 @@
             delete scope_Target.noUiSlider;
         }
 
+        function getNextStepsForHandle(handleNumber) {
+            var location = scope_Locations[handleNumber];
+            var nearbySteps = scope_Spectrum.getNearbySteps(location);
+            var value = scope_Values[handleNumber];
+            var increment = nearbySteps.thisStep.step;
+            var decrement = null;
+
+            // If the next value in this step moves into the next step,
+            // the increment is the start of the next step - the current value
+            if (increment !== false) {
+                if (value + increment > nearbySteps.stepAfter.startValue) {
+                    increment = nearbySteps.stepAfter.startValue - value;
+                }
+            }
+
+            // If the value is beyond the starting point
+            if (value > nearbySteps.thisStep.startValue) {
+                decrement = nearbySteps.thisStep.step;
+            } else if (nearbySteps.stepBefore.step === false) {
+                decrement = false;
+            }
+
+            // If a handle is at the start of a step, it always steps back into the previous step first
+            else {
+                decrement = value - nearbySteps.stepBefore.highestStep;
+            }
+
+            // Now, if at the slider edges, there is no in/decrement
+            if (location === 100) {
+                increment = null;
+            } else if (location === 0) {
+                decrement = null;
+            }
+
+            // As per #391, the comparison for the decrement step can have some rounding issues.
+            var stepDecimals = scope_Spectrum.countStepDecimals();
+
+            // Round per #391
+            if (increment !== null && increment !== false) {
+                increment = Number(increment.toFixed(stepDecimals));
+            }
+
+            if (decrement !== null && decrement !== false) {
+                decrement = Number(decrement.toFixed(stepDecimals));
+            }
+
+            return [decrement, increment];
+        }
+
         // Get the current step size for the slider.
-        function getCurrentStep() {
-            // Check all locations, map them to their stepping point.
-            // Get the step point, then find it in the input list.
-            return scope_Locations.map(function(location, index) {
-                var nearbySteps = scope_Spectrum.getNearbySteps(location);
-                var value = scope_Values[index];
-                var increment = nearbySteps.thisStep.step;
-                var decrement = null;
-
-                // If the next value in this step moves into the next step,
-                // the increment is the start of the next step - the current value
-                if (increment !== false) {
-                    if (value + increment > nearbySteps.stepAfter.startValue) {
-                        increment = nearbySteps.stepAfter.startValue - value;
-                    }
-                }
-
-                // If the value is beyond the starting point
-                if (value > nearbySteps.thisStep.startValue) {
-                    decrement = nearbySteps.thisStep.step;
-                } else if (nearbySteps.stepBefore.step === false) {
-                    decrement = false;
-                }
-
-                // If a handle is at the start of a step, it always steps back into the previous step first
-                else {
-                    decrement = value - nearbySteps.stepBefore.highestStep;
-                }
-
-                // Now, if at the slider edges, there is not in/decrement
-                if (location === 100) {
-                    increment = null;
-                } else if (location === 0) {
-                    decrement = null;
-                }
-
-                // As per #391, the comparison for the decrement step can have some rounding issues.
-                var stepDecimals = scope_Spectrum.countStepDecimals();
-
-                // Round per #391
-                if (increment !== null && increment !== false) {
-                    increment = Number(increment.toFixed(stepDecimals));
-                }
-
-                if (decrement !== null && decrement !== false) {
-                    decrement = Number(decrement.toFixed(stepDecimals));
-                }
-
-                return [decrement, increment];
-            });
+        function getNextSteps() {
+            return scope_HandleNumbers.map(getNextStepsForHandle);
         }
 
         // Updateable: margin, limit, padding, step, range, animate, snap
@@ -2232,21 +2319,37 @@
             valueSet(optionsToUpdate.start || v, fireSetEvent);
         }
 
-        // Create the base element, initialize HTML and set classes.
-        // Add handles and connect elements.
-        scope_Base = addSlider(scope_Target);
-        addElements(options.connect, scope_Base);
+        // Initialization steps
+        function setupSlider() {
+            // Create the base element, initialize HTML and set classes.
+            // Add handles and connect elements.
+            scope_Base = addSlider(scope_Target);
 
-        // Attach user events.
-        bindSliderEvents(options.events);
+            addElements(options.connect, scope_Base);
 
-        // Use the public value method to set the start values.
-        valueSet(options.start);
+            // Attach user events.
+            bindSliderEvents(options.events);
+
+            // Use the public value method to set the start values.
+            valueSet(options.start);
+
+            if (options.pips) {
+                pips(options.pips);
+            }
+
+            if (options.tooltips) {
+                tooltips();
+            }
+
+            aria();
+        }
+
+        setupSlider();
 
         // noinspection JSUnusedGlobalSymbols
         scope_Self = {
             destroy: destroy,
-            steps: getCurrentStep,
+            steps: getNextSteps,
             on: bindEvent,
             off: removeEvent,
             get: valueGet,
@@ -2263,16 +2366,6 @@
             removePips: removePips,
             pips: pips // Issue #594
         };
-
-        if (options.pips) {
-            pips(options.pips);
-        }
-
-        if (options.tooltips) {
-            tooltips();
-        }
-
-        aria();
 
         return scope_Self;
     }

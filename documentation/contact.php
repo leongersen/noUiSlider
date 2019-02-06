@@ -38,6 +38,6 @@
 <section>
 
 	<div class="view">
-		<p>Besides noUiSlider, I've written more on tech-related subjects, ranging from PHP to Embedded subjects. Give <a href="/blog/">my blog</a> a try if you are interested!</a>
+        <p>Besides noUiSlider, I've written more on tech-related subjects, ranging from PHP to Embedded subjects. Give <a href="/blog/">my blog</a> a try if you are interested!</a></p>
 	</div>
 </section>

@@ -79,7 +79,7 @@
 		<p>To update any other option, destroy the slider using <code>slider.noUiSlider.destroy()</code> and create a new one. Events are unbound when destroying a slider.</p>
 
 		<p>The update method can be called as:</p>
-		
+
 <pre><code>slider.noUiSlider.updateOptions(
 	newOptions, // Object
 	true // Boolean 'fireSetEvent'
@@ -150,7 +150,7 @@
 <section>
 
 	<div class="view">
-		<p>Styling noUiSlider is easy. The default stylesheet contains helpful comments to get a head start.</p>
+		<p>If you want to style noUiSlider, the default stylesheet contains helpful comments to get a head start.</p>
 
 		<p>It is recommended to use the default stylesheet, overriding where necessary, as a starting point when re-styling noUiSlider.</p>
 
@@ -188,6 +188,10 @@
 					<tr>
 						<td><code>.noUi-handle</code></td>
 						<td>The actual, visible handles. Style these any way you like!</td>
+					</tr>
+					<tr>
+						<td><code>.noUi-touch-area</code></td>
+						<td>An empty div withing <code>.noUi-handle</code>. Can be styled larger if desired.</td>
 					</tr>
 					<tr>
 						<td><code>.noUi-connect</code></td>

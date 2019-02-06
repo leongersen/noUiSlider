@@ -115,6 +115,15 @@
 				<td class="events-no"><span>No</span></td>
 				<td class="events-no"><span>No</span></td>
 			</tr>
+			<tr>
+				<td><span>A handle is moved by arrow keys</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-yes"><span>Yes</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+				<td class="events-no"><span>No</span></td>
+			</tr>
 		</tbody>
 	</table>
 </section>
