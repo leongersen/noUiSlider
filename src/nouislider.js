@@ -1612,6 +1612,15 @@
         // Bind move events on document.
         function eventStart(event, data) {
             var handle;
+            // Disable the slider dragging if any handle is disabled
+            var isAnyHandleDisabled = function (handleNumber) {
+                var handleOrigin = scope_Handles[handleNumber];
+                return handleOrigin.hasAttribute("disabled");
+            }
+            // Ignore event if any handle is disabled
+            if (data.handleNumbers.some(isAnyHandleDisabled)) {
+                return false;
+            }
             if (data.handleNumbers.length === 1) {
                 var handleOrigin = scope_Handles[data.handleNumbers[0]];
 
