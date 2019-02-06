@@ -1,4 +1,4 @@
-/*! nouislider - 12.1.0 - 2/6/2019 */
+/*! nouislider - 13.0.0 - 2/6/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "12.1.0";
+    var VERSION = "13.0.0";
 
     function isValidFormatter(entry) {
         return typeof entry === "object" && typeof entry.to === "function" && typeof entry.from === "function";
