@@ -20,7 +20,7 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changelog
 ---------
 
-### 13.1.0 (*???*)
+### 13.1.0 (*2018-02-08*)
 - Fixed: Updating `pips` using `updateOptions` (#933);
 - Added: Updating `tooltips` using `updateOptions` (#946);
 
