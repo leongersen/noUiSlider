@@ -20,11 +20,11 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changelog
 ---------
 
-### 13.1.0 (*2018-02-08*)
+### 13.1.0 (*2019-02-08*)
 - Fixed: Updating `pips` using `updateOptions` (#933);
 - Added: Updating `tooltips` using `updateOptions` (#946);
 
-### 13.0.0 (*2018-02-06*)
+### 13.0.0 (*2019-02-06*)
 noUiSlider 13 does not include any breaking API changes.
 Keyboard support is now built-in, so any custom implementations should be removed when upgrading.
 Alternatively, built-in keyboard support can be disabled using `keyboardSupport: false`.
