@@ -8,3 +8,6 @@ noUiSlider.create(tooltipSlider, {
         'max': 200
     }
 });
+
+// Remove tooltips:
+// tooltipSlider.noUiSlider.removeTooltips();
