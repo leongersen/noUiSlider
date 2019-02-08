@@ -221,6 +221,11 @@ $description = "Full reference of all options, methods, properties and events in
                 <td><code>slider.noUiSlider.removePips()</code></td>
                 <td><em>[none]</em></td>
             </tr>
+            <tr>
+                <td><a href="/nouislider/slider-options/#section-tooltips">removeTooltips</a></td>
+                <td><code>slider.noUiSlider.removeTooltips()</code></td>
+                <td><em>[none]</em></td>
+            </tr>
             </tbody>
         </table>
     </div>

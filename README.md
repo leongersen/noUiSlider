@@ -20,19 +20,23 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changelog
 ---------
 
+### 13.1.0 (*???*)
+- Fixed: Updating `pips` using `updateOptions` (#933);
+- Added: Updating `tooltips` using `updateOptions` (#946);
+
 ### 13.0.0 (*2018-02-06*)
 noUiSlider 13 does not include any breaking API changes.
 Keyboard support is now built-in, so any custom implementations should be removed when upgrading.
 Alternatively, built-in keyboard support can be disabled using `keyboardSupport: false`.
-- Added: Built-in keyboard support (#724)
-- Added: `.noUi-touch-area` element (#924)
-- Fixed: Dragging a range does not check for handle disabled state (#938)
-- Fixed: Incorrect CSS transform in pips (#931)
+- Added: Built-in keyboard support (#724);
+- Added: `.noUi-touch-area` element (#924);
+- Fixed: Dragging a range does not check for handle disabled state (#938);
+- Fixed: Incorrect CSS transform in pips (#931);
 
 ### 12.1.0 (*2018-10-25*)
-- Added: `unconstrained` behaviour (#747, #815, #913)
-- Added: `setHandle` API (#917)
-- Changed: point to `nouislider.js` in `package.json`.`main` (#921)
+- Added: `unconstrained` behaviour (#747, #815, #913);
+- Added: `setHandle` API (#917);
+- Changed: point to `nouislider.js` in `package.json`.`main` (#921);
 
 ### 12.0.0 (*2018-09-14*) 
 - Change: License changed to MIT;

@@ -72,7 +72,7 @@
 
 	<div class="view">
 
-		<p>noUiSlider has an update method that can change the <code>'margin'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'pips'</code>, <code>'animate'</code> and <code>'snap'</code> options.</p>
+        <p>noUiSlider has an update method that can change the <code>'margin'</code>, <code>'padding'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'pips'</code>, <code>'tooltips'</code>, <code>'animate'</code> and <code>'snap'</code> options.</p>
 
 		<p>All other options require changes to the slider's HTML or event bindings.</p>
 
@@ -87,9 +87,11 @@
 
 		<p>Options that can not be updated will be ignored without errors.</p>
 
+        <p>The value <code>null</code> can be used to unset a previously set value.</p>
+
 		<p>The <code>'update'</code> event fires after updating the slider.</p>
 
-		<p>By default, the sliders <strong>values remain unchanged</strong>. To update the slider values, <code>newOptions</code> may also contain a <code>start</code> property</a> that matches the signature of the <a href="/nouislider/slider-read-write/#section-setting"><code>.set()</code></a> method.</p>
+		<p>By default, the sliders <strong>values remain unchanged</strong>. To update the slider values, <code>newOptions</code> may also contain a <code>start</code> property that matches the signature of the <a href="/nouislider/slider-read-write/#section-setting"><code>.set()</code></a> method.</p>
 
 		<p>The <code>'set'</code> event fires when the slider values are restored. If this is unwanted, you can pass <code>false</code> as the second parameter, <code>fireSetEvent</code>.</p>
 
@@ -99,15 +101,17 @@
 
 		<div class="example">
 			<div id="slider-update"></div>
-			<span class="example-val" id="slider-update-value"></span>
-
-			<button class="update-button" id="update-1">Set range [20, 50]</button>
-			<button class="update-button" id="update-2">Set range [10, 40]</button>
-
-			<?php run('update-setup'); ?>
-			<?php run('update'); ?>
+			<span class="example-val" style="margin-top: 70px;" id="slider-update-value"></span>
+            <button class="update-button" id="update-1">Set range [20, 50]</button>
+            <button class="update-button" id="update-2">Set range [10, 40]</button>
+            <button class="update-button" id="update-3">Tooltips, no Pips</button>
+            <button class="update-button" id="update-4">Pips, no Tooltips</button>
+            <button class="update-button" id="update-5">Add padding</button>
+            <button class="update-button" id="update-6">Remove padding</button>
+            <?php run('update-setup'); ?>
+            <?php run('update'); ?>
 		</div>
-	</div>
+    </div>
 
 	<div class="side">
 

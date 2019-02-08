@@ -957,6 +957,7 @@
         var scope_Handles;
         var scope_Connects;
         var scope_Pips;
+        var scope_Tooltips;
 
         // Override for the 'animate' option
         var scope_ShouldAnimate = true;
@@ -1093,13 +1094,27 @@
             return handleOrigin.hasAttribute("disabled");
         }
 
+        function removeTooltips() {
+            if (scope_Tooltips) {
+                removeEvent("update.tooltips");
+                scope_Tooltips.forEach(function(tooltip) {
+                    if (tooltip) {
+                        removeElement(tooltip);
+                    }
+                });
+                scope_Tooltips = null;
+            }
+        }
+
         // The tooltips option is a shorthand for using the 'update' event.
         function tooltips() {
-            // Tooltips are added with options.tooltips in original order.
-            var tips = scope_Handles.map(addTooltip);
+            removeTooltips();
 
-            bindEvent("update", function(values, handleNumber, unencoded) {
-                if (!tips[handleNumber]) {
+            // Tooltips are added with options.tooltips in original order.
+            scope_Tooltips = scope_Handles.map(addTooltip);
+
+            bindEvent("update.tooltips", function(values, handleNumber, unencoded) {
+                if (!scope_Tooltips[handleNumber]) {
                     return;
                 }
 
@@ -1109,7 +1124,7 @@
                     formattedValue = options.tooltips[handleNumber].to(unencoded[handleNumber]);
                 }
 
-                tips[handleNumber].innerHTML = formattedValue;
+                scope_Tooltips[handleNumber].innerHTML = formattedValue;
             });
         }
 
@@ -2283,10 +2298,22 @@
             // If 'snap' and 'step' are not passed, they should remain unchanged.
             var v = valueGet();
 
-            var updateAble = ["margin", "limit", "padding", "range", "animate", "snap", "step", "format", "pips"];
+            var updateAble = [
+                "margin",
+                "limit",
+                "padding",
+                "range",
+                "animate",
+                "snap",
+                "step",
+                "format",
+                "pips",
+                "tooltips"
+            ];
 
             // Only change options that we're actually passed to update.
             updateAble.forEach(function(name) {
+                // Check for undefined. null removes the value.
                 if (optionsToUpdate[name] !== undefined) {
                     originalOptions[name] = optionsToUpdate[name];
                 }
@@ -2311,6 +2338,15 @@
             // Update pips, removes existing.
             if (options.pips) {
                 pips(options.pips);
+            } else {
+                removePips();
+            }
+
+            // Update tooltips, removes existing.
+            if (options.tooltips) {
+                tooltips();
+            } else {
+                removeTooltips();
             }
 
             // Invalidate the current positioning so valueSet forces an update.
@@ -2363,6 +2399,7 @@
             updateOptions: updateOptions,
             target: scope_Target, // Issue #597
             removePips: removePips,
+            removeTooltips: removeTooltips,
             pips: pips // Issue #594
         };
 
