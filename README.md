@@ -20,6 +20,9 @@ An extensive documentation, including **examples**, **options** and **configurat
 Changelog
 ---------
 
+### 13.1.1 (*2019-02-14*)
+- Fixed: Slider hang when using a zero-length range (#948);
+
 ### 13.1.0 (*2019-02-08*)
 - Fixed: Updating `pips` using `updateOptions` (#933);
 - Added: Updating `tooltips` using `updateOptions` (#946);

@@ -1,4 +1,4 @@
-/*! nouislider - 13.1.0 - 2/8/2019 */
+/*! nouislider - 13.1.1 - 2/14/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,9 @@
 })(function() {
     "use strict";
 
-    var VERSION = "13.1.0";
+    var VERSION = "13.1.1";
+
+    //region Helper Methods
 
     function isValidFormatter(entry) {
         return typeof entry === "object" && typeof entry.to === "function" && typeof entry.from === "function";
@@ -194,7 +196,9 @@
         return window.CSS && CSS.supports && CSS.supports("touch-action", "none");
     }
 
-    // Value calculation
+    //endregion
+
+    //region Range Calculation
 
     // Determine the size of a sub-range in relation to a full range.
     function subRangeRatio(pa, pb) {
@@ -215,8 +219,6 @@
     function isPercentage(range, value) {
         return (value * (range[1] - range[0])) / 100 + range[0];
     }
-
-    // Range conversion
 
     function getJ(value, arr) {
         var j = 1;
@@ -286,8 +288,6 @@
         return xPct[j - 1] + closest(value - xPct[j - 1], xSteps[j - 1]);
     }
 
-    // Entry parsing
-
     function handleEntryPoint(index, value, that) {
         var percentage;
 
@@ -336,7 +336,14 @@
     function handleStepPoint(i, n, that) {
         // Ignore 'false' stepping.
         if (!n) {
-            return true;
+            return;
+        }
+
+        // Step over zero-length ranges (#948);
+        if (that.xVal[i] === that.xVal[i + 1]) {
+            that.xSteps[i] = that.xHighestCompleteStep[i] = that.xVal[i];
+
+            return;
         }
 
         // Factor to range ratio
@@ -350,7 +357,9 @@
         that.xHighestCompleteStep[i] = step;
     }
 
-    // Interface
+    //endregion
+
+    //region Spectrum
 
     function Spectrum(entry, snap, singleStep) {
         this.xPct = [];
@@ -465,6 +474,10 @@
     Spectrum.prototype.convert = function(value) {
         return this.getStep(this.toStepping(value));
     };
+
+    //endregion
+
+    //region Options
 
     /*	Every input option is tested and parsed. This'll prevent
         endless validation in internal methods. These tests are
@@ -944,6 +957,8 @@
 
         return parsed;
     }
+
+    //endregion
 
     function scope(target, options, originalOptions) {
         var actions = getActions();
@@ -1807,6 +1822,9 @@
             if (step === false) {
                 step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown, 10);
             }
+
+            // Step over zero-length ranges (#948);
+            step = Math.max(step, 0.0000001);
 
             // Decrement for down steps
             step = (isDown ? -1 : 1) * step;
