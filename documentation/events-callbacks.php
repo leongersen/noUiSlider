@@ -12,7 +12,7 @@
 		<p>noUiSlider offers several ways to listen to interaction: <code>'update'</code>, <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time. There are also the <code>'start'</code> and <code>'end'</code> events, that fire when a drag is started or ended.</p>
 
 		<p>Events always fire in the following order:</p>
-		
+
 		<p><code>'start'</code> &gt; <code>'slide'</code> &gt; <code>'update'</code> &gt; <code>'change'</code> &gt; <code>'set'</code> &gt; <code>'end'</code></p>
 
 	</div>
@@ -68,11 +68,11 @@
 				<td class="events-no"><span>No</span></td>
 				<td class="events-no"><span>No</span></td>
 				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-no"><span>Yes</span></td>
+				<td class="events-no"><span>No</span></td>
 			</tr>
 			<tr>
 				<td><span>A handle is <strong>released</strong> after dragging</span></td>
-				<td class="events-no"><span>no</span></td>
+				<td class="events-no"><span>No</span></td>
 				<td class="events-no"><span>No</span></td>
 				<td class="events-yes"><span>Yes</span></td>
 				<td class="events-yes"><span>Yes</span></td>
@@ -140,7 +140,7 @@
 		<p>Nested namespaces (<code>'slide.something.else'</code>) are not supported, and are threated as a single namespace (so <code>'.a.b'</code> isn't related to <code>'.a'</code>).</p>
 
 		<p><code>values</code> is an array containing the current slider values, with formatting applied. <code>handle</code> is the index of the handle that caused the event, starting at zero. <code>values[handle]</code> gives the value for the handle that triggered the event.</p>
-		
+
 		<p><code>unencoded</code> contains the slider values without any formatting. </p>
 
 		<p>For all events, <code>this</code> is set to the current slider's API, containing (among others) the <code>.get()</code> and <code>.set()</code> methods.</p>
