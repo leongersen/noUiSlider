@@ -37,6 +37,13 @@ Devices/browsers tested:
 	+ IE10 (Emulated)
 	+ IE9 (Emulated)
 
+Testing
+-------
+
+Cross-browser testing kindly provided by BrowserStack.
+
+[![Tested with BrowserStack](documentation\assets\browserstack-logo-600x315.png)](http://browserstack.com/)
+
 Webpack
 -------
 In order to use this with webpack, the easiest way to work with it is by using the [`ProvidePlugin`](https://webpack.js.org/plugins/provide-plugin/):
