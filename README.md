@@ -42,7 +42,7 @@ Testing
 
 Cross-browser testing kindly provided by BrowserStack.
 
-[![Tested with BrowserStack](documentation\assets\browserstack-logo-600x315.png)](http://browserstack.com/)
+[![Tested with BrowserStack](documentation/assets/browserstack-logo-600x315.png)](http://browserstack.com/)
 
 Webpack
 -------
