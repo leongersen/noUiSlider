@@ -1,5 +1,9 @@
 # Changelog
 
+### 13.1.2 (*2019-03-13*)
+- Fixed: Handle disappears in Safari on tap (#927);
+- Fixed: Disabled slider still accepts keyboard interaction (#953);
+
 ### 13.1.1 (*2019-02-14*)
 - Fixed: Slider hang when using a zero-length range (#948);
 

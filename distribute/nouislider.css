@@ -1,4 +1,4 @@
-/*! nouislider - 13.1.1 - 2/14/2019 */
+/*! nouislider - 13.1.2 - 3/13/2019 */
 /* Functional styling;
  * These styles are required for noUiSlider to function.
  * You don't need to change these rules to apply your design.
@@ -44,7 +44,9 @@
   width: 100%;
   -ms-transform-origin: 0 0;
   -webkit-transform-origin: 0 0;
+  -webkit-transform-style: preserve-3d;
   transform-origin: 0 0;
+  transform-style: flat;
 }
 /* Offset direction
  */
@@ -62,6 +64,8 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-origin {
   height: 0;
 }
 .noUi-handle {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   position: absolute;
 }
 .noUi-touch-area {
