@@ -1103,6 +1103,10 @@
             return addNodeTo(handle.firstChild, options.cssClasses.tooltip);
         }
 
+        function isSliderDisabled() {
+            return scope_Target.hasAttribute("disabled");
+        }
+
         // Disable the slider dragging if any handle is disabled
         function isHandleDisabled(handleNumber) {
             var handleOrigin = scope_Handles[handleNumber];
@@ -1442,7 +1446,7 @@
 
                 // doNotReject is passed by all end events to make sure released touches
                 // are not rejected, leaving the slider "stuck" to the cursor;
-                if (scope_Target.hasAttribute("disabled") && !data.doNotReject) {
+                if (isSliderDisabled() && !data.doNotReject) {
                     return false;
                 }
 
@@ -1782,7 +1786,7 @@
         // Handles keydown on focused handles
         // Don't move the document when pressing arrow keys on focused handles
         function eventKeydown(event, handleNumber) {
-            if (isHandleDisabled(handleNumber)) {
+            if (isSliderDisabled() || isHandleDisabled(handleNumber)) {
                 return false;
             }
 
