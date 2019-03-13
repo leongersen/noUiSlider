@@ -44,7 +44,9 @@
 	width: 100%;
 	-ms-transform-origin: 0 0;
 	-webkit-transform-origin: 0 0;
+	-webkit-transform-style: preserve-3d;
 	transform-origin: 0 0;
+	transform-style: flat;
 }
 /* Offset direction
  */
@@ -63,6 +65,8 @@ html:not([dir="rtl"]) .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin 
 	height: 0;
 }
 .@{noUi-css-prefix}-handle {
+-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
 	position: absolute;
 }
 .@{noUi-css-prefix}-touch-area {
