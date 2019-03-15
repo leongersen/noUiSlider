@@ -974,9 +974,6 @@
         var scope_Pips;
         var scope_Tooltips;
 
-        // Override for the 'animate' option
-        var scope_ShouldAnimate = true;
-
         // Slider state values
         var scope_Spectrum = options.spectrum;
         var scope_Values = [];
@@ -1832,11 +1829,7 @@
             // Decrement for down steps
             step = (isDown ? -1 : 1) * step;
 
-            scope_ShouldAnimate = false;
-
             valueSetHandle(handleNumber, scope_Values[handleNumber] + step, true);
-
-            scope_ShouldAnimate = true;
 
             return false;
         }
@@ -2180,7 +2173,7 @@
 
             // Animation is optional.
             // Make sure the initial values were set before using animated placement.
-            if (options.animate && !isInit && scope_ShouldAnimate) {
+            if (options.animate && !isInit) {
                 addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
             }
 
@@ -2213,8 +2206,6 @@
 
         // Set value for a single handle
         function valueSetHandle(handleNumber, value, fireSetEvent) {
-            var values = [];
-
             // Ensure numeric input
             handleNumber = Number(handleNumber);
 
@@ -2222,13 +2213,14 @@
                 throw new Error("noUiSlider (" + VERSION + "): invalid handle number, got: " + handleNumber);
             }
 
-            for (var i = 0; i < scope_HandleNumbers.length; i++) {
-                values[i] = null;
+            // Look both backward and forward, since we don't want this handle to "push" other handles (#960);
+            setHandle(handleNumber, resolveToValue(value, handleNumber), true, true);
+
+            fireEvent("update", handleNumber);
+
+            if (fireSetEvent) {
+                fireEvent("set", handleNumber);
             }
-
-            values[handleNumber] = value;
-
-            valueSet(values, fireSetEvent);
         }
 
         // Get the slider value.

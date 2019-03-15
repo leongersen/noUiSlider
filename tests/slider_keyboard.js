@@ -84,4 +84,28 @@ QUnit.test("Keyboard support", function (assert) {
 
     down(handle0);
     assert.equal(slider.noUiSlider.get(), '50.00');
+
+    slider.noUiSlider.destroy();
+
+    noUiSlider.create(slider, {
+        start: [1, 6],
+        step: 3,
+        range: {
+            'min': 0,
+            'max': 10
+        }
+    });
+
+    assert.deepEqual(slider.noUiSlider.get(), ['0.00', '6.00']);
+
+    handle0 = slider.querySelector('[data-handle="0"]');
+
+    up(handle0);
+    assert.deepEqual(slider.noUiSlider.get(), ['3.00', '6.00']);
+
+    up(handle0);
+    assert.deepEqual(slider.noUiSlider.get(), ['6.00', '6.00']);
+
+    up(handle0);
+    assert.deepEqual(slider.noUiSlider.get(), ['6.00', '6.00'], 'Handle 0 cannot push past handle 1');
 });
