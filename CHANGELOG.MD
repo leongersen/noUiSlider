@@ -1,5 +1,9 @@
 # Changelog
 
+### 13.1.3 (*2019-03-15*)
+- Fixed: Keyboard interaction allows handles to "push" other handles (#960);
+- Fixed: Update event fires for all handles during keyboard interaction (#960);
+
 ### 13.1.2 (*2019-03-13*)
 - Fixed: Handle disappears in Safari on tap (#927);
 - Fixed: Disabled slider still accepts keyboard interaction (#953);
