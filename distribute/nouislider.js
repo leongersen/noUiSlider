@@ -1,4 +1,4 @@
-/*! nouislider - 13.1.3 - 3/15/2019 */
+/*! nouislider - 13.1.4 - 3/20/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "13.1.3";
+    var VERSION = "13.1.4";
 
     //region Helper Methods
 
@@ -2258,6 +2258,14 @@
             var value = scope_Values[handleNumber];
             var increment = nearbySteps.thisStep.step;
             var decrement = null;
+
+            // If snapped, directly use defined step value
+            if (options.snap) {
+                return [
+                    value - nearbySteps.stepBefore.startValue || null,
+                    nearbySteps.stepAfter.startValue - value || null
+                ];
+            }
 
             // If the next value in this step moves into the next step,
             // the increment is the start of the next step - the current value

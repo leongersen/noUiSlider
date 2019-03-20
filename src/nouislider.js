@@ -2265,7 +2265,7 @@
                     nearbySteps.stepAfter.startValue - value || null
                 ];
             }
-            
+
             // If the next value in this step moves into the next step,
             // the increment is the start of the next step - the current value
             if (increment !== false) {

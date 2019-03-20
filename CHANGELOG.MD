@@ -1,5 +1,8 @@
 # Changelog
 
+### 13.1.4 (*2019-03-20*)
+- Fixed: Keyboard interaction does not work with `snap` option (#961);
+
 ### 13.1.3 (*2019-03-15*)
 - Fixed: Keyboard interaction allows handles to "push" other handles (#960);
 - Fixed: Update event fires for all handles during keyboard interaction (#960);
