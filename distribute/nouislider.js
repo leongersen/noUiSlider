@@ -1,4 +1,4 @@
-/*! nouislider - 13.1.4 - 3/20/2019 */
+/*! nouislider - 13.1.5 - 4/24/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "13.1.4";
+    var VERSION = "13.1.5";
 
     //region Helper Methods
 
@@ -690,7 +690,7 @@
             throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
         }
 
-        if (parsed.padding[0] + parsed.padding[1] >= 100) {
+        if (parsed.padding[0] + parsed.padding[1] > 100) {
             throw new Error("noUiSlider (" + VERSION + "): 'padding' option must not exceed 100% of the range.");
         }
     }
