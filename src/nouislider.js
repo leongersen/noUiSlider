@@ -689,7 +689,7 @@
             throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
         }
 
-        if (parsed.padding[0] + parsed.padding[1] >= 100) {
+        if (parsed.padding[0] + parsed.padding[1] > 100) {
             throw new Error("noUiSlider (" + VERSION + "): 'padding' option must not exceed 100% of the range.");
         }
     }

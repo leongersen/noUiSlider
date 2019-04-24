@@ -1,5 +1,8 @@
 # Changelog
 
+### 13.1.5 (*2019-03-20*)
+- Fixed: Full-range padding (#880);
+
 ### 13.1.4 (*2019-03-20*)
 - Fixed: Keyboard interaction does not work with `snap` option (#961);
 
