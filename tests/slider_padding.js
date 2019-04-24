@@ -64,3 +64,24 @@ QUnit.test("Padding option", function (assert) {
     assert.deepEqual(slider.noUiSlider.get(), ['0.00', '90.00'], 'One of the padding values is 0');
 
 });
+
+QUnit.test("Padding values <= 100%", function (assert) {
+
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
+
+    var settings = {
+        start: [0, 100],
+        padding: [30, 70],
+        range: {
+            'min': 0,
+            'max': 100
+        }
+    };
+
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
+
+    noUiSlider.create(slider, settings);
+
+    assert.deepEqual(slider.noUiSlider.get(), ['30.00', '30.00'], 'Slider values can only be 30');
+
+});
