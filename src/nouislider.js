@@ -408,7 +408,7 @@
     Spectrum.prototype.getMargin = function(value) {
         var step = this.xNumSteps[0];
 
-        if (step && (value / step) % 1 !== 0) {
+        if (step && Math.round(value / step) % 1 !== 0) {
             throw new Error("noUiSlider (" + VERSION + "): 'limit', 'margin' and 'padding' must be divisible by step.");
         }
 

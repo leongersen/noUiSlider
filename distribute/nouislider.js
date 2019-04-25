@@ -1,4 +1,4 @@
-/*! nouislider - 13.1.5 - 4/24/2019 */
+/*! nouislider - 13.1.6 - 4/25/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "13.1.5";
+    var VERSION = "13.1.6";
 
     //region Helper Methods
 
@@ -409,7 +409,7 @@
     Spectrum.prototype.getMargin = function(value) {
         var step = this.xNumSteps[0];
 
-        if (step && (value / step) % 1 !== 0) {
+        if (step && Math.round(value / step) % 1 !== 0) {
             throw new Error("noUiSlider (" + VERSION + "): 'limit', 'margin' and 'padding' must be divisible by step.");
         }
 
