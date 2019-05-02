@@ -33,7 +33,7 @@ $description = "Full reference of all options, methods, properties and events in
                 <td><em>[none]</em></td>
             </tr>
             <tr>
-                <td><a href="/nouislider/slider-values/#section-step">step</a></td>
+                <td><a href="/nouislider/slider-options/#section-step">step</a></td>
                 <td><code>number</code></td>
                 <td><code>false</code></td>
                 <td><em>[none]</em></td>
@@ -282,27 +282,27 @@ $description = "Full reference of all options, methods, properties and events in
             <tbody>
             <tr>
                 <td><a href="/nouislider/events-callbacks/#section-update">update</a></td>
-                <td><a href="event-callback"><em>Event Callback</em></a></td>
+                <td><a href="#event-callback"><em>Event Callback</em></a></td>
             </tr>
             <tr>
                 <td><a href="/nouislider/events-callbacks/#section-slide">slide</a></td>
-                <td><a href="event-callback"><em>Event Callback</em></a></td>
+                <td><a href="#event-callback"><em>Event Callback</em></a></td>
             </tr>
             <tr>
                 <td><a href="/nouislider/events-callbacks/#section-set">set</a></td>
-                <td><a href="event-callback"><em>Event Callback</em></a></td>
+                <td><a href="#event-callback"><em>Event Callback</em></a></td>
             </tr>
             <tr>
                 <td><a href="/nouislider/events-callbacks/#section-change">change</a></td>
-                <td><a href="event-callback"><em>Event Callback</em></a></td>
+                <td><a href="#event-callback"><em>Event Callback</em></a></td>
             </tr>
             <tr>
                 <td><a href="/nouislider/events-callbacks/#section-start">start</a></td>
-                <td><a href="event-callback"><em>Event Callback</em></a></td>
+                <td><a href="#event-callback"><em>Event Callback</em></a></td>
             </tr>
             <tr>
                 <td><a href="/nouislider/events-callbacks/#section-end">end</a></td>
-                <td><a href="event-callback"><em>Event Callback</em></a></td>
+                <td><a href="#event-callback"><em>Event Callback</em></a></td>
             </tr>
             </tbody>
         </table>

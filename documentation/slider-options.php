@@ -245,6 +245,10 @@
 	<div class="view">
 		<p>By default, the slider slides fluently. In order to make the handles jump between intervals, you can use the step option.</p>
 
+        <div class="notice">
+            <p>Note that for non-linear sliders, <code>step</code> values are set as part of the <a href="/nouislider/slider-values/#section-range"><code>range</code> option</a>.</p>
+        </div>
+
 		<div class="example">
 			<div id="slider-step"></div>
 			<?php run('step', false); ?>
