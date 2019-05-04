@@ -1,49 +1,49 @@
 <?php
 
-	chdir(__DIR__.'/..');
+chdir(__DIR__ . '/..');
 
-	$url = strtolower($_SERVER['REQUEST_URI']);
+$url = strtolower($_SERVER['REQUEST_URI']);
 
-	if ( strpos($url, '.js') || strpos($url, '.css') || strpos($url, '.html') ) {
-		return false;
-	}
+if (strpos($url, '.js') || strpos($url, '.css') || strpos($url, '.html')) {
+    return false;
+}
 
-	$request = parse_url($url);
-	$page = rtrim(substr($request['path'], strlen('/nouislider/')), '/');
+$request = parse_url($url);
+$page = rtrim(substr($request['path'], strlen('/nouislider/')), '/');
 
-	if ( !$page ) {
-		$page = 'index';
-	}
+if (!$page) {
+    $page = 'index';
+}
 
-	$file = $page . '.php';
-	$file_menu = '_run/menu.php';
+$file = $page . '.php';
+$file_menu = '_run/menu.php';
 
-	require '_run/helpers.php';
+require '_run/helpers.php';
 
-	if ( !file_exists($file) ){
-		header('HTTP/1.0 404 Not Found');
-		$file = '_run/404.php';
-	}
+if (!file_exists($file)) {
+    header('HTTP/1.0 404 Not Found');
+    $file = '_run/404.php';
+}
 
-	// Defaults
-	$title = "";
-	$description = "";
-    $canonical = "";
+// Defaults
+$title = "";
+$description = "";
+$canonical = "";
 
-	$package = json_decode(file_get_contents('./../package.json'));
-	$version = $package->version;
-	$plain_version = str_replace('.', '', $version);
+$package = json_decode(file_get_contents('./../package.json'));
+$version = $package->version;
+$plain_version = str_replace('.', '', $version);
 
-	ob_start();
+ob_start();
 
-	include $file;
-	$content = ob_get_contents();
+include $file;
+$content = ob_get_contents();
 
-	ob_end_clean();
+ob_end_clean();
 
-	if ($canonical) {
-        $canonical = 'https://refreshless.com'.$canonical;
-    }
+if ($canonical) {
+    $canonical = 'https://refreshless.com' . $canonical;
+}
 
-	$distribute = '/nouislider/distribute';
-	include '_run/index.php';
+$distribute = '/nouislider/distribute';
+include '_run/index.php';
