@@ -1,7 +1,7 @@
 <?php
 	$title = "noUiSlider - Options and settings";
 	$description = "There are many options to make noUiSlider do exactly what you need. Read all about these options and find the one you need.";
-    $canonical = "/nouislider/slider-options/"
+    $canonical = "nouislider/slider-options/"
 ?>
 
 <h1>Options</h1>

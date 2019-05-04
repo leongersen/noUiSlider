@@ -2,7 +2,10 @@
 
 chdir(__DIR__ . '/..');
 
-$url = strtolower($_SERVER['REQUEST_URI']);
+$is_server = isset($_SERVER['REQUEST_URI']);
+$request_url = $is_server ? $_SERVER['REQUEST_URI'] : ('/nouislider/' . $argv[1]);
+
+$url = strtolower($request_url);
 
 if (strpos($url, '.js') || strpos($url, '.css') || strpos($url, '.html')) {
     return false;
@@ -37,13 +40,21 @@ $plain_version = str_replace('.', '', $version);
 ob_start();
 
 include $file;
+
 $content = ob_get_contents();
 
 ob_end_clean();
 
 if ($canonical) {
-    $canonical = 'https://refreshless.com' . $canonical;
+    $canonical = 'https://refreshless.com/' . $canonical;
 }
 
 $distribute = '/nouislider/distribute';
+
+if (!$is_server) {
+    echo "---\n";
+    echo "permalink: " . $canonical . "\n";
+    echo "---\n";
+}
+
 include '_run/index.php';

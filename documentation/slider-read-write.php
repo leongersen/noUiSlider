@@ -1,7 +1,7 @@
 <?php
 	$title = "noUiSlider - Getting and setting slider values";
 	$description = "Reading and setting values from a slider is as easy as reading from any other form element.";
-    $canonical = "/nouislider/slider-read-write/"
+    $canonical = "nouislider/slider-read-write/"
 ?>
 
 <h1>Getting and setting slider values</h1>
