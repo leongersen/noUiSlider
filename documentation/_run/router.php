@@ -45,16 +45,16 @@ $content = ob_get_contents();
 
 ob_end_clean();
 
-if ($canonical) {
-    $canonical = 'https://refreshless.com/' . $canonical;
-}
-
 $distribute = '/nouislider/distribute';
 
 if (!$is_server) {
     echo "---\n";
     echo "permalink: " . $canonical . "\n";
     echo "---\n";
+}
+
+if ($canonical) {
+    $canonical = 'https://refreshless.com/' . $canonical;
 }
 
 include '_run/index.php';
