@@ -1,9 +1,7 @@
 <?php
 	$title = "noUiSlider - Getting and setting slider values";
 	$description = "Reading and setting values from a slider is as easy as reading from any other form element.";
-
-	$title = "noUiSlider - Formatting numbers";
-	$description = "noUiSlider can read and display values formatting using a bunch of options. Read more here.";
+    $canonical = "/nouislider/slider-read-write/"
 ?>
 
 <h1>Getting and setting slider values</h1>

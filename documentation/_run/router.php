@@ -25,9 +25,10 @@
 		$file = '_run/404.php';
 	}
 
-	// Defaults for title and description.
+	// Defaults
 	$title = "";
 	$description = "";
+    $canonical = "";
 
 	$package = json_decode(file_get_contents('./../package.json'));
 	$version = $package->version;
@@ -39,6 +40,10 @@
 	$content = ob_get_contents();
 
 	ob_end_clean();
+
+	if ($canonical) {
+        $canonical = 'https://refreshless.com'.$canonical;
+    }
 
 	$distribute = '/nouislider/distribute';
 	include '_run/index.php';

@@ -16,6 +16,8 @@
 	<link href="<?php echo $distribute; ?>/nouislider.css?v=<?php echo $plain_version; ?>" rel="stylesheet">
 	<script src="<?php echo $distribute; ?>/nouislider.js?v=<?php echo $plain_version; ?>"></script>
 
+	<link rel="canonical" href="<?php echo $canonical; ?>">
+
 </head>
 
 <body class="language-javascript">

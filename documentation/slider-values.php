@@ -1,6 +1,7 @@
 <?php
 	$title = "noUiSlider - Handles and Slider Values";
 	$description = "";
+    $canonical = "/nouislider/slider-values/"
 ?>
 
 <h1>Slider values</h1>
