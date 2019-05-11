@@ -67,7 +67,4 @@
 
 <script src="/nouislider/documentation/assets/prism.js"></script>
 
-<?php $t = $_SERVER['DOCUMENT_ROOT'] . '/private';
-if (file_exists($t)) include $t; ?>
-
 </body>
