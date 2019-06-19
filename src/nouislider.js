@@ -1837,7 +1837,12 @@
             // Decrement for down steps
             step = (isDown ? -1 : 1) * step;
 
-            valueSetHandle(handleNumber, scope_Values[handleNumber] + step, true);
+            setHandle(handleNumber, resolveToValue(scope_Values[handleNumber] + step, handleNumber), true, true);
+
+            fireEvent("slide", handleNumber);
+            fireEvent("update", handleNumber);
+            fireEvent("change", handleNumber);
+            fireEvent("set", handleNumber);
 
             return false;
         }
