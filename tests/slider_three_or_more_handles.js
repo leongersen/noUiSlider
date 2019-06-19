@@ -77,4 +77,9 @@ QUnit.test("Slider with three or more handles", function (assert) {
     simulateMousedown(clickTarget, click2x, clickY);
     assert.deepEqual(slider2.noUiSlider.get(), ["10.00", "17.00", "20.00"], "Expect click nearer middle & right handles to move middle handle");
 
+    slider2.noUiSlider.set([10, 10, 10]);
+
+    simulateMousedown(clickTarget, click2x, clickY);
+    assert.deepEqual(slider2.noUiSlider.get(), ["10.00", "10.00", "17.00"], "Expect click after last handle with all in the same position to move the last handle");
+
 });
