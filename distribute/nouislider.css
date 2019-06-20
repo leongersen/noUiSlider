@@ -1,4 +1,4 @@
-/*! nouislider - 13.1.5 - 4/24/2019 */
+/*! nouislider - 14.0.0 - 6/20/2019 */
 /* Functional styling;
  * These styles are required for noUiSlider to function.
  * You don't need to change these rules to apply your design.
@@ -40,13 +40,19 @@
   z-index: 1;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 100%;
   -ms-transform-origin: 0 0;
   -webkit-transform-origin: 0 0;
   -webkit-transform-style: preserve-3d;
   transform-origin: 0 0;
   transform-style: flat;
+}
+.noUi-connect {
+  height: 100%;
+  width: 100%;
+}
+.noUi-origin {
+  height: 1%;
+  width: 1%;
 }
 /* Offset direction
  */

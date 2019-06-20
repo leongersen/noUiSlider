@@ -1,5 +1,11 @@
 # Changelog
 
+### 14.0.0 (*2019-06-20*)
+- Fixed: `change` & `slide` events should fire on keyboard control (#994);
+- Fixed: `.noUi-origin` overflows document on vertical sliders (#987);
+- Fixed: Clicking to right of handle doesn't move it when it's at the same point as another (#965);
+- Added: Additional documentation on number formatting (#978, #985);
+
 ### 13.1.5 (*2019-04-24*)
 - Fixed: Full-range padding (#880);
 

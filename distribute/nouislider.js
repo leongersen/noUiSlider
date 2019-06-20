@@ -1,4 +1,4 @@
-/*! nouislider - 13.1.5 - 4/24/2019 */
+/*! nouislider - 14.0.0 - 6/20/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "13.1.5";
+    var VERSION = "14.0.0";
 
     //region Helper Methods
 
@@ -1567,8 +1567,8 @@
         }
 
         // Find handle closest to a certain percentage on the slider
-        function getClosestHandle(proposal) {
-            var closest = 100;
+        function getClosestHandle(clickedPosition) {
+            var smallestDifference = 100;
             var handleNumber = false;
 
             scope_Handles.forEach(function(handle, index) {
@@ -1577,11 +1577,19 @@
                     return;
                 }
 
-                var pos = Math.abs(scope_Locations[index] - proposal);
+                var handlePosition = scope_Locations[index];
+                var differenceWithThisHandle = Math.abs(handlePosition - clickedPosition);
 
-                if (pos < closest || (pos === 100 && closest === 100)) {
+                // Initial state
+                var clickAtEdge = differenceWithThisHandle === 100 && smallestDifference === 100;
+
+                // Difference with this handle is smaller than the previously checked handle
+                var isCloser = differenceWithThisHandle < smallestDifference;
+                var isCloserAfter = differenceWithThisHandle <= smallestDifference && clickedPosition > handlePosition;
+
+                if (isCloser || isCloserAfter || clickAtEdge) {
                     handleNumber = index;
-                    closest = pos;
+                    smallestDifference = differenceWithThisHandle;
                 }
             });
 
@@ -1830,7 +1838,12 @@
             // Decrement for down steps
             step = (isDown ? -1 : 1) * step;
 
-            valueSetHandle(handleNumber, scope_Values[handleNumber] + step, true);
+            setHandle(handleNumber, resolveToValue(scope_Values[handleNumber] + step, handleNumber), true, true);
+
+            fireEvent("slide", handleNumber);
+            fireEvent("update", handleNumber);
+            fireEvent("change", handleNumber);
+            fireEvent("set", handleNumber);
 
             return false;
         }
@@ -2080,8 +2093,10 @@
             // Convert the value to the slider stepping/range.
             scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-            var rule = "translate(" + inRuleOrder(transformDirection(to, 0) - scope_DirOffset + "%", "0") + ")";
-            scope_Handles[handleNumber].style[options.transformRule] = rule;
+            var translation = 100 * (transformDirection(to, 0) - scope_DirOffset);
+            var translateRule = "translate(" + inRuleOrder(translation + "%", "0") + ")";
+
+            scope_Handles[handleNumber].style[options.transformRule] = translateRule;
 
             updateConnect(handleNumber);
             updateConnect(handleNumber + 1);
