@@ -46,13 +46,13 @@ $canonical = "nouislider/reference/"
                 <td><code>false</code></td>
             </tr>
             <tr>
-                <td><a href="/nouislider/slider-read-write/#section-formatting">format</a></td>
+                <td><a href="/nouislider/number-formatting/">format</a></td>
                 <td><code>Formatter</code></td>
                 <td><code>false</code></td>
                 <td>Accept all numeric values, output two decimals</td>
             </tr>
             <tr>
-                <td><a href="/nouislider/slider-read-write/#section-formatting">ariaFormat</a></td>
+                <td><a href="/nouislider/number-formatting/#section-aria">ariaFormat</a></td>
                 <td><code>Formatter</code></td>
                 <td><code>false</code></td>
                 <td>Two decimals</td>

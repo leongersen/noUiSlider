@@ -90,45 +90,7 @@
 <section>
 
 	<div class="view">
-
-		<p>To format the slider output, noUiSlider offers a <code>format</code> option. Simply specify <code>to</code> and <code>from</code> functions to encode and decode the values. See <em>manual formatting</em> to the right for usage information.</p>
-
-		<p>By default, noUiSlider will format output with <strong>2 decimals</strong>.</p>
-
-		<p>Manual formatting can be error-prone, so noUiSlider has support for <a href="/wnumb">the wNumb formatting library</a>. wNumb offers a wide range of options and provides number validation.</p>
-
-        <p>Formatting can also be used for the <code>aria-valuenow</code> accessibility attribute using the <code>ariaFormat</code> option.</p>
-
-		<p>Note that if the <code>.to()</code> method returns a <code>Number</code>, noUiSlider's <code>.get()</code> will also return <code>Number</code>s. See <a href="https://github.com/leongersen/noUiSlider/issues/813">this issue </a> for more details.
-		
-		<div class="example">
-			<div id="slider-format"></div>
-			<input title="Formatted number" id="input-format">
-			<?php run('wnumb'); ?>
-			<?php run('format-link'); ?>
-		</div>
-
-	</div>
-
-	<div class="side">
-
-		<div class="viewer-header">Formatting with wNumb</div>
-
-		<div class="viewer-content">
-			<?php code('wnumb'); ?>
-		</div>
-
-		<div class="viewer-header">Manual formatting</div>
-
-		<div class="viewer-content">
-			<?php code('format'); ?>
-		</div>
-
-		<div class="viewer-header">Linking the input field</div>
-
-		<div class="viewer-content">
-			<?php code('format-link'); ?>
-		</div>
+        <p>See <a href="/nouislider/number-formatting/">the documentation on number formatting</a>.</p>
 	</div>
 
 </section>
