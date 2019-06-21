@@ -1,4 +1,4 @@
-/*! nouislider - 14.0.0 - 6/20/2019 */
+/*! nouislider - 14.0.1 - 6/21/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.0.0";
+    var VERSION = "14.0.1";
 
     //region Helper Methods
 
@@ -2093,7 +2093,7 @@
             // Convert the value to the slider stepping/range.
             scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
 
-            var translation = 100 * (transformDirection(to, 0) - scope_DirOffset);
+            var translation = 10 * (transformDirection(to, 0) - scope_DirOffset);
             var translateRule = "translate(" + inRuleOrder(translation + "%", "0") + ")";
 
             scope_Handles[handleNumber].style[options.transformRule] = translateRule;

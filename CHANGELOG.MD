@@ -1,5 +1,8 @@
 # Changelog
 
+### 14.0.1 (*2019-06-21*)
+- Fixed: Visual regression in Safari caused by fixing #987 (#998);
+
 ### 14.0.0 (*2019-06-20*)
 - Fixed: `change` & `slide` events should fire on keyboard control (#994);
 - Fixed: `.noUi-origin` overflows document on vertical sliders (#987);
