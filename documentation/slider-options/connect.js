@@ -2,7 +2,7 @@ var connectSlider = document.getElementById('slider-connect');
 
 noUiSlider.create(connectSlider, {
     start: 40,
-    connect: [true, false],
+    connect: 'lower',
     range: {
         'min': 0,
         'max': 100

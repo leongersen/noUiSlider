@@ -82,14 +82,16 @@
 
 		<p>The connect option can be used to control the bar between the handles or the edges of the slider.</p>
 
-		<p>Pass an <code>array</code> with a <code>boolean</code> for every connecting element, including the edges of the slider. The length of this array must match the handle count + 1.</p>
-
-		<p>Setting <code>true</code> sets the bars between the handles, but not between the handles and the sliders edges.</p>
+		<p>If you are using one handle, set the value to either <code>'upper'</code> or <code>'lower'</code>.
 
 		<div class="example">
 			<div id="slider-connect"></div>
 			<?php run('connect', false); ?>
 		</div>
+
+		<p>For sliders with 2 or more handles, pass an <code>array</code> with a <code>boolean</code> for every connecting element, including the edges of the slider. The length of this array must match the handle count + 1.</p>
+
+		<p>Setting <code>true</code> sets the bars between the handles, but not between the handles and the sliders edges.</p>
 
 		<div class="example">
 			<div id="slider-connect2"></div>
@@ -102,6 +104,8 @@
 
 			<strong>Accepted values</strong>
 			<div>
+				<code>'lower'</code>,<br>
+				<code>'upper'</code>,<br>
 				<code>true</code>,<br>
 				<code>false</code>,<br>
 				<code>array[...]</code>

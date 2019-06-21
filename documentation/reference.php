@@ -59,7 +59,7 @@ $canonical = "nouislider/reference/"
             </tr>
             <tr>
                 <td><a href="/nouislider/slider-options/#section-connect">connect</a></td>
-                <td><code>boolean</code>, array of <code>boolean</code></td>
+                <td><code>string</code>, <code>boolean</code>, array of <code>boolean</code></td>
                 <td><code>false</code></td>
                 <td><code>false</code></td>
             </tr>
