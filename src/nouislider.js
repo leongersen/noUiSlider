@@ -1837,7 +1837,7 @@
             // Decrement for down steps
             step = (isDown ? -1 : 1) * step;
 
-            setHandle(handleNumber, resolveToValue(scope_Values[handleNumber] + step, handleNumber), true, true);
+            setHandle(handleNumber, scope_Spectrum.toStepping(scope_Values[handleNumber] + step), true, true);
 
             fireEvent("slide", handleNumber);
             fireEvent("update", handleNumber);
