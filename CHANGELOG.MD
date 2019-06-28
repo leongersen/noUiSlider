@@ -1,5 +1,8 @@
 # Changelog
 
+### 14.0.2 (*2019-06-28*)
+- Fixed: Keyboard interaction uses formatter when it does not need to (#1000);
+
 ### 14.0.1 (*2019-06-21*)
 - Fixed: Visual regression in Safari caused by fixing #987 (#998);
 

@@ -1,4 +1,4 @@
-/*! nouislider - 14.0.1 - 6/21/2019 */
+/*! nouislider - 14.0.2 - 6/28/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.0.1";
+    var VERSION = "14.0.2";
 
     //region Helper Methods
 
@@ -1838,7 +1838,7 @@
             // Decrement for down steps
             step = (isDown ? -1 : 1) * step;
 
-            setHandle(handleNumber, resolveToValue(scope_Values[handleNumber] + step, handleNumber), true, true);
+            setHandle(handleNumber, scope_Spectrum.toStepping(scope_Values[handleNumber] + step), true, true);
 
             fireEvent("slide", handleNumber);
             fireEvent("update", handleNumber);
