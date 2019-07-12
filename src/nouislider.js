@@ -626,22 +626,24 @@
 
     function testMargin(parsed, entry) {
         if (Array.isArray(entry)) {
-            if (!entry.length || entry.length !== parsed.handles - 1) {
-                throw new Error("noUiSlider (" + VERSION + "): 'margin' option doesn't match handle count.");
-            }
+            testMarginArray(parsed, entry);
+        } else {
+            testMarginNumeric(parsed, entry);
+        }
+    }
 
-            parsed.margin = [];
-            for (var i = 0; i < entry.length; ++i) {
-                if (!isNumeric(entry[i])) {
-                    throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be either number or array of numbers.");
-                }
-
-                testMargin(parsed, entry[i]);
-            }
-
-            return;
+    function testMarginArray(parsed, entry) {
+        if (!entry.length || entry.length !== parsed.handles - 1) {
+            throw new Error("noUiSlider (" + VERSION + "): 'margin' option doesn't match handle count.");
         }
 
+        parsed.margin = [];
+        for (var i = 0; i < entry.length; ++i) {
+            testMarginNumeric(parsed, entry[i]);
+        }
+    }
+
+    function testMarginNumeric(parsed, entry) {
         if (!isNumeric(entry)) {
             throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be either number or array of numbers.");
         }
