@@ -625,8 +625,25 @@
     }
 
     function testMargin(parsed, entry) {
+        if (Array.isArray(entry)) {
+            if (!entry.length || entry.length !== parsed.handles - 1) {
+                throw new Error("noUiSlider (" + VERSION + "): 'margin' option doesn't match handle count.");
+            }
+
+            parsed.margin = [];
+            for (var i = 0; i < entry.length; ++i) {
+                if (!isNumeric(entry[i])) {
+                    throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be either number or array of numbers.");
+                }
+
+                testMargin(parsed, entry[i]);
+            }
+
+            return;
+        }
+
         if (!isNumeric(entry)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be numeric.");
+            throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be either number or array of numbers.");
         }
 
         // Issue #582
@@ -634,9 +651,14 @@
             return;
         }
 
-        parsed.margin = parsed.spectrum.getMargin(entry);
+        var parsedMargin = parsed.spectrum.getMargin(entry);
+        if (Array.isArray(parsed.margin)) {
+            parsed.margin.push(parsedMargin);
+        } else {
+            parsed.margin = parsedMargin;
+        }
 
-        if (!parsed.margin) {
+        if (!parsedMargin) {
             throw new Error("noUiSlider (" + VERSION + "): 'margin' option is only supported on linear sliders.");
         }
     }
@@ -1963,12 +1985,15 @@
             // For sliders with multiple handles, limit movement to the other handle.
             // Apply the margin option by adding it to the handle positions.
             if (scope_Handles.length > 1 && !options.events.unconstrained) {
+                var isIncrese = reference[handleNumber] < to,
+                    margin    = getMargin(handleNumber, isIncrese);
+
                 if (lookBackward && handleNumber > 0) {
-                    to = Math.max(to, reference[handleNumber - 1] + options.margin);
+                    to = Math.max(to, reference[handleNumber - 1] + margin);
                 }
 
                 if (lookForward && handleNumber < scope_Handles.length - 1) {
-                    to = Math.min(to, reference[handleNumber + 1] - options.margin);
+                    to = Math.min(to, reference[handleNumber + 1] - margin);
                 }
             }
 
@@ -2008,6 +2033,23 @@
             }
 
             return to;
+        }
+
+        function getMargin(handleNumber, isIncrese) {
+            if (!Array.isArray(options.margin))
+                return options.margin;
+
+            var i;
+
+            if (handleNumber === 0) {
+                i = 0;
+            } else if (options.margin.length === handleNumber) {
+                i = handleNumber - 1;
+            } else {
+                i = isIncrese ? handleNumber : handleNumber - 1;
+            }
+
+            return options.margin[i];
         }
 
         // Uses slider orientation to create CSS rules. a = base value;

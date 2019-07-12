@@ -82,7 +82,7 @@
 
 		<p>The connect option can be used to control the bar between the handles or the edges of the slider.</p>
 
-		<p>If you are using one handle, set the value to either <code>'upper'</code> or <code>'lower'</code>.
+		<p>If you are using one handle, set the value to either <code>'upper'</code> or <code>'lower'</code>.</p>
 
 		<div class="example">
 			<div id="slider-connect"></div>
@@ -129,7 +129,7 @@
 
 	<div class="view">
 
-		<p>When using two handles, the minimum distance between the handles can be set using the margin option. The margin value is relative to the value set in 'range'. This option is only available on linear sliders.</p>
+		<p>When using two handles or more, the minimum distance between the handles can be set using the margin option. The margin value is relative to the value set in 'range'. This option is only available on linear sliders.</p>
 
 		<div class="example">
 			<div id="slider-margin"></div>
@@ -139,12 +139,21 @@
 			<?php run('margin-link'); ?>
 		</div>
 
+		<p>When using more than 2 handles, you can specify custom margin for each range.</p>
+
+		<div class="example">
+			<div id="slider-margin2"></div>
+			<?php run('margin-array'); ?>
+		</div>
+
 		<div class="options">
 			<strong>Default</strong>
 			<div><em>none</em></div>
 
 			<strong>Accepted values</strong>
-			<div><code>number</code></div>
+			<div><code>number</code>,<br>
+                <code>array[number]</code>
+            </div>
 		</div>
 	</div>
 
@@ -156,6 +165,9 @@
 		<div class="viewer-content">
 			<?php code('margin-link'); ?>
 		</div>
+
+        <br>
+        <?php code('margin-array'); ?>
 	</div>
 
 </section>
