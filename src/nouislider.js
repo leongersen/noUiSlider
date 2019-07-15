@@ -1987,14 +1987,15 @@
             // For sliders with multiple handles, limit movement to the other handle.
             // Apply the margin option by adding it to the handle positions.
             if (scope_Handles.length > 1 && !options.events.unconstrained) {
-                var isIncrese = reference[handleNumber] < to,
-                    margin    = getMargin(handleNumber, isIncrese);
+                var margin;
 
                 if (lookBackward && handleNumber > 0) {
+                    margin = getMargin(handleNumber, false);
                     to = Math.max(to, reference[handleNumber - 1] + margin);
                 }
 
                 if (lookForward && handleNumber < scope_Handles.length - 1) {
+                    margin = getMargin(handleNumber, true);
                     to = Math.min(to, reference[handleNumber + 1] - margin);
                 }
             }
@@ -2037,7 +2038,7 @@
             return to;
         }
 
-        function getMargin(handleNumber, isIncrese) {
+        function getMargin(handleNumber, lookForward) {
             if (!Array.isArray(options.margin))
                 return options.margin;
 
@@ -2048,7 +2049,7 @@
             } else if (options.margin.length === handleNumber) {
                 i = handleNumber - 1;
             } else {
-                i = isIncrese ? handleNumber : handleNumber - 1;
+                i = lookForward ? handleNumber : handleNumber - 1;
             }
 
             return options.margin[i];
