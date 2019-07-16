@@ -2181,8 +2181,7 @@
         // Set the slider value.
         function valueSet(input, fireSetEvent) {
             var values = asArray(input);
-            var isInit = scope_Locations[0] === undefined,
-                i = scope_HandleNumbers.length === 1 ? 0 : 1;
+            var isInit = scope_Locations[0] === undefined;
 
             // Event fires by default
             fireSetEvent = fireSetEvent === undefined ? true : !!fireSetEvent;
@@ -2198,9 +2197,11 @@
                 setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
             });
 
-            for (; i < scope_HandleNumbers.length; ++i) { // Issue #1009
+            var i = scope_HandleNumbers.length === 1 ? 0 : 1;
+            for (; i < scope_HandleNumbers.length; ++i) {
+                // Issue #1009
                 // Second pass. Now that all base values are set, apply constraints
-                scope_HandleNumbers.forEach(function (handleNumber) {
+                scope_HandleNumbers.forEach(function(handleNumber) {
                     setHandle(handleNumber, scope_Locations[handleNumber], true, true);
                 });
             }
