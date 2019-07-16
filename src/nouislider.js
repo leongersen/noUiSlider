@@ -2039,8 +2039,7 @@
         }
 
         function getMargin(handleNumber, lookForward) {
-            if (!Array.isArray(options.margin))
-                return options.margin;
+            if (!Array.isArray(options.margin)) return options.margin;
 
             var i;
 
