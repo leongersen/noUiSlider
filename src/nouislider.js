@@ -2198,9 +2198,10 @@
             });
 
             var i = scope_HandleNumbers.length === 1 ? 0 : 1;
+
+            // Secondary passes. Now that all base values are set, apply constraints.
+            // Iterate all handles to ensure constraints are applied for the entire slider (Issue #1009)
             for (; i < scope_HandleNumbers.length; ++i) {
-                // Issue #1009
-                // Second pass. Now that all base values are set, apply constraints
                 scope_HandleNumbers.forEach(function(handleNumber) {
                     setHandle(handleNumber, scope_Locations[handleNumber], true, true);
                 });

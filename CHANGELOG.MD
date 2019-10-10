@@ -1,5 +1,8 @@
 # Changelog
 
+### 14.0.3 (*2019-10-10*)
+- Fixed: Initialising handle values near the slider edge does not always respect `margin` (#1009);
+
 ### 14.0.2 (*2019-06-28*)
 - Fixed: Keyboard interaction uses formatter when it does not need to (#1000);
 
