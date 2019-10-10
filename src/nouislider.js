@@ -2197,10 +2197,14 @@
                 setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
             });
 
-            // Second pass. Now that all base values are set, apply constraints
-            scope_HandleNumbers.forEach(function(handleNumber) {
-                setHandle(handleNumber, scope_Locations[handleNumber], true, true);
-            });
+            var i = scope_HandleNumbers.length === 1 ? 0 : 1;
+            for (; i < scope_HandleNumbers.length; ++i) {
+                // Issue #1009
+                // Second pass. Now that all base values are set, apply constraints
+                scope_HandleNumbers.forEach(function(handleNumber) {
+                    setHandle(handleNumber, scope_Locations[handleNumber], true, true);
+                });
+            }
 
             setZindex();
 
