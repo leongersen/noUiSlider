@@ -1,6 +1,6 @@
-var tooltipSlider = document.getElementById('slider-joint-tooltips');
+var jointTooltipSlider = document.getElementById('slider-joint-tooltips');
 
-noUiSlider.create(tooltipSlider, {
+noUiSlider.create(jointTooltipSlider, {
     start: [20, 80, 120],
     tooltips: [wNumb({decimals: 1}), true],
     jointTooltips: true,

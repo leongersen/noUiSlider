@@ -983,7 +983,7 @@
         var scope_Pips;
         var scope_Tooltips;
         var scope_JointTooltips;
-        var scope_CollapsingTooltips;
+        var scope_OverlappingTooltips;
 
         // Slider state values
         var scope_Spectrum = options.spectrum;
@@ -1113,45 +1113,44 @@
 
         // create or update joint tooltips and hide or display related tooltips
         function updateJointTooltips() {
-            for (var index in scope_CollapsingTooltips) {
-                var collapsingTooltip = scope_JointTooltips[index];
-                var collapseInfo = scope_CollapsingTooltips[index];
+            for (var index in scope_OverlappingTooltips) {
+                var jointTooltip = scope_JointTooltips[index];
+                var overlapInfo = scope_OverlappingTooltips[index];
 
-                var firstHandleIndex = collapseInfo[0];
-                var secondHandleIndex = collapseInfo[1];
+                var firstHandleIndex = overlapInfo[0];
+                var secondHandleIndex = overlapInfo[1];
 
                 var firstTooltip = scope_Tooltips[firstHandleIndex];
                 var secondTooltip = scope_Tooltips[secondHandleIndex];
 
-                // if collapse info has 3 values, two collapsing tooltips are separated and joint tooltip can be removed
-                // and original tooltips can be visible again
+                // if overlapping tooltips info has 3 values, two overlapping tooltips are separated and joint tooltip
+                // can be removed and original tooltips can be visible again
                 //
-                // else if collapsing tooltip is not existing then create it and gide related tooltips
+                // else if overlapping tooltip is not existing then create it and gide related tooltips
                 //
-                // else update position of collapsing tooltip
-                if (collapseInfo.length === 3) {
+                // else update position of overlapping tooltip
+                if (overlapInfo.length === 3) {
                     firstTooltip.className = options.cssClasses.tooltip;
                     secondTooltip.className = options.cssClasses.tooltip;
-                    collapsingTooltip.remove();
+                    jointTooltip.remove();
                     delete scope_JointTooltips[index];
-                    delete scope_CollapsingTooltips[index];
-                } else if (!collapsingTooltip) {
+                    delete scope_OverlappingTooltips[index];
+                } else if (!jointTooltip) {
                     firstTooltip.className += " noUi-hidden-tooltip";
                     secondTooltip.className += " noUi-hidden-tooltip";
                     var newTooltip = addNodeTo(scope_Handles[index].firstChild, options.cssClasses.tooltip);
                     scope_JointTooltips[index] = newTooltip;
 
                     var location = (scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
-                    newTooltip.style.marginLeft = location * scope_Target.offsetWidth / 100 + "px";
+                    newTooltip.style.marginLeft = (location * scope_Target.offsetWidth) / 100 + "px";
 
-                    var formattedValue = firstTooltip.innerHTML + " - " +
-                        secondTooltip.innerHTML;
+                    var formattedValue = firstTooltip.innerHTML + " - " + secondTooltip.innerHTML;
 
                     newTooltip.className += " noUi-joint-tooltip";
                     newTooltip.innerHTML = formattedValue;
                 } else {
                     var updatedLocation = (scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
-                    collapsingTooltip.style.marginLeft = updatedLocation * scope_Target.offsetWidth / 100 + "px";
+                    jointTooltip.style.marginLeft = (updatedLocation * scope_Target.offsetWidth) / 100 + "px";
                 }
             }
         }
@@ -2165,44 +2164,48 @@
 
         // calculate overlapping tooltips and update the view accordingly
         function checkOverlappingTooltips() {
-            scope_CollapsingTooltips = scope_CollapsingTooltips || {};
+            scope_OverlappingTooltips = scope_OverlappingTooltips || {};
 
             // if scope has tooltips then continue
             if (scope_Tooltips && scope_Tooltips.length) {
-                var tooltipLimits = {limitMap: {}, limits: []};
+                var tooltipLimits = { limitMap: {}, limits: [] };
 
                 // calculate start and end points in x coordinate for each tooltip
                 scope_Locations.forEach(function(location, index) {
                     if (scope_Tooltips[index]) {
-                        var center = scope_Target.offsetWidth * location / 100;
+                        var center = (scope_Target.offsetWidth * location) / 100;
                         var tooltipLength = scope_Tooltips[index].offsetWidth;
-                        tooltipLimits.limits.push({start: center - tooltipLength / 2, end: center + tooltipLength / 2});
+                        tooltipLimits.limits.push({
+                            start: center - tooltipLength / 2,
+                            end: center + tooltipLength / 2
+                        });
                         tooltipLimits.limitMap[tooltipLimits.limits.length - 1] = index;
                     }
                 });
 
                 // if there are at least two tooltip limits then continue
                 if (tooltipLimits.limits.length > 1) {
-
-                    // calculate collapsing tooltips
+                    // calculate overlapping tooltips
                     tooltipLimits.limits.forEach(function(limit, index) {
                         // check if there is a tooltip on right side of current tooltip
                         if (tooltipLimits.limits[index + 1]) {
                             // if end of current tooltip is bigger then start of next tooltip then update scope for
-                            // collapsing tooltips
+                            // overlapping tooltips
                             //
-                            // else if there is a collapsing tooltip data on scope for current tooltip invalidate it
+                            // else if there is a overlapping tooltip data on scope for current tooltip invalidate it
                             if (limit.end > tooltipLimits.limits[index + 1].start) {
-                                scope_CollapsingTooltips[tooltipLimits.limitMap[index]] =
-                                    [tooltipLimits.limitMap[index], tooltipLimits.limitMap[index + 1]];
-                            }  else if (scope_CollapsingTooltips[tooltipLimits.limitMap[index]]) {
-                                scope_CollapsingTooltips[tooltipLimits.limitMap[index]][2] = null;
+                                scope_OverlappingTooltips[tooltipLimits.limitMap[index]] = [
+                                    tooltipLimits.limitMap[index],
+                                    tooltipLimits.limitMap[index + 1]
+                                ];
+                            } else if (scope_OverlappingTooltips[tooltipLimits.limitMap[index]]) {
+                                scope_OverlappingTooltips[tooltipLimits.limitMap[index]][2] = null;
                             }
                         }
                     });
 
-                    // update view for joint tooltips if there are any collapsing tooltips
-                    if (Object.keys(scope_CollapsingTooltips).length) {
+                    // update view for joint tooltips if there are any overlapping tooltips
+                    if (Object.keys(scope_OverlappingTooltips).length) {
                         updateJointTooltips();
                     }
                 }
