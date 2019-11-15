@@ -380,6 +380,37 @@
 </section>
 
 
+<?php sect('jointTooltips'); ?>
+<h2>Joint Tooltips</h2>
+
+<section>
+
+	<div class="view">
+
+		<p>Tooltips can be merged when they are collapsing by using the <code>jointTooltips</code> option. This option only accepts boolean input. By default noUiSlider will not join collapsing tooltips.
+
+		<div class="example overflow">
+			<div id="slider-joint-tooltips"></div>
+			<?php run('jointTooltips'); ?>
+		</div>
+
+		<div class="options">
+			<strong>Default</strong>
+			<div><code>false</code></div>
+
+			<strong>Accepted values</strong>
+			<div><code>false</code>, <code>true</code></div>
+		</div>
+	</div>
+
+	<div class="side">
+
+		<?php code('jointTooltips'); ?>
+	</div>
+
+</section>
+
+
 <?php sect('animate'); ?>
 <h2>Animate</h2>
 
