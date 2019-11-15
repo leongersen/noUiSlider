@@ -387,7 +387,7 @@
 
 	<div class="view">
 
-		<p>Tooltips can be merged when they are collapsing by using the <code>jointTooltips</code> option. This option only accepts boolean input. By default noUiSlider will not join collapsing tooltips.
+		<p>Tooltips can be merged when they are overlapping by using the <code>jointTooltips</code> option. This option only accepts boolean input. By default noUiSlider will not join overlapping tooltips.
 
 		<div class="example overflow">
 			<div id="slider-joint-tooltips"></div>
