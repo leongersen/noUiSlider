@@ -779,6 +779,14 @@
         }
     }
 
+    function testJointTooltips(parsed, entry) {
+        parsed.jointTooltips = entry;
+
+        if (typeof entry !== "boolean") {
+            throw new Error("noUiSlider (" + VERSION + "): 'jointTooltips' option must be a boolean.");
+        }
+    }
+
     function testAriaFormat(parsed, entry) {
         parsed.ariaFormat = entry;
         validateFormat(entry);
@@ -864,6 +872,7 @@
             ariaFormat: { r: false, t: testAriaFormat },
             format: { r: false, t: testFormat },
             tooltips: { r: false, t: testTooltips },
+            jointTooltips: { r: false, t: testJointTooltips },
             keyboardSupport: { r: true, t: testKeyboardSupport },
             documentElement: { r: false, t: testDocumentElement },
             cssPrefix: { r: true, t: testCssPrefix },
@@ -975,6 +984,8 @@
         var scope_Connects;
         var scope_Pips;
         var scope_Tooltips;
+        var scope_JointTooltips;
+        var scope_CollapsingTooltips;
 
         // Slider state values
         var scope_Spectrum = options.spectrum;
@@ -1110,6 +1121,51 @@
             return addNodeTo(handle.firstChild, options.cssClasses.tooltip);
         }
 
+        // create or update joint tooltips and hide or display related tooltips
+        function updateJointTooltips() {
+            for (var index in scope_CollapsingTooltips) {
+                var collapsingTooltip = scope_JointTooltips[index];
+                var collapseInfo = scope_CollapsingTooltips[index];
+
+                var firstHandleIndex = collapseInfo[0];
+                var secondHandleIndex = collapseInfo[1];
+
+                var firstTooltip = scope_Tooltips[firstHandleIndex];
+                var secondTooltip = scope_Tooltips[secondHandleIndex];
+
+                // if collapse info has 3 values, two collapsing tooltips are separated and joint tooltip can be removed
+                // and original tooltips can be visible again
+                //
+                // else if collapsing tooltip is not existing then create it and gide related tooltips
+                //
+                // else update position of collapsing tooltip
+                if (collapseInfo.length === 3) {
+                    firstTooltip.className = options.cssClasses.tooltip;
+                    secondTooltip.className = options.cssClasses.tooltip;
+                    collapsingTooltip.remove();
+                    delete scope_JointTooltips[index];
+                    delete scope_CollapsingTooltips[index];
+                } else if (!collapsingTooltip) {
+                    firstTooltip.className += " noUi-hidden-tooltip";
+                    secondTooltip.className += " noUi-hidden-tooltip";
+                    var newTooltip = addNodeTo(scope_Handles[index].firstChild, options.cssClasses.tooltip);
+                    scope_JointTooltips[index] = newTooltip;
+
+                    var location = (scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
+                    newTooltip.style.marginLeft = location * scope_Target.offsetWidth / 100 + "px";
+
+                    var formattedValue = firstTooltip.innerHTML + " - " +
+                        secondTooltip.innerHTML;
+
+                    newTooltip.className += " noUi-joint-tooltip";
+                    newTooltip.innerHTML = formattedValue;
+                } else {
+                    var updatedLocation = (scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
+                    collapsingTooltip.style.marginLeft = updatedLocation * scope_Target.offsetWidth / 100 + "px";
+                }
+            }
+        }
+
         function isSliderDisabled() {
             return scope_Target.hasAttribute("disabled");
         }
@@ -1138,6 +1194,7 @@
 
             // Tooltips are added with options.tooltips in original order.
             scope_Tooltips = scope_Handles.map(addTooltip);
+            scope_JointTooltips = [];
 
             bindEvent("update.tooltips", function(values, handleNumber, unencoded) {
                 if (!scope_Tooltips[handleNumber]) {
@@ -2132,8 +2189,59 @@
 
             scope_Handles[handleNumber].style[options.transformRule] = translateRule;
 
+            // check for overlapping tooltips if option is activated
+            if (options.jointTooltips) {
+                checkOverlappingTooltips();
+            }
+
             updateConnect(handleNumber);
             updateConnect(handleNumber + 1);
+        }
+
+        // calculate overlapping tooltips and update the view accordingly
+        function checkOverlappingTooltips() {
+            scope_CollapsingTooltips = scope_CollapsingTooltips || {};
+
+            // if scope has tooltips then continue
+            if (scope_Tooltips && scope_Tooltips.length) {
+                var tooltipLimits = {limitMap: {}, limits: []};
+
+                // calculate start and end points in x coordinate for each tooltip
+                scope_Locations.forEach(function(location, index) {
+                    if (scope_Tooltips[index]) {
+                        var center = scope_Target.offsetWidth * location / 100;
+                        var tooltipLength = scope_Tooltips[index].offsetWidth;
+                        tooltipLimits.limits.push({start: center - tooltipLength / 2, end: center + tooltipLength / 2});
+                        tooltipLimits.limitMap[tooltipLimits.limits.length - 1] = index;
+                    }
+                });
+
+                // if there are at least two tooltip limits then continue
+                if (tooltipLimits.limits.length > 1) {
+
+                    // calculate collapsing tooltips
+                    tooltipLimits.limits.forEach(function(limit, index) {
+                        // check if there is a tooltip on right side of current tooltip
+                        if (tooltipLimits.limits[index + 1]) {
+                            // if end of current tooltip is bigger then start of next tooltip then update scope for
+                            // collapsing tooltips
+                            //
+                            // else if there is a collapsing tooltip data on scope for current tooltip invalidate it
+                            if (limit.end > tooltipLimits.limits[index + 1].start) {
+                                scope_CollapsingTooltips[tooltipLimits.limitMap[index]] =
+                                    [tooltipLimits.limitMap[index], tooltipLimits.limitMap[index + 1]];
+                            }  else if (scope_CollapsingTooltips[tooltipLimits.limitMap[index]]) {
+                                scope_CollapsingTooltips[tooltipLimits.limitMap[index]][2] = null;
+                            }
+                        }
+                    });
+
+                    // update view for joint tooltips if there are any collapsing tooltips
+                    if (Object.keys(scope_CollapsingTooltips).length) {
+                        updateJointTooltips();
+                    }
+                }
+            }
         }
 
         // Handles before the slider middle are stacked later = higher,
