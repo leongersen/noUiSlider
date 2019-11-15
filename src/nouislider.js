@@ -1151,7 +1151,7 @@
                     var newTooltip = addNodeTo(scope_Handles[index].firstChild, options.cssClasses.tooltip);
                     scope_JointTooltips[index] = newTooltip;
 
-                    var location = (scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
+                    var location = -(scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
                     newTooltip.style.marginLeft = (location * scope_Target.offsetWidth) / 100 + "px";
 
                     var formattedValue = firstTooltip.innerHTML + " - " + secondTooltip.innerHTML;
@@ -1159,8 +1159,11 @@
                     newTooltip.className += " noUi-joint-tooltip";
                     newTooltip.innerHTML = formattedValue;
                 } else {
-                    var updatedLocation = (scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
+                    var updatedLocation = -(scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
                     jointTooltip.style.marginLeft = (updatedLocation * scope_Target.offsetWidth) / 100 + "px";
+
+                    var updatedValue = firstTooltip.innerHTML + " - " + secondTooltip.innerHTML;
+                    jointTooltip.innerHTML = updatedValue;
                 }
             }
         }
@@ -1207,6 +1210,11 @@
                 }
 
                 scope_Tooltips[handleNumber].innerHTML = formattedValue;
+
+                // check for overlapping tooltips if option is activated
+                if (options.jointTooltips) {
+                    checkOverlappingTooltips();
+                }
             });
         }
 
@@ -2188,11 +2196,6 @@
 
             scope_Handles[handleNumber].style[options.transformRule] = translateRule;
 
-            // check for overlapping tooltips if option is activated
-            if (options.jointTooltips) {
-                checkOverlappingTooltips();
-            }
-
             updateConnect(handleNumber);
             updateConnect(handleNumber + 1);
         }
@@ -2222,16 +2225,16 @@
                 if (tooltipLimits.limits.length > 1) {
                     // calculate overlapping tooltips
                     tooltipLimits.limits.forEach(function(limit, index) {
-                        // check if there is a tooltip on right side of current tooltip
-                        if (tooltipLimits.limits[index + 1]) {
-                            // if end of current tooltip is bigger then start of next tooltip then update scope for
-                            // overlapping tooltips
+                        // check if there is a tooltip on the left side of current tooltip
+                        if (tooltipLimits.limits[index - 1]) {
+                            // if start of current tooltip is smaller then start of previous tooltip then update scope
+                            // for overlapping tooltips
                             //
                             // else if there is a overlapping tooltip data on scope for current tooltip invalidate it
-                            if (limit.end > tooltipLimits.limits[index + 1].start) {
+                            if (limit.start < tooltipLimits.limits[index - 1].end) {
                                 scope_OverlappingTooltips[tooltipLimits.limitMap[index]] = [
-                                    tooltipLimits.limitMap[index],
-                                    tooltipLimits.limitMap[index + 1]
+                                    tooltipLimits.limitMap[index - 1],
+                                    tooltipLimits.limitMap[index]
                                 ];
                             } else if (scope_OverlappingTooltips[tooltipLimits.limitMap[index]]) {
                                 scope_OverlappingTooltips[tooltipLimits.limitMap[index]][2] = null;
