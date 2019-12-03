@@ -507,6 +507,13 @@
         throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
     }
 
+    function testDefault( parsed, entry) {
+        if (!isNumeric(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'default' is not numeric.");
+        }
+    	parsed.default = entry;
+    }
+
     function testStep(parsed, entry) {
         if (!isNumeric(entry)) {
             throw new Error("noUiSlider (" + VERSION + "): 'step' is not numeric.");
@@ -849,6 +856,7 @@
         // Tests are executed in the order they are presented here.
         var tests = {
             step: { r: false, t: testStep },
+        default: { r: false, t: testDefault },
             start: { r: true, t: testStart },
             connect: { r: true, t: testConnect },
             direction: { r: true, t: testDirection },
@@ -1797,27 +1805,45 @@
 
             var horizontalKeys = ["Left", "Right"];
             var verticalKeys = ["Down", "Up"];
-
-            if (options.dir && !options.ort) {
-                // On an right-to-left slider, the left and right keys act inverted
+            var largeStepKeys = [ "PageDown", "PageUp"];
+            var edgeKeys = [ "Home", "End"];
+            
+            if( !options.dir && !options.ort) {
+            	// left to right:
+            	verticalKeys.reverse();
+            	largeStepKeys.reverse();
+            } else if( options.dir && !options.ort) {
+            	// right to left slider: 
                 horizontalKeys.reverse();
-            } else if (options.ort && !options.dir) {
-                // On a top-to-bottom slider, the up and down keys act inverted
-                verticalKeys.reverse();
+            	verticalKeys.reverse();
+            	largeStepKeys.reverse();
+            } else if( !options.dir && options.ort) {
+            	// top down:
+            	verticalKeys.reverse();
+            	largeStepKeys.reverse();
+            } else if( options.dir && options.ort) {
+            	// bottom up: 
+            	edgeKeys.reverse();
             }
 
             // Strip "Arrow" for IE compatibility. https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
             var key = event.key.replace("Arrow", "");
+            
             var isDown = key === verticalKeys[0] || key === horizontalKeys[0];
             var isUp = key === verticalKeys[1] || key === horizontalKeys[1];
-
-            if (!isDown && !isUp) {
+            var isLargeDown = key === largeStepKeys[0];
+            var isLargeUp = key === largeStepKeys[1];
+            var isMin = key === edgeKeys[0];
+            var isMax = key === edgeKeys[1];
+            if (!isDown && !isUp && !isLargeDown && !isLargeUp && !isMin && !isMax) {
                 return true;
             }
 
             event.preventDefault();
 
-            var direction = isDown ? 0 : 1;
+            if( isUp || isDown || isLargeUp || isLargeDown) {
+            var multiplier = 5;
+            var direction = (isDown || isLargeDown)? 0 : 1;
             var steps = getNextStepsForHandle(handleNumber);
             var step = steps[direction];
 
@@ -1828,16 +1854,51 @@
 
             // No step set, use the default of 10% of the sub-range
             if (step === false) {
-                step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown, 10);
+                step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown || isLargeDown, 10);
             }
 
+            if( isLargeUp || isLargeDown) {
+            	step *= multiplier;
+            }
             // Step over zero-length ranges (#948);
             step = Math.max(step, 0.0000001);
 
             // Decrement for down steps
-            step = (isDown ? -1 : 1) * step;
-
+            step = ((isDown || isLargeDown)? -1 : 1) * step;
             setHandle(handleNumber, scope_Spectrum.toStepping(scope_Values[handleNumber] + step), true, true);
+            } else {
+            	// home or end key were pressed
+                var minVal = options.spectrum.xVal[0];
+                var maxVal = options.spectrum.xVal[ options.spectrum.xVal.length -1];
+                var defaultVal = (options.default === undefined) ? minVal : options.default;
+                
+                var currentVal = scope_Values[handleNumber];
+    var targetVal = currentVal;
+    if( defaultVal === minVal || defaultVal === maxVal) {
+    	// ignore defaultVal
+    	if( isMin) {
+    		targetVal = minVal;
+    	} else {
+    		targetVal = maxVal;
+    	}
+    } else {
+    	// check wether set to default value nor to min / max value
+    if( isMax) {
+    	if( currentVal < defaultVal) {
+    		targetVal = defaultVal;
+    	} else {
+    		targetVal = maxVal;
+    	}
+    } else {
+    	if( currentVal > defaultVal) {
+    		targetVal = defaultVal;
+    	} else {
+    		targetVal = minVal;
+    	}
+    }
+    }
+            setHandle(handleNumber, scope_Spectrum.toStepping( targetVal), true, true);
+            }
 
             fireEvent("slide", handleNumber);
             fireEvent("update", handleNumber);
