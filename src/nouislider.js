@@ -892,6 +892,8 @@
                 connects: "connects",
                 ltr: "ltr",
                 rtl: "rtl",
+                textDirectionLtr: "txt-dir-ltr",
+                textDirectionRtl: "txt-dir-rtl",
                 draggable: "draggable",
                 drag: "state-drag",
                 tap: "state-tap",
@@ -1087,6 +1089,14 @@
                 addClass(addTarget, options.cssClasses.horizontal);
             } else {
                 addClass(addTarget, options.cssClasses.vertical);
+            }
+
+            var textDirection = getComputedStyle(addTarget).direction;
+
+            if (textDirection === "ltr") {
+                addClass(addTarget, options.cssClasses.textDirectionLtr);
+            } else {
+                addClass(addTarget, options.cssClasses.textDirectionRtl);
             }
 
             return addNodeTo(addTarget, options.cssClasses.base);

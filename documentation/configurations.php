@@ -1,7 +1,9 @@
 <?php
 $title = "noUiSlider - Configurations";
 $description = "";
+$direction = ($_GET['dir'] ?? null) === 'rtl' ? 'dir="rtl"' : 'ltr';
 ?>
+<html <?php echo $direction; ?>></html>
 
 <style>
 
