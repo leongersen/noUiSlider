@@ -1,5 +1,9 @@
 # Changelog
 
+### 14.1.0 (*2019-12-04*)
+- Fixed: Styling requires a root `html` node, so noUiSlider can't be used in shadow dom (#1035);
+- Added: Support for PageUp/PageDown and Home/End keys in keyboard support (#1036);
+
 ### 14.0.3 (*2019-10-10*)
 - Fixed: Initialising handle values near the slider edge does not always respect `margin` (#1009);
 
