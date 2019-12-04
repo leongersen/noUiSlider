@@ -507,13 +507,6 @@
         throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
     }
 
-    function testDefault(parsed, entry) {
-        if (!isNumeric(entry)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'default' is not numeric.");
-        }
-        parsed.default = entry;
-    }
-
     function testStep(parsed, entry) {
         if (!isNumeric(entry)) {
             throw new Error("noUiSlider (" + VERSION + "): 'step' is not numeric.");
@@ -522,6 +515,13 @@
         // The step option can still be used to set stepping
         // for linear sliders. Overwritten if set in 'range'.
         parsed.singleStep = entry;
+    }
+
+    function testDefaultStep(parsed, entry) {
+        if (!isNumeric(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'defaultStep' option must be numeric.");
+        }
+        parsed.defaultStep = entry;
     }
 
     function testRange(parsed, entry) {
@@ -856,7 +856,7 @@
         // Tests are executed in the order they are presented here.
         var tests = {
             step: { r: false, t: testStep },
-            default: { r: false, t: testDefault },
+            defaultStep: { r: false, t: testDefaultStep },
             start: { r: true, t: testStart },
             connect: { r: true, t: testConnect },
             direction: { r: true, t: testDirection },
@@ -1835,11 +1835,14 @@
             var isLargeUp = key === largeStepKeys[1];
             var isMin = key === edgeKeys[0];
             var isMax = key === edgeKeys[1];
+
             if (!isDown && !isUp && !isLargeDown && !isLargeUp && !isMin && !isMax) {
                 return true;
             }
 
             event.preventDefault();
+
+            var to;
 
             if (isUp || isDown || isLargeUp || isLargeDown) {
                 var multiplier = 5;
@@ -1860,45 +1863,51 @@
                 if (isLargeUp || isLargeDown) {
                     step *= multiplier;
                 }
+
                 // Step over zero-length ranges (#948);
                 step = Math.max(step, 0.0000001);
 
                 // Decrement for down steps
                 step = (isDown || isLargeDown ? -1 : 1) * step;
-                setHandle(handleNumber, scope_Spectrum.toStepping(scope_Values[handleNumber] + step), true, true);
+
+                to = scope_Spectrum.toStepping(scope_Values[handleNumber] + step);
             } else {
                 // home or end key were pressed
                 var minVal = options.spectrum.xVal[0];
                 var maxVal = options.spectrum.xVal[options.spectrum.xVal.length - 1];
-                var defaultVal = options.default === undefined ? minVal : options.default;
+                var defaultStep = options.defaultStep === undefined ? minVal : options.defaultStep;
 
                 var currentVal = scope_Values[handleNumber];
                 var targetVal = currentVal;
-                if (defaultVal === minVal || defaultVal === maxVal) {
-                    // ignore defaultVal
+
+                if (defaultStep === minVal || defaultStep === maxVal) {
+                    // ignore defaultStep
                     if (isMin) {
                         targetVal = minVal;
                     } else {
                         targetVal = maxVal;
                     }
                 } else {
-                    // check wether set to default value nor to min / max value
+                    // check whether set to default value nor to min / max value
                     if (isMax) {
-                        if (currentVal < defaultVal) {
-                            targetVal = defaultVal;
+                        if (currentVal < defaultStep) {
+                            targetVal = defaultStep;
                         } else {
                             targetVal = maxVal;
                         }
                     } else {
-                        if (currentVal > defaultVal) {
-                            targetVal = defaultVal;
+                        if (currentVal > defaultStep) {
+                            targetVal = defaultStep;
                         } else {
                             targetVal = minVal;
                         }
                     }
                 }
-                setHandle(handleNumber, scope_Spectrum.toStepping(targetVal), true, true);
+
+                to = scope_Spectrum.toStepping(targetVal);
             }
+
+            setHandle(handleNumber, to, true, true);
 
             fireEvent("slide", handleNumber);
             fireEvent("update", handleNumber);
