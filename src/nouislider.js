@@ -1808,22 +1808,13 @@
             var largeStepKeys = ["PageDown", "PageUp"];
             var edgeKeys = ["Home", "End"];
 
-            if (!options.dir && !options.ort) {
-                // left to right:
-                verticalKeys.reverse();
-                largeStepKeys.reverse();
-            } else if (options.dir && !options.ort) {
-                // right to left slider:
+            if (options.dir && !options.ort) {
+                // On an right-to-left slider, the left and right keys act inverted
                 horizontalKeys.reverse();
+            } else if (options.ort && !options.dir) {
+                // On a top-to-bottom slider, the up and down keys act inverted
                 verticalKeys.reverse();
                 largeStepKeys.reverse();
-            } else if (!options.dir && options.ort) {
-                // top down:
-                verticalKeys.reverse();
-                largeStepKeys.reverse();
-            } else if (options.dir && options.ort) {
-                // bottom up:
-                edgeKeys.reverse();
             }
 
             // Strip "Arrow" for IE compatibility. https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
