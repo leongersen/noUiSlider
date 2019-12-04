@@ -1853,22 +1853,16 @@
                 // Decrement for down steps
                 step = (isDown ? -1 : 1) * step;
 
-                to = scope_Spectrum.toStepping(scope_Values[handleNumber] + step);
+                to = scope_Values[handleNumber] + step;
+            } else if (isMax) {
+                // End key
+                to = options.spectrum.xVal[options.spectrum.xVal.length - 1];
             } else {
-                // home or end key were pressed
-                var minVal = options.spectrum.xVal[0];
-                var maxVal = options.spectrum.xVal[options.spectrum.xVal.length - 1];
-
-                if (isMax) {
-                    to = maxVal;
-                } else {
-                    to = minVal;
-                }
-
-                to = scope_Spectrum.toStepping(to);
+                // Home key
+                to = options.spectrum.xVal[0];
             }
 
-            setHandle(handleNumber, to, true, true);
+            setHandle(handleNumber, scope_Spectrum.toStepping(to), true, true);
 
             fireEvent("slide", handleNumber);
             fireEvent("update", handleNumber);
