@@ -517,13 +517,6 @@
         parsed.singleStep = entry;
     }
 
-    function testDefaultStep(parsed, entry) {
-        if (!isNumeric(entry)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'defaultStep' option must be numeric.");
-        }
-        parsed.defaultStep = entry;
-    }
-
     function testRange(parsed, entry) {
         // Filter incorrect input.
         if (typeof entry !== "object" || Array.isArray(entry)) {
@@ -856,7 +849,6 @@
         // Tests are executed in the order they are presented here.
         var tests = {
             step: { r: false, t: testStep },
-            defaultStep: { r: false, t: testDefaultStep },
             start: { r: true, t: testStart },
             connect: { r: true, t: testConnect },
             direction: { r: true, t: testDirection },
@@ -1820,14 +1812,14 @@
             // Strip "Arrow" for IE compatibility. https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
             var key = event.key.replace("Arrow", "");
 
-            var isDown = key === verticalKeys[0] || key === horizontalKeys[0];
-            var isUp = key === verticalKeys[1] || key === horizontalKeys[1];
             var isLargeDown = key === largeStepKeys[0];
             var isLargeUp = key === largeStepKeys[1];
+            var isDown = key === verticalKeys[0] || key === horizontalKeys[0] || isLargeDown;
+            var isUp = key === verticalKeys[1] || key === horizontalKeys[1] || isLargeUp;
             var isMin = key === edgeKeys[0];
             var isMax = key === edgeKeys[1];
 
-            if (!isDown && !isUp && !isLargeDown && !isLargeUp && !isMin && !isMax) {
+            if (!isDown && !isUp && !isMin && !isMax) {
                 return true;
             }
 
@@ -1835,9 +1827,9 @@
 
             var to;
 
-            if (isUp || isDown || isLargeUp || isLargeDown) {
+            if (isUp || isDown) {
                 var multiplier = 5;
-                var direction = isDown || isLargeDown ? 0 : 1;
+                var direction = isDown ? 0 : 1;
                 var steps = getNextStepsForHandle(handleNumber);
                 var step = steps[direction];
 
@@ -1848,7 +1840,7 @@
 
                 // No step set, use the default of 10% of the sub-range
                 if (step === false) {
-                    step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown || isLargeDown, 10);
+                    step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown, 10);
                 }
 
                 if (isLargeUp || isLargeDown) {
@@ -1859,43 +1851,21 @@
                 step = Math.max(step, 0.0000001);
 
                 // Decrement for down steps
-                step = (isDown || isLargeDown ? -1 : 1) * step;
+                step = (isDown ? -1 : 1) * step;
 
                 to = scope_Spectrum.toStepping(scope_Values[handleNumber] + step);
             } else {
                 // home or end key were pressed
                 var minVal = options.spectrum.xVal[0];
                 var maxVal = options.spectrum.xVal[options.spectrum.xVal.length - 1];
-                var defaultStep = options.defaultStep === undefined ? minVal : options.defaultStep;
 
-                var currentVal = scope_Values[handleNumber];
-                var targetVal = currentVal;
-
-                if (defaultStep === minVal || defaultStep === maxVal) {
-                    // ignore defaultStep
-                    if (isMin) {
-                        targetVal = minVal;
-                    } else {
-                        targetVal = maxVal;
-                    }
+                if (isMax) {
+                    to = maxVal;
                 } else {
-                    // check whether set to default value nor to min / max value
-                    if (isMax) {
-                        if (currentVal < defaultStep) {
-                            targetVal = defaultStep;
-                        } else {
-                            targetVal = maxVal;
-                        }
-                    } else {
-                        if (currentVal > defaultStep) {
-                            targetVal = defaultStep;
-                        } else {
-                            targetVal = minVal;
-                        }
-                    }
+                    to = minVal;
                 }
 
-                to = scope_Spectrum.toStepping(targetVal);
+                to = scope_Spectrum.toStepping(to);
             }
 
             setHandle(handleNumber, to, true, true);
