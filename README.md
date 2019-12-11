@@ -11,16 +11,27 @@ noUiSlider is a lightweight JavaScript range slider.
 
 License
 -------
-noUiSlider is licensed [MIT](https://choosealicense.com/licenses/mit/). You can use it **for free** and **without any attribution**, in any personal or commercial project.
+noUiSlider is licensed [MIT](https://choosealicense.com/licenses/mit/).
+
+It can be used **for free** and **without any attribution**, in any personal or commercial project.
 
 [Documentation](https://refreshless.com/nouislider/)
 -------
-An extensive documentation, including **examples**, **options** and **configuration details**, is available here: [noUiSlider documentation](https://refreshless.com/nouislider/).
+An extensive documentation, including **examples**, **options** and **configuration details**, is available here:
+
+[noUiSlider documentation](https://refreshless.com/nouislider/).
 
 Contributing
 ------------
 
 See [Contributing](CONTRIBUTING.md).
+
+Sponsorship
+-----------
+
+noUiSlider is a stable project that still receives a lot of feature requests. A lot of these are interesting, but require a good amount of effort to implement, test and document. Sponsorship of this project will allow me to spend some more of my time on these feature requests.
+
+Please consider sponsoring the project by clicking the "❤ Sponsor" button above. Thanks!
 
 Tooling
 -------
