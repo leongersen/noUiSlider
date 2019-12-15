@@ -1,4 +1,4 @@
-/*! nouislider - 14.1.0 - 12/4/2019 */
+/*! nouislider - 14.1.1 - 12/15/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.1.0";
+    var VERSION = "14.1.1";
 
     //region Helper Methods
 
@@ -1094,10 +1094,10 @@
 
             var textDirection = getComputedStyle(addTarget).direction;
 
-            if (textDirection === "ltr") {
-                addClass(addTarget, options.cssClasses.textDirectionLtr);
-            } else {
+            if (textDirection === "rtl") {
                 addClass(addTarget, options.cssClasses.textDirectionRtl);
+            } else {
+                addClass(addTarget, options.cssClasses.textDirectionLtr);
             }
 
             return addNodeTo(addTarget, options.cssClasses.base);

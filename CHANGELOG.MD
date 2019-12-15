@@ -1,5 +1,8 @@
 # Changelog
 
+### 14.1.1 (*2019-12-15*)
+- Fixed: Text direction is not correctly determined when the slider is not in the DOM (#1038);
+
 ### 14.1.0 (*2019-12-04*)
 - Fixed: Styling requires a root `html` node, so noUiSlider can't be used in shadow dom (#1035);
 - Added: Support for PageUp/PageDown and Home/End keys in keyboard support (#1036);
