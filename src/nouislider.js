@@ -1093,10 +1093,10 @@
 
             var textDirection = getComputedStyle(addTarget).direction;
 
-            if (textDirection === "ltr") {
-                addClass(addTarget, options.cssClasses.textDirectionLtr);
-            } else {
+            if (textDirection === "rtl") {
                 addClass(addTarget, options.cssClasses.textDirectionRtl);
+            } else {
+                addClass(addTarget, options.cssClasses.textDirectionLtr);
             }
 
             return addNodeTo(addTarget, options.cssClasses.base);
