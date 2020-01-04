@@ -1,6 +1,7 @@
 <?php
 	$title = "noUiSlider - JavaScript Range Slider";
-	$description = "noUiSlider is a free and lightweight JavaScript range slider with full touch support (iOS, Android, Windows 8). Great for responsive designs, and no dependencies!";
+	$description = "noUiSlider is a free and lightweight JavaScript range slider with multi-touch support (iOS, Android, Windows). Great for responsive designs, and no dependencies!";
+    $canonical = "nouislider/"
 ?>
 
 <section>
@@ -10,16 +11,16 @@
 		<h3 class="quotable">noUiSlider: lightweight JavaScript range slider with full touch support</h3>
 
 		<ul class="pro-list">
-			<li>Responsive design friendly</li>
-			<li>Touch support for iOS, Android &amp; Windows (phone)</li>
-            <li>ARIA support</li>
-			<li>No dependencies!</li>
-			<li>Tested in IE9 - IE11, Edge, Chrome, Opera, Firefox &amp; Safari</li>
+			<li>Multi-Touch support for iOS, Android &amp; Windows (phone)</li>
+            <li>Accessible with ARIA and keyboard support</li>
+            <li>Responsive design friendly</li>
+			<li>No dependencies</li>
+			<li>Tested in IE9 - IE11, Edge, Chrome, Firefox &amp; Safari</li>
 		</ul>
 
 		<a href="/nouislider/download/" class="button">Download noUiSlider</a>
 
-		<p>noUiSlider is a <strong>lightweight</strong> range slider with full touch support and a ton of <strong>features</strong>. It works with pretty much any device, whether it has a mouse, touchscreen or both, and it'll work great in <strong>responsive designs</strong>. Have you tried this documentation on your phone?</p>
+		<p>noUiSlider is a <strong>lightweight</strong> range slider with multi-touch support and a ton of <strong>features</strong>. It supports non-linear ranges, requires no external dependencies, has keyboard support, and it works great in <strong>responsive designs</strong>. Have you tried this documentation on your phone?</p>
 
 		<div class="example" id="showcase" style="margin: 0 20px;">
 

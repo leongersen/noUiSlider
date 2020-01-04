@@ -1,6 +1,7 @@
 <?php
 	$title = "noUiSlider - Options and settings";
 	$description = "There are many options to make noUiSlider do exactly what you need. Read all about these options and find the one you need.";
+    $canonical = "nouislider/slider-options/"
 ?>
 
 <h1>Options</h1>
@@ -81,14 +82,16 @@
 
 		<p>The connect option can be used to control the bar between the handles or the edges of the slider.</p>
 
-		<p>Pass an <code>array</code> with a <code>boolean</code> for every connecting element, including the edges of the slider. The length of this array must match the handle count + 1.</p>
-
-		<p>Setting <code>true</code> sets the bars between the handles, but not between the handles and the sliders edges.</p>
+		<p>If you are using one handle, set the value to either <code>'upper'</code> or <code>'lower'</code>.
 
 		<div class="example">
 			<div id="slider-connect"></div>
 			<?php run('connect', false); ?>
 		</div>
+
+		<p>For sliders with 2 or more handles, pass an <code>array</code> with a <code>boolean</code> for every connecting element, including the edges of the slider. The length of this array must match the handle count + 1.</p>
+
+		<p>Setting <code>true</code> sets the bars between the handles, but not between the handles and the sliders edges.</p>
 
 		<div class="example">
 			<div id="slider-connect2"></div>
@@ -101,6 +104,8 @@
 
 			<strong>Accepted values</strong>
 			<div>
+				<code>'lower'</code>,<br>
+				<code>'upper'</code>,<br>
 				<code>true</code>,<br>
 				<code>false</code>,<br>
 				<code>array[...]</code>
@@ -245,6 +250,10 @@
 	<div class="view">
 		<p>By default, the slider slides fluently. In order to make the handles jump between intervals, you can use the step option.</p>
 
+        <div class="notice">
+            <p>Note that for non-linear sliders, <code>step</code> values are set as part of the <a href="/nouislider/slider-values/#section-range"><code>range</code> option</a>.</p>
+        </div>
+
 		<div class="example">
 			<div id="slider-step"></div>
 			<?php run('step', false); ?>
@@ -345,7 +354,9 @@
 
 	<div class="view">
 
-		<p>noUiSlider can provide a basic tooltip using the <code>tooltips</code> option. This option can also accept <a href="/nouislider/slider-read-write/#section-formatting">formatting options</a> to format the tooltips content. In that case, pass an <code>array</code> with a formatter for each handle, <code>true</code> to use the default or <code>false</code> to display no tooltip.</p>
+		<p>noUiSlider can provide a basic tooltip using the <code>tooltips</code> option. This option can also accept <a href="/nouislider/number-formatting/">formatting options</a> to format the tooltips content. In that case, pass an <code>array</code> with a formatter for each handle, <code>true</code> to use the default or <code>false</code> to display no tooltip.</p>
+
+        <p>Tooltips can be removed from a slider using the <code>removeTooltips()</code> method.</p>
 
 		<div class="example overflow">
 			<div id="slider-tooltips"></div>
@@ -423,10 +434,12 @@
 
     <div class="view">
 
-        <p>Handles in the slider can receive keyboard focus by default. This can be turned off.</p>
+        <p>Handles in the slider can receive keyboard focus and be moved by arrow keys.</p>
 
-        <p><a href="/nouislider/examples/#section-keyboard">Example: Adding keyboard support</a></p>
-        <p><a href="/nouislider/examples/#section-keypress">Example: Using the <code>.steps()</code> API to determine the next step value</a></p>
+        <p>When moved by the arrow keys on a keyboard, handles obey the <code>step</code> value for the range they are in.
+            When moving in a range that has no <code>step</code> value set, handles move by 10% of the range they are in.</p>
+
+        <p>Keyboard support can be disabled:</p>
 
         <div class="example overflow">
             <div id="slider-keyboard"></div>

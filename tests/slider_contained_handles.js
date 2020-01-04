@@ -1,14 +1,3 @@
-function simulateMousedown(clickTarget, x, y) {
-    // Based on https://stackoverflow.com/a/19570419/1367431
-    var clickEvent = document.createEvent('MouseEvents');
-    clickEvent.initMouseEvent(
-        'mousedown', true, true, window, 0,
-        0, 0, x, y, false, false,
-        false, false, 0, null
-    );
-    clickTarget.dispatchEvent(clickEvent);
-}
-
 QUnit.test("Slider with contained handles", function (assert) {
 
     document.getElementById('qunit-fixture').innerHTML = '\

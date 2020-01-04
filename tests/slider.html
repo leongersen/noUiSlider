@@ -23,7 +23,18 @@
     <script src="../distribute/nouislider.js" data-cover></script>
 
     <script src="https://code.jquery.com/qunit/qunit-2.6.2.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsdom-simulant@1.1.2/dist/jsdom-simulant.umd.min.js"></script>
+    <script>
+        function simulateMousedown(clickTarget, x, y) {
+            // Based on https://stackoverflow.com/a/19570419/1367431
+            var clickEvent = document.createEvent('MouseEvents');
+            clickEvent.initMouseEvent(
+                'mousedown', true, true, window, 0,
+                0, 0, x, y, false, false,
+                false, false, 0, null
+            );
+            clickTarget.dispatchEvent(clickEvent);
+        }
+    </script>
 </head>
 
 <body>
@@ -38,6 +49,7 @@
 <script src="slider_step.js"></script>
 <script src="slider_step_margin.js"></script>
 <script src="slider_aria.js"></script>
+<script src="slider_keyboard.js"></script>
 <script src="slider_rtl.js"></script>
 <script src="slider_rtl2.js"></script>
 <script src="slider_rtl_update_options.js"></script>
@@ -46,6 +58,7 @@
 <script src="slider_setting-getting.js"></script>
 <script src="slider_update.js"></script>
 <script src="slider_get-step.js"></script>
+<script src="slider_init_max.js"></script>
 <script src="slider_unordered.js"></script>
 <script src="slider_errors.js"></script>
 <script src="slider_binding.js"></script>

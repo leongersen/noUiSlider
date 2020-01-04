@@ -1,9 +1,9 @@
-var keypressSlider = document.getElementById('keypress');
+var stepsSlider = document.getElementById('steps-slider');
 var input0 = document.getElementById('input-with-keypress-0');
 var input1 = document.getElementById('input-with-keypress-1');
 var inputs = [input0, input1];
 
-noUiSlider.create(keypressSlider, {
+noUiSlider.create(stepsSlider, {
     start: [20, 80],
     connect: true,
     tooltips: [true, wNumb({decimals: 1})],
@@ -16,6 +16,6 @@ noUiSlider.create(keypressSlider, {
     }
 });
 
-keypressSlider.noUiSlider.on('update', function (values, handle) {
+stepsSlider.noUiSlider.on('update', function (values, handle) {
     inputs[handle].value = values[handle];
 });

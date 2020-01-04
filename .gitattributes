@@ -1,0 +1,9 @@
+* text=auto
+
+*.js text eol=lf
+*.less text eol=lf
+*.css text eol=lf
+*.php text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.json text eol=lf

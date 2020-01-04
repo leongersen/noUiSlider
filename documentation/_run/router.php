@@ -1,44 +1,60 @@
 <?php
 
-	chdir(__DIR__.'/..');
+chdir(__DIR__ . '/..');
 
-	$url = strtolower($_SERVER['REQUEST_URI']);
+$is_server = isset($_SERVER['REQUEST_URI']);
+$request_url = $is_server ? $_SERVER['REQUEST_URI'] : ('/nouislider/' . $argv[1]);
 
-	if ( strpos($url, '.js') || strpos($url, '.css') || strpos($url, '.html') ) {
-		return false;
-	}
+$url = strtolower($request_url);
 
-	$request = parse_url($url);
-	$page = rtrim(substr($request['path'], strlen('/nouislider/')), '/');
+if (strpos($url, '.js') || strpos($url, '.css') || strpos($url, '.html')) {
+    return false;
+}
 
-	if ( !$page ) {
-		$page = 'index';
-	}
+$request = parse_url($url);
+$page = rtrim(substr($request['path'], strlen('/nouislider/')), '/');
 
-	$file = $page . '.php';
-	$file_menu = '_run/menu.php';
+if (!$page) {
+    $page = 'index';
+}
 
-	require '_run/helpers.php';
+$file = $page . '.php';
+$file_menu = '_run/menu.php';
 
-	if ( !file_exists($file) ){
-		header('HTTP/1.0 404 Not Found');
-		$file = '_run/404.php';
-	}
+require '_run/helpers.php';
 
-	// Defaults for title and description.
-	$title = "";
-	$description = "";
+if (!file_exists($file)) {
+    header('HTTP/1.0 404 Not Found');
+    $file = '_run/404.php';
+}
 
-	$package = json_decode(file_get_contents('./../package.json'));
-	$version = $package->version;
-	$plain_version = str_replace('.', '', $version);
+// Defaults
+$title = "";
+$description = "";
+$canonical = "";
 
-	ob_start();
+$package = json_decode(file_get_contents('./../package.json'));
+$version = $package->version;
+$plain_version = str_replace('.', '', $version);
 
-	include $file;
-	$content = ob_get_contents();
+ob_start();
 
-	ob_end_clean();
+include $file;
 
-	$distribute = '/nouislider/distribute';
-	include '_run/index.php';
+$content = ob_get_contents();
+
+ob_end_clean();
+
+$distribute = '/nouislider/distribute';
+
+if (!$is_server) {
+    echo "---\n";
+    echo "permalink: " . $canonical . "\n";
+    echo "---\n";
+}
+
+if ($canonical) {
+    $canonical = 'https://refreshless.com/' . $canonical;
+}
+
+include '_run/index.php';

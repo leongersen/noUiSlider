@@ -6,6 +6,7 @@ noUiSlider.create(updateSlider, {
         'min': 0,
         'max': 40
     },
+    padding: 6,
     start: 20,
     margin: 2,
     step: 2

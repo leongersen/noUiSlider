@@ -18,7 +18,6 @@
 }
 .@{noUi-css-prefix}-target {
 	position: relative;
-	direction: ltr;
 }
 .@{noUi-css-prefix}-base,
 .@{noUi-css-prefix}-connects {
@@ -39,18 +38,27 @@
 	position: absolute;
 	z-index: 1;
 	top: 0;
-	left: 0;
-	height: 100%;
-	width: 100%;
+	right: 0;
 	-ms-transform-origin: 0 0;
 	-webkit-transform-origin: 0 0;
+	-webkit-transform-style: preserve-3d;
 	transform-origin: 0 0;
+	transform-style: flat;
 }
+.@{noUi-css-prefix}-connect {
+	height: 100%;
+	width: 100%;
+}
+.@{noUi-css-prefix}-origin {
+	height: 10%;
+	width: 10%;
+}
+
 /* Offset direction
  */
-html:not([dir="rtl"]) .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin {
-	left: auto;
-	right: 0;
+.@{noUi-css-prefix}-txt-dir-rtl.@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin {
+	left: 0;
+	right: auto;
 }
 
 /* Give origins 0 height/width so they don't interfere with clicking the
@@ -63,7 +71,13 @@ html:not([dir="rtl"]) .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin 
 	height: 0;
 }
 .@{noUi-css-prefix}-handle {
+-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
 	position: absolute;
+}
+.@{noUi-css-prefix}-touch-area {
+	height: 100%;
+	width: 100%;
 }
 .@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-connect,
 .@{noUi-css-prefix}-state-tap .@{noUi-css-prefix}-origin {
@@ -82,7 +96,7 @@ html:not([dir="rtl"]) .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin 
 .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-handle {
 	width: 34px;
 	height: 28px;
-	left: -17px;
+	right: -17px;
 	top: -6px;
 }
 .@{noUi-css-prefix}-vertical {
@@ -91,12 +105,12 @@ html:not([dir="rtl"]) .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin 
 .@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-handle {
 	width: 28px;
 	height: 34px;
-	left: -6px;
+	right: -6px;
 	top: -17px;
 }
-html:not([dir="rtl"]) .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-handle {
-	right: -17px;
-	left: auto;
+.@{noUi-css-prefix}-txt-dir-rtl.@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-handle {
+	left: -17px;
+	right: auto;
 }
 
 /* Styling;

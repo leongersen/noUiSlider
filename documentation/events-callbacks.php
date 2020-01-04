@@ -1,6 +1,7 @@
 <?php
 	$title = "noUiSlider - Events and callbacks";
 	$description = "Listen to everything that happens, and run your code when you want too. noUiSlider has a bunch of events and callbacks. Read all about them!";
+    $canonical = "nouislider/events-callbacks/"
 ?>
 
 <h1>Events</h1>
@@ -12,7 +13,7 @@
 		<p>noUiSlider offers several ways to listen to interaction: <code>'update'</code>, <code>'change'</code>, <code>'set'</code> and <code>'slide'</code>. You can use these events all at the same time. There are also the <code>'start'</code> and <code>'end'</code> events, that fire when a drag is started or ended.</p>
 
 		<p>Events always fire in the following order:</p>
-		
+
 		<p><code>'start'</code> &gt; <code>'slide'</code> &gt; <code>'update'</code> &gt; <code>'change'</code> &gt; <code>'set'</code> &gt; <code>'end'</code></p>
 
 	</div>
@@ -52,68 +53,77 @@
 		<thead>
 			<tr>
 				<th>&nbsp;</th>
-				<th width="65">Update</th>
-				<th width="65">Slide</th>
-				<th width="65">Set</th>
-				<th width="65">Change</th>
-				<th width="65">Start</th>
-				<th width="65">End</th>
+                <th width="80">Start</th>
+                <th width="80">Slide</th>
+                <th width="80">Update</th>
+                <th width="80">Change</th>
+                <th width="80">Set</th>
+				<th width="80">End</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td><span>A handle is <strong>activated</strong>, starting dragging</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-no"><span>Yes</span></td>
+                <td class="events-yes" title="Start"><span>Yes</span></td>
+                <td class="events-no" title="Slide"><span>No</span></td>
+                <td class="events-no" title="Update"><span>No</span></td>
+                <td class="events-no" title="Change"><span>No</span></td>
+                <td class="events-no" title="Set"><span>No</span></td>
+				<td class="events-no" title="End"><span>No</span></td>
 			</tr>
 			<tr>
 				<td><span>A handle is <strong>released</strong> after dragging</span></td>
-				<td class="events-no"><span>no</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-			</tr>
-			<tr>
-				<td><span>A slider is moved by <strong>tapping</strong> it</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
+                <td class="events-no" title="Start"><span>No</span></td>
+                <td class="events-no" title="Slide"><span>No</span></td>
+                <td class="events-no" title="Update"><span>No</span></td>
+                <td class="events-yes" title="Change"><span>Yes</span></td>
+                <td class="events-yes" title="Set"><span>Yes</span></td>
+				<td class="events-yes" title="End"><span>Yes</span></td>
 			</tr>
 			<tr>
 				<td><span>A handle moves while <strong>dragging</strong></span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
+                <td class="events-no" title="Start"><span>No</span></td>
+                <td class="events-yes" title="Slide"><span>Yes</span></td>
+                <td class="events-yes" title="Update"><span>Yes</span></td>
+                <td class="events-no" title="Change"><span>No</span></td>
+                <td class="events-no" title="Set"><span>No</span></td>
+				<td class="events-no" title="End"><span>No</span></td>
 			</tr>
 			<tr>
 				<td><span>The <strong><code>.set()</code></strong> method is called</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
+                <td class="events-no" title="Start"><span>No</span></td>
+                <td class="events-no" title="Slide"><span>No</span></td>
+                <td class="events-yes" title="Update"><span>Yes</span></td>
+                <td class="events-no" title="Change"><span>No</span></td>
+                <td class="events-yes" title="Set"><span>Yes</span></td>
+				<td class="events-no" title="End"><span>No</span></td>
 			</tr>
 			<tr>
 				<td><span>When bound using the <strong><code>.on()</code></strong> method</span></td>
-				<td class="events-yes"><span>Yes</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
-				<td class="events-no"><span>No</span></td>
+                <td class="events-no" title="Start"><span>No</span></td>
+                <td class="events-no" title="Slide"><span>No</span></td>
+                <td class="events-yes" title="Update"><span>Yes</span></td>
+                <td class="events-no" title="Change"><span>No</span></td>
+                <td class="events-no" title="Set"><span>No</span></td>
+				<td class="events-no" title="End"><span>No</span></td>
+			</tr>
+            <tr>
+                <td><span>A slider is moved by <strong>tapping</strong> it</span></td>
+                <td class="events-no" title="Start"><span>No</span></td>
+                <td class="events-yes" title="Slide"><span>Yes</span></td>
+                <td class="events-yes" title="Update"><span>Yes</span></td>
+                <td class="events-yes" title="Change"><span>Yes</span></td>
+                <td class="events-yes" title="Set"><span>Yes</span></td>
+                <td class="events-no" title="End"><span>No</span></td>
+            </tr>
+			<tr>
+				<td><span>A handle is moved by arrow keys</span></td>
+                <td class="events-no" title="Start"><span>No</span></td>
+                <td class="events-yes" title="Slide"><span>Yes</span></td>
+                <td class="events-yes" title="Update"><span>Yes</span></td>
+                <td class="events-yes" title="Change"><span>Yes</span></td>
+                <td class="events-yes" title="Set"><span>Yes</span></td>
+				<td class="events-no" title="End"><span>No</span></td>
 			</tr>
 		</tbody>
 	</table>
@@ -131,7 +141,7 @@
 		<p>Nested namespaces (<code>'slide.something.else'</code>) are not supported, and are threated as a single namespace (so <code>'.a.b'</code> isn't related to <code>'.a'</code>).</p>
 
 		<p><code>values</code> is an array containing the current slider values, with formatting applied. <code>handle</code> is the index of the handle that caused the event, starting at zero. <code>values[handle]</code> gives the value for the handle that triggered the event.</p>
-		
+
 		<p><code>unencoded</code> contains the slider values without any formatting. </p>
 
 		<p>For all events, <code>this</code> is set to the current slider's API, containing (among others) the <code>.get()</code> and <code>.set()</code> methods.</p>
@@ -181,7 +191,7 @@
 <section>
 
 	<div class="view">
-		<p>This event is similar to the <code>'change'</code> events on regular <code>&lt;input&gt;</code> elements. It fires when a user <em>stops</em> sliding, or when a slider value is changed by 'tap'.</p>
+		<p>This event is similar to the <code>'change'</code> events on regular <code>&lt;input&gt;</code> elements. It fires when a user <em>stops</em> sliding, when a slider value is changed by 'tap', or on keyboard interaction.</p>
 	</div>
 </section>
 

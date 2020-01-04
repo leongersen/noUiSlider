@@ -1,6 +1,7 @@
 <?php
 	$title = "noUiSlider - Handles and Slider Values";
 	$description = "";
+    $canonical = "nouislider/slider-values/"
 ?>
 
 <h1>Slider values</h1>
@@ -137,7 +138,11 @@
 <section>
 
 	<div class="view">
-		<p>For every subrange in a non-linear slider, stepping can be set. Note how in the example below the slider doesn't step until it reaches <code>500</code>. From there on, it changes in increments of <code>500</code>, until it reaches <code>4000</code>, where increments now span <code>1000</code>.</p>
+		<p>For every sub-range in a non-linear slider, stepping can be set. Note how in the example below the slider doesn't step until it reaches <code>500</code>. From there on, it changes in increments of <code>500</code>, until it reaches <code>4000</code>, where increments now span <code>1000</code>.</p>
+
+        <div class="notice">
+            <p>Note that the <a href="/nouislider/slider-options/#section-step"><code>step</code> option</a>, when set, only applies to the first sub-range.</p>
+        </div>
 
 		<div class="example">
 			<div id="slider-non-linear-step"></div>

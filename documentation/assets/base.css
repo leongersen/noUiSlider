@@ -349,6 +349,10 @@
 		color: #0c5460;
 		padding: 5px 15px;
 	}
+	.notice a {
+		color: inherit;
+		text-decoration: underline;
+	}
 
 	.reference-table {
 		width: 100%;

@@ -70,11 +70,7 @@ QUnit.test("Binding", function (assert) {
     // Do this async, because we can't click the slider before it paints.
     setTimeout(function () {
 
-        simulant.fire(slider.querySelectorAll('.noUi-origin')[1], 'mousedown', {
-            button: 1, // middle-click
-            clientX: offset(slider).left + 100,
-            clientY: offset(slider).top + 8
-        });
+        simulateMousedown(slider.querySelectorAll('.noUi-origin')[1], offset(slider).left + 100, offset(slider).top + 8);
 
         slider.noUiSlider.off('.namespace');
 

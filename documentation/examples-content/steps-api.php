@@ -1,5 +1,5 @@
-<?php sect('keypress'); ?>
-<h1>Changing the slider by key press</h1>
+<?php sect('steps-api'); ?>
+<h1>Using the steps API</h1>
 
 <section>
 
@@ -11,14 +11,12 @@
 
 		<p>We'll listen to keydown on the input element, and pass the event to a function so we can read the code that identifies the key.</p>
 
-		<p>Note that the slider value will be a <code>string</code>, so we'll need to parse it to an integer.</p>
-
 		<div class="example">
-			<div id="keypress"></div>
+			<div id="steps-slider"></div>
 			<input type="text" id="input-with-keypress-1">
 			<input type="text" id="input-with-keypress-0">
-			<?php run('keypress-slider'); ?>
-			<?php run('keypress-event'); ?>
+			<?php run('steps-slider'); ?>
+			<?php run('steps-event'); ?>
 		</div>
 	</div>
 
@@ -27,13 +25,13 @@
 		<div class="viewer-header">Initializing the slider and linking the input</div>
 
 		<div class="viewer-content">
-			<?php code('keypress-slider'); ?>
+			<?php code('steps-slider'); ?>
 		</div>
 
 		<div class="viewer-header">Listen to <code>keypress</code> on the input</div>
 
 		<div class="viewer-content">
-			<?php code('keypress-event'); ?>
+			<?php code('steps-event'); ?>
 		</div>
 
 	</div>
