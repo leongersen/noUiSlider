@@ -1123,6 +1123,12 @@
                 var firstTooltip = scope_Tooltips[firstHandleIndex];
                 var secondTooltip = scope_Tooltips[secondHandleIndex];
 
+                // determine transform direction and offset type based on slider orientation,
+                // if slider is horizontal then tooltips overlaps in x direction,
+                // if slider is vertical then tooltips overlaps in y direction.
+                var transformDirection = options.ort === 0 ? "translateX" : "translateY";
+                var offsetType = options.ort === 0 ? "offsetWidth" : "offsetHeight";
+
                 // if overlapping tooltips info has 3 values, two overlapping tooltips are separated and joint tooltip
                 // can be removed and original tooltips can be visible again
                 //
@@ -1132,7 +1138,7 @@
                 if (overlapInfo.length === 3) {
                     firstTooltip.className = options.cssClasses.tooltip;
                     secondTooltip.className = options.cssClasses.tooltip;
-                    jointTooltip.remove();
+                    jointTooltip.parentNode.removeChild(jointTooltip);
                     delete scope_JointTooltips[index];
                     delete scope_OverlappingTooltips[index];
                 } else if (!jointTooltip) {
@@ -1141,16 +1147,20 @@
                     var newTooltip = addNodeTo(scope_Handles[index].firstChild, options.cssClasses.tooltip);
                     scope_JointTooltips[index] = newTooltip;
 
-                    var location = -(scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
-                    newTooltip.style.marginLeft = (location * scope_Target.offsetWidth) / 100 + "px";
-
-                    var formattedValue = firstTooltip.innerHTML + " - " + secondTooltip.innerHTML;
-
+                    newTooltip.innerHTML = firstTooltip.innerHTML + " - " + secondTooltip.innerHTML;
                     newTooltip.className += " noUi-joint-tooltip";
-                    newTooltip.innerHTML = formattedValue;
+
+                    var location = -(scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
+                    var distance = (location * scope_Target[offsetType]) / 100;
+                    distance = options.dir === 1 ? distance : -distance;
+                    newTooltip.style.transform =
+                        transformDirection + "(" + -(50 + (distance * 100) / newTooltip[offsetType]) + "%)";
                 } else {
                     var updatedLocation = -(scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
-                    jointTooltip.style.marginLeft = (updatedLocation * scope_Target.offsetWidth) / 100 + "px";
+                    var updatedDistance = (updatedLocation * scope_Target[offsetType]) / 100;
+                    updatedDistance = options.dir === 1 ? updatedDistance : -updatedDistance;
+                    jointTooltip.style.transform =
+                        transformDirection + "(" + -(50 + (updatedDistance * 100) / jointTooltip[offsetType]) + "%)";
 
                     var updatedValue = firstTooltip.innerHTML + " - " + secondTooltip.innerHTML;
                     jointTooltip.innerHTML = updatedValue;
@@ -2176,12 +2186,8 @@
                 // calculate start and end points in x coordinate for each tooltip
                 scope_Locations.forEach(function(location, index) {
                     if (scope_Tooltips[index]) {
-                        var center = (scope_Target.offsetWidth * location) / 100;
-                        var tooltipLength = scope_Tooltips[index].offsetWidth;
-                        tooltipLimits.limits.push({
-                            start: center - tooltipLength / 2,
-                            end: center + tooltipLength / 2
-                        });
+                        var tooltipLimit = getTooltipLimit(index, location);
+                        tooltipLimits.limits.push(tooltipLimit);
                         tooltipLimits.limitMap[tooltipLimits.limits.length - 1] = index;
                     }
                 });
@@ -2212,6 +2218,27 @@
                         updateJointTooltips();
                     }
                 }
+            }
+        }
+
+        // Calculate limits of tooltip based on orientation of slider.
+        function getTooltipLimit(tooltipIndex, location) {
+            // If orientation is horizontal then calculate limits based on width,
+            // If orientation is vertical then calculate limits based on height.
+            if (options.ort === 0) {
+                var horizontalCenter = (scope_Target.offsetWidth * location) / 100;
+                var tooltipLength = scope_Tooltips[tooltipIndex].offsetWidth;
+                return {
+                    start: horizontalCenter - tooltipLength / 2,
+                    end: horizontalCenter + tooltipLength / 2
+                };
+            } else {
+                var verticalCenter = (scope_Target.offsetHeight * location) / 100;
+                var tooltipHeight = scope_Tooltips[tooltipIndex].offsetHeight;
+                return {
+                    start: verticalCenter - tooltipHeight / 2,
+                    end: verticalCenter + tooltipHeight / 2
+                };
             }
         }
 
