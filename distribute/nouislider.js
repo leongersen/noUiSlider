@@ -1,4 +1,4 @@
-/*! nouislider - 14.0.3 - 10/10/2019 */
+/*! nouislider - 14.1.1 - 12/15/2019 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.0.3";
+    var VERSION = "14.1.1";
 
     //region Helper Methods
 
@@ -893,6 +893,8 @@
                 connects: "connects",
                 ltr: "ltr",
                 rtl: "rtl",
+                textDirectionLtr: "txt-dir-ltr",
+                textDirectionRtl: "txt-dir-rtl",
                 draggable: "draggable",
                 drag: "state-drag",
                 tap: "state-tap",
@@ -1088,6 +1090,14 @@
                 addClass(addTarget, options.cssClasses.horizontal);
             } else {
                 addClass(addTarget, options.cssClasses.vertical);
+            }
+
+            var textDirection = getComputedStyle(addTarget).direction;
+
+            if (textDirection === "rtl") {
+                addClass(addTarget, options.cssClasses.textDirectionRtl);
+            } else {
+                addClass(addTarget, options.cssClasses.textDirectionLtr);
             }
 
             return addNodeTo(addTarget, options.cssClasses.base);
@@ -1798,6 +1808,8 @@
 
             var horizontalKeys = ["Left", "Right"];
             var verticalKeys = ["Down", "Up"];
+            var largeStepKeys = ["PageDown", "PageUp"];
+            var edgeKeys = ["Home", "End"];
 
             if (options.dir && !options.ort) {
                 // On an right-to-left slider, the left and right keys act inverted
@@ -1805,40 +1817,63 @@
             } else if (options.ort && !options.dir) {
                 // On a top-to-bottom slider, the up and down keys act inverted
                 verticalKeys.reverse();
+                largeStepKeys.reverse();
             }
 
             // Strip "Arrow" for IE compatibility. https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
             var key = event.key.replace("Arrow", "");
-            var isDown = key === verticalKeys[0] || key === horizontalKeys[0];
-            var isUp = key === verticalKeys[1] || key === horizontalKeys[1];
 
-            if (!isDown && !isUp) {
+            var isLargeDown = key === largeStepKeys[0];
+            var isLargeUp = key === largeStepKeys[1];
+            var isDown = key === verticalKeys[0] || key === horizontalKeys[0] || isLargeDown;
+            var isUp = key === verticalKeys[1] || key === horizontalKeys[1] || isLargeUp;
+            var isMin = key === edgeKeys[0];
+            var isMax = key === edgeKeys[1];
+
+            if (!isDown && !isUp && !isMin && !isMax) {
                 return true;
             }
 
             event.preventDefault();
 
-            var direction = isDown ? 0 : 1;
-            var steps = getNextStepsForHandle(handleNumber);
-            var step = steps[direction];
+            var to;
 
-            // At the edge of a slider, do nothing
-            if (step === null) {
-                return false;
+            if (isUp || isDown) {
+                var multiplier = 5;
+                var direction = isDown ? 0 : 1;
+                var steps = getNextStepsForHandle(handleNumber);
+                var step = steps[direction];
+
+                // At the edge of a slider, do nothing
+                if (step === null) {
+                    return false;
+                }
+
+                // No step set, use the default of 10% of the sub-range
+                if (step === false) {
+                    step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown, 10);
+                }
+
+                if (isLargeUp || isLargeDown) {
+                    step *= multiplier;
+                }
+
+                // Step over zero-length ranges (#948);
+                step = Math.max(step, 0.0000001);
+
+                // Decrement for down steps
+                step = (isDown ? -1 : 1) * step;
+
+                to = scope_Values[handleNumber] + step;
+            } else if (isMax) {
+                // End key
+                to = options.spectrum.xVal[options.spectrum.xVal.length - 1];
+            } else {
+                // Home key
+                to = options.spectrum.xVal[0];
             }
 
-            // No step set, use the default of 10% of the sub-range
-            if (step === false) {
-                step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown, 10);
-            }
-
-            // Step over zero-length ranges (#948);
-            step = Math.max(step, 0.0000001);
-
-            // Decrement for down steps
-            step = (isDown ? -1 : 1) * step;
-
-            setHandle(handleNumber, scope_Spectrum.toStepping(scope_Values[handleNumber] + step), true, true);
+            setHandle(handleNumber, scope_Spectrum.toStepping(to), true, true);
 
             fireEvent("slide", handleNumber);
             fireEvent("update", handleNumber);
