@@ -986,6 +986,8 @@
         var scope_Tooltips;
         var scope_JointTooltips;
         var scope_OverlappingTooltips;
+        var scope_JointTooltipLimits;
+        var scope_ActiveTooltip;
 
         // Slider state values
         var scope_Spectrum = options.spectrum;
@@ -1121,61 +1123,93 @@
             return addNodeTo(handle.firstChild, options.cssClasses.tooltip);
         }
 
-        // create or update joint tooltips and hide or display related tooltips
+        // create or update joint tooltips
         function updateJointTooltips() {
             for (var index in scope_OverlappingTooltips) {
                 var jointTooltip = scope_JointTooltips[index];
-                var overlapInfo = scope_OverlappingTooltips[index];
+                var overlappingTooltipIndexes = scope_OverlappingTooltips[index].tooltipIndexes;
 
-                var firstHandleIndex = overlapInfo[0];
-                var secondHandleIndex = overlapInfo[1];
-
-                var firstTooltip = scope_Tooltips[firstHandleIndex];
-                var secondTooltip = scope_Tooltips[secondHandleIndex];
-
-                // determine transform direction and offset type based on slider orientation,
-                // if slider is horizontal then tooltips overlaps in x direction,
-                // if slider is vertical then tooltips overlaps in y direction.
-                var transformDirection = options.ort === 0 ? "translateX" : "translateY";
-                var offsetType = options.ort === 0 ? "offsetWidth" : "offsetHeight";
-
-                // if overlapping tooltips info has 3 values, two overlapping tooltips are separated and joint tooltip
-                // can be removed and original tooltips can be visible again
+                // if joint tooltip is not existing then create it
                 //
-                // else if overlapping tooltip is not existing then create it and gide related tooltips
-                //
-                // else update position of overlapping tooltip
-                if (overlapInfo.length === 3) {
-                    firstTooltip.className = options.cssClasses.tooltip;
-                    secondTooltip.className = options.cssClasses.tooltip;
-                    jointTooltip.parentNode.removeChild(jointTooltip);
-                    delete scope_JointTooltips[index];
-                    delete scope_OverlappingTooltips[index];
-                } else if (!jointTooltip) {
-                    firstTooltip.className += " noUi-hidden-tooltip";
-                    secondTooltip.className += " noUi-hidden-tooltip";
-                    var newTooltip = addNodeTo(scope_Handles[index].firstChild, options.cssClasses.tooltip);
+                // else update status of joint tooltip
+                if (!jointTooltip) {
+                    // hide overlapping tooltips
+                    overlappingTooltipIndexes.forEach(function(tooltipIndex) {
+                        scope_Tooltips[tooltipIndex].className += " noUi-hidden-tooltip";
+                    });
+
+                    // add joint tooltip
+                    var newTooltip = addNodeTo(
+                        scope_Handles[scope_OverlappingTooltips[index].relatedTooltip].firstChild,
+                        options.cssClasses.tooltip
+                    );
                     scope_JointTooltips[index] = newTooltip;
-
-                    newTooltip.innerHTML = firstTooltip.innerHTML + " - " + secondTooltip.innerHTML;
                     newTooltip.className += " noUi-joint-tooltip";
 
-                    var location = -(scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
-                    var distance = (location * scope_Target[offsetType]) / 100;
-                    distance = options.dir === 1 ? distance : -distance;
-                    newTooltip.style.transform =
-                        transformDirection + "(" + -(50 + (distance * 100) / newTooltip[offsetType]) + "%)";
+                    updateJointTooltip(newTooltip, index, overlappingTooltipIndexes);
                 } else {
-                    var updatedLocation = -(scope_Locations[secondHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
-                    var updatedDistance = (updatedLocation * scope_Target[offsetType]) / 100;
-                    updatedDistance = options.dir === 1 ? updatedDistance : -updatedDistance;
-                    jointTooltip.style.transform =
-                        transformDirection + "(" + -(50 + (updatedDistance * 100) / jointTooltip[offsetType]) + "%)";
-
-                    var updatedValue = firstTooltip.innerHTML + " - " + secondTooltip.innerHTML;
-                    jointTooltip.innerHTML = updatedValue;
+                    updateJointTooltip(jointTooltip, index, overlappingTooltipIndexes);
                 }
             }
+        }
+
+        function updateJointTooltip(jointTooltip, jointTooltipIndex, overlappingTooltipIndexes) {
+            // update joint tooltip text
+            jointTooltip.innerHTML = getJointTooltipText(overlappingTooltipIndexes);
+
+            var firstHandleIndex = overlappingTooltipIndexes[0];
+            var lastHandleIndex = overlappingTooltipIndexes[overlappingTooltipIndexes.length - 1];
+
+            // determine transform direction and offset type based on slider orientation,
+            // if slider is horizontal then tooltips overlaps in x direction,
+            // if slider is vertical then tooltips overlaps in y direction.
+            var transformDirection = options.ort === 0 ? "translateX" : "translateY";
+            var offsetType = options.ort === 0 ? "offsetWidth" : "offsetHeight";
+
+            // update location of joint tooltip
+            var updatedLocation = -(scope_Locations[lastHandleIndex] - scope_Locations[firstHandleIndex]) / 2;
+            var updatedDistance = (updatedLocation * scope_Target[offsetType]) / 100;
+            updatedDistance = options.dir === 1 ? updatedDistance : -updatedDistance;
+            jointTooltip.style.transform =
+                transformDirection + "(" + -(50 + (updatedDistance * 100) / jointTooltip[offsetType]) + "%)";
+
+            // store joint tooltip limit for future comparisions
+            var jointTooltipTruePosition =
+                ((scope_Locations[lastHandleIndex] + updatedLocation) * scope_Target[offsetType]) / 100;
+            scope_JointTooltipLimits[jointTooltipIndex] = {
+                start: jointTooltipTruePosition - jointTooltip[offsetType] / 2,
+                end: jointTooltipTruePosition + jointTooltip[offsetType] / 2
+            };
+
+            // relate overlapping tooltips with joint tooltip. Because of overlapping tooltips are not visible,
+            // joint tooltip should be used whenever an overlapping tooltip needed for calculation
+            scope_OverlappingTooltips[jointTooltipIndex].tooltipIndexes.forEach(function(tooltipIndex) {
+                scope_ActiveTooltip[tooltipIndex] = jointTooltipIndex;
+            });
+        }
+
+        // calculate joint tooltip text from merged tooltips
+        function getJointTooltipText(overlappingTooltipIndexes) {
+            var tooltipText = "";
+            overlappingTooltipIndexes.forEach(function(tooltipIndex, index) {
+                var currentTooltip = scope_Tooltips[tooltipIndex];
+
+                // if direction is ltr then put text left to right
+                // else put text right to left
+                if (options.dir === 0) {
+                    tooltipText += currentTooltip.innerHTML;
+                    if (index !== overlappingTooltipIndexes.length - 1) {
+                        tooltipText = tooltipText + " - ";
+                    }
+                } else {
+                    tooltipText = currentTooltip.innerHTML + tooltipText;
+                    if (index !== overlappingTooltipIndexes.length - 1) {
+                        tooltipText = " - " + tooltipText;
+                    }
+                }
+            });
+
+            return tooltipText;
         }
 
         function isSliderDisabled() {
@@ -1223,7 +1257,7 @@
 
                 // check for overlapping tooltips if option is activated
                 if (options.jointTooltips) {
-                    checkOverlappingTooltips();
+                    checkOverlappingTooltips(handleNumber);
                 }
             });
         }
@@ -2211,49 +2245,191 @@
         }
 
         // calculate overlapping tooltips and update the view accordingly
-        function checkOverlappingTooltips() {
+        function checkOverlappingTooltips(focusedHandleIndex) {
             scope_OverlappingTooltips = scope_OverlappingTooltips || {};
+            scope_JointTooltipLimits = scope_JointTooltipLimits || {};
+            scope_ActiveTooltip = scope_ActiveTooltip || {};
+
+            scope_Tooltips.forEach(function(handle, index) {
+                scope_ActiveTooltip[index] = scope_ActiveTooltip[index] || index;
+            });
 
             // if scope has tooltips then continue
             if (scope_Tooltips && scope_Tooltips.length) {
-                var tooltipLimits = { limitMap: {}, limits: [] };
+                // if focused tooltip is inside a joint tooltip then check if overlapping breaks or not
+                //
+                // else check if focused tooltip overlaps after movement
+                if (scope_OverlappingTooltips[scope_ActiveTooltip[focusedHandleIndex]]) {
+                    checkIfTooltipStillOverlap(focusedHandleIndex);
+                } else {
+                    checkIfFocusedTooltipOverlaps(focusedHandleIndex);
+                }
 
-                // calculate start and end points in x coordinate for each tooltip
-                scope_Locations.forEach(function(location, index) {
-                    if (scope_Tooltips[index]) {
-                        var tooltipLimit = getTooltipLimit(index, location);
-                        tooltipLimits.limits.push(tooltipLimit);
-                        tooltipLimits.limitMap[tooltipLimits.limits.length - 1] = index;
+                // update view for joint tooltips if there are any overlapping tooltips
+                if (Object.keys(scope_OverlappingTooltips).length) {
+                    updateJointTooltips();
+                }
+            }
+        }
+
+        // add overlapping tooltip
+        function storeOverlappingTooltip(tooltipIndexes) {
+            var joinedTooltipIndex = tooltipIndexes.join("-");
+            scope_OverlappingTooltips[joinedTooltipIndex] = {
+                tooltipIndexes: tooltipIndexes,
+                relatedTooltip: tooltipIndexes[tooltipIndexes.length - 1]
+            };
+
+            // associate overlapping tooltips with their joint tooltip
+            tooltipIndexes.forEach(function(index) {
+                scope_ActiveTooltip[index] = joinedTooltipIndex;
+            });
+        }
+
+        // control if focused tooltip overlaps wtih another tooltip after movement
+        function checkIfFocusedTooltipOverlaps(focusedHandleIndex) {
+            var focusedTooltipLimit = getTooltipLimit(focusedHandleIndex, scope_Locations[focusedHandleIndex]);
+
+            // check if focused tooltip is overlapping with tooltip on left
+            var tooltipIndexOnLeft = scope_ActiveTooltip[focusedHandleIndex - 1];
+            if (tooltipIndexOnLeft || tooltipIndexOnLeft > -1) {
+                // if tooltip on left is a joint tooltip then check overlap status with joint tooltip
+                //
+                // else compare two tooltips
+                if (tooltipIndexOnLeft.toString().indexOf("-") > -1) {
+                    var limitOfTooltipOnLeft = scope_JointTooltipLimits[tooltipIndexOnLeft];
+
+                    // if joint tooltip overlaps with focused tooltip then join focused tooltip to joint tooltip on left
+                    if (focusedTooltipLimit.start < limitOfTooltipOnLeft.end) {
+                        storeOverlappingTooltip([
+                            ...scope_OverlappingTooltips[tooltipIndexOnLeft].tooltipIndexes,
+                            focusedHandleIndex
+                        ]);
+                        deleteJointTooltip(tooltipIndexOnLeft);
                     }
-                });
+                } else {
+                    var limitOfTooltipOnLeft = getTooltipLimit(tooltipIndexOnLeft, scope_Locations[tooltipIndexOnLeft]);
 
-                // if there are at least two tooltip limits then continue
-                if (tooltipLimits.limits.length > 1) {
-                    // calculate overlapping tooltips
-                    tooltipLimits.limits.forEach(function(limit, index) {
-                        // check if there is a tooltip on the left side of current tooltip
-                        if (tooltipLimits.limits[index - 1]) {
-                            // if start of current tooltip is smaller then start of previous tooltip then update scope
-                            // for overlapping tooltips
-                            //
-                            // else if there is a overlapping tooltip data on scope for current tooltip invalidate it
-                            if (limit.start < tooltipLimits.limits[index - 1].end) {
-                                scope_OverlappingTooltips[tooltipLimits.limitMap[index]] = [
-                                    tooltipLimits.limitMap[index - 1],
-                                    tooltipLimits.limitMap[index]
-                                ];
-                            } else if (scope_OverlappingTooltips[tooltipLimits.limitMap[index]]) {
-                                scope_OverlappingTooltips[tooltipLimits.limitMap[index]][2] = null;
-                            }
-                        }
-                    });
-
-                    // update view for joint tooltips if there are any overlapping tooltips
-                    if (Object.keys(scope_OverlappingTooltips).length) {
-                        updateJointTooltips();
+                    // if tooltip on left overlaps with focused tooltip then store overlapping tooltips
+                    if (focusedTooltipLimit.start < limitOfTooltipOnLeft.end) {
+                        storeOverlappingTooltip([tooltipIndexOnLeft, focusedHandleIndex]);
                     }
                 }
             }
+
+            // check if focused tooltip is overlapping with tooltip on right
+            var tooltipIndexOnRight = scope_ActiveTooltip[focusedHandleIndex + 1];
+            if (tooltipIndexOnRight) {
+                // if tooltip on right is a joint tooltip then check overlap status with joint tooltip
+                //
+                // else compare two tooltips
+                if (tooltipIndexOnRight.toString().indexOf("-") > -1) {
+                    var limitOfTooltipOnRight = scope_JointTooltipLimits[tooltipIndexOnRight];
+
+                    // if joint tooltip overlaps with focused tooltip then join focused tooltip to joint tooltip on
+                    // right
+                    if (limitOfTooltipOnRight.start < focusedTooltipLimit.end) {
+                        storeOverlappingTooltip([
+                            focusedHandleIndex,
+                            ...scope_OverlappingTooltips[tooltipIndexOnRight].tooltipIndexes
+                        ]);
+                        deleteJointTooltip(tooltipIndexOnRight);
+                    }
+                } else {
+                    var limitOfTooltipOnRight = getTooltipLimit(
+                        tooltipIndexOnRight,
+                        scope_Locations[tooltipIndexOnRight]
+                    );
+
+                    // if tooltip on right overlaps with focused tooltip then store overlapping tooltips
+                    if (limitOfTooltipOnRight.start < focusedTooltipLimit.end) {
+                        storeOverlappingTooltip([focusedHandleIndex, tooltipIndexOnRight]);
+                    }
+                }
+            }
+        }
+
+        // control joint tooltip after movement of focused tooltip
+        function checkIfTooltipStillOverlap(focusedHandleIndex) {
+            var tooltipIndexes = scope_OverlappingTooltips[scope_ActiveTooltip[focusedHandleIndex]].tooltipIndexes;
+
+            // if focused tooltip is first tooltip of joint tooltips check joint tooltip's status
+            // else if focused tooltip is last tooltip of joint tooltip check joint tooltip's status
+            // else joint tooltip should stay as it is because a focused tooltip is moving inside joint tooltip limits
+            if (tooltipIndexes[0] === focusedHandleIndex) {
+                // calculate focused tooltip and joint tooltip limits depending to orientation of slider
+                var focusedTooltipLimit = getTooltipLimit(focusedHandleIndex, scope_Locations[focusedHandleIndex]);
+                var jointTooltipLimit;
+                if (options.ort === 0) {
+                    focusedTooltipLimit = focusedTooltipLimit.start;
+                    jointTooltipLimit = scope_JointTooltipLimits[scope_ActiveTooltip[focusedHandleIndex]].start;
+                } else {
+                    focusedTooltipLimit = focusedTooltipLimit.end;
+                    jointTooltipLimit = getTooltipLimit(tooltipIndexes[1], scope_Locations[tooltipIndexes[1]]).start;
+                }
+
+                // if focused tooltip limit is outside of joint tooltip limit
+                if (jointTooltipLimit > focusedTooltipLimit) {
+                    // if joint tooltip has more then two tooltips then un-merge focused tooltip from joint tooltip
+                    // else destroy joint tooltip
+                    if (tooltipIndexes.length > 2) {
+                        removeFocusedTooltipFromJointTooltip(focusedHandleIndex);
+                    } else {
+                        deleteJointTooltip(scope_ActiveTooltip[focusedHandleIndex]);
+                    }
+                }
+            } else if (tooltipIndexes[tooltipIndexes.length - 1] === focusedHandleIndex) {
+                // calculate focused tooltip and joint tooltip limits depending to orientation of slider
+                var focusedTooltipLimit = getTooltipLimit(focusedHandleIndex, scope_Locations[focusedHandleIndex]);
+                var jointTooltipLimit;
+                if (options.ort === 0) {
+                    focusedTooltipLimit = focusedTooltipLimit.end;
+                    jointTooltipLimit = scope_JointTooltipLimits[scope_ActiveTooltip[focusedHandleIndex]].end;
+                } else {
+                    focusedTooltipLimit = focusedTooltipLimit.start;
+                    jointTooltipLimit = getTooltipLimit(
+                        tooltipIndexes[tooltipIndexes.length - 2],
+                        scope_Locations[tooltipIndexes[tooltipIndexes.length - 2]]
+                    ).end;
+                }
+
+                // if focused tooltip limit is outside of joint tooltip limit
+                if (focusedTooltipLimit > jointTooltipLimit) {
+                    // if joint tooltip has more then two tooltips then un-merge focused tooltip from joint tooltip
+                    // else destroy joint tooltip
+                    if (tooltipIndexes.length > 2) {
+                        removeFocusedTooltipFromJointTooltip(focusedHandleIndex);
+                    } else {
+                        deleteJointTooltip(scope_ActiveTooltip[focusedHandleIndex]);
+                    }
+                }
+            }
+        }
+
+        // un-merge focused tooltip from joint tooltip and update joint tooltip
+        function removeFocusedTooltipFromJointTooltip(focusedHandleIndex) {
+            var tooltipIndexes = [...scope_OverlappingTooltips[scope_ActiveTooltip[focusedHandleIndex]].tooltipIndexes];
+            deleteJointTooltip(scope_ActiveTooltip[focusedHandleIndex]);
+
+            tooltipIndexes.splice(tooltipIndexes.indexOf(focusedHandleIndex), 1);
+            storeOverlappingTooltip(tooltipIndexes);
+        }
+
+        // remove joint tooltip from view
+        function deleteJointTooltip(jointTooltipIndex) {
+            // remove relation of overlapping tooltips with their joint tooltip
+            scope_OverlappingTooltips[jointTooltipIndex].tooltipIndexes.forEach(function(tooltipIndex) {
+                scope_ActiveTooltip[tooltipIndex] = tooltipIndex;
+                scope_Tooltips[tooltipIndex].className = options.cssClasses.tooltip;
+            });
+
+            // remove joint tooltip from dom
+            var jointTooltip = scope_JointTooltips[jointTooltipIndex];
+            jointTooltip.parentNode.removeChild(jointTooltip);
+
+            // clear joint tooltip relation indexes
+            delete scope_JointTooltips[jointTooltipIndex];
+            delete scope_OverlappingTooltips[jointTooltipIndex];
         }
 
         // Calculate limits of tooltip based on orientation of slider.
