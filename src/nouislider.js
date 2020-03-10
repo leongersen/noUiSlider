@@ -1519,7 +1519,7 @@
             if (touch) {
                 // Returns true if a touch originated on the target.
                 var isTouchOnTarget = function(checkTouch) {
-                    return checkTouch.target === eventTarget || eventTarget.contains(checkTouch.target);
+                    return checkTouch.target === eventTarget || eventTarget.contains(checkTouch.target) || (checkTouch.target.shadowRoot && checkTouch.target.shadowRoot.contains(eventTarget));
                 };
 
                 // In the case of touchstart events, we need to make sure there is still no more than one
