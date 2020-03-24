@@ -148,6 +148,15 @@ QUnit.test("Pips: Values", function (assert) {
     assert.equal(document.getElementById('qunit-fixture').querySelectorAll('.noUi-value').length, 7, 'Placed requested number of values');
 });
 
+QUnit.test("Pips: Values", function(assert) {
+    var slider = test_slider({
+        mode: 'values',
+        values: [10000]
+    }, 0);
+
+    assert.equal(document.getElementById('qunit-fixture').querySelectorAll('.noUi-value').length, 1, 'Placed single value at end of range');
+});
+
 // VALUES (STEPPED)
 
 QUnit.test("Pips: Values, stepped", function (assert) {
