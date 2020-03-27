@@ -1,3 +1,4 @@
+// &lt;div id="slider"&gt;&lt;/div&gt;
 var slider = document.getElementById('slider');
 
 noUiSlider.create(slider, {
