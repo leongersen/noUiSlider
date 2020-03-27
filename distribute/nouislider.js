@@ -1,4 +1,4 @@
-/*! nouislider - 14.1.1 - 12/15/2019 */
+/*! nouislider - 14.2.0 - 3/27/2020 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.1.1";
+    var VERSION = "14.2.0";
 
     //region Helper Methods
 
@@ -100,7 +100,7 @@
 
     // http://youmightnotneedjquery.com/#add_class
     function addClass(el, className) {
-        if (el.classList) {
+        if (el.classList && !/\s/.test(className)) {
             el.classList.add(className);
         } else {
             el.className += " " + className;
@@ -1329,7 +1329,7 @@
                     type = group.indexOf(i) > -1 ? PIPS_LARGE_VALUE : isSteps ? PIPS_SMALL_VALUE : PIPS_NO_VALUE;
 
                     // Enforce the 'ignoreFirst' option by overwriting the type for 0.
-                    if (!index && ignoreFirst) {
+                    if (!index && ignoreFirst && i !== high) {
                         type = 0;
                     }
 
@@ -1520,7 +1520,11 @@
             if (touch) {
                 // Returns true if a touch originated on the target.
                 var isTouchOnTarget = function(checkTouch) {
-                    return checkTouch.target === eventTarget || eventTarget.contains(checkTouch.target);
+                    return (
+                        checkTouch.target === eventTarget ||
+                        eventTarget.contains(checkTouch.target) ||
+                        (checkTouch.target.shadowRoot && checkTouch.target.shadowRoot.contains(eventTarget))
+                    );
                 };
 
                 // In the case of touchstart events, we need to make sure there is still no more than one
@@ -1987,7 +1991,9 @@
                             // Event is fired by tap, true or false
                             tap || false,
                             // Left offset of the handle, in relation to the slider
-                            scope_Locations.slice()
+                            scope_Locations.slice(),
+                            // add the slider public API to an accessible parameter when this is unavailable
+                            scope_Self
                         );
                     });
                 }

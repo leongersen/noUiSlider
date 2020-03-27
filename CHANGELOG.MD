@@ -1,5 +1,11 @@
 # Changelog
 
+### 14.2.0 (*2020-03-27*)
+- Added: Slider api as event parameter (#1058);
+- Added: Allow multiple classes in `cssClasses` option (#1054);
+- Fixed: Slider not working within shadow DOM (#1060);
+- Fixed: Last pip not rendered if it is also the first and at the slider edge (#1063);
+ 
 ### 14.1.1 (*2019-12-15*)
 - Fixed: Text direction is not correctly determined when the slider is not in the DOM (#1038);
 

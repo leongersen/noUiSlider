@@ -144,7 +144,7 @@
 
 		<p><code>unencoded</code> contains the slider values without any formatting. </p>
 
-		<p>For all events, <code>this</code> is set to the current slider's API, containing (among others) the <code>.get()</code> and <code>.set()</code> methods.</p>
+		<p>For all events, <code>this</code> is set to the current slider's API, containing (among others) the <code>.get()</code> and <code>.set()</code> methods. The slider api is also available as the sixth argument to all events.</p>
 	</div>
 
 	<?php code('binding'); ?>
