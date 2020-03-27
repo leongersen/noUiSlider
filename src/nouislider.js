@@ -99,7 +99,7 @@
 
     // http://youmightnotneedjquery.com/#add_class
     function addClass(el, className) {
-        if (el.classList) {
+        if (el.classList && !/\s/.test(className)) {
             el.classList.add(className);
         } else {
             el.className += " " + className;
