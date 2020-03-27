@@ -35,10 +35,18 @@
             <div id="slider"></div>
             <?php run('minimal'); ?>
             <?php code('minimal'); ?>
-            <pre><code class="language-console">npm <span class="token function">install</span> <span
+
+            <div class="viewer-header">Installation</div>
+
+            <div class="viewer-content">
+
+                <pre><code class="language-console">npm <span class="token function">install</span> <span
                             class="token keyword">nouislider</span></code></pre>
-            <pre><code class="language-console">yarn <span class="token function">add</span> <span
-                            class="token keyword">nouislider</span></code></pre>
+                <pre><code class="language-console">yarn <span class="token function">add</span> <span
+                                class="token keyword">nouislider</span></code></pre>
+
+                <?php code('install'); ?>
+            </div>
 
             <iframe style="margin: 30px auto 0; display: block;"
                     src="https://ghbtns.com/github-btn.html?user=leongersen&repo=noUiSlider&type=star&count=true&size=large"
