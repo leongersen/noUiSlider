@@ -16,6 +16,14 @@ QUnit.test("Errors", function (assert) {
     }, new Error('noUiSlider (' + noUiSlider.version + '): create requires a single element, got: [object NodeList]'), 'Gave a nodelist');
 
     assert.throws(function () {
+        noUiSlider.create(slider, null);
+    });
+
+    assert.throws(function () {
+        noUiSlider.create(slider, undefined);
+    });
+
+    assert.throws(function () {
         noUiSlider.create(slider, {
             start: [5],
             range: {
