@@ -34,7 +34,7 @@
 
         <p>For sliders with multiple handles, pass an array. One-handled sliders will also accept arrays.</p>
 
-		<p>Within an array, you can set any position to <code>null</code> to you leave a handle unchanged.</p>
+		<p>Within an array, you can set any position to <code>null</code> to leave a handle unchanged.</p>
 
         <p>noUiSlider will always limit values to the slider range.</p>
 
