@@ -14,7 +14,7 @@
 		<li><a href="#section-click-pips">Moving the slider by clicking pips</a></li>
 		<li><a href="#section-hiding-tooltips">Only showing tooltips when sliding handles</a></li>
 		<li><a href="#section-colored-connect">Colored connect elements</a></li>
-		<li><a href="#section-keypress">Changing the slider value by keypress</a></li>
+		<li><a href="#section-steps-api">Changing the slider value by keypress</a></li>
 		<li><a href="#section-skipping">Skipping values on a slider</a></li>
 		<li><a href="#section-huge-numbers">Working with huge numbers</a></li>
 		<li><a href="#section-toggle">Create a toggle</a></li>
