@@ -315,6 +315,8 @@ $canonical = "nouislider/reference/"
     <?php sect('event-callback'); ?>
     <h1>Event Callback</h1>
 
+    <p>See <a href="/nouislider/events-callbacks/#section-binding">events</a> for more information.</p>
+
     <table class="reference-table">
         <thead>
         <tr>
@@ -353,6 +355,11 @@ $canonical = "nouislider/reference/"
             <td>positions</td>
             <td>Array of <code>number</code></td>
             <td>Handle positions, in percentages</td>
+        </tr>
+        <tr>
+            <td>noUiSlider</td>
+            <td><code>object</code></td>
+            <td>Slider API</td>
         </tr>
         </tbody>
     </table>
