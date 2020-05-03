@@ -390,7 +390,8 @@
 		<p>Set the animate option to <code>false</code> to prevent the slider from animating to a new value with when calling <code>.set()</code>.</p>
 
 		<div class="example" style="margin: 0; padding-bottom: 20px">
-			<div class="sliders" id="slider-animate-true"></div>
+			<div class="sliders" id="slider-slow"></div>
+            <?php run('animate-duration'); ?>
 			<button id="set-sliders">Set sliders</button>
 		</div>
 
@@ -409,7 +410,11 @@
 
 		<br>
 
-		<p>The <code>animationDuration</code> option can be used to set the animation speed assumed by the slider library. In <strong>addition</strong> to this, you must <strong>manually</strong> alter the CSS <code>(-webkit-)transition</code> property for the <code>.noUi-state-tap .noUi-origin</code> selector.</p>
+        <h3>Animation Duration</h3>
+
+		<p>The <code>animationDuration</code> option can be used to set the animation speed assumed by the slider library.</p>
+
+        <p>In addition to this, the CSS <code>(-webkit-)transition</code> property for the <code>.noUi-state-tap .noUi-origin</code> and <code>.noUi-state-tap .noUi-connect</code> selectors must be set.</p>
 
 		<div class="options">
 			<strong>Default</strong>
@@ -422,6 +427,13 @@
 
 	<div class="side">
 		<?php code('animate'); ?>
+
+        <div class="viewer-header">Changing animation duration</div>
+
+        <div class="viewer-content">
+            <?php code('animate-duration'); ?>
+            <?php loadShowCSS('animate-duration'); ?>
+        </div>
 	</div>
 
 </section>
