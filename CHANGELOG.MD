@@ -1,5 +1,9 @@
 # Changelog
 
+### 14.3.0 (*2020-05-05*)
+- Added: Default `cssClasses` are now exposed and can be modified;
+- Fixed: Destroying sliders with multiple classes in `cssClasses` fails (#1069);
+
 ### 14.2.0 (*2020-03-27*)
 - Added: Slider api as event parameter (#1058);
 - Added: Allow multiple classes in `cssClasses` option (#1054);

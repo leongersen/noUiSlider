@@ -2,7 +2,7 @@ QUnit.test("Classes", function (assert) {
 
     document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
-    noUiSlider.cssClasses.base += ' test';
+    noUiSlider.cssClasses.target += ' test';
 
     var settings = {
         start: [50, 100],
