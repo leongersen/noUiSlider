@@ -161,6 +161,8 @@
 
 		<p>If your styling system doesn't match the convention in noUiSlider, you can use the <code>cssPrefix</code> and <code>cssClasses</code> options to reconfigure the markup.</p>
 
+        <p>Alternatively, to modify the default classes for all sliders, a modifiable reference to the default class list is available as <code>noUiSlider.cssClasses</code>.</p>
+
         <p>When adding padding to <code>.noUi-target</code>, you'll notice the <code>.noUi-connect</code> elements don't fill the slider width. This can be fixed by increasing the size of <code>.noUi-connects</code>. An example is included to the right.</p>
 	</div>
 

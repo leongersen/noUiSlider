@@ -1,3 +1,7 @@
+// Change default classes for all sliders
+// For example, all sliders will now have the className "noUi-target range-slider"
+noUiSlider.cssClasses.target += ' range-slider';
+
 noUiSlider.create(slider, {
     start: 80,
     range: {
@@ -6,10 +10,8 @@ noUiSlider.create(slider, {
     },
     cssPrefix: 'noUi-', // defaults to 'noUi-',
     cssClasses: {
-        // Full list of classnames to override.
+        // Full list of class names to override.
         // Does NOT extend the default classes.
-        // The First Class in String gets prefixed, the rest gets added as it is
-        // Have a look at the source for the full, current list:
-        // https://github.com/leongersen/noUiSlider/blob/master/src/nouislider.js#L880
+        // The first class in String gets prefixed, the rest gets added as it is
     }
 });
