@@ -358,6 +358,8 @@
 
         <p>Tooltips can be removed from a slider using the <code>removeTooltips()</code> method.</p>
 
+        <p>To merge overlapping tooltips, refer to <a href="/nouislider/examples/#section-merging-tooltips">this example</a>.</p>
+
 		<div class="example overflow">
 			<div id="slider-tooltips"></div>
 			<?php run('tooltips'); ?>

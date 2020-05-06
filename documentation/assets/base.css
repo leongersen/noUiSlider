@@ -120,7 +120,7 @@
 		content: "";
 	}
 	.viewer-header.open + .viewer-content {
-		max-height: 2000px;
+		max-height: 2500px;
 	}
 
 	.options {

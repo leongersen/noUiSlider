@@ -6,8 +6,9 @@
 
 <section>
 	<ul>
-		<li><a href="#section-colorpicker">Color Picker</a></li>
+		<li><a href="#section-colorpicker">Color picker</a></li>
 		<li><a href="#section-dates">Using dates</a></li>
+		<li><a href="#section-merging-tooltips">Merging overlapping tooltips</a></li>
 		<li><a href="#section-html5">Working with HTML5 input types</a></li>
 		<li><a href="#section-non-linear">Using non linear ranges</a></li>
 		<li><a href="#section-lock">Locking two sliders together</a></li>
@@ -29,6 +30,7 @@
 
 <?php include 'examples-content/colorpicker.php'; ?>
 <?php include 'examples-content/dates.php'; ?>
+<?php include 'examples-content/merging-tooltips.php'; ?>
 <?php include 'examples-content/html5.php'; ?>
 <?php include 'examples-content/non-linear.php'; ?>
 <?php include 'examples-content/lock.php'; ?>
