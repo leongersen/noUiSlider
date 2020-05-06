@@ -1,5 +1,9 @@
 # Changelog
 
+### 14.4.0 (*2020-05-06*)
+- Added: `getOrigins` and `getTooltips` methods;
+- Added: Default styling to support merging overlapping tooltips (#1032);
+
 ### 14.3.0 (*2020-05-05*)
 - Added: Default `cssClasses` are now exposed and can be modified;
 - Fixed: Destroying sliders with multiple classes in `cssClasses` fails (#1069);

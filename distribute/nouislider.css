@@ -1,4 +1,4 @@
-/*! nouislider - 14.3.0 - 5/5/2020 */
+/*! nouislider - 14.4.0 - 5/6/2020 */
 /* Functional styling;
  * These styles are required for noUiSlider to function.
  * You don't need to change these rules to apply your design.
@@ -295,4 +295,16 @@
   transform: translate(0, -50%);
   top: 50%;
   right: 120%;
+}
+.noUi-horizontal .noUi-origin > .noUi-tooltip {
+  -webkit-transform: translate(50%, 0);
+  transform: translate(50%, 0);
+  left: auto;
+  bottom: 10px;
+}
+.noUi-vertical .noUi-origin > .noUi-tooltip {
+  -webkit-transform: translate(0, -18px);
+  transform: translate(0, -18px);
+  top: auto;
+  right: 28px;
 }

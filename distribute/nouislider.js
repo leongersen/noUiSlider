@@ -1,4 +1,4 @@
-/*! nouislider - 14.3.0 - 5/5/2020 */
+/*! nouislider - 14.4.0 - 5/6/2020 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.3.0";
+    var VERSION = "14.4.0";
 
     //region Helper Methods
 
@@ -2490,6 +2490,12 @@
             target: scope_Target, // Issue #597
             removePips: removePips,
             removeTooltips: removeTooltips,
+            getTooltips: function() {
+                return scope_Tooltips;
+            },
+            getOrigins: function() {
+                return scope_Handles;
+            },
             pips: pips // Issue #594
         };
 
