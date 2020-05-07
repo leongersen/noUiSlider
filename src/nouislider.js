@@ -205,8 +205,11 @@
     }
 
     // (percentage) How many percent is this value of this range?
-    function fromPercentage(range, value) {
-        return (value * 100) / (range[1] - range[0]);
+    function fromPercentage(range, value, start_range) {
+        if (start_range === undefined)
+            return (value * 100) / (range[1] - range[0]);
+        else 
+            return (value * 100) / (range[start_range + 1] - range[start_range]);
     }
 
     // (percentage) Where is this value on this range?
@@ -405,15 +408,103 @@
         }
     }
 
-    Spectrum.prototype.getMargin = function(value) {
-        var step = this.xNumSteps[0];
+    Spectrum.prototype.getDistance = function(value) { // Former getMargin
+        var index;
+        var distances = [];
 
-        if (step && (value / step) % 1 !== 0) {
-            throw new Error("noUiSlider (" + VERSION + "): 'limit', 'margin' and 'padding' must be divisible by step.");
+        for (index = 0; index < this.xNumSteps.length - 1; index++) {
+        // last "range" can't contain step size as it is purely an endpoint.
+            var step = this.xNumSteps[index];
+
+            if (step && (value / step) % 1 !== 0) {
+                throw new Error("noUiSlider (" + VERSION + "): 'limit', 'margin' and 'padding' of " + this.xPct[index] + "% range must be divisible by step.");
+            }
+
+            // Calculate percentual distance in current range of limit, margin or padding
+            distances[index] = fromPercentage(this.xVal, value, index); 
         }
 
-        return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;
+        return distances; 
     };
+
+    // Calculate the percentual distance over the whole scale of ranges. 
+    // direction: 0 = backwards / 1 = forwards
+    Spectrum.prototype.getAbsoluteDistance = function(value, distances, direction) { 
+        var xPct_index = 0;
+        var abs_distance = 0;
+        
+        // Calculate range where to start calculation
+        if (value < this.xPct[this.xPct.length - 1]) {
+            while (value > this.xPct[xPct_index + 1]) {
+                xPct_index++;
+            }
+        } else if (value == this.xPct[this.xPct.length - 1]) {
+            xPct_index = this.xPct.length - 2;
+        }
+
+        // If looking backwards and the value is exactly at a range separator then look one range further
+        if (!direction && (value == this.xPct[xPct_index + 1])) {
+            xPct_index++;
+        }
+
+        var start_factor;
+        var rest_factor = 1;
+
+        var rest_rel_distance = distances[xPct_index];
+
+        var range_pct = 0;
+
+        var rel_range_distance = 0;
+        var abs_distance_counter = 0;
+        var range_counter = 0;
+
+        // Calculate what part of the start range the value is
+        if (direction) {
+            var start_factor = (value - this.xPct[xPct_index]) / (this.xPct[xPct_index + 1] - this.xPct[xPct_index]);
+        } else {
+            var start_factor = (this.xPct[xPct_index + 1] - value) / (this.xPct[xPct_index + 1] - this.xPct[xPct_index]);
+        }
+
+         // Do until the complete distance accross ranges is calculated
+        while (rest_rel_distance > 0) {
+            // Calculate the percentage of total range
+            range_pct = (this.xPct[xPct_index + 1 + range_counter] - this.xPct[xPct_index + range_counter])
+        
+            // Detect if the margin, padding or limit is larger then the current range and calculate 
+            if ((distances[xPct_index + range_counter] * rest_factor + 100 - start_factor * 100) > 100) {
+                // If larger then take the percentual distance of the whole range
+                rel_range_distance = range_pct * start_factor;
+                // Rest factor of relative percentual distance still to be calculated
+                rest_factor = (rest_rel_distance - (100 * start_factor)) / distances[xPct_index + range_counter] ;
+                // Set start factor to 1 as for next range it does not apply.
+                start_factor = 1;  
+            } else {
+                // If smaller or equal then take the percentual distance of the calculate percentual part of that range
+                rel_range_distance = distances[xPct_index + range_counter] * range_pct / 100 * rest_factor;
+                // No rest left as the rest fits in current range
+                rest_factor = 0;
+            }
+            
+            if (direction) {
+                abs_distance_counter = abs_distance_counter - rel_range_distance;
+                // Limit range to first range when distance becomes outside of minimum range
+                if ((this.xPct.length + range_counter) >= 1) {
+                    range_counter--;
+                }
+            } else {
+                abs_distance_counter = abs_distance_counter + rel_range_distance;
+                // Limit range to last range when distance becomes outside of maximum range
+                if ((this.xPct.length - range_counter) >= 1) {
+                    range_counter++;
+                }
+            }
+            // Rest of relative percentual distance still to be calculated
+            rest_rel_distance = distances[xPct_index + range_counter] * rest_factor; 
+        }
+
+        abs_distance = value + abs_distance_counter;
+        return abs_distance;
+    }
 
     Spectrum.prototype.toStepping = function(value) {
         value = toStepping(this.xVal, this.xPct, value);
@@ -677,11 +768,7 @@
             return;
         }
 
-        parsed.margin = parsed.spectrum.getMargin(entry);
-
-        if (!parsed.margin) {
-            throw new Error("noUiSlider (" + VERSION + "): 'margin' option is only supported on linear sliders.");
-        }
+        parsed.margin = parsed.spectrum.getDistance(entry);
     }
 
     function testLimit(parsed, entry) {
@@ -689,18 +776,12 @@
             throw new Error("noUiSlider (" + VERSION + "): 'limit' option must be numeric.");
         }
 
-        parsed.limit = parsed.spectrum.getMargin(entry);
-
-        if (!parsed.limit || parsed.handles < 2) {
-            throw new Error(
-                "noUiSlider (" +
-                    VERSION +
-                    "): 'limit' option is only supported on linear sliders with 2 or more handles."
-            );
-        }
+        parsed.limit = parsed.spectrum.getDistance(entry);
     }
 
     function testPadding(parsed, entry) {
+        var index;
+
         if (!isNumeric(entry) && !Array.isArray(entry)) {
             throw new Error(
                 "noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers."
@@ -721,20 +802,20 @@
             entry = [entry, entry];
         }
 
-        // 'getMargin' returns false for invalid values.
-        parsed.padding = [parsed.spectrum.getMargin(entry[0]), parsed.spectrum.getMargin(entry[1])];
+        // 'getDistance' returns false for invalid values.
+        parsed.padding = [parsed.spectrum.getDistance(entry[0]), parsed.spectrum.getDistance(entry[1])];
 
-        if (parsed.padding[0] === false || parsed.padding[1] === false) {
-            throw new Error("noUiSlider (" + VERSION + "): 'padding' option is only supported on linear sliders.");
+        for (index = 0; index < parsed.spectrum.xNumSteps.length - 1; index++) {
+        // last "range" can't contain step size as it is purely an endpoint.
+            if (parsed.padding[0][index] < 0 || parsed.padding[1][index] < 0) {
+                throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
+            }
         }
 
-        if (parsed.padding[0] < 0 || parsed.padding[1] < 0) {
-            throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
-        }
-
-        if (parsed.padding[0] + parsed.padding[1] > 100) {
+        if ((entry[0] + entry[1]) / (parsed.spectrum.xVal[parsed.spectrum.xVal.length - 1] - parsed.spectrum.xVal[0]) > 1) {
             throw new Error("noUiSlider (" + VERSION + "): 'padding' option must not exceed 100% of the range.");
         }
+
     }
 
     function testDirection(parsed, entry) {
@@ -2007,15 +2088,19 @@
 
         // Split out the handle positioning logic so the Move event can use it, too
         function checkHandlePosition(reference, handleNumber, to, lookBackward, lookForward, getValue) {
+            var distance;
+
             // For sliders with multiple handles, limit movement to the other handle.
             // Apply the margin option by adding it to the handle positions.
             if (scope_Handles.length > 1 && !options.events.unconstrained) {
                 if (lookBackward && handleNumber > 0) {
-                    to = Math.max(to, reference[handleNumber - 1] + options.margin);
+                    distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber - 1], options.margin, 0)
+                    to = Math.max(to, distance);
                 }
 
                 if (lookForward && handleNumber < scope_Handles.length - 1) {
-                    to = Math.min(to, reference[handleNumber + 1] - options.margin);
+                    distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber + 1], options.margin, 1)
+                    to = Math.min(to, distance);
                 }
             }
 
@@ -2024,11 +2109,13 @@
             // handles would be unmovable.
             if (scope_Handles.length > 1 && options.limit) {
                 if (lookBackward && handleNumber > 0) {
-                    to = Math.min(to, reference[handleNumber - 1] + options.limit);
+                    distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber - 1], options.limit, 0)
+                    to = Math.min(to, distance);
                 }
 
                 if (lookForward && handleNumber < scope_Handles.length - 1) {
-                    to = Math.max(to, reference[handleNumber + 1] - options.limit);
+                    distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber + 1], options.limit, 1)
+                    to = Math.max(to, distance);
                 }
             }
 
@@ -2036,11 +2123,13 @@
             // edges of the slider. Padding must be > 0.
             if (options.padding) {
                 if (handleNumber === 0) {
-                    to = Math.max(to, options.padding[0]);
+                    distance = scope_Spectrum.getAbsoluteDistance(0, options.padding[0], 0)
+                    to = Math.max(to, distance);
                 }
 
                 if (handleNumber === scope_Handles.length - 1) {
-                    to = Math.min(to, 100 - options.padding[1]);
+                    distance = scope_Spectrum.getAbsoluteDistance(100, options.padding[1], 1)
+                    to = Math.min(to, distance);
                 }
             }
 
