@@ -17,12 +17,18 @@
 
     </style>
 
-    <link href="https://code.jquery.com/qunit/qunit-2.6.2.css" rel="stylesheet">
+    <link href="https://code.jquery.com/qunit/qunit-2.10.0.css" rel="stylesheet">
     <link href="../distribute/nouislider.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/qunit/qunit-2.10.0.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blanket.js/1.1.4/blanket.js"></script>
+
+    <!-- Blanket includes require js, but we want to be in a browser context -->
+    <script>var define = null;</script>
 
     <script src="../distribute/nouislider.js" data-cover></script>
 
-    <script src="https://code.jquery.com/qunit/qunit-2.6.2.js"></script>
     <script>
         function simulateMousedown(clickTarget, x, y) {
             // Based on https://stackoverflow.com/a/19570419/1367431
