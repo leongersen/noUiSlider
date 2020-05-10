@@ -205,14 +205,13 @@
     }
 
     // (percentage) How many percent is this value of this range?
-    function fromPercentage(range, value, start_range) {
-        if (start_range === undefined) return (value * 100) / (range[1] - range[0]);
-        else return (value * 100) / (range[start_range + 1] - range[start_range]);
+    function fromPercentage(range, value, startRange) {
+        return (value * 100) / (range[startRange + 1] - range[startRange]);
     }
 
     // (percentage) Where is this value on this range?
     function toPercentage(range, value) {
-        return fromPercentage(range, range[0] < 0 ? value + Math.abs(range[0]) : value - range[0]);
+        return fromPercentage(range, range[0] < 0 ? value + Math.abs(range[0]) : value - range[0], 0);
     }
 
     // (value) How much is this percentage on this range?
@@ -348,7 +347,7 @@
 
         // Factor to range ratio
         that.xSteps[i] =
-            fromPercentage([that.xVal[i], that.xVal[i + 1]], n) / subRangeRatio(that.xPct[i], that.xPct[i + 1]);
+            fromPercentage([that.xVal[i], that.xVal[i + 1]], n, 0) / subRangeRatio(that.xPct[i], that.xPct[i + 1]);
 
         var totalSteps = (that.xVal[i + 1] - that.xVal[i]) / that.xNumSteps[i];
         var highestStep = Math.ceil(Number(totalSteps.toFixed(3)) - 1);
@@ -407,7 +406,6 @@
     }
 
     Spectrum.prototype.getDistance = function(value) {
-        // Former getMargin
         var index;
         var distances = [];
 
@@ -436,19 +434,18 @@
     // direction: 0 = backwards / 1 = forwards
     Spectrum.prototype.getAbsoluteDistance = function(value, distances, direction) {
         var xPct_index = 0;
-        var abs_distance = 0;
 
         // Calculate range where to start calculation
         if (value < this.xPct[this.xPct.length - 1]) {
             while (value > this.xPct[xPct_index + 1]) {
                 xPct_index++;
             }
-        } else if (value == this.xPct[this.xPct.length - 1]) {
+        } else if (value === this.xPct[this.xPct.length - 1]) {
             xPct_index = this.xPct.length - 2;
         }
 
         // If looking backwards and the value is exactly at a range separator then look one range further
-        if (!direction && value == this.xPct[xPct_index + 1]) {
+        if (!direction && value === this.xPct[xPct_index + 1]) {
             xPct_index++;
         }
 
@@ -470,7 +467,7 @@
             start_factor = (this.xPct[xPct_index + 1] - value) / (this.xPct[xPct_index + 1] - this.xPct[xPct_index]);
         }
 
-        // Do until the complete distance accross ranges is calculated
+        // Do until the complete distance across ranges is calculated
         while (rest_rel_distance > 0) {
             // Calculate the percentage of total range
             range_pct = this.xPct[xPct_index + 1 + range_counter] - this.xPct[xPct_index + range_counter];
@@ -503,12 +500,12 @@
                     range_counter++;
                 }
             }
+
             // Rest of relative percentual distance still to be calculated
             rest_rel_distance = distances[xPct_index + range_counter] * rest_factor;
         }
 
-        abs_distance = value + abs_distance_counter;
-        return abs_distance;
+        return value + abs_distance_counter;
     };
 
     Spectrum.prototype.toStepping = function(value) {
