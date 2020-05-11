@@ -169,7 +169,7 @@
 <section>
 
 	<div class="view">
-		<p>This event is useful when you specifically want to listen to a handle being dragged, but want to <strong>ignore other updates</strong> to the slider value. This event also fires on a change by a 'tap'. In most cases, the <code>'update'</code> is the better choice.</p>
+		<p>This event is useful to specifically listen to a handle being dragged, whilst <strong>ignoring other updates</strong> to the slider value. This event also fires on a change by a 'tap'. In most cases, the <code>'update'</code> is the better choice.</p>
 	</div>
 </section>
 
@@ -179,7 +179,7 @@
 <section>
 
 	<div class="view">
-		<p>Whenever a slider is changed to a new value, this event is fired. This function will trigger every time a slider <em>stops</em> changing, <strong>including</strong> after calls to the <code>.set()</code> method. You can consider this 'end of slide'.</p>
+		<p>Whenever a slider is changed to a new value, this event is fired. This function will trigger every time a slider <em>stops</em> changing, <strong>including</strong> after calls to the <code>.set()</code> method. This event can be considered as the 'end of slide'.</p>
 	</div>
 
 </section>

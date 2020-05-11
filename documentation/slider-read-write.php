@@ -34,7 +34,7 @@
 
         <p>For sliders with multiple handles, pass an array. One-handled sliders will also accept arrays.</p>
 
-		<p>Within an array, you can set any position to <code>null</code> to leave a handle unchanged.</p>
+		<p>Within an array, any position can be set to <code>null</code> to leave a handle unchanged.</p>
 
         <p>noUiSlider will always limit values to the slider range.</p>
 
@@ -42,7 +42,7 @@
 
         <p>Passing <code>null</code> as the value to <code>setHandle</code> will leave the handle unchanged.</p>
 
-		<p>To return to the initial slider values, you can use the <code>.reset()</code> method. This will <strong>only</strong> reset the slider <i>values</i>.</p>
+		<p>To return to the initial slider values, the <code>.reset()</code> method can be used. This will <strong>only</strong> reset the slider <i>values</i>.</p>
 	</div>
 
 	<div class="side">

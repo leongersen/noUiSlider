@@ -10,7 +10,7 @@
 
 	<div class="view">
 
-		<p>This feature allows you to generate points along the slider.</p>
+		<p>This feature allows the generation of points along the slider.</p>
 		<p>Five options can be set: <code>mode</code> to determine where to place pips, <code>values</code> as additional options for <code>mode</code>, <code>stepped</code> to round pip values to the slider stepping, <code>density</code> to pre-scale the number of pips, and <code>filter</code> to manually modify pip size.</p>
 
 		<p>The <code>density</code> value controls how many pips are placed on one percent of the slider range. With the default value of <code>1</code>, there is one pip per percent. For a value of <code>2</code>, a pip is placed for every 2 percent. A value below one will place more than one pip per percentage.</p>
@@ -111,7 +111,7 @@
 
 		<p>The Pips add-on supports <code>format</code> in the same way the slider itself does.</p>
 
-        <p>Pips are written as HTML. If you are using user-supplied values in the format option, you may want to escape them.</p>
+        <p>Pips are written as HTML. When using user-supplied values in the format option, they might need to be escaped.</p>
 
 	</div>
 

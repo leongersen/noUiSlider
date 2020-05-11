@@ -82,11 +82,11 @@
 
 		<p>The connect option can be used to control the bar between the handles or the edges of the slider.</p>
 
-		<p>If you are using one handle, set the value to either <code>'upper'</code> or <code>'lower'</code>.
+        <p>When using one handle, set the value to either <code>'upper'</code> or <code>'lower'</code>.</p>
 
 		<div class="example">
 			<div id="slider-connect"></div>
-			<?php run('connect', false); ?>
+			<?php run('connect'); ?>
 		</div>
 
 		<p>For sliders with 2 or more handles, pass an <code>array</code> with a <code>boolean</code> for every connecting element, including the edges of the slider. The length of this array must match the handle count + 1.</p>
@@ -95,7 +95,7 @@
 
 		<div class="example">
 			<div id="slider-connect2"></div>
-			<?php run('connect-more', false); ?>
+			<?php run('connect-more'); ?>
 		</div>
 
 		<div class="options">
@@ -129,7 +129,7 @@
 
 	<div class="view">
 
-		<p>When using two handles, the minimum distance between the handles can be set using the margin option. The margin value is relative to the value set in 'range'. This option is only available on linear sliders.</p>
+		<p>When using two handles, the minimum distance between the handles can be set using the margin option. The margin value is relative to the value set in 'range'.</p>
 
 		<div class="example">
 			<div id="slider-margin"></div>
@@ -168,7 +168,7 @@
 
 	<div class="view">
 
-		<p>The limit option is the oposite of the margin option, limiting the maximum distance between two handles. As with the margin option, the limit option can only be used on linear sliders.</p>
+		<p>The limit option is the opposite of the margin option, limiting the maximum distance between two handles.</p>
 
 		<div class="example">
 			<div id="slider-limit"></div>
@@ -248,7 +248,7 @@
 <section>
 
 	<div class="view">
-		<p>By default, the slider slides fluently. In order to make the handles jump between intervals, you can use the step option.</p>
+		<p>By default, the slider slides fluently. In order to make the handles jump between intervals, the step option can be used.</p>
 
         <div class="notice">
             <p>Note that for non-linear sliders, <code>step</code> values are set as part of the <a href="/nouislider/slider-values/#section-range"><code>range</code> option</a>.</p>
@@ -256,7 +256,7 @@
 
 		<div class="example">
 			<div id="slider-step"></div>
-			<?php run('step', false); ?>
+			<?php run('step'); ?>
 		</div>
 
 		<div class="options">
@@ -285,7 +285,7 @@
 
 		<p>The orientation setting can be used to set the slider to <code>"vertical"</code> or <code>"horizontal"</code>.</p>
 
-		<p><strong>Set dimensions!</strong> Vertical sliders don't assume a default <code>height</code>, so you'll need to set one. You can use any unit you want, including <code>%</code> or <code>px</code>.</p>
+		<p><strong>Set dimensions!</strong> Vertical sliders don't assume a default <code>height</code>, so a height needs to be set. Any unit can be used, including <code>%</code> or <code>px</code>.</p>
 
 		<div class="example vertical">
 			<div id="slider-vertical"></div>

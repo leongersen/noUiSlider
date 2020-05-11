@@ -34,7 +34,7 @@
 
 	<div class="view">
 
-		<p>The number of handles in the <code>start</code> option is not limited to two. You can use the <a href="/nouislider/slider-options/#section-Connect">connect option</a> between every handle.</p>
+		<p>The number of handles in the <code>start</code> option is not limited to two. The <a href="/nouislider/slider-options/#section-Connect">connect option</a> can be used between every handle.</p>
 
 		<div class="example">
 			<div id="slider-handles4"></div>

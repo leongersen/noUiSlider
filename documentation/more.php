@@ -22,7 +22,7 @@
 
 		<p>Disabling a slider is identical to disabling a checkbox or textarea; add the <code class="language-markup">disabled</code> attribute.</p>
 
-		<p>A disabled slider can't be changed by user interaction (sliding, clicking or touching), but you can still change its value using the <code>.set()</code> method.</p>
+		<p>A disabled slider can't be changed by user interaction (sliding, clicking or touching), but its value can still be changed using the <code>.set()</code> method.</p>
 
 		<p>CSS can be used to show the disabled state. The default stylesheet also sets a <code>not-allowed</code> cursor.</p>
 

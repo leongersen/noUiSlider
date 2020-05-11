@@ -10,7 +10,7 @@ $canonical = "nouislider/download/"
 
     <div class="view">
 
-        <p>noUiSlider is open source (MIT), and you can use it <strong>for free</strong> in any personal or commercial
+        <p>noUiSlider is open source (MIT), and it can be used <strong>for free</strong> in any personal or commercial
             product. No attribution required.</p>
 
         <a href="/nouislider/tests/slider.html">Run the unit tests!</a>
