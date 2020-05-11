@@ -822,10 +822,11 @@
             }
         }
 
-        if (
-            (entry[0] + entry[1]) / (parsed.spectrum.xVal[parsed.spectrum.xVal.length - 1] - parsed.spectrum.xVal[0]) >
-            1
-        ) {
+        var totalPadding = entry[0] + entry[1];
+        var firstValue = parsed.spectrum.xVal[0];
+        var lastValue = parsed.spectrum.xVal[parsed.spectrum.xVal.length - 1];
+
+        if (totalPadding / (lastValue - firstValue) > 1) {
             throw new Error("noUiSlider (" + VERSION + "): 'padding' option must not exceed 100% of the range.");
         }
     }
