@@ -94,11 +94,11 @@
 
 		<p>By default, the sliders <strong>values remain unchanged</strong>. To update the slider values, <code>newOptions</code> may also contain a <code>start</code> property that matches the signature of the <a href="/nouislider/slider-read-write/#section-setting"><code>.set()</code></a> method.</p>
 
-		<p>The <code>'set'</code> event fires when the slider values are restored. If this is unwanted, you can pass <code>false</code> as the second parameter, <code>fireSetEvent</code>.</p>
+		<p>The <code>'set'</code> event fires when the slider values are restored. If this is unwanted, <code>false</code> can be passed as the second parameter, <code>fireSetEvent</code>.</p>
 
 		<p>Options can be read from the slider using the <code>slider.noUiSlider.options</code> property. This property contains a <strong>reference</strong> to the options object passed when creating the slider. This object is <strong>modified</strong> when calling <code>updateOptions</code>.</p>
 
-		<p>Note that if you initiate multiple sliders using the same options object and update a subset of them later, this <em>will</em> move the <code>options</code> property out of sync with the actual slider options.</p>
+		<p>Note that if multiple sliders are initiated using the same options object and a subset of them is updated later, this <em>will</em> move the <code>options</code> property out of sync with the actual slider options.</p>
 
 		<div class="example">
 			<div id="slider-update"></div>
@@ -155,15 +155,15 @@
 <section>
 
 	<div class="view">
-		<p>If you want to style noUiSlider, the default stylesheet contains helpful comments to get a head start.</p>
+		<p>To style noUiSlider the default stylesheet contains helpful comments to get a head start.</p>
 
 		<p>It is recommended to use the default stylesheet, overriding where necessary, as a starting point when re-styling noUiSlider.</p>
 
-		<p>If your styling system doesn't match the convention in noUiSlider, you can use the <code>cssPrefix</code> and <code>cssClasses</code> options to reconfigure the markup.</p>
+		<p>If your styling system doesn't match the convention in noUiSlider, the <code>cssPrefix</code> and <code>cssClasses</code> options can be used to reconfigure the markup.</p>
 
         <p>Alternatively, to modify the default classes for all sliders, a modifiable reference to the default class list is available as <code>noUiSlider.cssClasses</code>.</p>
 
-        <p>When adding padding to <code>.noUi-target</code>, you'll notice the <code>.noUi-connect</code> elements don't fill the slider width. This can be fixed by increasing the size of <code>.noUi-connects</code>. An example is included to the right.</p>
+        <p>When adding padding to <code>.noUi-target</code>, <code>.noUi-connect</code> elements don't fill the slider width. This can be fixed by increasing the size of <code>.noUi-connects</code>.</p>
 	</div>
 
 	<div class="side">
@@ -182,7 +182,7 @@
 				<tbody>
 					<tr>
 						<td><code>.noUi-target</code></td>
-						<td>This class is added to the element you call <code>.noUiSlider()</code> on. Has <code>border</code>, <code>background</code> and other styling properties to establish the slider design and background.</td>
+						<td>This class is added to the element <code>noUiSlider.create()</code> is called on. Has <code>border</code>, <code>background</code> and other styling properties to establish the slider design and background.</td>
 					</tr>
 					<tr>
 						<td><code>.noUi-base</code></td>
@@ -194,7 +194,7 @@
 					</tr>
 					<tr>
 						<td><code>.noUi-handle</code></td>
-						<td>The actual, visible handles. Style these any way you like!</td>
+						<td>The actual, visible handles.</td>
 					</tr>
 					<tr>
 						<td><code>.noUi-touch-area</code></td>

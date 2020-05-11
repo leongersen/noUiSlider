@@ -110,7 +110,7 @@
 
 	<div class="view">
 
-		<p>noUiSlider offers some powerful mechanisms that allow a slider to behave in a non-linear fashion. You can create sliders with ever-increasing increments by specifying the value for the slider at certain intervals. Note how the handle in the example below starts at 30% of the slider width, even though <code>4000</code> is not 30% of the span between <code>2000</code> and <code>10000</code>.</p>
+		<p>noUiSlider offers some powerful mechanisms that allow a slider to behave in a non-linear fashion. Sliders can be created with ever-increasing increments by specifying the value for the slider at certain intervals. Note how the handle in the example below starts at 30% of the slider width, even though <code>4000</code> is not 30% of the span between <code>2000</code> and <code>10000</code>.</p>
 
 		<div class="example">
 			<div id="slider-non-linear"></div>

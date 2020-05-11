@@ -30,7 +30,7 @@
 
 	<div class="view">
 
-        <p>If you have configured the slider to use one handle, you can change the current value by passing a number to the <code>.set()</code> method.</p>
+        <p>If a slider is configured to use one handle, its current value can be changed using the <code>.set()</code> method.</p>
 
         <p>For sliders with multiple handles, pass an array. One-handled sliders will also accept arrays.</p>
 

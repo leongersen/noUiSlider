@@ -315,7 +315,7 @@
 
 	<div class="view">
 
-		<p>By default the sliders are <em>top-to-bottom</em> and <em>left-to-right</em>, but you can change this using the direction option, which decides where the upper side of the slider is.</p>
+		<p>By default the sliders are <em>top-to-bottom</em> and <em>left-to-right</em>, but this can be changed using the direction option, which decides where the upper side of the slider is.</p>
 
 		<div class="example">
 			<div id="slider-direction"></div>
