@@ -1,5 +1,8 @@
 # Changelog
 
+### 14.5.0 (*2020-05-20*)
+- Added: Support for `margin`, `padding` and `limit` on non-linear sliders (#911, #1030, #1031, #1071);
+
 ### 14.4.0 (*2020-05-06*)
 - Added: `getOrigins` and `getTooltips` methods;
 - Added: Default styling to support merging overlapping tooltips (#1032);
