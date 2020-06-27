@@ -1865,6 +1865,13 @@
 
         // Move closest handle to tapped location.
         function eventTap(event) {
+            // Erroneous events seem to be passed in occasionally on iOS/iPadOS after user finishes interacting with 
+            // the slider. They appear to be of type MouseEvent, yet they don't have usual properties set. Ignore tap 
+            // events that have no touches or buttons associated with them.
+            if (!event.buttons && !event.touches) {
+                return false;
+            }
+
             // The tap event shouldn't propagate up
             event.stopPropagation();
 
