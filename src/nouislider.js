@@ -653,12 +653,20 @@
         parsed.singleStep = entry;
     }
 
-    function testPageStep(parsed, entry) {
+    function testKeyboardPageMultiplier(parsed, entry) {
         if (!isNumeric(entry)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'pageStep' is not numeric.");
+            throw new Error("noUiSlider (" + VERSION + "): 'keyboardPageMultiplier' is not numeric.");
         }
 
-        parsed.pageStep = entry;
+        parsed.keyboardPageMultiplier = entry;
+    }
+
+    function testKeyboardDefaultStep(parsed, entry) {
+        if (!isNumeric(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'keyboardDefaultStep' is not numeric.");
+        }
+
+        parsed.keyboardDefaultStep = entry;
     }
 
     function testRange(parsed, entry) {
@@ -994,7 +1002,8 @@
         // Tests are executed in the order they are presented here.
         var tests = {
             step: { r: false, t: testStep },
-            pageStep: { r: false, t: testPageStep },
+            keyboardPageMultiplier: { r: false, t: testKeyboardPageMultiplier },
+            keyboardDefaultStep: { r: false, t: testKeyboardDefaultStep },
             start: { r: true, t: testStart },
             connect: { r: true, t: testConnect },
             direction: { r: true, t: testDirection },
@@ -1024,7 +1033,8 @@
             keyboardSupport: true,
             cssPrefix: "noUi-",
             cssClasses: cssClasses,
-            pageStep: 5
+            keyboardPageMultiplier: 5,
+            keyboardDefaultStep: 10
         };
 
         // AriaFormat defaults to regular format, if any.
@@ -1865,8 +1875,8 @@
 
         // Move closest handle to tapped location.
         function eventTap(event) {
-            // Erroneous events seem to be passed in occasionally on iOS/iPadOS after user finishes interacting with 
-            // the slider. They appear to be of type MouseEvent, yet they don't have usual properties set. Ignore tap 
+            // Erroneous events seem to be passed in occasionally on iOS/iPadOS after user finishes interacting with
+            // the slider. They appear to be of type MouseEvent, yet they don't have usual properties set. Ignore tap
             // events that have no touches or buttons associated with them.
             if (!event.buttons && !event.touches) {
                 return false;
@@ -1959,7 +1969,7 @@
             var to;
 
             if (isUp || isDown) {
-                var multiplier = options.pageStep;
+                var multiplier = options.keyboardPageMultiplier;
                 var direction = isDown ? 0 : 1;
                 var steps = getNextStepsForHandle(handleNumber);
                 var step = steps[direction];
@@ -1971,7 +1981,11 @@
 
                 // No step set, use the default of 10% of the sub-range
                 if (step === false) {
-                    step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown, 10);
+                    step = scope_Spectrum.getDefaultStep(
+                        scope_Locations[handleNumber],
+                        isDown,
+                        options.keyboardDefaultStep
+                    );
                 }
 
                 if (isLargeUp || isLargeDown) {

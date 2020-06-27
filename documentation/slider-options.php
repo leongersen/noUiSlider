@@ -451,9 +451,13 @@
         <p>Handles in the slider can receive keyboard focus and be moved by arrow keys.</p>
 
         <p>When moved by the arrow keys on a keyboard, handles obey the <code>step</code> value for the range they are in.
-            When moving in a range that has no <code>step</code> value set, handles move by 10% of the range they are in.</p>
+            When moving in a range that has no <code>step</code> value set, handles move by 10% <i>of the range they are in</i>.
+            This default can be changed using the <code>keyboardDefaultStep</code> option.</p>
 
-        <p>Keyboard support can be disabled:</p>
+        <p>The Page Up and Page Down keys can be used to make larger steps through the slider range. By default, the page keys
+            multiply the default step by 5. This can be changed using the <code>keywordPageMultiplier</code> option.</p>
+
+        <p>Keyboard support can be disabled by setting the <code>keyboardSupport</code> option to <code>false</code>.</p>
 
         <div class="example overflow">
             <div id="slider-keyboard"></div>

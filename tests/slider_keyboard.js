@@ -126,7 +126,7 @@ QUnit.test("Keyboard support", function (assert) {
             'min': 0,
             'max': 10
         },
-        pageStep: 2
+        keyboardPageMultiplier: 2
     });
 
     assert.deepEqual(slider.noUiSlider.get(), '5.00');
