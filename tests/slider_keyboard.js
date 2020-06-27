@@ -8,6 +8,14 @@ QUnit.test("Keyboard support", function (assert) {
         element.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowDown'}));
     }
 
+    function pageUp(element) {
+        element.dispatchEvent(new KeyboardEvent('keydown', {'key': 'PageUp'}));
+    }
+
+    function pageDown(element) {
+        element.dispatchEvent(new KeyboardEvent('keydown', {'key': 'PageDown'}));
+    }
+
     document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
     var slider = document.getElementById('qunit-fixture').querySelector('.slider');
@@ -108,4 +116,26 @@ QUnit.test("Keyboard support", function (assert) {
 
     up(handle0);
     assert.deepEqual(slider.noUiSlider.get(), ['6.00', '6.00'], 'Handle 0 cannot push past handle 1');
+
+    slider.noUiSlider.destroy();
+
+    noUiSlider.create(slider, {
+        start: [5],
+        step: 1,
+        range: {
+            'min': 0,
+            'max': 10
+        },
+        pageStep: 2
+    });
+
+    assert.deepEqual(slider.noUiSlider.get(), '5.00');
+
+    handle0 = slider.querySelector('[data-handle="0"]');
+
+    pageDown(handle0);
+    assert.deepEqual(slider.noUiSlider.get(), '3.00');
+
+    pageUp(handle0);
+    assert.deepEqual(slider.noUiSlider.get(), '5.00');
 });

@@ -653,6 +653,14 @@
         parsed.singleStep = entry;
     }
 
+    function testPageStep(parsed, entry) {
+        if (!isNumeric(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'pageStep' is not numeric.");
+        }
+
+        parsed.pageStep = entry;
+    }
+
     function testRange(parsed, entry) {
         // Filter incorrect input.
         if (typeof entry !== "object" || Array.isArray(entry)) {
@@ -986,6 +994,7 @@
         // Tests are executed in the order they are presented here.
         var tests = {
             step: { r: false, t: testStep },
+            pageStep: { r: false, t: testPageStep },
             start: { r: true, t: testStart },
             connect: { r: true, t: testConnect },
             direction: { r: true, t: testDirection },
@@ -1014,7 +1023,8 @@
             orientation: "horizontal",
             keyboardSupport: true,
             cssPrefix: "noUi-",
-            cssClasses: cssClasses
+            cssClasses: cssClasses,
+            pageStep: 5
         };
 
         // AriaFormat defaults to regular format, if any.
@@ -1942,7 +1952,7 @@
             var to;
 
             if (isUp || isDown) {
-                var multiplier = 5;
+                var multiplier = options.pageStep;
                 var direction = isDown ? 0 : 1;
                 var steps = getNextStepsForHandle(handleNumber);
                 var step = steps[direction];
