@@ -1,4 +1,4 @@
-/*! nouislider - 14.5.0 - 5/11/2020 */
+/*! nouislider - 14.6.0 - 6/27/2020 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.5.0";
+    var VERSION = "14.6.0";
 
     //region Helper Methods
 
@@ -654,6 +654,22 @@
         parsed.singleStep = entry;
     }
 
+    function testKeyboardPageMultiplier(parsed, entry) {
+        if (!isNumeric(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'keyboardPageMultiplier' is not numeric.");
+        }
+
+        parsed.keyboardPageMultiplier = entry;
+    }
+
+    function testKeyboardDefaultStep(parsed, entry) {
+        if (!isNumeric(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'keyboardDefaultStep' is not numeric.");
+        }
+
+        parsed.keyboardDefaultStep = entry;
+    }
+
     function testRange(parsed, entry) {
         // Filter incorrect input.
         if (typeof entry !== "object" || Array.isArray(entry)) {
@@ -987,6 +1003,8 @@
         // Tests are executed in the order they are presented here.
         var tests = {
             step: { r: false, t: testStep },
+            keyboardPageMultiplier: { r: false, t: testKeyboardPageMultiplier },
+            keyboardDefaultStep: { r: false, t: testKeyboardDefaultStep },
             start: { r: true, t: testStart },
             connect: { r: true, t: testConnect },
             direction: { r: true, t: testDirection },
@@ -1015,7 +1033,9 @@
             orientation: "horizontal",
             keyboardSupport: true,
             cssPrefix: "noUi-",
-            cssClasses: cssClasses
+            cssClasses: cssClasses,
+            keyboardPageMultiplier: 5,
+            keyboardDefaultStep: 10
         };
 
         // AriaFormat defaults to regular format, if any.
@@ -1856,6 +1876,13 @@
 
         // Move closest handle to tapped location.
         function eventTap(event) {
+            // Erroneous events seem to be passed in occasionally on iOS/iPadOS after user finishes interacting with
+            // the slider. They appear to be of type MouseEvent, yet they don't have usual properties set. Ignore tap
+            // events that have no touches or buttons associated with them.
+            if (!event.buttons && !event.touches) {
+                return false;
+            }
+
             // The tap event shouldn't propagate up
             event.stopPropagation();
 
@@ -1943,7 +1970,7 @@
             var to;
 
             if (isUp || isDown) {
-                var multiplier = 5;
+                var multiplier = options.keyboardPageMultiplier;
                 var direction = isDown ? 0 : 1;
                 var steps = getNextStepsForHandle(handleNumber);
                 var step = steps[direction];
@@ -1955,7 +1982,11 @@
 
                 // No step set, use the default of 10% of the sub-range
                 if (step === false) {
-                    step = scope_Spectrum.getDefaultStep(scope_Locations[handleNumber], isDown, 10);
+                    step = scope_Spectrum.getDefaultStep(
+                        scope_Locations[handleNumber],
+                        isDown,
+                        options.keyboardDefaultStep
+                    );
                 }
 
                 if (isLargeUp || isLargeDown) {

@@ -1,5 +1,9 @@
 # Changelog
 
+### 14.6.0 (*2020-06-27*)
+- Added: `keyboardPageMultiplier` and `keyboardDefaultStep` options (#1083);
+- Fixed: Ignore erroneous tap events for iOS (#1057, #1079);
+
 ### 14.5.0 (*2020-05-20*)
 - Added: Support for `margin`, `padding` and `limit` on non-linear sliders (#911, #1030, #1031, #1071);
 
