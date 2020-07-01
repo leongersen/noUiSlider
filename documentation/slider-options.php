@@ -455,7 +455,7 @@
             This default can be changed using the <code>keyboardDefaultStep</code> option.</p>
 
         <p>The Page Up and Page Down keys can be used to make larger steps through the slider range. By default, the page keys
-            multiply the default step by 5. This can be changed using the <code>keywordPageMultiplier</code> option.</p>
+            multiply the default step by 5. This can be changed using the <code>keyboardPageMultiplier</code> option.</p>
 
         <p>Keyboard support can be disabled by setting the <code>keyboardSupport</code> option to <code>false</code>.</p>
 

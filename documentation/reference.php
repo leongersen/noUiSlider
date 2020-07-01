@@ -118,13 +118,13 @@ $canonical = "nouislider/reference/"
                 <td><code>true</code></td>
             </tr>
             <tr>
-                <td><a href="/nouislider/slider-options/#section-keyboard-support">keywordDefaultStep</a></td>
+                <td><a href="/nouislider/slider-options/#section-keyboard-support">keyboardDefaultStep</a></td>
                 <td><code>number</code></td>
                 <td><code>false</code></td>
                 <td><code>10</code></td>
             </tr>
             <tr>
-                <td><a href="/nouislider/slider-options/#section-keyboard-support">keywordPageMultiplier</a></td>
+                <td><a href="/nouislider/slider-options/#section-keyboard-support">keyboardPageMultiplier</a></td>
                 <td><code>number</code></td>
                 <td><code>false</code></td>
                 <td><code>5</code></td>
