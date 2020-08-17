@@ -1,5 +1,8 @@
 # Changelog
 
+### 14.6.1 (*2020-08-17*)
+- Fixed: Pips in count mode ignores pip at end of range (#1088);
+
 ### 14.6.0 (*2020-06-27*)
 - Added: `keyboardPageMultiplier` and `keyboardDefaultStep` options (#1083);
 - Fixed: Ignore erroneous tap events for iOS (#1057, #1079);
@@ -20,7 +23,7 @@
 - Added: Allow multiple classes in `cssClasses` option (#1054);
 - Fixed: Slider not working within shadow DOM (#1060);
 - Fixed: Last pip not rendered if it is also the first and at the slider edge (#1063);
- 
+
 ### 14.1.1 (*2019-12-15*)
 - Fixed: Text direction is not correctly determined when the slider is not in the DOM (#1038);
 
@@ -78,7 +81,7 @@ Alternatively, built-in keyboard support can be disabled using `keyboardSupport:
 - Added: `setHandle` API (#917);
 - Changed: point to `nouislider.js` in `package.json`.`main` (#921);
 
-### 12.0.0 (*2018-09-14*) 
+### 12.0.0 (*2018-09-14*)
 - Change: License changed to MIT;
 - Change: Build process is now based on NPM scripts, phasing out the Grunt task runner.
 - Fixed: Aria values are now as per spec (#889);

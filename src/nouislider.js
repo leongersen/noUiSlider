@@ -1408,10 +1408,14 @@
                     step = high - low;
                 }
 
-                // Low can be 0, so test for false. If high is undefined,
-                // we are at the last subrange. Index 0 is already handled.
-                if (low === false || high === undefined) {
+                // Low can be 0, so test for false. Index 0 is already handled.
+                if (low === false) {
                     return;
+                }
+
+                // If high is undefined we are at the last subrange. Make sure it iterates once (#1088)
+                if (high === undefined) {
+                    high = low;
                 }
 
                 // Make sure step isn't 0, which would cause an infinite loop (#654)

@@ -1,4 +1,4 @@
-/*! nouislider - 14.6.0 - 6/27/2020 */
+/*! nouislider - 14.6.1 - 8/17/2020 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.6.0";
+    var VERSION = "14.6.1";
 
     //region Helper Methods
 
@@ -1409,10 +1409,14 @@
                     step = high - low;
                 }
 
-                // Low can be 0, so test for false. If high is undefined,
-                // we are at the last subrange. Index 0 is already handled.
-                if (low === false || high === undefined) {
+                // Low can be 0, so test for false. Index 0 is already handled.
+                if (low === false) {
                     return;
+                }
+
+                // If high is undefined we are at the last subrange. Make sure it iterates once (#1088)
+                if (high === undefined) {
+                    high = low;
                 }
 
                 // Make sure step isn't 0, which would cause an infinite loop (#654)
