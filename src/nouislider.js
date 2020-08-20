@@ -942,6 +942,12 @@
         validateFormat(entry);
     }
 
+    function testExactInput(parsed, entry) {
+        parsed.exactInput = entry;
+        if (typeof entry !== "boolean")
+            throw new Error("noUiSlider: 'exactInput' must be boolean.")
+    }
+
     function testKeyboardSupport(parsed, entry) {
         parsed.keyboardSupport = entry;
 
@@ -1018,6 +1024,7 @@
             behaviour: { r: true, t: testBehaviour },
             ariaFormat: { r: false, t: testAriaFormat },
             format: { r: false, t: testFormat },
+            exactInput: { r: false, t: testExactInput },
             tooltips: { r: false, t: testTooltips },
             keyboardSupport: { r: true, t: testKeyboardSupport },
             documentElement: { r: false, t: testDocumentElement },
@@ -1030,6 +1037,7 @@
             direction: "ltr",
             behaviour: "tap",
             orientation: "horizontal",
+            exactInput: false,
             keyboardSupport: true,
             cssPrefix: "noUi-",
             cssClasses: cssClasses,
@@ -2297,8 +2305,12 @@
         }
 
         // Test suggested values and apply margin, step.
-        function setHandle(handleNumber, to, lookBackward, lookForward) {
-            to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
+        // if notCheckHandlePosition is true, don't run checkHandlePosition, then the handle can be placed in between steps
+        // issue #436 https://github.com/leongersen/noUiSlider/issues/436 - idea by Jan Heinzle and Roy
+        function setHandle(handleNumber, to, lookBackward, lookForward, exactInput) {
+            if (!exactInput){
+                to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
+            }
 
             if (to === false) {
                 return false;
@@ -2378,7 +2390,7 @@
 
             // First pass, without lookAhead but with lookBackward. Values are set from left to right.
             scope_HandleNumbers.forEach(function(handleNumber) {
-                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
+                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false, options.exactInput);
             });
 
             var i = scope_HandleNumbers.length === 1 ? 0 : 1;
@@ -2387,7 +2399,7 @@
             // Iterate all handles to ensure constraints are applied for the entire slider (Issue #1009)
             for (; i < scope_HandleNumbers.length; ++i) {
                 scope_HandleNumbers.forEach(function(handleNumber) {
-                    setHandle(handleNumber, scope_Locations[handleNumber], true, true);
+                    setHandle(handleNumber, scope_Locations[handleNumber], true, true, options.exactInput);
                 });
             }
 
