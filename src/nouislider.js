@@ -12,7 +12,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "%%REPLACE_THIS_WITH_VERSION%%";
+    var VERSION = "14.6.1";
 
     //region Helper Methods
 
@@ -2305,8 +2305,7 @@
         }
 
         // Test suggested values and apply margin, step.
-        // if notCheckHandlePosition is true, don't run checkHandlePosition, then the handle can be placed in between steps
-        // issue #436 https://github.com/leongersen/noUiSlider/issues/436 - idea by Jan Heinzle and Roy
+        // if exactInput is true, don't run checkHandlePosition, then the handle can be placed in between steps (#436)
         function setHandle(handleNumber, to, lookBackward, lookForward, exactInput) {
             if (!exactInput){
                 to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
@@ -2430,7 +2429,8 @@
             }
 
             // Look both backward and forward, since we don't want this handle to "push" other handles (#960);
-            setHandle(handleNumber, resolveToValue(value, handleNumber), true, true);
+            //setHandle 5th parameter is notCheckHandlePosition, enable it will allow the handle to sit in between steps (#436)
+            setHandle(handleNumber, resolveToValue(value, handleNumber), true, true, options.exactInput);
 
             fireEvent("update", handleNumber);
 
