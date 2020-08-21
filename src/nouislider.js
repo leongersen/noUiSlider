@@ -944,8 +944,7 @@
 
     function testExactInput(parsed, entry) {
         parsed.exactInput = entry;
-        if (typeof entry !== "boolean")
-            throw new Error("noUiSlider: 'exactInput' must be boolean.")
+        if (typeof entry !== "boolean") throw new Error("noUiSlider: 'exactInput' must be boolean.");
     }
 
     function testKeyboardSupport(parsed, entry) {
@@ -2307,7 +2306,7 @@
         // Test suggested values and apply margin, step.
         // if exactInput is true, don't run checkHandlePosition, then the handle can be placed in between steps (#436)
         function setHandle(handleNumber, to, lookBackward, lookForward, exactInput) {
-            if (!exactInput){
+            if (!exactInput) {
                 to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
             }
 
@@ -2389,7 +2388,13 @@
 
             // First pass, without lookAhead but with lookBackward. Values are set from left to right.
             scope_HandleNumbers.forEach(function(handleNumber) {
-                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false, options.exactInput);
+                setHandle(
+                    handleNumber,
+                    resolveToValue(values[handleNumber], handleNumber),
+                    true,
+                    false,
+                    options.exactInput
+                );
             });
 
             var i = scope_HandleNumbers.length === 1 ? 0 : 1;
