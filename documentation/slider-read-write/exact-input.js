@@ -1,6 +1,6 @@
-var rangeSlider = document.getElementById('slider-exact-input');
+var slider = document.getElementById('slider-exact-input');
 
-noUiSlider.create(rangeSlider, {
+noUiSlider.create(slider, {
     start: 3000,
     exactInput: true,
     range: {

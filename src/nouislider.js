@@ -12,7 +12,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.6.1";
+    var VERSION = "%%REPLACE_THIS_WITH_VERSION%%";
 
     //region Helper Methods
 
@@ -942,11 +942,6 @@
         validateFormat(entry);
     }
 
-    function testExactInput(parsed, entry) {
-        parsed.exactInput = entry;
-        if (typeof entry !== "boolean") throw new Error("noUiSlider: 'exactInput' must be boolean.");
-    }
-
     function testKeyboardSupport(parsed, entry) {
         parsed.keyboardSupport = entry;
 
@@ -1023,7 +1018,6 @@
             behaviour: { r: true, t: testBehaviour },
             ariaFormat: { r: false, t: testAriaFormat },
             format: { r: false, t: testFormat },
-            exactInput: { r: false, t: testExactInput },
             tooltips: { r: false, t: testTooltips },
             keyboardSupport: { r: true, t: testKeyboardSupport },
             documentElement: { r: false, t: testDocumentElement },
@@ -1036,7 +1030,6 @@
             direction: "ltr",
             behaviour: "tap",
             orientation: "horizontal",
-            exactInput: false,
             keyboardSupport: true,
             cssPrefix: "noUi-",
             cssClasses: cssClasses,
@@ -2373,7 +2366,7 @@
         }
 
         // Set the slider value.
-        function valueSet(input, fireSetEvent) {
+        function valueSet(input, fireSetEvent, exactInput) {
             var values = asArray(input);
             var isInit = scope_Locations[0] === undefined;
 
@@ -2388,13 +2381,7 @@
 
             // First pass, without lookAhead but with lookBackward. Values are set from left to right.
             scope_HandleNumbers.forEach(function(handleNumber) {
-                setHandle(
-                    handleNumber,
-                    resolveToValue(values[handleNumber], handleNumber),
-                    true,
-                    false,
-                    options.exactInput
-                );
+                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false, exactInput);
             });
 
             var i = scope_HandleNumbers.length === 1 ? 0 : 1;
@@ -2403,7 +2390,7 @@
             // Iterate all handles to ensure constraints are applied for the entire slider (Issue #1009)
             for (; i < scope_HandleNumbers.length; ++i) {
                 scope_HandleNumbers.forEach(function(handleNumber) {
-                    setHandle(handleNumber, scope_Locations[handleNumber], true, true, options.exactInput);
+                    setHandle(handleNumber, scope_Locations[handleNumber], true, true, exactInput);
                 });
             }
 
@@ -2425,7 +2412,7 @@
         }
 
         // Set value for a single handle
-        function valueSetHandle(handleNumber, value, fireSetEvent) {
+        function valueSetHandle(handleNumber, value, fireSetEvent, exactInput) {
             // Ensure numeric input
             handleNumber = Number(handleNumber);
 
@@ -2435,7 +2422,7 @@
 
             // Look both backward and forward, since we don't want this handle to "push" other handles (#960);
             //setHandle 5th parameter is notCheckHandlePosition, enable it will allow the handle to sit in between steps (#436)
-            setHandle(handleNumber, resolveToValue(value, handleNumber), true, true, options.exactInput);
+            setHandle(handleNumber, resolveToValue(value, handleNumber), true, true, exactInput);
 
             fireEvent("update", handleNumber);
 
