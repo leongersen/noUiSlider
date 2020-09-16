@@ -1,3 +1,4 @@
+/*! nouislider - 14.6.1 - 8/17/2020 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -2297,11 +2298,8 @@
         }
 
         // Test suggested values and apply margin, step.
-        // if exactInput is true, don't run checkHandlePosition, then the handle can be placed in between steps (#436)
-        function setHandle(handleNumber, to, lookBackward, lookForward, exactInput) {
-            if (!exactInput) {
-                to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
-            }
+        function setHandle(handleNumber, to, lookBackward, lookForward) {
+            to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
 
             if (to === false) {
                 return false;
@@ -2366,7 +2364,7 @@
         }
 
         // Set the slider value.
-        function valueSet(input, fireSetEvent, exactInput) {
+        function valueSet(input, fireSetEvent) {
             var values = asArray(input);
             var isInit = scope_Locations[0] === undefined;
 
@@ -2381,7 +2379,7 @@
 
             // First pass, without lookAhead but with lookBackward. Values are set from left to right.
             scope_HandleNumbers.forEach(function(handleNumber) {
-                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false, exactInput);
+                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
             });
 
             var i = scope_HandleNumbers.length === 1 ? 0 : 1;
@@ -2390,7 +2388,7 @@
             // Iterate all handles to ensure constraints are applied for the entire slider (Issue #1009)
             for (; i < scope_HandleNumbers.length; ++i) {
                 scope_HandleNumbers.forEach(function(handleNumber) {
-                    setHandle(handleNumber, scope_Locations[handleNumber], true, true, exactInput);
+                    setHandle(handleNumber, scope_Locations[handleNumber], true, true);
                 });
             }
 
@@ -2412,7 +2410,7 @@
         }
 
         // Set value for a single handle
-        function valueSetHandle(handleNumber, value, fireSetEvent, exactInput) {
+        function valueSetHandle(handleNumber, value, fireSetEvent) {
             // Ensure numeric input
             handleNumber = Number(handleNumber);
 
@@ -2421,8 +2419,7 @@
             }
 
             // Look both backward and forward, since we don't want this handle to "push" other handles (#960);
-            //setHandle 5th parameter is notCheckHandlePosition, enable it will allow the handle to sit in between steps (#436)
-            setHandle(handleNumber, resolveToValue(value, handleNumber), true, true, exactInput);
+            setHandle(handleNumber, resolveToValue(value, handleNumber), true, true);
 
             fireEvent("update", handleNumber);
 

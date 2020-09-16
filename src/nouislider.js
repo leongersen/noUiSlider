@@ -2421,7 +2421,7 @@
             }
 
             // Look both backward and forward, since we don't want this handle to "push" other handles (#960);
-            //setHandle 5th parameter is notCheckHandlePosition, enable it will allow the handle to sit in between steps (#436)
+            // The exactInput argument can be used to ignore slider stepping (#436)
             setHandle(handleNumber, resolveToValue(value, handleNumber), true, true, exactInput);
 
             fireEvent("update", handleNumber);
