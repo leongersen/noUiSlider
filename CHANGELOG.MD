@@ -1,5 +1,9 @@
 # Changelog
 
+### 14.6.2 (*2020-09-16*)
+- Fixed: Ignore erroneous mouse events on taps for iOS 13.4 (#1095);
+- Added: `exactInput` argument to `set` and `setHandle` methods (#436, #1094);
+
 ### 14.6.1 (*2020-08-17*)
 - Fixed: Pips in count mode ignores pip at end of range (#1088);
 
