@@ -1639,6 +1639,13 @@
                 pointer = true;
             }
 
+            // Erroneous events seem to be passed in occasionally on iOS/iPadOS after user finishes interacting with
+            // the slider. They appear to be of type MouseEvent, yet they don't have usual properties set. Ignore
+            // events that have no touches or buttons associated with them. (#1057, #1079, #1095)
+            if (e.type === "mousedown" && !e.buttons && !e.touches) {
+                return false;
+            }
+
             // The only thing one handle should be concerned about is the touches that originated on top of it.
             if (touch) {
                 // Returns true if a touch originated on the target.
@@ -1879,13 +1886,6 @@
 
         // Move closest handle to tapped location.
         function eventTap(event) {
-            // Erroneous events seem to be passed in occasionally on iOS/iPadOS after user finishes interacting with
-            // the slider. They appear to be of type MouseEvent, yet they don't have usual properties set. Ignore tap
-            // events that have no touches or buttons associated with them.
-            if (!event.buttons && !event.touches) {
-                return false;
-            }
-
             // The tap event shouldn't propagate up
             event.stopPropagation();
 
