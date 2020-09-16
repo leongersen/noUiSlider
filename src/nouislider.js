@@ -2297,8 +2297,11 @@
         }
 
         // Test suggested values and apply margin, step.
-        function setHandle(handleNumber, to, lookBackward, lookForward) {
-            to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
+        // if exactInput is true, don't run checkHandlePosition, then the handle can be placed in between steps (#436)
+        function setHandle(handleNumber, to, lookBackward, lookForward, exactInput) {
+            if (!exactInput) {
+                to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
+            }
 
             if (to === false) {
                 return false;
@@ -2363,7 +2366,7 @@
         }
 
         // Set the slider value.
-        function valueSet(input, fireSetEvent) {
+        function valueSet(input, fireSetEvent, exactInput) {
             var values = asArray(input);
             var isInit = scope_Locations[0] === undefined;
 
@@ -2378,7 +2381,7 @@
 
             // First pass, without lookAhead but with lookBackward. Values are set from left to right.
             scope_HandleNumbers.forEach(function(handleNumber) {
-                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
+                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false, exactInput);
             });
 
             var i = scope_HandleNumbers.length === 1 ? 0 : 1;
@@ -2387,7 +2390,7 @@
             // Iterate all handles to ensure constraints are applied for the entire slider (Issue #1009)
             for (; i < scope_HandleNumbers.length; ++i) {
                 scope_HandleNumbers.forEach(function(handleNumber) {
-                    setHandle(handleNumber, scope_Locations[handleNumber], true, true);
+                    setHandle(handleNumber, scope_Locations[handleNumber], true, true, exactInput);
                 });
             }
 
@@ -2409,7 +2412,7 @@
         }
 
         // Set value for a single handle
-        function valueSetHandle(handleNumber, value, fireSetEvent) {
+        function valueSetHandle(handleNumber, value, fireSetEvent, exactInput) {
             // Ensure numeric input
             handleNumber = Number(handleNumber);
 
@@ -2418,7 +2421,8 @@
             }
 
             // Look both backward and forward, since we don't want this handle to "push" other handles (#960);
-            setHandle(handleNumber, resolveToValue(value, handleNumber), true, true);
+            // The exactInput argument can be used to ignore slider stepping (#436)
+            setHandle(handleNumber, resolveToValue(value, handleNumber), true, true, exactInput);
 
             fireEvent("update", handleNumber);
 

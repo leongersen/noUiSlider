@@ -42,6 +42,8 @@
 
         <p>Passing <code>null</code> as the value to <code>setHandle</code> will leave the handle unchanged.</p>
 
+        <p>Both the <code>set</code> and <code>setHandle</code> methods have an <code>exactInput</code> argument, which can be used to ignore the stepping configured for the slider.</p>
+
 		<p>To return to the initial slider values, the <code>.reset()</code> method can be used. This will <strong>only</strong> reset the slider <i>values</i>.</p>
 	</div>
 
