@@ -2098,6 +2098,12 @@
             }
         }
 
+        function isInternalNamespace(namespace) {
+            return Object.keys(INTERNAL_EVENT_NS)
+                    .map(key=>INTERNAL_EVENT_NS[key]) // legacy compatibility version of object.values
+                    .indexOf(namespace) > -1;
+        }
+
         // Undo attachment of event
         function removeEvent(namespacedEvent) {
             var event = namespacedEvent && namespacedEvent.split(".")[0];
@@ -2108,7 +2114,7 @@
                 var tNamespace = bind.substring(tEvent.length);
                 if ((!event || event === tEvent) && (!namespace || namespace === tNamespace)) {
                     // only delete protected internal event if intentional
-                    if (Object.values(INTERNAL_EVENT_NS).indexOf(tNamespace) === -1 || (namespace === tNamespace)) { 
+                    if (!isInternalNamespace(tNamespace) || (namespace === tNamespace)) { 
                         delete scope_Events[bind];
                     }
                 }
@@ -2455,8 +2461,8 @@
         // Removes classes from the root and empties it.
         function destroy() {
             // remove protected internal listeners
-            Object.values(INTERNAL_EVENT_NS).forEach(function (ns) {
-                removeEvent(ns);
+            Object.keys(INTERNAL_EVENT_NS).forEach(function (ns) {
+                removeEvent(INTERNAL_EVENT_NS[ns]);
             })
             
             for (var key in options.cssClasses) {
