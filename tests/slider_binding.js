@@ -1,6 +1,6 @@
 QUnit.test("Binding", function (assert) {
 
-    assert.expect(10);
+    assert.expect(15);
 
     document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
@@ -47,6 +47,11 @@ QUnit.test("Binding", function (assert) {
         assert.ok(true);
     });
 
+    // Fires thrice because of different namespace (1 for mousedown + 2 for set) (3)
+    slider.noUiSlider.on('set.othernamespace', function(values, handle) {
+        assert.ok(true);
+    });
+
     // Fires once on click (1)
     slider.noUiSlider.on('change.namespace', function (values, handle) {
         assert.ok(true);
@@ -65,6 +70,17 @@ QUnit.test("Binding", function (assert) {
         };
     }
 
+    function getAriaValues() {
+        var domAriaValues = [];
+        var handlesArray = Array.prototype.slice.call(slider.querySelectorAll('.noUi-handle'));
+        handlesArray.forEach(function(handle) {
+            domAriaValues.push(
+                Number( handle.getAttribute('aria-valuenow') )
+            );
+        });
+        return domAriaValues;
+    }
+
     var done = assert.async();
 
     // Do this async, because we can't click the slider before it paints.
@@ -74,9 +90,21 @@ QUnit.test("Binding", function (assert) {
 
         slider.noUiSlider.off('.namespace');
 
-        // Doesn't trigger 'set' again
+        // Should only trigger different namespace
         slider.noUiSlider.set([5, 7]);
-        done();
 
+        slider.noUiSlider.off('.othernamespace');
+
+        slider.noUiSlider.set([1, 7]);
+        // confirm aria value update (1)
+        assert.deepEqual(getAriaValues(), [1, 7]);
+        // remove all listeners
+        slider.noUiSlider.off();
+        // modify slider value after removing all listeners
+        slider.noUiSlider.set([1, 6]);
+        // check if internal listeners are kept as expected  (1)
+        assert.deepEqual(getAriaValues(), [1, 6]);
+
+        done();
     }, 300);
 });
