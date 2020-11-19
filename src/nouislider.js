@@ -634,9 +634,9 @@
 
     // Namespaces of internal event listeners
     var INTERNAL_EVENT_NS = {
-        tooltips: '.__tooltips',
-        aria: '.__aria',
-    } 
+        tooltips: ".__tooltips",
+        aria: ".__aria"
+    };
 
     //endregion
 
@@ -2099,22 +2099,20 @@
         }
 
         function isInternalNamespace(namespace) {
-            return Object.keys(INTERNAL_EVENT_NS)
-                    .map(key=>INTERNAL_EVENT_NS[key]) // legacy compatibility version of object.values
-                    .indexOf(namespace) > -1;
+            return namespace === INTERNAL_EVENT_NS.aria || namespace === INTERNAL_EVENT_NS.tooltips;
         }
 
         // Undo attachment of event
         function removeEvent(namespacedEvent) {
             var event = namespacedEvent && namespacedEvent.split(".")[0];
             var namespace = event ? namespacedEvent.substring(event.length) : namespacedEvent;
-            
+
             Object.keys(scope_Events).forEach(function(bind) {
                 var tEvent = bind.split(".")[0];
                 var tNamespace = bind.substring(tEvent.length);
                 if ((!event || event === tEvent) && (!namespace || namespace === tNamespace)) {
                     // only delete protected internal event if intentional
-                    if (!isInternalNamespace(tNamespace) || (namespace === tNamespace)) { 
+                    if (!isInternalNamespace(tNamespace) || namespace === tNamespace) {
                         delete scope_Events[bind];
                     }
                 }
@@ -2461,10 +2459,9 @@
         // Removes classes from the root and empties it.
         function destroy() {
             // remove protected internal listeners
-            Object.keys(INTERNAL_EVENT_NS).forEach(function (ns) {
-                removeEvent(INTERNAL_EVENT_NS[ns]);
-            })
-            
+            removeEvent(INTERNAL_EVENT_NS.aria);
+            removeEvent(INTERNAL_EVENT_NS.tooltips);
+
             for (var key in options.cssClasses) {
                 if (!options.cssClasses.hasOwnProperty(key)) {
                     continue;

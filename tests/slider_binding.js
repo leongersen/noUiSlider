@@ -98,13 +98,12 @@ QUnit.test("Binding", function (assert) {
         slider.noUiSlider.set([1, 7]);
         // confirm aria value update (1)
         assert.deepEqual(getAriaValues(), [1, 7]);
-        // remove all listeners 
+        // remove all listeners
         slider.noUiSlider.off();
-        // modifiy slider value after removing all listeners
+        // modify slider value after removing all listeners
         slider.noUiSlider.set([1, 6]);
         // check if internal listeners are kept as expected  (1)
         assert.deepEqual(getAriaValues(), [1, 6]);
-        // TODO? maybe extend to check tooltip update as well?
 
         done();
     }, 300);
