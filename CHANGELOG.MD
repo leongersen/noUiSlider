@@ -1,5 +1,8 @@
 # Changelog
 
+### 14.6.3 (*2020-11-19*)
+- Fixed: Fixed removing namespaced event listeners, internal listeners getting removed (#1109);
+
 ### 14.6.2 (*2020-09-16*)
 - Fixed: Ignore erroneous mouse events on taps for iOS 13.4 (#1095);
 - Added: `exactInput` argument to `set` and `setHandle` methods (#436, #1094);

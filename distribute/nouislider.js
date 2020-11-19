@@ -1,4 +1,4 @@
-/*! nouislider - 14.6.2 - 9/16/2020 */
+/*! nouislider - 14.6.3 - 11/19/2020 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.6.2";
+    var VERSION = "14.6.3";
 
     //region Helper Methods
 
@@ -633,6 +633,12 @@
         valueSub: "value-sub"
     };
 
+    // Namespaces of internal event listeners
+    var INTERNAL_EVENT_NS = {
+        tooltips: ".__tooltips",
+        aria: ".__aria"
+    };
+
     //endregion
 
     function validateFormat(entry) {
@@ -1243,7 +1249,7 @@
 
         function removeTooltips() {
             if (scope_Tooltips) {
-                removeEvent("update.tooltips");
+                removeEvent("update" + INTERNAL_EVENT_NS.tooltips);
                 scope_Tooltips.forEach(function(tooltip) {
                     if (tooltip) {
                         removeElement(tooltip);
@@ -1260,7 +1266,7 @@
             // Tooltips are added with options.tooltips in original order.
             scope_Tooltips = scope_Handles.map(addTooltip);
 
-            bindEvent("update.tooltips", function(values, handleNumber, unencoded) {
+            bindEvent("update" + INTERNAL_EVENT_NS.tooltips, function(values, handleNumber, unencoded) {
                 if (!scope_Tooltips[handleNumber]) {
                     return;
                 }
@@ -1276,7 +1282,8 @@
         }
 
         function aria() {
-            bindEvent("update", function(values, handleNumber, unencoded, tap, positions) {
+            removeEvent("update" + INTERNAL_EVENT_NS.aria);
+            bindEvent("update" + INTERNAL_EVENT_NS.aria, function(values, handleNumber, unencoded, tap, positions) {
                 // Update Aria Values for all handles, as a change in one changes min and max values for the next.
                 scope_HandleNumbers.forEach(function(index) {
                     var handle = scope_Handles[index];
@@ -2092,17 +2099,23 @@
             }
         }
 
+        function isInternalNamespace(namespace) {
+            return namespace === INTERNAL_EVENT_NS.aria || namespace === INTERNAL_EVENT_NS.tooltips;
+        }
+
         // Undo attachment of event
         function removeEvent(namespacedEvent) {
             var event = namespacedEvent && namespacedEvent.split(".")[0];
-            var namespace = event && namespacedEvent.substring(event.length);
+            var namespace = event ? namespacedEvent.substring(event.length) : namespacedEvent;
 
             Object.keys(scope_Events).forEach(function(bind) {
                 var tEvent = bind.split(".")[0];
                 var tNamespace = bind.substring(tEvent.length);
-
                 if ((!event || event === tEvent) && (!namespace || namespace === tNamespace)) {
-                    delete scope_Events[bind];
+                    // only delete protected internal event if intentional
+                    if (!isInternalNamespace(tNamespace) || namespace === tNamespace) {
+                        delete scope_Events[bind];
+                    }
                 }
             });
         }
@@ -2446,6 +2459,10 @@
 
         // Removes classes from the root and empties it.
         function destroy() {
+            // remove protected internal listeners
+            removeEvent(INTERNAL_EVENT_NS.aria);
+            removeEvent(INTERNAL_EVENT_NS.tooltips);
+
             for (var key in options.cssClasses) {
                 if (!options.cssClasses.hasOwnProperty(key)) {
                     continue;
