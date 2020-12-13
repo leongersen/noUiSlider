@@ -869,6 +869,11 @@
         }
     }
 
+    function testDragAllHandles(parsed, entry) {
+        // Set if all handles are to be dragged
+        parsed.dragAllHandles = !!entry;
+    }
+
     function testBehaviour(parsed, entry) {
         // Make sure the input is a string.
         if (typeof entry !== "string") {
@@ -885,8 +890,12 @@
         var unconstrained = entry.indexOf("unconstrained") >= 0;
 
         if (fixed) {
-            if (parsed.handles !== 2) {
-                throw new Error("noUiSlider (" + VERSION + "): 'fixed' behaviour must be used with 2 handles");
+            if (parsed.handles !== 2 && !parsed.dragAllHandles) {
+                throw new Error(
+                    "noUiSlider (" +
+                        VERSION +
+                        "): 'fixed' behaviour must be used with 2 handles or dragAllHandles property set to true"
+                );
             }
 
             // Use margin to enforce fixed state
@@ -1021,6 +1030,7 @@
             margin: { r: false, t: testMargin },
             limit: { r: false, t: testLimit },
             padding: { r: false, t: testPadding },
+            dragAllHandles: { r: false, t: testDragAllHandles },
             behaviour: { r: true, t: testBehaviour },
             ariaFormat: { r: false, t: testAriaFormat },
             format: { r: false, t: testFormat },
@@ -1040,7 +1050,8 @@
             cssPrefix: "noUi-",
             cssClasses: cssClasses,
             keyboardPageMultiplier: 5,
-            keyboardDefaultStep: 10
+            keyboardDefaultStep: 10,
+            dragAllHandles: false
         };
 
         // AriaFormat defaults to regular format, if any.
@@ -2063,6 +2074,8 @@
                     var handleBefore = scope_Handles[index - 1];
                     var handleAfter = scope_Handles[index];
                     var eventHolders = [connect];
+                    var handlesToDrag = [handleBefore, handleAfter];
+                    var handleNumbersToDrag = [index - 1, index];
 
                     addClass(connect, options.cssClasses.draggable);
 
@@ -2075,10 +2088,19 @@
                         eventHolders.push(handleAfter.children[0]);
                     }
 
+                    // Check for the option dragAllHandles to see if
+                    // must drag all handles at the same time
+                    if (originalOptions.dragAllHandles) {
+                        handleNumbersToDrag = [0];
+                        while (handleNumbersToDrag.length < scope_Handles.length) {
+                            handleNumbersToDrag.push(handleNumbersToDrag.length);
+                        }
+                    }
+
                     eventHolders.forEach(function(eventHolder) {
                         attachEvent(actions.start, eventHolder, eventStart, {
-                            handles: [handleBefore, handleAfter],
-                            handleNumbers: [index - 1, index]
+                            handles: handlesToDrag,
+                            handleNumbers: handleNumbersToDrag
                         });
                     });
                 });
