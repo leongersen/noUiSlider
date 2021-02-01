@@ -1101,6 +1101,7 @@
         var scope_Connects;
         var scope_Pips;
         var scope_Tooltips;
+        var scope_Inputs;
 
         // Slider state values
         var scope_Spectrum = options.spectrum;
