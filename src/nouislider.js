@@ -1180,12 +1180,25 @@
             return addNodeTo(base, options.cssClasses.connect);
         }
 
+        // Appends input elements to target element.
+        function addInput(inputName){
+            var inputElement = document.createElement('input')
+
+            inputElement.style.display = 'none';
+            inputElement.name = inputName;
+
+            scope_Inputs.push(inputElement);
+            scope_Target.appendChild(inputElement);
+            return inputElement;
+        }
+
         // Add handles to the slider base.
         function addElements(connectOptions, base) {
             var connectBase = addNodeTo(base, options.cssClasses.connects);
 
             scope_Handles = [];
             scope_Connects = [];
+            scope_Inputs = [];
 
             scope_Connects.push(addConnect(connectBase, connectOptions[0]));
 
@@ -1198,6 +1211,10 @@
                 scope_HandleNumbers[i] = i;
                 scope_Connects.push(addConnect(connectBase, connectOptions[i + 1]));
             }
+
+            // Create input elements for each handle
+            var inputNames = originalOptions.inputs;
+            inputNames.forEach(addInput)
         }
 
         // Initialize a single slider.
@@ -2281,6 +2298,12 @@
             return options.dir ? 100 - a - b : a;
         }
 
+        // Update input element values
+        function updateInputValue(handleNumber) {
+            const parsedValue = options.format ? options.format.to(scope_Values[handleNumber]) : scope_Values[handleNumber];
+            scope_Inputs[handleNumber].value = parsedValue;
+        }
+
         // Updates scope_Locations and scope_Values, updates visual state
         function updateHandlePosition(handleNumber, to) {
             // Update locations.
@@ -2296,6 +2319,11 @@
 
             updateConnect(handleNumber);
             updateConnect(handleNumber + 1);
+
+            // Update input element values
+            if (scope_Inputs) {
+                updateInputValue(handleNumber);
+            }
         }
 
         // Handles before the slider middle are stacked later = higher,
