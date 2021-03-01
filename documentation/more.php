@@ -198,7 +198,7 @@
 					</tr>
 					<tr>
 						<td><code>.noUi-touch-area</code></td>
-						<td>An empty div withing <code>.noUi-handle</code>. Can be styled larger if desired.</td>
+						<td>An empty div within <code>.noUi-handle</code>. Can be styled larger if desired.</td>
 					</tr>
 					<tr>
 						<td><code>.noUi-connect</code></td>
