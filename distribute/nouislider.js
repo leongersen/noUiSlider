@@ -1,4 +1,4 @@
-/*! nouislider - 14.6.3 - 11/19/2020 */
+/*! nouislider - 14.6.4 - 3/18/2021 */
 (function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
@@ -13,7 +13,7 @@
 })(function() {
     "use strict";
 
-    var VERSION = "14.6.3";
+    var VERSION = "14.6.4";
 
     //region Helper Methods
 
@@ -2599,7 +2599,7 @@
 
             // Invalidate the current positioning so valueSet forces an update.
             scope_Locations = [];
-            valueSet(optionsToUpdate.start || v, fireSetEvent);
+            valueSet(isSet(optionsToUpdate.start) ? optionsToUpdate.start : v, fireSetEvent);
         }
 
         // Initialization steps

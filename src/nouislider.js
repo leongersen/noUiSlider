@@ -2598,7 +2598,7 @@
 
             // Invalidate the current positioning so valueSet forces an update.
             scope_Locations = [];
-            valueSet(optionsToUpdate.start || v, fireSetEvent);
+            valueSet(isSet(optionsToUpdate.start) ? optionsToUpdate.start : v, fireSetEvent);
         }
 
         // Initialization steps

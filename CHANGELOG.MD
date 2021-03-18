@@ -1,5 +1,8 @@
 # Changelog
 
+### 14.6.4 (*2021-03-18*)
+- Fixed: Fixed `updateOptions` with falsy value for `start` (#1127);
+
 ### 14.6.3 (*2020-11-19*)
 - Fixed: Fixed removing namespaced event listeners, internal listeners getting removed (#1109);
 
