@@ -14,12 +14,15 @@
 <script>
 	var slider = document.getElementById('slider');
 	noUiSlider.create(slider, {
-		start: [5],
+		start: [2, 5, 8],
 		step: 1,
+		behaviour: 'drag',
+		dragAllHandles: true,
+		connect: true,
 		range: {
 			min: [0],
 			max: [10]
-		}
+		},
 	});
 	
 	slider.noUiSlider.on('hover', function( value ){

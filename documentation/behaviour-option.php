@@ -112,6 +112,22 @@
 	</div>
 </section>
 
+<?php sect('drag-all'); ?>
+<h2>Drag All Handles</h2>
+<section>
+
+	<div class="view">
+		<p>If you want to drag all handles when you have more than two, you can set the <code>dragAllHandles</code> option to <strong>true</strong>. The <code>slide</code> event fires for all handles when dragging the range.</p>
+		<div class="example">
+			<div id="drag-all"></div>
+			<?php run('drag-all'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('drag-all'); ?>
+	</div>
+</section>
 
 <?php sect('fixed'); ?>
 <h2>Fixed dragging</h2>
