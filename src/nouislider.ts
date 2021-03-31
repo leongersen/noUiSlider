@@ -1,15 +1,4 @@
-(function(factory) {
-    if (typeof define === "function" && define.amd) {
-        // AMD. Register as an anonymous module.
-        define([], factory);
-    } else if (typeof exports === "object") {
-        // Node/CommonJS
-        module.exports = factory();
-    } else {
-        // Browser globals
-        window.noUiSlider = factory();
-    }
-})(function() {
+
     "use strict";
 
     var VERSION = "%%REPLACE_THIS_WITH_VERSION%%";
@@ -1003,7 +992,7 @@
             animationDuration: 300,
             ariaFormat: defaultFormatter,
             format: defaultFormatter
-        };
+        } as any;
 
         // Tests are executed in the order they are presented here.
         var tests = {
@@ -1072,7 +1061,7 @@
         // Assume use of -webkit- if unprefixed and -ms- are not supported.
         // https://caniuse.com/#feat=transforms2d
         var d = document.createElement("div");
-        var msPrefix = d.style.msTransform !== undefined;
+        var msPrefix = (d.style as any).msTransform !== undefined;
         var noPrefix = d.style.transform !== undefined;
 
         parsed.transformRule = noPrefix ? "transform" : msPrefix ? "msTransform" : "webkitTransform";
@@ -1678,7 +1667,7 @@
                     y = targetTouches[0].pageY;
                 } else {
                     // In the other cases, find on changedTouches is enough.
-                    var targetTouch = Array.prototype.find.call(e.changedTouches, isTouchOnTarget);
+                    var targetTouch = (Array.prototype as any).find.call(e.changedTouches, isTouchOnTarget);
 
                     // Cancel if the target touch has not moved.
                     if (!targetTouch) {
@@ -2120,7 +2109,7 @@
         }
 
         // External event handling
-        function fireEvent(eventName, handleNumber, tap) {
+        function fireEvent(eventName, handleNumber, tap?) {
             Object.keys(scope_Events).forEach(function(targetEvent) {
                 var eventType = targetEvent.split(".")[0];
 
@@ -2311,7 +2300,7 @@
 
         // Test suggested values and apply margin, step.
         // if exactInput is true, don't run checkHandlePosition, then the handle can be placed in between steps (#436)
-        function setHandle(handleNumber, to, lookBackward, lookForward, exactInput) {
+        function setHandle(handleNumber, to, lookBackward, lookForward, exactInput?) {
             if (!exactInput) {
                 to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
             }
@@ -2379,7 +2368,7 @@
         }
 
         // Set the slider value.
-        function valueSet(input, fireSetEvent, exactInput) {
+        function valueSet(input, fireSetEvent?, exactInput?) {
             var values = asArray(input);
             var isInit = scope_Locations[0] === undefined;
 
@@ -2671,7 +2660,7 @@
         }
 
         // Test the options and create the slider environment;
-        var options = testOptions(originalOptions, target);
+        var options = testOptions(originalOptions);
         var api = scope(target, options, originalOptions);
 
         target.noUiSlider = api;
@@ -2680,7 +2669,7 @@
     }
 
     // Use an object instead of a function for future expandability;
-    return {
+    export var noUiSlider = {
         // Exposed for unit testing, don't use this in your application.
         __spectrum: Spectrum,
         version: VERSION,
@@ -2689,4 +2678,3 @@
         cssClasses: cssClasses,
         create: initialize
     };
-});

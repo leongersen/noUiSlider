@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "umd",
+    "lib": ["es5", "dom"],
+    "target": "es5",
+    "outDir": "distribute"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
