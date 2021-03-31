@@ -1,4 +1,3 @@
-
 "use strict";
 
 var VERSION = "%%REPLACE_THIS_WITH_VERSION%%";
@@ -48,9 +47,7 @@ function offset(elem, orientation) {
         pageOffset.x = 0;
     }
 
-    return orientation
-        ? rect.top + pageOffset.y - docElem.clientTop
-        : rect.left + pageOffset.x - docElem.clientLeft;
+    return orientation ? rect.top + pageOffset.y - docElem.clientTop : rect.left + pageOffset.x - docElem.clientLeft;
 }
 
 // Checks whether a value is numerical.
@@ -109,9 +106,7 @@ function removeClass(el, className) {
 
 // https://plainjs.com/javascript/attributes/adding-removing-and-testing-for-classes-9/
 function hasClass(el, className) {
-    return el.classList
-        ? el.classList.contains(className)
-        : new RegExp("\\b" + className + "\\b").test(el.className);
+    return el.classList ? el.classList.contains(className) : new RegExp("\\b" + className + "\\b").test(el.className);
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
@@ -123,11 +118,7 @@ function getPageOffset(doc) {
         : isCSS1Compat
             ? doc.documentElement.scrollLeft
             : doc.body.scrollLeft;
-    var y = supportPageOffset
-        ? window.pageYOffset
-        : isCSS1Compat
-            ? doc.documentElement.scrollTop
-            : doc.body.scrollTop;
+    var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? doc.documentElement.scrollTop : doc.body.scrollTop;
 
     return {
         x: x,
@@ -793,9 +784,7 @@ function testLimit(parsed, entry) {
 
     if (!parsed.limit || parsed.handles < 2) {
         throw new Error(
-            "noUiSlider (" +
-                VERSION +
-                "): 'limit' option is only supported on linear sliders with 2 or more handles."
+            "noUiSlider (" + VERSION + "): 'limit' option is only supported on linear sliders with 2 or more handles."
         );
     }
 }
@@ -883,9 +872,7 @@ function testBehaviour(parsed, entry) {
     }
 
     if (unconstrained && (parsed.margin || parsed.limit)) {
-        throw new Error(
-            "noUiSlider (" + VERSION + "): 'unconstrained' behaviour cannot be used with margin or limit"
-        );
+        throw new Error("noUiSlider (" + VERSION + "): 'unconstrained' behaviour cannot be used with margin or limit");
     }
 
     parsed.events = {

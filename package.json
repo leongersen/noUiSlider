@@ -12,7 +12,7 @@
     "_build_js": "npm run _write_js && npm run _write_js_compress",
     "_build_css": "npm run _write_css && npm run _write_css_compress",
     "_banner": "bannerize distribute/* --banner=banner.ejs",
-    "format": "prettier src/nouislider.ts --write --print-width=120",
+    "format": "prettier src/nouislider.ts --write --config .prettierrc",
     "lint": "eslint src/nouislider.ts",
     "build": "npm run _build_js && npm run _build_css && npm run _banner",
     "docs": "cd ../ && php -S localhost:80 nouislider/documentation/_run/router.php"
