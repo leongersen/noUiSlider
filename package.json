@@ -5,7 +5,7 @@
   "style": "distribute/nouislider.min.css",
   "license": "MIT",
   "scripts": {
-    "_write_js": "tsc && node replace-in-file --quiet --configFile=replace-in-file.js",
+    "_write_js": "tsc && replace-in-file --quiet --configFile=replace-in-file-config.js",
     "_write_js_compress": "uglifyjs distribute/nouislider.js --compress --mangle --output distribute/nouislider.min.js",
     "_write_css": "lessc src/nouislider.less distribute/nouislider.css",
     "_write_css_compress": "lessc src/nouislider.less distribute/nouislider.min.css --clean-css",
@@ -25,7 +25,7 @@
     "less": "^3.9.0",
     "less-plugin-clean-css": "^1.5.1",
     "prettier": "^1.14.2",
-    "replace-in-file": "^3.4.2",
+    "replace-in-file": "^6.2.0",
     "typescript": "^4.2.3",
     "uglify-js": "^3.4.9"
   },
