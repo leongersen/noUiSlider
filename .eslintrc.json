@@ -12,7 +12,8 @@
         "no-unused-vars": "off",
         "no-undef": "off",
         "one-var": ["error", "never"],
-        "no-var": "off"
+        "no-var": "off",
+        "prefer-spread": "off"
     },
     "env": {
         "browser": true,
