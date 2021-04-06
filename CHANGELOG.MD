@@ -1,5 +1,8 @@
 # Changelog
 
+### 14.7.0 (*2021-04-06*)
+- noUiSlider is now build with Typescript. This release contains no further changes.
+
 ### 14.6.4 (*2021-03-18*)
 - Fixed: Fixed `updateOptions` with falsy value for `start` (#1127);
 
