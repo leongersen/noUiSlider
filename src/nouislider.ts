@@ -131,20 +131,20 @@ const VERSION = "%%REPLACE_THIS_WITH_VERSION%%";
 
 //region Helper Methods
 
-function isValidFormatter(entry) {
+function isValidFormatter(entry): boolean {
     return typeof entry === "object" && typeof entry.to === "function" && typeof entry.from === "function";
 }
 
-function removeElement(el) {
+function removeElement(el: HTMLElement): void {
     el.parentElement.removeChild(el);
 }
 
-function isSet(value) {
+function isSet(value): boolean {
     return value !== null && value !== undefined;
 }
 
 // Bindable version
-function preventDefault(e) {
+function preventDefault(e: Event): void {
     e.preventDefault();
 }
 
@@ -161,7 +161,7 @@ function closest(value: number, to: number): number {
 }
 
 // Current position of an element relative to the document.
-function offset(elem, orientation) {
+function offset(elem: HTMLElement, orientation: boolean): number {
     const rect = elem.getBoundingClientRect();
     const doc = elem.ownerDocument;
     const docElem = doc.documentElement;
@@ -178,12 +178,12 @@ function offset(elem, orientation) {
 }
 
 // Checks whether a value is numerical.
-function isNumeric(a) {
+function isNumeric(a: string|number): boolean {
     return typeof a === "number" && !isNaN(a) && isFinite(a);
 }
 
 // Sets a class and removes it after [duration] ms.
-function addClassFor(element, className, duration) {
+function addClassFor(element: HTMLElement, className: string, duration: number): void {
     if (duration > 0) {
         addClass(element, className);
         setTimeout(function() {
@@ -193,25 +193,25 @@ function addClassFor(element, className, duration) {
 }
 
 // Limits a value to 0 - 100
-function limit(a) {
+function limit(a: number): number {
     return Math.max(Math.min(a, 100), 0);
 }
 
 // Wraps a variable as an array, if it isn't one yet.
 // Note that an input array is returned by reference!
-function asArray(a) {
+function asArray<Type>(a: Type|Type[]): Type[] {
     return Array.isArray(a) ? a : [a];
 }
 
 // Counts decimals
-function countDecimals(numStr) {
+function countDecimals(numStr: string|number): number {
     numStr = String(numStr);
     const pieces = numStr.split(".");
     return pieces.length > 1 ? pieces[1].length : 0;
 }
 
 // http://youmightnotneedjquery.com/#add_class
-function addClass(el, className) {
+function addClass(el: HTMLElement, className: string): void {
     if (el.classList && !/\s/.test(className)) {
         el.classList.add(className);
     } else {
@@ -220,7 +220,7 @@ function addClass(el, className) {
 }
 
 // http://youmightnotneedjquery.com/#remove_class
-function removeClass(el, className) {
+function removeClass(el: HTMLElement, className: string): void {
     if (el.classList && !/\s/.test(className)) {
         el.classList.remove(className);
     } else {
@@ -232,12 +232,12 @@ function removeClass(el, className) {
 }
 
 // https://plainjs.com/javascript/attributes/adding-removing-and-testing-for-classes-9/
-function hasClass(el, className) {
+function hasClass(el: HTMLElement, className: string): boolean {
     return el.classList ? el.classList.contains(className) : new RegExp("\\b" + className + "\\b").test(el.className);
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
-function getPageOffset(doc) {
+function getPageOffset(doc: Document): {x:number,y:number} {
     const supportPageOffset = window.pageXOffset !== undefined;
     const isCSS1Compat = (doc.compatMode || "") === "CSS1Compat";
     const x = supportPageOffset
@@ -260,7 +260,7 @@ function getPageOffset(doc) {
 // we provide a function to compute constants instead
 // of accessing window.* as soon as the module needs it
 // so that we do not compute anything if not needed
-function getActions() {
+function getActions(): {start:string,move:string,end:string} {
     // Determine the events to bind. IE11 implements pointerEvents without
     // a prefix, which breaks compatibility with the IE10 implementation.
     return window.navigator.pointerEnabled
@@ -284,7 +284,7 @@ function getActions() {
 
 // https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
 // Issue #785
-function getSupportsPassive() {
+function getSupportsPassive(): boolean {
     let supportsPassive = false;
 
     /* eslint-disable */
@@ -302,7 +302,7 @@ function getSupportsPassive() {
     return supportsPassive;
 }
 
-function getSupportsTouchActionNone() {
+function getSupportsTouchActionNone(): boolean {
     return window.CSS && CSS.supports && CSS.supports("touch-action", "none");
 }
 
