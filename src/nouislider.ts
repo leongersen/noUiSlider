@@ -178,7 +178,7 @@ function offset(elem: HTMLElement, orientation: boolean): number {
 }
 
 // Checks whether a value is numerical.
-function isNumeric(a: string|number): boolean {
+function isNumeric(a: string | number): boolean {
     return typeof a === "number" && !isNaN(a) && isFinite(a);
 }
 
@@ -199,12 +199,12 @@ function limit(a: number): number {
 
 // Wraps a variable as an array, if it isn't one yet.
 // Note that an input array is returned by reference!
-function asArray<Type>(a: Type|Type[]): Type[] {
+function asArray<Type>(a: Type | Type[]): Type[] {
     return Array.isArray(a) ? a : [a];
 }
 
 // Counts decimals
-function countDecimals(numStr: string|number): number {
+function countDecimals(numStr: string | number): number {
     numStr = String(numStr);
     const pieces = numStr.split(".");
     return pieces.length > 1 ? pieces[1].length : 0;
@@ -237,7 +237,7 @@ function hasClass(el: HTMLElement, className: string): boolean {
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
-function getPageOffset(doc: Document): {x:number,y:number} {
+function getPageOffset(doc: Document): { x: number; y: number } {
     const supportPageOffset = window.pageXOffset !== undefined;
     const isCSS1Compat = (doc.compatMode || "") === "CSS1Compat";
     const x = supportPageOffset
@@ -260,7 +260,7 @@ function getPageOffset(doc: Document): {x:number,y:number} {
 // we provide a function to compute constants instead
 // of accessing window.* as soon as the module needs it
 // so that we do not compute anything if not needed
-function getActions(): {start:string,move:string,end:string} {
+function getActions(): { start: string; move: string; end: string } {
     // Determine the events to bind. IE11 implements pointerEvents without
     // a prefix, which breaks compatibility with the IE10 implementation.
     return window.navigator.pointerEnabled
@@ -398,75 +398,6 @@ function getStep(xPct: number[], xSteps: number[], snap: boolean, value: number)
     return xPct[j - 1] + closest(value - xPct[j - 1], xSteps[j - 1]);
 }
 
-function handleEntryPoint(index, value, that) {
-    let percentage;
-
-    // Wrap numerical input in an array.
-    if (typeof value === "number") {
-        value = [value];
-    }
-
-    // Reject any invalid input, by testing whether value is an array.
-    if (!Array.isArray(value)) {
-        throw new Error("noUiSlider (" + VERSION + "): 'range' contains invalid value.");
-    }
-
-    // Covert min/max syntax to 0 and 100.
-    if (index === "min") {
-        percentage = 0;
-    } else if (index === "max") {
-        percentage = 100;
-    } else {
-        percentage = parseFloat(index);
-    }
-
-    // Check for correct input.
-    if (!isNumeric(percentage) || !isNumeric(value[0])) {
-        throw new Error("noUiSlider (" + VERSION + "): 'range' value isn't numeric.");
-    }
-
-    // Store values.
-    that.xPct.push(percentage);
-    that.xVal.push(value[0]);
-
-    // NaN will evaluate to false too, but to keep
-    // logging clear, set step explicitly. Make sure
-    // not to override the 'step' setting with false.
-    if (!percentage) {
-        if (!isNaN(value[1])) {
-            that.xSteps[0] = value[1];
-        }
-    } else {
-        that.xSteps.push(isNaN(value[1]) ? false : value[1]);
-    }
-
-    that.xHighestCompleteStep.push(0);
-}
-
-function handleStepPoint(i, n, that) {
-    // Ignore 'false' stepping.
-    if (!n) {
-        return;
-    }
-
-    // Step over zero-length ranges (#948);
-    if (that.xVal[i] === that.xVal[i + 1]) {
-        that.xSteps[i] = that.xHighestCompleteStep[i] = that.xVal[i];
-
-        return;
-    }
-
-    // Factor to range ratio
-    that.xSteps[i] =
-        fromPercentage([that.xVal[i], that.xVal[i + 1]], n, 0) / subRangeRatio(that.xPct[i], that.xPct[i + 1]);
-
-    const totalSteps = (that.xVal[i + 1] - that.xVal[i]) / that.xNumSteps[i];
-    const highestStep = Math.ceil(Number(totalSteps.toFixed(3)) - 1);
-    const step = that.xVal[i] + that.xNumSteps[i] * highestStep;
-
-    that.xHighestCompleteStep[i] = step;
-}
-
 //endregion
 
 //region Spectrum
@@ -506,7 +437,7 @@ class Spectrum {
 
         // Convert all entries to subranges.
         for (index = 0; index < ordered.length; index++) {
-            handleEntryPoint(ordered[index][1], ordered[index][0], this);
+            this.handleEntryPoint(ordered[index][1], ordered[index][0]);
         }
 
         // Store the actual step values.
@@ -515,7 +446,7 @@ class Spectrum {
 
         // Convert all numeric steps to the percentage of the subrange they represent.
         for (index = 0; index < this.xNumSteps.length; index++) {
-            handleStepPoint(index, this.xNumSteps[index], this);
+            this.handleStepPoint(index, this.xNumSteps[index]);
         }
     }
 
@@ -679,6 +610,75 @@ class Spectrum {
     // Outside testing
     public convert(value: number): number {
         return this.getStep(this.toStepping(value));
+    }
+
+    private handleEntryPoint(index: string, value: number | number[]): void {
+        let percentage;
+
+        // Wrap numerical input in an array.
+        if (typeof value === "number") {
+            value = [value];
+        }
+
+        // Reject any invalid input, by testing whether value is an array.
+        if (!Array.isArray(value)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'range' contains invalid value.");
+        }
+
+        // Covert min/max syntax to 0 and 100.
+        if (index === "min") {
+            percentage = 0;
+        } else if (index === "max") {
+            percentage = 100;
+        } else {
+            percentage = parseFloat(index);
+        }
+
+        // Check for correct input.
+        if (!isNumeric(percentage) || !isNumeric(value[0])) {
+            throw new Error("noUiSlider (" + VERSION + "): 'range' value isn't numeric.");
+        }
+
+        // Store values.
+        this.xPct.push(percentage);
+        this.xVal.push(value[0]);
+
+        // NaN will evaluate to false too, but to keep
+        // logging clear, set step explicitly. Make sure
+        // not to override the 'step' setting with false.
+        if (!percentage) {
+            if (!isNaN(value[1])) {
+                this.xSteps[0] = value[1];
+            }
+        } else {
+            this.xSteps.push(isNaN(value[1]) ? false : value[1]);
+        }
+
+        this.xHighestCompleteStep.push(0);
+    }
+
+    private handleStepPoint(i: number, n: number | false): void {
+        // Ignore 'false' stepping.
+        if (!n) {
+            return;
+        }
+
+        // Step over zero-length ranges (#948);
+        if (this.xVal[i] === this.xVal[i + 1]) {
+            this.xSteps[i] = this.xHighestCompleteStep[i] = this.xVal[i];
+
+            return;
+        }
+
+        // Factor to range ratio
+        this.xSteps[i] =
+            fromPercentage([this.xVal[i], this.xVal[i + 1]], n, 0) / subRangeRatio(this.xPct[i], this.xPct[i + 1]);
+
+        const totalSteps = (this.xVal[i + 1] - this.xVal[i]) / this.xNumSteps[i];
+        const highestStep = Math.ceil(Number(totalSteps.toFixed(3)) - 1);
+        const step = this.xVal[i] + this.xNumSteps[i] * highestStep;
+
+        this.xHighestCompleteStep[i] = step;
     }
 }
 
