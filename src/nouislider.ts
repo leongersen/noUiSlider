@@ -71,7 +71,7 @@ interface Pips {
     mode: PipsMode;
     density: number;
     values: number | number[];
-    filter: any;
+    filter: PipsFilter;
     format: Formatter;
     stepped: boolean;
 }
@@ -139,12 +139,12 @@ interface ParsedOptions {
     format?: Formatter;
 
     singleStep: number;
-    transformRule: string;
-    style: string;
-    ort: 0|1;
+    transformRule: keyof CSSStyleDeclarationIE10;
+    style: keyof CSSStyleDeclaration;
+    ort: 0 | 1;
     handles: number;
     events: Behaviour;
-    dir: 0|1;
+    dir: 0 | 1;
     spectrum: Spectrum;
 }
 
@@ -204,15 +204,18 @@ interface NearBySteps {
 
 type EventHandler = (event: BrowserEvent) => false | never;
 
-type GetResult = number | string | string[] | number[];
+type GetResult = number | string | (string | number)[];
 
 type NextStepsForHandle = [number | false | null, number | false | null];
 
 type OptionKey = (keyof Options) & (keyof ParsedOptions) & (keyof UpdatableOptions);
 
+type PipsFilter = (value: number, type: PipsType) => PipsType;
+
 type PageOffset = { x: number; y: number };
 
-type BrowserEvent = MouseEvent & TouchEvent & { pageOffset: PageOffset; points: [number, number]; cursor: boolean; calcPoint: number };
+type BrowserEvent = MouseEvent &
+    TouchEvent & { pageOffset: PageOffset; points: [number, number]; cursor: boolean; calcPoint: number };
 
 type EventCallback = (
     this: API,
@@ -258,7 +261,7 @@ function closest(value: number, to: number): number {
 }
 
 // Current position of an element relative to the document.
-function offset(elem: HTMLElement, orientation: boolean): number {
+function offset(elem: HTMLElement, orientation: 0 | 1): number {
     const rect = elem.getBoundingClientRect();
     const doc = elem.ownerDocument;
     const docElem = doc.documentElement;
@@ -1187,7 +1190,7 @@ function testCssClasses(parsed: ParsedOptions, entry: CssClasses): void {
     if (typeof parsed.cssPrefix === "string") {
         parsed.cssClasses = {};
 
-        Object.keys(entry).forEach((key: (keyof CssClasses)) => {
+        Object.keys(entry).forEach((key: keyof CssClasses) => {
             parsed.cssClasses[key] = parsed.cssPrefix + entry[key];
         });
     } else {
@@ -1286,7 +1289,7 @@ function testOptions(options: Options): ParsedOptions {
     // Pips don't move, so we can place them using left/top.
     const styles = [["left", "top"], ["right", "bottom"]];
 
-    parsed.style = styles[parsed.dir][parsed.ort];
+    parsed.style = styles[parsed.dir][parsed.ort] as keyof CSSStyleDeclaration;
 
     return parsed;
 }
@@ -1553,13 +1556,13 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         }
     }
 
-    function generateSpread(density: number, mode: PipsMode, group: number[]) {
+    function generateSpread(density: number, mode: PipsMode, group: number[]): { [key: string]: [number, PipsType] } {
         function safeIncrement(value: number, increment: number) {
             // Avoid floating point variance by dropping the smallest decimal places.
-            return Number((value + increment).toFixed(7)) / 1;
+            return Number((value + increment).toFixed(7));
         }
 
-        const indexes = {};
+        const indexes: { [key: string]: [number, PipsType] } = {};
         const firstInRange = scope_Spectrum.xVal[0];
         const lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length - 1];
         let ignoreFirst = false;
@@ -1673,18 +1676,25 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         return indexes;
     }
 
-    function addMarking(spread, filterFunc, formatter: Formatter): HTMLElement {
+    function addMarking(
+        spread: { [key: string]: [number, PipsType] },
+        filterFunc: PipsFilter,
+        formatter: Formatter
+    ): HTMLElement {
         const element = scope_Document.createElement("div");
 
-        const valueSizeClasses = [];
-        valueSizeClasses[PipsType.NoValue] = options.cssClasses.valueNormal;
-        valueSizeClasses[PipsType.LargeValue] = options.cssClasses.valueLarge;
-        valueSizeClasses[PipsType.SmallValue] = options.cssClasses.valueSub;
-
-        const markerSizeClasses = [];
-        markerSizeClasses[PipsType.NoValue] = options.cssClasses.markerNormal;
-        markerSizeClasses[PipsType.LargeValue] = options.cssClasses.markerLarge;
-        markerSizeClasses[PipsType.SmallValue] = options.cssClasses.markerSub;
+        const valueSizeClasses: Record<PipsType, string> = {
+            [PipsType.None]: "",
+            [PipsType.NoValue]: options.cssClasses.valueNormal,
+            [PipsType.LargeValue]: options.cssClasses.valueLarge,
+            [PipsType.SmallValue]: options.cssClasses.valueSub
+        };
+        const markerSizeClasses: Record<PipsType, string> = {
+            [PipsType.None]: "",
+            [PipsType.NoValue]: options.cssClasses.markerNormal,
+            [PipsType.LargeValue]: options.cssClasses.markerLarge,
+            [PipsType.SmallValue]: options.cssClasses.markerSub
+        };
 
         const valueOrientationClasses = [options.cssClasses.valueHorizontal, options.cssClasses.valueVertical];
         const markerOrientationClasses = [options.cssClasses.markerHorizontal, options.cssClasses.markerVertical];
@@ -1744,13 +1754,14 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         const mode = grid.mode;
         const density = grid.density || 1;
-        const filter = grid.filter || false;
-        const values = grid.values || false;
+        const filter: PipsFilter = grid.filter;
+        const values = grid.values;
         const stepped = grid.stepped || false;
         const group = getGroup(mode, values, stepped);
         const spread = generateSpread(density, mode, group);
-        const format = grid.format || {
-            to: Math.round
+        const format: Formatter = grid.format || {
+            to: Math.round,
+            from: Number
         };
 
         scope_Pips = scope_Target.appendChild(addMarking(spread, filter, format));
@@ -1832,11 +1843,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Provide a clean event with standardized offset values.
-    function fixEvent(
-        e: BrowserEvent,
-        pageOffset: PageOffset,
-        eventTarget: HTMLElement
-    ): BrowserEvent | false {
+    function fixEvent(e: BrowserEvent, pageOffset: PageOffset, eventTarget: HTMLElement): BrowserEvent | false {
         // Filter the event to register the type, which can be
         // touch, mouse or pointer. Offset changes need to be
         // made on an event specific basis.
@@ -2711,7 +2718,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const nearbySteps = scope_Spectrum.getNearbySteps(location);
         const value: number = scope_Values[handleNumber];
         let increment = nearbySteps.thisStep.step;
-        let decrement = null;
+        let decrement: number | false | null = null;
 
         // If snapped, directly use defined step value
         if (options.snap) {
@@ -2858,7 +2865,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
     setupSlider();
 
-    const scope_Self = {
+    const scope_Self: API = {
         destroy: destroy,
         steps: getNextSteps,
         on: bindEvent,
