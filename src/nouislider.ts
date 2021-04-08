@@ -52,7 +52,14 @@ enum PipsMode {
     Values = "values"
 }
 
-type SubRange = number|string|[number|string]|[number|string, number|string];
+enum PipsType {
+    None = -1,
+    NoValue = 0,
+    LargeValue = 1,
+    SmallValue = 2
+}
+
+type SubRange = number | string | [number | string] | [number | string, number | string];
 
 interface Range {
     min: SubRange;
@@ -63,7 +70,7 @@ interface Range {
 interface Pips {
     mode: PipsMode;
     density: number;
-    values: number;
+    values: number | number[];
     filter: any;
     format: Formatter;
     stepped: boolean;
@@ -88,6 +95,7 @@ interface Options extends UpdatableOptions {
     connect?: "lower" | "upper" | boolean | boolean[];
     orientation?: "vertical" | "horizontal";
     direction?: "ltr" | "rtl";
+    behaviour: "string";
     keyboardSupport?: boolean;
     keyboardPageMultiplier?: number;
     keyboardDefaultStep?: number;
@@ -96,6 +104,15 @@ interface Options extends UpdatableOptions {
     cssClasses?: CssClasses;
     ariaFormat?: Formatter;
     animationDuration?: number;
+}
+
+interface Behaviour {
+    tap: boolean;
+    drag: boolean;
+    fixed: boolean;
+    snap: boolean;
+    hover: boolean;
+    unconstrained: boolean;
 }
 
 interface ParsedOptions {
@@ -113,7 +130,7 @@ interface ParsedOptions {
     keyboardPageMultiplier?: number;
     keyboardDefaultStep?: number;
     documentElement?: HTMLElement;
-    cssPrefix?: string;
+    cssPrefix?: string | false;
     cssClasses?: CssClasses;
     ariaFormat?: Formatter;
     pips?: Pips;
@@ -121,14 +138,14 @@ interface ParsedOptions {
     snap?: boolean;
     format?: Formatter;
 
-    singleStep: any;
-    transformRule: any;
-    style: any;
-    ort: any;
-    handles: any;
-    events: any;
-    dir: any;
-    spectrum: any;
+    singleStep: number;
+    transformRule: string;
+    style: string;
+    ort: 0|1;
+    handles: number;
+    events: Behaviour;
+    dir: 0|1;
+    spectrum: Spectrum;
 }
 
 interface API {
@@ -154,15 +171,48 @@ interface TargetElement extends HTMLElement {
     noUiSlider?: API;
 }
 
+interface CSSStyleDeclarationIE10 extends CSSStyleDeclaration {
+    msTransform?: string;
+}
+
+interface EventData {
+    target?: HTMLElement;
+    handles?: HTMLElement[];
+    handle?: HTMLElement;
+    listeners?: [string, EventHandler][];
+    startCalcPoint?: number;
+    baseSize?: number;
+    pageOffset?: PageOffset;
+    handleNumbers?: number[];
+    buttonsProperty?: number;
+    locations?: number[];
+    doNotReject?: boolean;
+    hover?: boolean;
+}
+
+interface NearByStep {
+    startValue: number;
+    step: number | false;
+    highestStep: number;
+}
+
+interface NearBySteps {
+    stepBefore: NearByStep;
+    thisStep: NearByStep;
+    stepAfter: NearByStep;
+}
+
 type EventHandler = (event: BrowserEvent) => false | never;
 
 type GetResult = number | string | string[] | number[];
 
 type NextStepsForHandle = [number | false | null, number | false | null];
 
-type OptionKey = keyof Options & keyof ParsedOptions & keyof UpdatableOptions;
+type OptionKey = (keyof Options) & (keyof ParsedOptions) & (keyof UpdatableOptions);
 
-type BrowserEvent = MouseEvent & TouchEvent & { pageOffset: any; points: any; cursor: any; calcPoint: any };
+type PageOffset = { x: number; y: number };
+
+type BrowserEvent = MouseEvent & TouchEvent & { pageOffset: PageOffset; points: [number, number]; cursor: boolean; calcPoint: number };
 
 type EventCallback = (
     this: API,
@@ -196,7 +246,7 @@ function preventDefault(e: Event): void {
 }
 
 // Removes duplicates from an array.
-function unique(array: (number | string)[]): (number | string)[] {
+function unique<Type>(array: Type[]): Type[] {
     return array.filter(function(a) {
         return !this[a] ? (this[a] = true) : false;
     }, {});
@@ -284,7 +334,7 @@ function hasClass(el: HTMLElement, className: string): boolean {
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
-function getPageOffset(doc: Document): { x: number; y: number } {
+function getPageOffset(doc: Document): PageOffset {
     const supportPageOffset = window.pageXOffset !== undefined;
     const isCSS1Compat = (doc.compatMode || "") === "CSS1Compat";
     const x = supportPageOffset
@@ -450,10 +500,10 @@ function getStep(xPct: number[], xSteps: (number | false)[], snap: boolean, valu
 //region Spectrum
 
 class Spectrum {
-    protected xPct: number[] = [];
-    protected xVal: number[] = [];
-    protected xSteps: (number | false)[] = [];
-    protected xNumSteps: (number | false)[] = [];
+    public xPct: number[] = [];
+    public xVal: number[] = [];
+    public xSteps: (number | false)[] = [];
+    public xNumSteps: (number | false)[] = [];
     protected xHighestCompleteStep: number[] = [];
     protected snap: boolean;
 
@@ -627,7 +677,7 @@ class Spectrum {
         return (this.xVal[j] - this.xVal[j - 1]) / size;
     }
 
-    public getNearbySteps(value: number) {
+    public getNearbySteps(value: number): NearBySteps {
         const j = getJ(value, this.xPct);
 
         return {
@@ -821,7 +871,7 @@ function testStep(parsed: ParsedOptions, entry: unknown): void {
     parsed.singleStep = entry;
 }
 
-function testKeyboardPageMultiplier(parsed: ParsedOptions, entry: unknown) {
+function testKeyboardPageMultiplier(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
         throw new Error("noUiSlider (" + VERSION + "): 'keyboardPageMultiplier' is not numeric.");
     }
@@ -829,7 +879,7 @@ function testKeyboardPageMultiplier(parsed: ParsedOptions, entry: unknown) {
     parsed.keyboardPageMultiplier = entry;
 }
 
-function testKeyboardDefaultStep(parsed: ParsedOptions, entry: unknown) {
+function testKeyboardDefaultStep(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
         throw new Error("noUiSlider (" + VERSION + "): 'keyboardDefaultStep' is not numeric.");
     }
@@ -837,7 +887,7 @@ function testKeyboardDefaultStep(parsed: ParsedOptions, entry: unknown) {
     parsed.keyboardDefaultStep = entry;
 }
 
-function testRange(parsed: ParsedOptions, entry: Range) {
+function testRange(parsed: ParsedOptions, entry: Range): void {
     // Filter incorrect input.
     if (typeof entry !== "object" || Array.isArray(entry)) {
         throw new Error("noUiSlider (" + VERSION + "): 'range' is not an object.");
@@ -856,7 +906,7 @@ function testRange(parsed: ParsedOptions, entry: Range) {
     parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.singleStep);
 }
 
-function testStart(parsed: ParsedOptions, entry: unknown) {
+function testStart(parsed: ParsedOptions, entry: unknown): void {
     entry = asArray(entry);
 
     // Validate input. Values aren't tested, as the public .val method
@@ -873,7 +923,7 @@ function testStart(parsed: ParsedOptions, entry: unknown) {
     parsed.start = entry;
 }
 
-function testSnap(parsed: ParsedOptions, entry: unknown) {
+function testSnap(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "boolean") {
         throw new Error("noUiSlider (" + VERSION + "): 'snap' option must be a boolean.");
     }
@@ -882,7 +932,7 @@ function testSnap(parsed: ParsedOptions, entry: unknown) {
     parsed.snap = entry;
 }
 
-function testAnimate(parsed: ParsedOptions, entry: unknown) {
+function testAnimate(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "boolean") {
         throw new Error("noUiSlider (" + VERSION + "): 'animate' option must be a boolean.");
     }
@@ -891,7 +941,7 @@ function testAnimate(parsed: ParsedOptions, entry: unknown) {
     parsed.animate = entry;
 }
 
-function testAnimationDuration(parsed: ParsedOptions, entry: unknown) {
+function testAnimationDuration(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "number") {
         throw new Error("noUiSlider (" + VERSION + "): 'animationDuration' option must be a number.");
     }
@@ -899,7 +949,7 @@ function testAnimationDuration(parsed: ParsedOptions, entry: unknown) {
     parsed.animationDuration = entry;
 }
 
-function testConnect(parsed: ParsedOptions, entry: unknown) {
+function testConnect(parsed: ParsedOptions, entry: unknown): void {
     let connect = [false];
     let i;
 
@@ -944,7 +994,7 @@ function testOrientation(parsed: ParsedOptions, entry: unknown): void {
     }
 }
 
-function testMargin(parsed: ParsedOptions, entry: unknown) {
+function testMargin(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
         throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be numeric.");
     }
@@ -957,7 +1007,7 @@ function testMargin(parsed: ParsedOptions, entry: unknown) {
     parsed.margin = parsed.spectrum.getDistance(entry);
 }
 
-function testLimit(parsed: ParsedOptions, entry: unknown) {
+function testLimit(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
         throw new Error("noUiSlider (" + VERSION + "): 'limit' option must be numeric.");
     }
@@ -971,7 +1021,7 @@ function testLimit(parsed: ParsedOptions, entry: unknown) {
     }
 }
 
-function testPadding(parsed: ParsedOptions, entry: number|[number, number]) {
+function testPadding(parsed: ParsedOptions, entry: number | [number, number]): void {
     let index;
 
     if (!isNumeric(entry) && !Array.isArray(entry)) {
@@ -1013,7 +1063,7 @@ function testPadding(parsed: ParsedOptions, entry: number|[number, number]) {
     }
 }
 
-function testDirection(parsed: ParsedOptions, entry: unknown) {
+function testDirection(parsed: ParsedOptions, entry: unknown): void {
     // Set direction as a numerical value for easy parsing.
     // Invert connection for RTL sliders, so that the proper
     // handles get the connect/background classes.
@@ -1029,7 +1079,7 @@ function testDirection(parsed: ParsedOptions, entry: unknown) {
     }
 }
 
-function testBehaviour(parsed: ParsedOptions, entry: unknown) {
+function testBehaviour(parsed: ParsedOptions, entry: unknown): void {
     // Make sure the input is a string.
     if (typeof entry !== "string") {
         throw new Error("noUiSlider (" + VERSION + "): 'behaviour' must be a string containing options.");
@@ -1067,7 +1117,7 @@ function testBehaviour(parsed: ParsedOptions, entry: unknown) {
     };
 }
 
-function testTooltips(parsed: ParsedOptions, entry: unknown) {
+function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boolean | Formatter)[]): void {
     if (entry === false) {
         return;
     }
@@ -1079,13 +1129,13 @@ function testTooltips(parsed: ParsedOptions, entry: unknown) {
             parsed.tooltips.push(true);
         }
     } else {
-        parsed.tooltips = asArray(entry);
+        entry = asArray(entry);
 
-        if (parsed.tooltips.length !== parsed.handles) {
+        if (entry.length !== parsed.handles) {
             throw new Error("noUiSlider (" + VERSION + "): must pass a formatter for all handles.");
         }
 
-        parsed.tooltips.forEach(function(formatter) {
+        entry.forEach(function(formatter) {
             if (
                 typeof formatter !== "boolean" &&
                 (typeof formatter !== "object" || typeof formatter.to !== "function")
@@ -1093,33 +1143,35 @@ function testTooltips(parsed: ParsedOptions, entry: unknown) {
                 throw new Error("noUiSlider (" + VERSION + "): 'tooltips' must be passed a formatter or 'false'.");
             }
         });
+
+        parsed.tooltips = entry;
     }
 }
 
-function testAriaFormat(parsed: ParsedOptions, entry: unknown) {
+function testAriaFormat(parsed: ParsedOptions, entry: Formatter): void {
+    validateFormat(entry);
     parsed.ariaFormat = entry;
-    validateFormat(entry);
 }
 
-function testFormat(parsed: ParsedOptions, entry: unknown) {
+function testFormat(parsed: ParsedOptions, entry: Formatter): void {
+    validateFormat(entry);
     parsed.format = entry;
-    validateFormat(entry);
 }
 
-function testKeyboardSupport(parsed: ParsedOptions, entry: unknown) {
-    parsed.keyboardSupport = entry;
-
+function testKeyboardSupport(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "boolean") {
         throw new Error("noUiSlider (" + VERSION + "): 'keyboardSupport' option must be a boolean.");
     }
+
+    parsed.keyboardSupport = entry;
 }
 
-function testDocumentElement(parsed: ParsedOptions, entry: unknown) {
+function testDocumentElement(parsed: ParsedOptions, entry: HTMLElement): void {
     // This is an advanced option. Passed values are used without validation.
     parsed.documentElement = entry;
 }
 
-function testCssPrefix(parsed: ParsedOptions, entry: unknown) {
+function testCssPrefix(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "string" && entry !== false) {
         throw new Error("noUiSlider (" + VERSION + "): 'cssPrefix' must be a string or `false`.");
     }
@@ -1127,7 +1179,7 @@ function testCssPrefix(parsed: ParsedOptions, entry: unknown) {
     parsed.cssPrefix = entry;
 }
 
-function testCssClasses(parsed: ParsedOptions, entry: unknown) {
+function testCssClasses(parsed: ParsedOptions, entry: CssClasses): void {
     if (typeof entry !== "object") {
         throw new Error("noUiSlider (" + VERSION + "): 'cssClasses' must be an object.");
     }
@@ -1135,7 +1187,7 @@ function testCssClasses(parsed: ParsedOptions, entry: unknown) {
     if (typeof parsed.cssPrefix === "string") {
         parsed.cssClasses = {};
 
-        Object.keys(entry).forEach(key => {
+        Object.keys(entry).forEach((key: (keyof CssClasses)) => {
             parsed.cssClasses[key] = parsed.cssPrefix + entry[key];
         });
     } else {
@@ -1157,10 +1209,10 @@ function testOptions(options: Options): ParsedOptions {
         animationDuration: 300,
         ariaFormat: defaultFormatter,
         format: defaultFormatter
-    } as Partial<ParsedOptions>;
+    } as ParsedOptions;
 
     // Tests are executed in the order they are presented here.
-    const tests = {
+    const tests: { [key in keyof Options]: { r: boolean; t: (parsed: ParsedOptions, entry: unknown) => void } } = {
         step: { r: false, t: testStep },
         keyboardPageMultiplier: { r: false, t: testKeyboardPageMultiplier },
         keyboardDefaultStep: { r: false, t: testKeyboardDefaultStep },
@@ -1226,7 +1278,7 @@ function testOptions(options: Options): ParsedOptions {
     // Assume use of -webkit- if unprefixed and -ms- are not supported.
     // https://caniuse.com/#feat=transforms2d
     const d = document.createElement("div");
-    const msPrefix = (d.style as any).msTransform !== undefined;
+    const msPrefix = (d.style as CSSStyleDeclarationIE10).msTransform !== undefined;
     const noPrefix = d.style.transform !== undefined;
 
     parsed.transformRule = noPrefix ? "transform" : msPrefix ? "msTransform" : "webkitTransform";
@@ -1268,12 +1320,6 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     const scope_Document = target.ownerDocument;
     const scope_DocumentElement = options.documentElement || scope_Document.documentElement;
     const scope_Body = scope_Document.body;
-
-    // Pips constants
-    const PIPS_NONE = -1;
-    const PIPS_NO_VALUE = 0;
-    const PIPS_LARGE_VALUE = 1;
-    const PIPS_SMALL_VALUE = 2;
 
     // For horizontal sliders in standard ltr documents,
     // make .noUi-origin overflow to the left so the document doesn't scroll.
@@ -1459,13 +1505,13 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         });
     }
 
-    function getGroup(mode: PipsMode, values, stepped) {
+    function getGroup(mode: PipsMode, values: number | number[], stepped: boolean) {
         // Use the range.
-        if (mode === "range" || mode === "steps") {
+        if (mode === PipsMode.Range || mode === PipsMode.Steps) {
             return scope_Spectrum.xVal;
         }
 
-        if (mode === "count") {
+        if (mode === PipsMode.Count) {
             if (values < 2) {
                 throw new Error("noUiSlider (" + VERSION + "): 'values' (>= 2) required for mode 'count'.");
             }
@@ -1486,14 +1532,14 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             mode = PipsMode.Positions;
         }
 
-        if (mode === "positions") {
+        if (mode === PipsMode.Positions) {
             // Map all percentages to on-range values.
             return values.map(function(value: number) {
                 return scope_Spectrum.fromStepping(stepped ? scope_Spectrum.getStep(value) : value);
             });
         }
 
-        if (mode === "values") {
+        if (mode === PipsMode.Values) {
             // If the value must be stepped, it needs to be converted to a percentage first.
             if (stepped) {
                 return values.map(function(value: number) {
@@ -1507,10 +1553,10 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         }
     }
 
-    function generateSpread(density: number, mode: PipsMode, group) {
+    function generateSpread(density: number, mode: PipsMode, group: number[]) {
         function safeIncrement(value: number, increment: number) {
             // Avoid floating point variance by dropping the smallest decimal places.
-            return (value + increment).toFixed(7) / 1;
+            return Number((value + increment).toFixed(7)) / 1;
         }
 
         const indexes = {};
@@ -1607,7 +1653,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 }
 
                 // Determine the point type.
-                type = group.indexOf(i) > -1 ? PIPS_LARGE_VALUE : isSteps ? PIPS_SMALL_VALUE : PIPS_NO_VALUE;
+                type = group.indexOf(i) > -1 ? PipsType.LargeValue : isSteps ? PipsType.SmallValue : PipsType.NoValue;
 
                 // Enforce the 'ignoreFirst' option by overwriting the type for 0.
                 if (!index && ignoreFirst && i !== high) {
@@ -1631,14 +1677,14 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const element = scope_Document.createElement("div");
 
         const valueSizeClasses = [];
-        valueSizeClasses[PIPS_NO_VALUE] = options.cssClasses.valueNormal;
-        valueSizeClasses[PIPS_LARGE_VALUE] = options.cssClasses.valueLarge;
-        valueSizeClasses[PIPS_SMALL_VALUE] = options.cssClasses.valueSub;
+        valueSizeClasses[PipsType.NoValue] = options.cssClasses.valueNormal;
+        valueSizeClasses[PipsType.LargeValue] = options.cssClasses.valueLarge;
+        valueSizeClasses[PipsType.SmallValue] = options.cssClasses.valueSub;
 
         const markerSizeClasses = [];
-        markerSizeClasses[PIPS_NO_VALUE] = options.cssClasses.markerNormal;
-        markerSizeClasses[PIPS_LARGE_VALUE] = options.cssClasses.markerLarge;
-        markerSizeClasses[PIPS_SMALL_VALUE] = options.cssClasses.markerSub;
+        markerSizeClasses[PipsType.NoValue] = options.cssClasses.markerNormal;
+        markerSizeClasses[PipsType.LargeValue] = options.cssClasses.markerLarge;
+        markerSizeClasses[PipsType.SmallValue] = options.cssClasses.markerSub;
 
         const valueOrientationClasses = [options.cssClasses.valueHorizontal, options.cssClasses.valueVertical];
         const markerOrientationClasses = [options.cssClasses.markerHorizontal, options.cssClasses.markerVertical];
@@ -1646,7 +1692,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         addClass(element, options.cssClasses.pips);
         addClass(element, options.ort === 0 ? options.cssClasses.pipsHorizontal : options.cssClasses.pipsVertical);
 
-        function getClasses(type, source) {
+        function getClasses(type: PipsType, source: string) {
             const a = source === options.cssClasses.value;
             const orientationClasses = a ? valueOrientationClasses : markerOrientationClasses;
             const sizeClasses = a ? valueSizeClasses : markerSizeClasses;
@@ -1654,11 +1700,11 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             return source + " " + orientationClasses[options.ort] + " " + sizeClasses[type];
         }
 
-        function addSpread(offset, value: number, type) {
+        function addSpread(offset: string, value: number, type: PipsType) {
             // Apply the filter function, if it is set.
             type = filterFunc ? filterFunc(value, type) : type;
 
-            if (type === PIPS_NONE) {
+            if (type === PipsType.None) {
                 return;
             }
 
@@ -1668,7 +1714,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             node.style[options.style] = offset + "%";
 
             // Values are only appended for points marked '1' or '2'.
-            if (type > PIPS_NO_VALUE) {
+            if (type > PipsType.NoValue) {
                 node = addNodeTo(element, false);
                 node.className = getClasses(type, options.cssClasses.value);
                 node.setAttribute("data-value", String(value));
@@ -1720,7 +1766,12 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Handler for attaching events trough a proxy.
-    function attachEvent(events: string, element: HTMLElement, callback, data): [string, EventHandler][] {
+    function attachEvent(
+        events: string,
+        element: HTMLElement,
+        callback: (event: BrowserEvent, data: EventData) => void,
+        data: EventData
+    ): [string, EventHandler][] {
         // This function can be used to 'filter' events to the slider.
         // element is a node, not a nodeList
 
@@ -1781,7 +1832,11 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Provide a clean event with standardized offset values.
-    function fixEvent(e: BrowserEvent, pageOffset: number, eventTarget: HTMLElement): BrowserEvent | false {
+    function fixEvent(
+        e: BrowserEvent,
+        pageOffset: PageOffset,
+        eventTarget: HTMLElement
+    ): BrowserEvent | false {
         // Filter the event to register the type, which can be
         // touch, mouse or pointer. Offset changes need to be
         // made on an event specific basis.
@@ -1789,8 +1844,8 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const mouse = e.type.indexOf("mouse") === 0;
         let pointer = e.type.indexOf("pointer") === 0;
 
-        let x;
-        let y;
+        let x: number;
+        let y: number;
 
         // IE10 implemented pointer events with a prefix;
         if (e.type.indexOf("MSPointer") === 0) {
@@ -1807,18 +1862,19 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         // The only thing one handle should be concerned about is the touches that originated on top of it.
         if (touch) {
             // Returns true if a touch originated on the target.
-            const isTouchOnTarget = function(checkTouch) {
+            const isTouchOnTarget = function(checkTouch: Touch) {
                 return (
                     checkTouch.target === eventTarget ||
-                    eventTarget.contains(checkTouch.target) ||
-                    (checkTouch.target.shadowRoot && checkTouch.target.shadowRoot.contains(eventTarget))
+                    eventTarget.contains(checkTouch.target as HTMLElement) ||
+                    ((checkTouch.target as HTMLElement).shadowRoot &&
+                        (checkTouch.target as HTMLElement).shadowRoot.contains(eventTarget))
                 );
             };
 
             // In the case of touchstart events, we need to make sure there is still no more than one
             // touch on the target so we look amongst all touches.
             if (e.type === "touchstart") {
-                const targetTouches = Array.prototype.filter.call(e.touches, isTouchOnTarget);
+                const targetTouches: Touch[] = Array.prototype.filter.call(e.touches, isTouchOnTarget);
 
                 // Do not support more than one touch per handle.
                 if (targetTouches.length > 1) {
@@ -1871,7 +1927,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     // Find handle closest to a certain percentage on the slider
     function getClosestHandle(clickedPosition: number): number | false {
         let smallestDifference = 100;
-        let handleNumber = false;
+        let handleNumber: number | false = false;
 
         scope_Handles.forEach(function(handle, index) {
             // Disabled handles are ignored
@@ -1899,14 +1955,18 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Fire 'end' when a mouse or pen leaves the document.
-    function documentLeave(event: BrowserEvent, data): void {
-        if (event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null) {
+    function documentLeave(event: BrowserEvent, data: EventData): void {
+        if (
+            event.type === "mouseout" &&
+            (event.target as HTMLElement).nodeName === "HTML" &&
+            event.relatedTarget === null
+        ) {
             eventEnd(event, data);
         }
     }
 
     // Handle movement on document for handle and range drag.
-    function eventMove(event: BrowserEvent, data): void {
+    function eventMove(event: BrowserEvent, data: EventData): void {
         // Fix #498
         // Check value of .buttons in 'start' to work around a bug in IE10 mobile (data.buttonsProperty).
         // https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
@@ -1926,7 +1986,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Unbind move events on document, call callbacks.
-    function eventEnd(event: BrowserEvent, data): void {
+    function eventEnd(event: BrowserEvent, data: EventData): void {
         // The handle is no longer active, so remove the class.
         if (data.handle) {
             removeClass(data.handle, options.cssClasses.active);
@@ -1934,7 +1994,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         }
 
         // Unbind the move and end events, which are added on 'start'.
-        data.listeners.forEach(function(c) {
+        data.listeners.forEach(function(c: [string, EventHandler]) {
             scope_DocumentElement.removeEventListener(c[0], c[1]);
         });
 
@@ -1950,7 +2010,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             }
         }
 
-        data.handleNumbers.forEach(function(handleNumber) {
+        data.handleNumbers.forEach(function(handleNumber: number) {
             fireEvent("change", handleNumber);
             fireEvent("set", handleNumber);
             fireEvent("end", handleNumber);
@@ -1958,7 +2018,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Bind move events on document.
-    function eventStart(event: BrowserEvent, data): false | never {
+    function eventStart(event: BrowserEvent, data: EventData): false | never {
         // Ignore event if any handle is disabled
         if (data.handleNumbers.some(isHandleDisabled)) {
             return false;
@@ -1969,7 +2029,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         if (data.handleNumbers.length === 1) {
             const handleOrigin = scope_Handles[data.handleNumbers[0]];
 
-            handle = handleOrigin.children[0];
+            handle = handleOrigin.children[0] as HTMLElement;
             scope_ActiveHandlesCount += 1;
 
             // Mark the handle as 'active' so it can be styled.
@@ -1980,13 +2040,13 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         event.stopPropagation();
 
         // Record the event listeners.
-        const listeners = [];
+        const listeners: [string, EventHandler][] = [];
 
         // Attach the move and end events.
         const moveEvent = attachEvent(actions.move, scope_DocumentElement, eventMove, {
             // The event target has changed so we need to propagate the original one so that we keep
             // relying on it to extract target touches.
-            target: event.target,
+            target: event.target as HTMLElement,
             handle: handle,
             listeners: listeners,
             startCalcPoint: event.calcPoint,
@@ -1998,7 +2058,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         });
 
         const endEvent = attachEvent(actions.end, scope_DocumentElement, eventEnd, {
-            target: event.target,
+            target: event.target as HTMLElement,
             handle: handle,
             listeners: listeners,
             doNotReject: true,
@@ -2006,7 +2066,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         });
 
         const outEvent = attachEvent("mouseout", scope_DocumentElement, documentLeave, {
-            target: event.target,
+            target: event.target as HTMLElement,
             handle: handle,
             listeners: listeners,
             doNotReject: true,
@@ -2180,7 +2240,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Attach events to several slider parts.
-    function bindSliderEvents(behaviour) {
+    function bindSliderEvents(behaviour: Behaviour) {
         // Attach the standard drag event to the handles.
         if (!behaviour.fixed) {
             scope_Handles.forEach(function(handle, index) {
@@ -2313,12 +2373,12 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         // Apply the margin option by adding it to the handle positions.
         if (scope_Handles.length > 1 && !options.events.unconstrained) {
             if (lookBackward && handleNumber > 0) {
-                distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber - 1], options.margin, 0);
+                distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber - 1], options.margin, false);
                 to = Math.max(to, distance);
             }
 
             if (lookForward && handleNumber < scope_Handles.length - 1) {
-                distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber + 1], options.margin, 1);
+                distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber + 1], options.margin, true);
                 to = Math.min(to, distance);
             }
         }
@@ -2328,12 +2388,12 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         // handles would be unmovable.
         if (scope_Handles.length > 1 && options.limit) {
             if (lookBackward && handleNumber > 0) {
-                distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber - 1], options.limit, 0);
+                distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber - 1], options.limit, false);
                 to = Math.min(to, distance);
             }
 
             if (lookForward && handleNumber < scope_Handles.length - 1) {
-                distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber + 1], options.limit, 1);
+                distance = scope_Spectrum.getAbsoluteDistance(reference[handleNumber + 1], options.limit, true);
                 to = Math.max(to, distance);
             }
         }
@@ -2342,12 +2402,12 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         // edges of the slider. Padding must be > 0.
         if (options.padding) {
             if (handleNumber === 0) {
-                distance = scope_Spectrum.getAbsoluteDistance(0, options.padding[0], 0);
+                distance = scope_Spectrum.getAbsoluteDistance(0, options.padding[0], false);
                 to = Math.max(to, distance);
             }
 
             if (handleNumber === scope_Handles.length - 1) {
-                distance = scope_Spectrum.getAbsoluteDistance(100, options.padding[1], 1);
+                distance = scope_Spectrum.getAbsoluteDistance(100, options.padding[1], true);
                 to = Math.min(to, distance);
             }
         }
@@ -2463,7 +2523,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         scope_HandleNumbers.forEach(function(handleNumber: number): void {
             const dir = scope_Locations[handleNumber] > 50 ? -1 : 1;
             const zIndex = 3 + (scope_Handles.length + dir * handleNumber);
-            scope_Handles[handleNumber].style.zIndex = zIndex;
+            scope_Handles[handleNumber].style.zIndex = String(zIndex);
         });
     }
 
@@ -2635,7 +2695,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         removeEvent(INTERNAL_EVENT_NS.aria);
         removeEvent(INTERNAL_EVENT_NS.tooltips);
 
-        Object.keys(options.cssClasses).forEach((key: (keyof CssClasses)) => {
+        Object.keys(options.cssClasses).forEach((key: keyof CssClasses) => {
             removeClass(scope_Target, options.cssClasses[key]);
         });
 
