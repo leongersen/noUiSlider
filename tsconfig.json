@@ -4,6 +4,7 @@
     "lib": ["es5", "dom"],
     "target": "es5",
     "newLine": "LF",
+    "noImplicitAny": true,
     "outDir": "distribute"
   },
   "include": ["src/**/*"],
