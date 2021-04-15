@@ -149,9 +149,9 @@ interface ParsedOptions {
     animate: boolean;
     connect: boolean[];
     start: number[];
-    margin: number[];
-    limit: number[];
-    padding: number[][];
+    margin: number[]|null;
+    limit: number[]|null;
+    padding: number[][]|null;
     step?: number;
     orientation?: "vertical" | "horizontal";
     direction?: "ltr" | "rtl";
@@ -161,7 +161,7 @@ interface ParsedOptions {
     keyboardDefaultStep?: number;
     documentElement?: HTMLElement;
     cssPrefix?: string | false;
-    cssClasses?: CssClasses;
+    cssClasses: CssClasses;
     ariaFormat?: Formatter;
     pips?: Pips;
     animationDuration?: number;
@@ -270,7 +270,7 @@ function removeElement(el: HTMLElement): void {
     el.parentElement.removeChild(el);
 }
 
-function isSet(value: unknown): boolean {
+function isSet(value: unknown): value is Exclude<typeof value, null|undefined> {
     return value !== null && value !== undefined;
 }
 
@@ -548,7 +548,7 @@ class Spectrum {
         this.snap = snap;
 
         let index;
-        const ordered: [SubRange, string][] = []; // [0, 'min'], [1, '50%'], [2, 'max']
+        const ordered: any = []; // [0, 'min'], [1, '50%'], [2, 'max']
 
         // Map the object keys to an array.
         Object.keys(entry).forEach(index => {
@@ -557,10 +557,12 @@ class Spectrum {
 
         // Sort all entries by value (numeric sort).
         if (ordered.length && typeof ordered[0][0] === "object") {
+            // @ts-ignore
             ordered.sort(function(a, b) {
                 return a[0][0] - b[0][0];
             });
         } else {
+            // @ts-ignore
             ordered.sort(function(a, b) {
                 return a[0] - b[0];
             });
@@ -608,7 +610,7 @@ class Spectrum {
 
     // Calculate the percentual distance over the whole scale of ranges.
     // direction: 0 = backwards / 1 = forwards
-    public getAbsoluteDistance(value: number, distances: number[], direction: boolean): number {
+    public getAbsoluteDistance(value: number, distances: number[]|null, direction: boolean): number {
         let xPct_index = 0;
 
         // Calculate range where to start calculation
@@ -623,6 +625,10 @@ class Spectrum {
         // If looking backwards and the value is exactly at a range separator then look one range further
         if (!direction && value === this.xPct[xPct_index + 1]) {
             xPct_index++;
+        }
+
+        if (distances === null) {
+            distances = [];
         }
 
         let start_factor;
@@ -1654,6 +1660,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             }
 
             // Low can be 0, so test for false. Index 0 is already handled.
+            // @ts-ignore
             if (low === false) {
                 return;
             }
@@ -1792,6 +1799,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         const spread = generateSpread(pips);
         const filter: PipsFilter = pips.filter;
+        // @ts-ignore
         const format: Formatter = pips.format || {
             to: Math.round,
             from: Number
@@ -2635,6 +2643,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         to = scope_Spectrum.toStepping(to);
 
         // If parsing the number failed, use the current value.
+        // @ts-ignore
         if (to === false || isNaN(to)) {
             return scope_Locations[handleNumber];
         }
@@ -2750,7 +2759,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const location = scope_Locations[handleNumber];
         const nearbySteps = scope_Spectrum.getNearbySteps(location);
         const value: number = scope_Values[handleNumber];
-        let increment = nearbySteps.thisStep.step;
+        let increment: number | false | null = nearbySteps.thisStep.step;
         let decrement: number | false | null = null;
 
         // If snapped, directly use defined step value
