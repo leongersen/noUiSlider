@@ -1,5 +1,7 @@
 "use strict";
 
+declare function assert(value: unknown): asserts value;
+
 interface CssClasses {
     target: string;
     base: string;
@@ -156,17 +158,17 @@ interface ParsedOptions {
     orientation?: "vertical" | "horizontal";
     direction?: "ltr" | "rtl";
     tooltips?: (boolean | Formatter)[];
-    keyboardSupport?: boolean;
-    keyboardPageMultiplier?: number;
-    keyboardDefaultStep?: number;
+    keyboardSupport: boolean;
+    keyboardPageMultiplier: number;
+    keyboardDefaultStep: number;
     documentElement?: HTMLElement;
     cssPrefix?: string | false;
     cssClasses: CssClasses;
-    ariaFormat?: Formatter;
+    ariaFormat: Formatter;
     pips?: Pips;
-    animationDuration?: number;
+    animationDuration: number;
     snap?: boolean;
-    format?: Formatter;
+    format: Formatter;
 
     range: Range;
     singleStep: number;
@@ -214,11 +216,22 @@ interface EventData {
     startCalcPoint?: number;
     baseSize?: number;
     pageOffset?: PageOffset;
-    handleNumbers?: number[];
+    handleNumbers: number[];
     buttonsProperty?: number;
     locations?: number[];
     doNotReject?: boolean;
     hover?: boolean;
+}
+
+interface MoveEventData extends EventData {
+    listeners: [string, EventHandler][];
+    startCalcPoint: number;
+    baseSize: number;
+    locations: number[];
+}
+
+interface EndEventData extends EventData {
+    listeners: [string, EventHandler][];
 }
 
 interface NearByStep {
@@ -233,7 +246,7 @@ interface NearBySteps {
     stepAfter: NearByStep;
 }
 
-type EventHandler = (event: BrowserEvent) => false | never;
+type EventHandler = (event: BrowserEvent) => false | undefined;
 
 type GetResult = number | string | (string | number)[];
 
@@ -267,10 +280,10 @@ function isValidFormatter(entry: Formatter): entry is Formatter {
 }
 
 function removeElement(el: HTMLElement): void {
-    el.parentElement.removeChild(el);
+    el.parentElement?.removeChild(el);
 }
 
-function isSet(value: unknown): value is Exclude<typeof value, null|undefined> {
+function isSet<T>(value: T): value is Exclude<T, null|undefined> {
     return value !== null && value !== undefined;
 }
 
@@ -426,6 +439,7 @@ function getSupportsPassive(): boolean {
             }
         });
 
+        // @ts-ignore
         window.addEventListener("test", null, opts);
     } catch (e) {}
     /* eslint-enable */
@@ -841,6 +855,7 @@ class Spectrum {
 //region Defaults
 
 const defaultFormatter: Formatter = {
+    // @ts-ignore
     to: function(value) {
         return value !== undefined && value.toFixed(2);
     },
@@ -945,7 +960,7 @@ function testRange(parsed: ParsedOptions, entry: Range): void {
         throw new Error("noUiSlider (" + VERSION + "): 'range' 'min' and 'max' cannot be equal.");
     }
 
-    parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.singleStep);
+    parsed.spectrum = new Spectrum(entry, parsed.snap || false, parsed.singleStep);
 }
 
 function testStart(parsed: ParsedOptions, entry: unknown): void {
@@ -1302,14 +1317,14 @@ function testOptions(options: Options): ParsedOptions {
     Object.keys(tests).forEach(function(name: OptionKey) {
         // If the option isn't set, but it is required, throw an error.
         if (!isSet(options[name]) && defaults[name] === undefined) {
-            if (tests[name].r) {
+            if (tests[name]?.r) {
                 throw new Error("noUiSlider (" + VERSION + "): '" + name + "' is required.");
             }
 
-            return true;
+            return;
         }
 
-        tests[name].t(parsed, !isSet(options[name]) ? defaults[name] : options[name]);
+        tests[name]?.t(parsed, !isSet(options[name]) ? defaults[name] : options[name]);
     });
 
     // Forward pips options
@@ -1468,6 +1483,8 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     function addTooltip(handle: HTMLElement, handleNumber: number): HTMLElement | false {
+        assert(options.tooltips);
+
         if (!options.tooltips[handleNumber]) {
             return false;
         }
@@ -1505,6 +1522,9 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         scope_Tooltips = scope_Handles.map(addTooltip);
 
         bindEvent("update" + INTERNAL_EVENT_NS.tooltips, function(values, handleNumber, unencoded) {
+
+            assert(scope_Tooltips && options.tooltips);
+
             if (scope_Tooltips[handleNumber] === false) {
                 return;
             }
@@ -1547,6 +1567,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         });
     }
 
+    // @ts-ignore
     function getGroup(pips: Pips): number[] {
         // Use the range.
         if (pips.mode === PipsMode.Range || pips.mode === PipsMode.Steps) {
@@ -1593,7 +1614,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         }
     }
 
-    function mapToRange(values: number[], stepped: boolean): number[] {
+    function mapToRange(values: number[], stepped: boolean|undefined): number[] {
         return values.map(function(value: number) {
             return scope_Spectrum.fromStepping(stepped ? scope_Spectrum.getStep(value) : value);
         });
@@ -1723,7 +1744,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
     function addMarking(
         spread: { [key: string]: [number, PipsType] },
-        filterFunc: PipsFilter,
+        filterFunc: PipsFilter|undefined,
         formatter: Formatter
     ): HTMLElement {
         const element = scope_Document.createElement("div");
@@ -1798,7 +1819,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         removePips();
 
         const spread = generateSpread(pips);
-        const filter: PipsFilter = pips.filter;
+        const filter = pips.filter;
         // @ts-ignore
         const format: Formatter = pips.format || {
             to: Math.round,
@@ -1827,7 +1848,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         // This function can be used to 'filter' events to the slider.
         // element is a node, not a nodeList
 
-        const method: EventHandler = function(event: BrowserEvent): false | never {
+        const method: EventHandler = function(event: BrowserEvent): false | undefined {
             const e = fixEvent(event, data.pageOffset, data.target || element);
 
             // fixEvent returns false if this event has a different target
@@ -1870,6 +1891,8 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
             // Call the event handler with the event [ and additional data ].
             callback(e, data);
+
+            return;
         };
 
         const methods: [string, EventHandler][] = [];
@@ -1884,7 +1907,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Provide a clean event with standardized offset values.
-    function fixEvent(e: BrowserEvent, pageOffset: PageOffset, eventTarget: HTMLElement): BrowserEvent | false {
+    function fixEvent(e: BrowserEvent, pageOffset: PageOffset | undefined, eventTarget: HTMLElement): BrowserEvent | false {
         // Filter the event to register the type, which can be
         // touch, mouse or pointer. Offset changes need to be
         // made on an event specific basis.
@@ -1892,8 +1915,8 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const mouse = e.type.indexOf("mouse") === 0;
         let pointer = e.type.indexOf("pointer") === 0;
 
-        let x: number;
-        let y: number;
+        let x = 0;
+        let y = 0;
 
         // IE10 implemented pointer events with a prefix;
         if (e.type.indexOf("MSPointer") === 0) {
@@ -1915,7 +1938,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                     checkTouch.target === eventTarget ||
                     eventTarget.contains(checkTouch.target as HTMLElement) ||
                     ((checkTouch.target as HTMLElement).shadowRoot &&
-                        (checkTouch.target as HTMLElement).shadowRoot.contains(eventTarget))
+                        (checkTouch.target as HTMLElement).shadowRoot?.contains(eventTarget))
                 );
             };
 
@@ -2003,7 +2026,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Fire 'end' when a mouse or pen leaves the document.
-    function documentLeave(event: BrowserEvent, data: EventData): void {
+    function documentLeave(event: BrowserEvent, data: EndEventData): void {
         if (
             event.type === "mouseout" &&
             (event.target as HTMLElement).nodeName === "HTML" &&
@@ -2014,7 +2037,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Handle movement on document for handle and range drag.
-    function eventMove(event: BrowserEvent, data: EventData): void {
+    function eventMove(event: BrowserEvent, data: MoveEventData): void {
         // Fix #498
         // Check value of .buttons in 'start' to work around a bug in IE10 mobile (data.buttonsProperty).
         // https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
@@ -2034,7 +2057,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Unbind move events on document, call callbacks.
-    function eventEnd(event: BrowserEvent, data: EventData): void {
+    function eventEnd(event: BrowserEvent, data: EndEventData): void {
         // The handle is no longer active, so remove the class.
         if (data.handle) {
             removeClass(data.handle, options.cssClasses.active);
@@ -2066,10 +2089,10 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Bind move events on document.
-    function eventStart(event: BrowserEvent, data: EventData): false | never {
+    function eventStart(event: BrowserEvent, data: EventData): void {
         // Ignore event if any handle is disabled
         if (data.handleNumbers.some(isHandleDisabled)) {
-            return false;
+            return;
         }
 
         let handle;
@@ -2151,7 +2174,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Move closest handle to tapped location.
-    function eventTap(event: BrowserEvent): false | never {
+    function eventTap(event: BrowserEvent): void {
         // The tap event shouldn't propagate up
         event.stopPropagation();
 
@@ -2160,7 +2183,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         // Tackle the case that all handles are 'disabled'.
         if (handleNumber === false) {
-            return false;
+            return;
         }
 
         // Flag the slider as it is now in a transitional state.
@@ -2302,14 +2325,14 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         // Attach the tap event to the slider base.
         if (behaviour.tap) {
-            attachEvent(actions.start, scope_Base, eventTap, {});
+            attachEvent(actions.start, scope_Base, eventTap, {} as EventData);
         }
 
         // Fire hover events
         if (behaviour.hover) {
             attachEvent(actions.move, scope_Base, eventHover, {
                 hover: true
-            });
+            } as EventData);
         }
 
         // Make the range draggable.
@@ -2661,7 +2684,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const isInit = scope_Locations[0] === undefined;
 
         // Event fires by default
-        fireSetEvent = fireSetEvent === undefined ? true : !!fireSetEvent;
+        fireSetEvent = fireSetEvent === undefined ? true : fireSetEvent;
 
         // Animation is optional.
         // Make sure the initial values were set before using animated placement.
@@ -2877,6 +2900,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         // Invalidate the current positioning so valueSet forces an update.
         scope_Locations = [];
+
         valueSet(isSet(optionsToUpdate.start) ? optionsToUpdate.start : v, fireSetEvent);
     }
 

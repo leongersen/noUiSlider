@@ -5,6 +5,8 @@
     "target": "es5",
     "newLine": "LF",
     "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": true,
     "outDir": "distribute"
   },
   "include": ["src/**/*"],
