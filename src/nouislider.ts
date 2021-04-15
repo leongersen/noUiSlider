@@ -67,14 +67,44 @@ interface Range {
     [key: string]: SubRange;
 }
 
-interface Pips {
+//region Pips
+
+interface BasePips {
     mode: PipsMode;
-    density: number;
-    values: number | number[];
-    filter: PipsFilter;
-    format: Formatter;
-    stepped: boolean;
+    density?: number;
+    filter?: PipsFilter;
+    format?: Formatter;
 }
+
+interface PositionsPips extends BasePips {
+    mode: PipsMode.Positions;
+    values: number[];
+    stepped?: boolean;
+}
+
+interface ValuesPips extends BasePips {
+    mode: PipsMode.Values;
+    values: number[];
+    stepped?: boolean;
+}
+
+interface CountPips extends BasePips {
+    mode: PipsMode.Count;
+    values: number;
+    stepped?: boolean;
+}
+
+interface StepsPips extends BasePips {
+    mode: PipsMode.Steps;
+}
+
+interface RangePips extends BasePips {
+    mode: PipsMode.Range;
+}
+
+type Pips = PositionsPips | ValuesPips | CountPips | StepsPips | RangePips;
+
+//endregion
 
 interface UpdatableOptions {
     range?: Range;
@@ -138,9 +168,10 @@ interface ParsedOptions {
     snap?: boolean;
     format?: Formatter;
 
+    range: Range;
     singleStep: number;
-    transformRule: keyof CSSStyleDeclarationIE10;
-    style: keyof CSSStyleDeclaration;
+    transformRule: 'transform' | 'msTransform' | 'webkitTransform';
+    style: 'left' | 'top' | 'right' | 'bottom';
     ort: 0 | 1;
     handles: number;
     events: Behaviour;
@@ -712,7 +743,7 @@ class Spectrum {
         return this.getStep(this.toStepping(value));
     }
 
-    private handleEntryPoint(index: string, value: number | number[]): void {
+    private handleEntryPoint(index: string, value: SubRange): void {
         let percentage;
 
         // Wrap numerical input in an array.
@@ -743,15 +774,17 @@ class Spectrum {
         this.xPct.push(percentage);
         this.xVal.push(value[0]);
 
+        const value1 = Number(value[1]);
+
         // NaN will evaluate to false too, but to keep
         // logging clear, set step explicitly. Make sure
         // not to override the 'step' setting with false.
         if (!percentage) {
-            if (!isNaN(value[1])) {
-                this.xSteps[0] = value[1];
+            if (!isNaN(value1)) {
+                this.xSteps[0] = value1;
             }
         } else {
-            this.xSteps.push(isNaN(value[1]) ? false : value[1]);
+            this.xSteps.push(isNaN(value1) ? false : value1);
         }
 
         this.xHighestCompleteStep.push(0);
@@ -1188,7 +1221,7 @@ function testCssClasses(parsed: ParsedOptions, entry: CssClasses): void {
     }
 
     if (typeof parsed.cssPrefix === "string") {
-        parsed.cssClasses = {};
+        parsed.cssClasses = {} as CssClasses;
 
         Object.keys(entry).forEach((key: keyof CssClasses) => {
             parsed.cssClasses[key] = parsed.cssPrefix + entry[key];
@@ -1289,7 +1322,7 @@ function testOptions(options: Options): ParsedOptions {
     // Pips don't move, so we can place them using left/top.
     const styles = [["left", "top"], ["right", "bottom"]];
 
-    parsed.style = styles[parsed.dir][parsed.ort] as keyof CSSStyleDeclaration;
+    parsed.style = styles[parsed.dir][parsed.ort] as 'left' | 'top' | 'right' | 'bottom';
 
     return parsed;
 }
@@ -1508,22 +1541,22 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         });
     }
 
-    function getGroup(mode: PipsMode, values: number | number[], stepped: boolean) {
+    function getGroup(pips: Pips): number[] {
         // Use the range.
-        if (mode === PipsMode.Range || mode === PipsMode.Steps) {
+        if (pips.mode === PipsMode.Range || pips.mode === PipsMode.Steps) {
             return scope_Spectrum.xVal;
         }
 
-        if (mode === PipsMode.Count) {
-            if (values < 2) {
+        if (pips.mode === PipsMode.Count) {
+            if (pips.values < 2) {
                 throw new Error("noUiSlider (" + VERSION + "): 'values' (>= 2) required for mode 'count'.");
             }
 
             // Divide 0 - 100 in 'count' parts.
-            let interval = values - 1;
+            let interval = pips.values - 1;
             const spread = 100 / interval;
 
-            values = [];
+            const values = [];
 
             // List these parts and have them handled as 'positions'.
             while (interval--) {
@@ -1532,36 +1565,41 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
             values.push(100);
 
-            mode = PipsMode.Positions;
+            return mapToRange(values, pips.stepped);
         }
 
-        if (mode === PipsMode.Positions) {
+        if (pips.mode === PipsMode.Positions) {
             // Map all percentages to on-range values.
-            return values.map(function(value: number) {
-                return scope_Spectrum.fromStepping(stepped ? scope_Spectrum.getStep(value) : value);
-            });
+            return mapToRange(pips.values, pips.stepped);
         }
 
-        if (mode === PipsMode.Values) {
+        if (pips.mode === PipsMode.Values) {
             // If the value must be stepped, it needs to be converted to a percentage first.
-            if (stepped) {
-                return values.map(function(value: number) {
+            if (pips.stepped) {
+                return pips.values.map(function(value: number) {
                     // Convert to percentage, apply step, return to value.
                     return scope_Spectrum.fromStepping(scope_Spectrum.getStep(scope_Spectrum.toStepping(value)));
                 });
             }
 
             // Otherwise, we can simply use the values.
-            return values;
+            return pips.values;
         }
     }
 
-    function generateSpread(density: number, mode: PipsMode, group: number[]): { [key: string]: [number, PipsType] } {
+    function mapToRange(values: number[], stepped: boolean): number[] {
+        return values.map(function(value: number) {
+            return scope_Spectrum.fromStepping(stepped ? scope_Spectrum.getStep(value) : value);
+        });
+    }
+
+    function generateSpread(pips: Pips): { [key: string]: [number, PipsType] } {
         function safeIncrement(value: number, increment: number) {
             // Avoid floating point variance by dropping the smallest decimal places.
             return Number((value + increment).toFixed(7));
         }
 
+        let group = getGroup(pips);
         const indexes: { [key: string]: [number, PipsType] } = {};
         const firstInRange = scope_Spectrum.xVal[0];
         const lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length - 1];
@@ -1602,7 +1640,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             let steps;
             let realSteps;
             let stepSize;
-            const isSteps = mode === "steps";
+            const isSteps = pips.mode === PipsMode.Steps;
 
             // When using 'steps' mode, use the provided steps.
             // Otherwise, we'll step on to the next subrange.
@@ -1635,7 +1673,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 newPct = scope_Spectrum.toStepping(i);
                 pctDifference = newPct - prevPct;
 
-                steps = pctDifference / density;
+                steps = pctDifference / (pips.density || 1);
                 realSteps = Math.round(steps);
 
                 // This ratio represents the amount of percentage-space a point indicates.
@@ -1748,18 +1786,13 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         }
     }
 
-    function pips(grid: Pips): HTMLElement {
+    function pips(pips: Pips): HTMLElement {
         // Fix #669
         removePips();
 
-        const mode = grid.mode;
-        const density = grid.density || 1;
-        const filter: PipsFilter = grid.filter;
-        const values = grid.values;
-        const stepped = grid.stepped || false;
-        const group = getGroup(mode, values, stepped);
-        const spread = generateSpread(density, mode, group);
-        const format: Formatter = grid.format || {
+        const spread = generateSpread(pips);
+        const filter: PipsFilter = pips.filter;
+        const format: Formatter = pips.format || {
             to: Math.round,
             from: Number
         };
@@ -1772,7 +1805,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     // Shorthand for base dimensions.
     function baseSize(): number {
         const rect = scope_Base.getBoundingClientRect();
-        const alt = "offset" + ["Width", "Height"][options.ort];
+        const alt = "offset" + ["Width", "Height"][options.ort] as 'offsetWidth' | 'offsetHeight';
         return options.ort === 0 ? rect.width || scope_Base[alt] : rect.height || scope_Base[alt];
     }
 
@@ -2517,7 +2550,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const translation = 10 * (transformDirection(to, 0) - scope_DirOffset);
         const translateRule = "translate(" + inRuleOrder(translation + "%", "0") + ")";
 
-        scope_Handles[handleNumber].style[options.transformRule] = translateRule;
+        (scope_Handles[handleNumber].style as CSSStyleDeclarationIE10)[options.transformRule] = translateRule;
 
         updateConnect(handleNumber);
         updateConnect(handleNumber + 1);
@@ -2538,13 +2571,13 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     // if exactInput is true, don't run checkHandlePosition, then the handle can be placed in between steps (#436)
     function setHandle(
         handleNumber: number,
-        to: number,
+        to: number | false,
         lookBackward: boolean,
         lookForward: boolean,
         exactInput?: boolean
     ): boolean {
         if (!exactInput) {
-            to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
+            to = checkHandlePosition(scope_Locations, handleNumber, <number>to, lookBackward, lookForward, false);
         }
 
         if (to === false) {
@@ -2582,7 +2615,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const translateRule = "translate(" + inRuleOrder(transformDirection(l, connectWidth) + "%", "0") + ")";
         const scaleRule = "scale(" + inRuleOrder(connectWidth / 100, "1") + ")";
 
-        (<HTMLElement>scope_Connects[index]).style[options.transformRule] = translateRule + " " + scaleRule;
+        ((<HTMLElement>scope_Connects[index]).style as CSSStyleDeclarationIE10)[options.transformRule] = translateRule + " " + scaleRule;
     }
 
     // Parses value passed to .set method. Returns current value if not parse-able.
@@ -2799,7 +2832,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         updateAble.forEach(function(name: OptionKey) {
             // Check for undefined. null removes the value.
             if (optionsToUpdate[name] !== undefined) {
-                originalOptions[name] = optionsToUpdate[name];
+                (originalOptions[name] as any) = optionsToUpdate[name];
             }
         });
 
@@ -2808,7 +2841,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         // Load new options into the slider state
         updateAble.forEach(function(name: OptionKey) {
             if (optionsToUpdate[name] !== undefined) {
-                options[name] = newOptions[name];
+                (options[name] as any) = newOptions[name];
             }
         });
 
@@ -2875,8 +2908,8 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         setHandle: valueSetHandle,
         reset: valueReset,
         // Exposed for unit testing, don't use this in your application.
-        __moveHandles: function(a, b, c) {
-            moveHandles(a, b, scope_Locations, c);
+        __moveHandles: function(upward: boolean, proposal: number, handleNumbers: number[]) {
+            moveHandles(upward, proposal, scope_Locations, handleNumbers);
         },
         options: originalOptions, // Issue #600, #678
         updateOptions: updateOptions,
@@ -2890,7 +2923,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             return scope_Handles;
         },
         pips: pips // Issue #594
-    };
+    } as API;
 
     return scope_Self;
 }
