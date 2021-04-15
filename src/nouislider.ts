@@ -1661,12 +1661,6 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 step = high - low;
             }
 
-            // Low can be 0, so test for false. Index 0 is already handled.
-            // @ts-ignore
-            if (low === false) {
-                return;
-            }
-
             // If high is undefined we are at the last subrange. Make sure it iterates once (#1088)
             if (high === undefined) {
                 high = low;
