@@ -1,7 +1,5 @@
 "use strict";
 
-declare function assert(value: unknown): asserts value;
-
 interface CssClasses {
     target: string;
     base: string;
@@ -42,8 +40,8 @@ interface CssClasses {
 }
 
 interface Formatter {
-    to: (value: number) => string;
-    from: (value: string) => number;
+    to: (value: number) => string | number;
+    from: (value: string) => number | false;
 }
 
 enum PipsMode {
@@ -61,7 +59,9 @@ enum PipsType {
     SmallValue = 2
 }
 
-type SubRange = number | string | [number | string] | [number | string, number | string];
+type WrappedSubRange = [number] | [number, number];
+
+type SubRange = number | WrappedSubRange;
 
 interface Range {
     min: SubRange;
@@ -151,9 +151,9 @@ interface ParsedOptions {
     animate: boolean;
     connect: boolean[];
     start: number[];
-    margin: number[]|null;
-    limit: number[]|null;
-    padding: number[][]|null;
+    margin: number[] | null;
+    limit: number[] | null;
+    padding: number[][] | null;
     step?: number;
     orientation?: "vertical" | "horizontal";
     direction?: "ltr" | "rtl";
@@ -172,8 +172,8 @@ interface ParsedOptions {
 
     range: Range;
     singleStep: number;
-    transformRule: 'transform' | 'msTransform' | 'webkitTransform';
-    style: 'left' | 'top' | 'right' | 'bottom';
+    transformRule: "transform" | "msTransform" | "webkitTransform";
+    style: "left" | "top" | "right" | "bottom";
     ort: 0 | 1;
     handles: number;
     events: Behaviour;
@@ -280,10 +280,10 @@ function isValidFormatter(entry: Formatter): entry is Formatter {
 }
 
 function removeElement(el: HTMLElement): void {
-    el.parentElement?.removeChild(el);
+    (el.parentElement as HTMLElement).removeChild(el);
 }
 
-function isSet<T>(value: T): value is Exclude<T, null|undefined> {
+function isSet<T>(value: T): value is Exclude<T, null | undefined> {
     return value !== null && value !== undefined;
 }
 
@@ -562,25 +562,17 @@ class Spectrum {
         this.snap = snap;
 
         let index;
-        const ordered: any = []; // [0, 'min'], [1, '50%'], [2, 'max']
+        const ordered: [WrappedSubRange, string][] = [];
 
         // Map the object keys to an array.
         Object.keys(entry).forEach(index => {
-            ordered.push([entry[index], index]);
+            ordered.push([asArray(entry[index]) as WrappedSubRange, index]);
         });
 
         // Sort all entries by value (numeric sort).
-        if (ordered.length && typeof ordered[0][0] === "object") {
-            // @ts-ignore
-            ordered.sort(function(a, b) {
-                return a[0][0] - b[0][0];
-            });
-        } else {
-            // @ts-ignore
-            ordered.sort(function(a, b) {
-                return a[0] - b[0];
-            });
-        }
+        ordered.sort(function(a, b) {
+            return a[0][0] - b[0][0];
+        });
 
         // Convert all entries to subranges.
         for (index = 0; index < ordered.length; index++) {
@@ -624,7 +616,7 @@ class Spectrum {
 
     // Calculate the percentual distance over the whole scale of ranges.
     // direction: 0 = backwards / 1 = forwards
-    public getAbsoluteDistance(value: number, distances: number[]|null, direction: boolean): number {
+    public getAbsoluteDistance(value: number, distances: number[] | null, direction: boolean): number {
         let xPct_index = 0;
 
         // Calculate range where to start calculation
@@ -763,18 +755,8 @@ class Spectrum {
         return this.getStep(this.toStepping(value));
     }
 
-    private handleEntryPoint(index: string, value: SubRange): void {
+    private handleEntryPoint(index: string, value: WrappedSubRange): void {
         let percentage;
-
-        // Wrap numerical input in an array.
-        if (typeof value === "number") {
-            value = [value];
-        }
-
-        // Reject any invalid input, by testing whether value is an array.
-        if (!Array.isArray(value)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'range' contains invalid value.");
-        }
 
         // Covert min/max syntax to 0 and 100.
         if (index === "min") {
@@ -855,9 +837,8 @@ class Spectrum {
 //region Defaults
 
 const defaultFormatter: Formatter = {
-    // @ts-ignore
     to: function(value) {
-        return value !== undefined && value.toFixed(2);
+        return value === undefined ? "" : value.toFixed(2);
     },
     from: Number
 };
@@ -1317,14 +1298,14 @@ function testOptions(options: Options): ParsedOptions {
     Object.keys(tests).forEach(function(name: OptionKey) {
         // If the option isn't set, but it is required, throw an error.
         if (!isSet(options[name]) && defaults[name] === undefined) {
-            if (tests[name]?.r) {
+            if ((tests[name] as any).r) {
                 throw new Error("noUiSlider (" + VERSION + "): '" + name + "' is required.");
             }
 
             return;
         }
 
-        tests[name]?.t(parsed, !isSet(options[name]) ? defaults[name] : options[name]);
+        (tests[name] as any).t(parsed, !isSet(options[name]) ? defaults[name] : options[name]);
     });
 
     // Forward pips options
@@ -1343,7 +1324,7 @@ function testOptions(options: Options): ParsedOptions {
     // Pips don't move, so we can place them using left/top.
     const styles = [["left", "top"], ["right", "bottom"]];
 
-    parsed.style = styles[parsed.dir][parsed.ort] as 'left' | 'top' | 'right' | 'bottom';
+    parsed.style = styles[parsed.dir][parsed.ort] as "left" | "top" | "right" | "bottom";
 
     return parsed;
 }
@@ -1483,9 +1464,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     function addTooltip(handle: HTMLElement, handleNumber: number): HTMLElement | false {
-        assert(options.tooltips);
-
-        if (!options.tooltips[handleNumber]) {
+        if (!options.tooltips || !options.tooltips[handleNumber]) {
             return false;
         }
 
@@ -1522,8 +1501,9 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         scope_Tooltips = scope_Handles.map(addTooltip);
 
         bindEvent("update" + INTERNAL_EVENT_NS.tooltips, function(values, handleNumber, unencoded) {
-
-            assert(scope_Tooltips && options.tooltips);
+            if (!scope_Tooltips || !options.tooltips) {
+                return;
+            }
 
             if (scope_Tooltips[handleNumber] === false) {
                 return;
@@ -1552,7 +1532,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 let now: number | string = positions[index];
 
                 // Formatted value for display
-                const text = options.ariaFormat.to(unencoded[index]);
+                const text = String(options.ariaFormat.to(unencoded[index]));
 
                 // Map to slider range values
                 min = <string>scope_Spectrum.fromStepping(min).toFixed(1);
@@ -1567,7 +1547,6 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         });
     }
 
-    // @ts-ignore
     function getGroup(pips: Pips): number[] {
         // Use the range.
         if (pips.mode === PipsMode.Range || pips.mode === PipsMode.Steps) {
@@ -1612,9 +1591,11 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             // Otherwise, we can simply use the values.
             return pips.values;
         }
+
+        return []; // pips.mode = never
     }
 
-    function mapToRange(values: number[], stepped: boolean|undefined): number[] {
+    function mapToRange(values: number[], stepped: boolean | undefined): number[] {
         return values.map(function(value: number) {
             return scope_Spectrum.fromStepping(stepped ? scope_Spectrum.getStep(value) : value);
         });
@@ -1744,7 +1725,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
     function addMarking(
         spread: { [key: string]: [number, PipsType] },
-        filterFunc: PipsFilter|undefined,
+        filterFunc: PipsFilter | undefined,
         formatter: Formatter
     ): HTMLElement {
         const element = scope_Document.createElement("div");
@@ -1795,7 +1776,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 node.className = getClasses(type, options.cssClasses.value);
                 node.setAttribute("data-value", String(value));
                 node.style[options.style] = offset + "%";
-                node.innerHTML = formatter.to(value);
+                node.innerHTML = String(formatter.to(value));
             }
         }
 
@@ -1820,9 +1801,10 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         const spread = generateSpread(pips);
         const filter = pips.filter;
-        // @ts-ignore
         const format: Formatter = pips.format || {
-            to: Math.round,
+            to: function(value) {
+                return String(Math.round(value));
+            },
             from: Number
         };
 
@@ -1834,7 +1816,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     // Shorthand for base dimensions.
     function baseSize(): number {
         const rect = scope_Base.getBoundingClientRect();
-        const alt = "offset" + ["Width", "Height"][options.ort] as 'offsetWidth' | 'offsetHeight';
+        const alt = ("offset" + ["Width", "Height"][options.ort]) as "offsetWidth" | "offsetHeight";
         return options.ort === 0 ? rect.width || scope_Base[alt] : rect.height || scope_Base[alt];
     }
 
@@ -1907,7 +1889,11 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Provide a clean event with standardized offset values.
-    function fixEvent(e: BrowserEvent, pageOffset: PageOffset | undefined, eventTarget: HTMLElement): BrowserEvent | false {
+    function fixEvent(
+        e: BrowserEvent,
+        pageOffset: PageOffset | undefined,
+        eventTarget: HTMLElement
+    ): BrowserEvent | false {
         // Filter the event to register the type, which can be
         // touch, mouse or pointer. Offset changes need to be
         // made on an event specific basis.
@@ -1934,11 +1920,12 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         if (touch) {
             // Returns true if a touch originated on the target.
             const isTouchOnTarget = function(checkTouch: Touch) {
+                const target: HTMLElement = checkTouch.target as HTMLElement;
+
                 return (
-                    checkTouch.target === eventTarget ||
-                    eventTarget.contains(checkTouch.target as HTMLElement) ||
-                    ((checkTouch.target as HTMLElement).shadowRoot &&
-                        (checkTouch.target as HTMLElement).shadowRoot?.contains(eventTarget))
+                    target === eventTarget ||
+                    eventTarget.contains(target) ||
+                    (target.shadowRoot && target.shadowRoot.contains(eventTarget))
                 );
             };
 
@@ -2646,7 +2633,8 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const translateRule = "translate(" + inRuleOrder(transformDirection(l, connectWidth) + "%", "0") + ")";
         const scaleRule = "scale(" + inRuleOrder(connectWidth / 100, "1") + ")";
 
-        ((<HTMLElement>scope_Connects[index]).style as CSSStyleDeclarationIE10)[options.transformRule] = translateRule + " " + scaleRule;
+        ((<HTMLElement>scope_Connects[index]).style as CSSStyleDeclarationIE10)[options.transformRule] =
+            translateRule + " " + scaleRule;
     }
 
     // Parses value passed to .set method. Returns current value if not parse-able.
@@ -2663,10 +2651,12 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         }
 
         to = options.format.from(to);
-        to = scope_Spectrum.toStepping(to);
+
+        if (to !== false) {
+            to = scope_Spectrum.toStepping(to);
+        }
 
         // If parsing the number failed, use the current value.
-        // @ts-ignore
         if (to === false || isNaN(to)) {
             return scope_Locations[handleNumber];
         }

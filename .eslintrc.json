@@ -13,6 +13,7 @@
         "no-undef": "off",
         "one-var": ["error", "never"],
         "no-var": "off",
+        "no-console": "error",
         "prefer-spread": "off"
     },
     "env": {
