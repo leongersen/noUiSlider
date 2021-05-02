@@ -1911,7 +1911,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 return (
                     target === eventTarget ||
                     eventTarget.contains(target) ||
-                    (target.shadowRoot && target.shadowRoot.contains(eventTarget))
+                    (e.composed && e.composedPath().shift() === eventTarget)
                 );
             };
 
