@@ -1,17 +1,18 @@
 {
   "name": "nouislider",
   "version": "14.7.0",
-  "main": "distribute/nouislider.js",
-  "style": "distribute/nouislider.min.css",
+  "main": "dist/nouislider.js",
+  "style": "dist/nouislider.min.css",
+  "types": "dist/nouislider.d.ts",
   "license": "MIT",
   "scripts": {
     "_write_js": "tsc && replace-in-file --quiet --configFile=replace-in-file-config.js",
-    "_write_js_compress": "uglifyjs distribute/nouislider.js --compress --mangle --output distribute/nouislider.min.js",
-    "_write_css": "lessc src/nouislider.less distribute/nouislider.css",
-    "_write_css_compress": "lessc src/nouislider.less distribute/nouislider.min.css --clean-css",
-    "_build_js": "npm run _write_js && npm run _write_js_compress",
+    "_write_js_compress": "uglifyjs dist/nouislider.js --compress --mangle --output dist/nouislider.min.js",
+    "_write_css": "lessc src/nouislider.less dist/nouislider.css",
+    "_write_css_compress": "lessc src/nouislider.less dist/nouislider.min.css --clean-css",
+    "_build_js": "npm run _write_js",
     "_build_css": "npm run _write_css && npm run _write_css_compress",
-    "_banner": "bannerize distribute/* --banner=banner.ejs",
+    "_banner": "bannerize dist/* --banner=banner.ejs",
     "format": "prettier src/nouislider.ts --write --config .prettierrc",
     "lint": "eslint src/nouislider.ts",
     "build": "npm run _build_js && npm run _build_css && npm run _banner",
@@ -34,7 +35,8 @@
     "url": "git://github.com/leongersen/noUiSlider.git"
   },
   "files": [
-    "distribute"
+    "src",
+    "dist"
   ],
   "dependencies": {}
 }

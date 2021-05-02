@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<link href="../../distribute/nouislider.min.css" rel="stylesheet"> 
+<link href="../../dist/nouislider.min.css" rel="stylesheet">
 <style>
 #slider {
     width: 250px;
@@ -10,7 +10,7 @@
 
 <div id="slider"></div>
 
-<script src="../../distribute/nouislider.js"></script>
+<script src="../../dist/nouislider.js"></script>
 <script>
 	var slider = document.getElementById('slider');
 	noUiSlider.create(slider, {
@@ -21,7 +21,7 @@
 			max: [10]
 		}
 	});
-	
+
 	slider.noUiSlider.on('hover', function( value ){
 		console.log(value);
 	});

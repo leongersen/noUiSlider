@@ -45,7 +45,7 @@ $content = ob_get_contents();
 
 ob_end_clean();
 
-$distribute = '/nouislider/distribute';
+$distribute = '/nouislider/dist';
 
 if (!$is_server) {
     echo "---\n";

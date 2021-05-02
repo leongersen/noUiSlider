@@ -2964,7 +2964,7 @@ function initialize(target: TargetElement, originalOptions: Options): API {
 }
 
 // Use an object instead of a function for future expandability;
-export var noUiSlider = {
+export default {
     // Exposed for unit testing, don't use this in your application.
     __spectrum: Spectrum,
     version: VERSION,

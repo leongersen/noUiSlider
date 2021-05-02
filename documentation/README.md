@@ -16,4 +16,4 @@ Alternatively, in your root (e.g. `C:/Web`), start the server:
 
 ```php -S localhost:80 nouislider/documentation/_run/router.php```
 
-The documentation uses noUiSlider from the `distribute` folder, so you can test any changes you've made to the main source in the documentation after running ` npm run build`.
+The documentation uses noUiSlider from the `dist` folder, so you can test any changes you've made to the main source in the documentation after running `npm run build`.

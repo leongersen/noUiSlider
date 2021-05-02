@@ -11,8 +11,8 @@
 		"slide"
 	],
 	"main": [
-		"distribute/nouislider.js",
-		"distribute/nouislider.min.css"
+		"dist/nouislider.js",
+		"dist/nouislider.min.css"
 	],
 	"ignore": [
 		"**/.*",

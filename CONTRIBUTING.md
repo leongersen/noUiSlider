@@ -22,4 +22,4 @@ npm run format
 - Detail (in the pull request comment) what your changes do.
 - When applicable, include new unit tests, and make sure existing ones pass.
 - If you are introducing a new feature, update the **documentation**.
-- Please don't commit `/distribute/*` files, I'll do that upon release.
+- Please don't commit `/dist/*` files, I'll do that upon release.

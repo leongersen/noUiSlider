@@ -15,7 +15,7 @@ mkdir -p static/slider-read-write
 mkdir -p static/slider-values
 
 cp -r documentation/assets static/documentation
-cp -r distribute static
+cp -r dist static
 cp -r tests static
 
 php documentation/_run/router.php "index" > static/index.html
