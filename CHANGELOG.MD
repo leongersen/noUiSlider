@@ -3,8 +3,10 @@
 ### 15.0.0 (*2021-05-02*)
 - noUiSlider is now written and distributed as Typescript;
 - Types are now provided. If you are currently using [@types/nouislider](https://www.npmjs.com/package/@types/nouislider), this should be replaced;
-- Changed: The distributed files have moved from `distribute` to `dist` in the NPM package, and are no longer in the repository;
+- The distributed files have moved from `distribute` to `dist` in the NPM package, and are no longer in the repository; You may need to change the path to the noUiSlider CSS file if you are importing it using a package manager;
+- Fixed: Slider now properly works in multiple layers of Shadow DOM (#1121);
 - Removed: `version` from exceptions and export;
+- Removed: Bower support;
 
 ### 14.7.0 (*2021-04-06*)
 - noUiSlider is now build with Typescript. This release contains no further changes.
