@@ -13,7 +13,7 @@ QUnit.test("Errors", function (assert) {
                 'max': 10
             }
         });
-    }, new Error('noUiSlider (' + noUiSlider.version + '): create requires a single element, got: [object NodeList]'), 'Gave a nodelist');
+    }, new Error('noUiSlider: create requires a single element, got: [object NodeList]'), 'Gave a nodelist');
 
     assert.throws(function () {
         noUiSlider.create(slider, null);

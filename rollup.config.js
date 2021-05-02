@@ -7,6 +7,7 @@ export default {
             file: 'dist/nouislider.js',
             format: 'umd',
             name: 'noUiSlider',
+            exports: 'named'
         },
     ],
     plugins: [typescript()],

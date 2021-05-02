@@ -44,7 +44,7 @@ interface Formatter {
     from: (value: string) => number | false;
 }
 
-enum PipsMode {
+export enum PipsMode {
     Range = "range",
     Steps = "steps",
     Positions = "positions",
@@ -52,7 +52,7 @@ enum PipsMode {
     Values = "values"
 }
 
-enum PipsType {
+export enum PipsType {
     None = -1,
     NoValue = 0,
     LargeValue = 1,
@@ -124,7 +124,7 @@ interface UpdatableOptions {
     animate?: boolean;
 }
 
-interface Options extends UpdatableOptions {
+export interface Options extends UpdatableOptions {
     range: Range;
     connect?: "lower" | "upper" | boolean | boolean[];
     orientation?: "vertical" | "horizontal";
@@ -183,7 +183,7 @@ interface ParsedOptions {
     spectrum: Spectrum;
 }
 
-interface API {
+export interface API {
     destroy: () => void;
     steps: () => NextStepsForHandle[];
     on: (eventName: string, callback: EventCallback) => void;
@@ -2952,6 +2952,12 @@ function initialize(target: TargetElement, originalOptions: Options): API {
 
     return api;
 }
+
+export { TargetElement as target };
+
+export { initialize as create };
+
+export { cssClasses };
 
 export default {
     // Exposed for unit testing, don't use this in your application.

@@ -1,6 +1,6 @@
 QUnit.test("Standard range", function (assert) {
 
-    var subject = new noUiSlider.__spectrum({
+    var subject = new noUiSlider.default.__spectrum({
         min: 0,
         max: 100
     }, false);
@@ -13,7 +13,7 @@ QUnit.test("Standard range", function (assert) {
 
 QUnit.test("Standard step", function (assert) {
 
-    var subject = new noUiSlider.__spectrum({
+    var subject = new noUiSlider.default.__spectrum({
         min: 0,
         max: 100
     }, false, 15);
