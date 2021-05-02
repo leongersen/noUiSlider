@@ -273,8 +273,6 @@ type EventCallback = (
     slider: API
 ) => void;
 
-const VERSION = "%%REPLACE_THIS_WITH_VERSION%%";
-
 //region Helper Methods
 
 function isValidFormatter(entry: Formatter): entry is Formatter {
@@ -601,9 +599,7 @@ class Spectrum {
 
             if (step && (value / step) % 1 !== 0) {
                 throw new Error(
-                    "noUiSlider (" +
-                        VERSION +
-                        "): 'limit', 'margin' and 'padding' of " +
+                    "noUiSlider: 'limit', 'margin' and 'padding' of " +
                         this.xPct[index] +
                         "% range must be divisible by step."
                 );
@@ -771,7 +767,7 @@ class Spectrum {
 
         // Check for correct input.
         if (!isNumeric(percentage) || !isNumeric(value[0])) {
-            throw new Error("noUiSlider (" + VERSION + "): 'range' value isn't numeric.");
+            throw new Error("noUiSlider: 'range' value isn't numeric.");
         }
 
         // Store values.
@@ -898,12 +894,12 @@ function validateFormat(entry: Formatter): true | never {
         return true;
     }
 
-    throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
+    throw new Error("noUiSlider: 'format' requires 'to' and 'from' methods.");
 }
 
 function testStep(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
-        throw new Error("noUiSlider (" + VERSION + "): 'step' is not numeric.");
+        throw new Error("noUiSlider: 'step' is not numeric.");
     }
 
     // The step option can still be used to set stepping
@@ -913,7 +909,7 @@ function testStep(parsed: ParsedOptions, entry: unknown): void {
 
 function testKeyboardPageMultiplier(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
-        throw new Error("noUiSlider (" + VERSION + "): 'keyboardPageMultiplier' is not numeric.");
+        throw new Error("noUiSlider: 'keyboardPageMultiplier' is not numeric.");
     }
 
     parsed.keyboardPageMultiplier = entry;
@@ -921,7 +917,7 @@ function testKeyboardPageMultiplier(parsed: ParsedOptions, entry: unknown): void
 
 function testKeyboardDefaultStep(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
-        throw new Error("noUiSlider (" + VERSION + "): 'keyboardDefaultStep' is not numeric.");
+        throw new Error("noUiSlider: 'keyboardDefaultStep' is not numeric.");
     }
 
     parsed.keyboardDefaultStep = entry;
@@ -930,17 +926,17 @@ function testKeyboardDefaultStep(parsed: ParsedOptions, entry: unknown): void {
 function testRange(parsed: ParsedOptions, entry: Range): void {
     // Filter incorrect input.
     if (typeof entry !== "object" || Array.isArray(entry)) {
-        throw new Error("noUiSlider (" + VERSION + "): 'range' is not an object.");
+        throw new Error("noUiSlider: 'range' is not an object.");
     }
 
     // Catch missing start or end.
     if (entry.min === undefined || entry.max === undefined) {
-        throw new Error("noUiSlider (" + VERSION + "): Missing 'min' or 'max' in 'range'.");
+        throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
     }
 
     // Catch equal start or end.
     if (entry.min === entry.max) {
-        throw new Error("noUiSlider (" + VERSION + "): 'range' 'min' and 'max' cannot be equal.");
+        throw new Error("noUiSlider: 'range' 'min' and 'max' cannot be equal.");
     }
 
     parsed.spectrum = new Spectrum(entry, parsed.snap || false, parsed.singleStep);
@@ -952,7 +948,7 @@ function testStart(parsed: ParsedOptions, entry: unknown): void {
     // Validate input. Values aren't tested, as the public .val method
     // will always provide a valid location.
     if (!Array.isArray(entry) || !entry.length) {
-        throw new Error("noUiSlider (" + VERSION + "): 'start' option is incorrect.");
+        throw new Error("noUiSlider: 'start' option is incorrect.");
     }
 
     // Store the number of handles.
@@ -965,7 +961,7 @@ function testStart(parsed: ParsedOptions, entry: unknown): void {
 
 function testSnap(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "boolean") {
-        throw new Error("noUiSlider (" + VERSION + "): 'snap' option must be a boolean.");
+        throw new Error("noUiSlider: 'snap' option must be a boolean.");
     }
 
     // Enforce 100% stepping within subranges.
@@ -974,7 +970,7 @@ function testSnap(parsed: ParsedOptions, entry: unknown): void {
 
 function testAnimate(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "boolean") {
-        throw new Error("noUiSlider (" + VERSION + "): 'animate' option must be a boolean.");
+        throw new Error("noUiSlider: 'animate' option must be a boolean.");
     }
 
     // Enforce 100% stepping within subranges.
@@ -983,7 +979,7 @@ function testAnimate(parsed: ParsedOptions, entry: unknown): void {
 
 function testAnimationDuration(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "number") {
-        throw new Error("noUiSlider (" + VERSION + "): 'animationDuration' option must be a number.");
+        throw new Error("noUiSlider: 'animationDuration' option must be a number.");
     }
 
     parsed.animationDuration = entry;
@@ -1011,7 +1007,7 @@ function testConnect(parsed: ParsedOptions, entry: unknown): void {
 
     // Reject invalid input
     else if (!Array.isArray(entry) || !entry.length || entry.length !== parsed.handles + 1) {
-        throw new Error("noUiSlider (" + VERSION + "): 'connect' option doesn't match handle count.");
+        throw new Error("noUiSlider: 'connect' option doesn't match handle count.");
     } else {
         connect = entry;
     }
@@ -1030,13 +1026,13 @@ function testOrientation(parsed: ParsedOptions, entry: unknown): void {
             parsed.ort = 1;
             break;
         default:
-            throw new Error("noUiSlider (" + VERSION + "): 'orientation' option is invalid.");
+            throw new Error("noUiSlider: 'orientation' option is invalid.");
     }
 }
 
 function testMargin(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
-        throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be numeric.");
+        throw new Error("noUiSlider: 'margin' option must be numeric.");
     }
 
     // Issue #582
@@ -1049,15 +1045,13 @@ function testMargin(parsed: ParsedOptions, entry: unknown): void {
 
 function testLimit(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
-        throw new Error("noUiSlider (" + VERSION + "): 'limit' option must be numeric.");
+        throw new Error("noUiSlider: 'limit' option must be numeric.");
     }
 
     parsed.limit = parsed.spectrum.getDistance(entry);
 
     if (!parsed.limit || parsed.handles < 2) {
-        throw new Error(
-            "noUiSlider (" + VERSION + "): 'limit' option is only supported on linear sliders with 2 or more handles."
-        );
+        throw new Error("noUiSlider: 'limit' option is only supported on linear sliders with 2 or more handles.");
     }
 }
 
@@ -1065,15 +1059,11 @@ function testPadding(parsed: ParsedOptions, entry: number | [number, number]): v
     let index;
 
     if (!isNumeric(entry) && !Array.isArray(entry)) {
-        throw new Error(
-            "noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers."
-        );
+        throw new Error("noUiSlider: 'padding' option must be numeric or array of exactly 2 numbers.");
     }
 
     if (Array.isArray(entry) && !(entry.length === 2 || isNumeric(entry[0]) || isNumeric(entry[1]))) {
-        throw new Error(
-            "noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers."
-        );
+        throw new Error("noUiSlider: 'padding' option must be numeric or array of exactly 2 numbers.");
     }
 
     if (entry === 0) {
@@ -1090,7 +1080,7 @@ function testPadding(parsed: ParsedOptions, entry: number | [number, number]): v
     for (index = 0; index < parsed.spectrum.xNumSteps.length - 1; index++) {
         // last "range" can't contain step size as it is purely an endpoint.
         if (parsed.padding[0][index] < 0 || parsed.padding[1][index] < 0) {
-            throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
+            throw new Error("noUiSlider: 'padding' option must be a positive number(s).");
         }
     }
 
@@ -1099,7 +1089,7 @@ function testPadding(parsed: ParsedOptions, entry: number | [number, number]): v
     const lastValue = parsed.spectrum.xVal[parsed.spectrum.xVal.length - 1];
 
     if (totalPadding / (lastValue - firstValue) > 1) {
-        throw new Error("noUiSlider (" + VERSION + "): 'padding' option must not exceed 100% of the range.");
+        throw new Error("noUiSlider: 'padding' option must not exceed 100% of the range.");
     }
 }
 
@@ -1115,14 +1105,14 @@ function testDirection(parsed: ParsedOptions, entry: unknown): void {
             parsed.dir = 1;
             break;
         default:
-            throw new Error("noUiSlider (" + VERSION + "): 'direction' option was not recognized.");
+            throw new Error("noUiSlider: 'direction' option was not recognized.");
     }
 }
 
 function testBehaviour(parsed: ParsedOptions, entry: unknown): void {
     // Make sure the input is a string.
     if (typeof entry !== "string") {
-        throw new Error("noUiSlider (" + VERSION + "): 'behaviour' must be a string containing options.");
+        throw new Error("noUiSlider: 'behaviour' must be a string containing options.");
     }
 
     // Check if the string contains any keywords.
@@ -1136,7 +1126,7 @@ function testBehaviour(parsed: ParsedOptions, entry: unknown): void {
 
     if (fixed) {
         if (parsed.handles !== 2) {
-            throw new Error("noUiSlider (" + VERSION + "): 'fixed' behaviour must be used with 2 handles");
+            throw new Error("noUiSlider: 'fixed' behaviour must be used with 2 handles");
         }
 
         // Use margin to enforce fixed state
@@ -1144,7 +1134,7 @@ function testBehaviour(parsed: ParsedOptions, entry: unknown): void {
     }
 
     if (unconstrained && (parsed.margin || parsed.limit)) {
-        throw new Error("noUiSlider (" + VERSION + "): 'unconstrained' behaviour cannot be used with margin or limit");
+        throw new Error("noUiSlider: 'unconstrained' behaviour cannot be used with margin or limit");
     }
 
     parsed.events = {
@@ -1172,7 +1162,7 @@ function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boole
         entry = asArray(entry);
 
         if (entry.length !== parsed.handles) {
-            throw new Error("noUiSlider (" + VERSION + "): must pass a formatter for all handles.");
+            throw new Error("noUiSlider: must pass a formatter for all handles.");
         }
 
         entry.forEach(function(formatter) {
@@ -1180,7 +1170,7 @@ function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boole
                 typeof formatter !== "boolean" &&
                 (typeof formatter !== "object" || typeof formatter.to !== "function")
             ) {
-                throw new Error("noUiSlider (" + VERSION + "): 'tooltips' must be passed a formatter or 'false'.");
+                throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
             }
         });
 
@@ -1200,7 +1190,7 @@ function testFormat(parsed: ParsedOptions, entry: Formatter): void {
 
 function testKeyboardSupport(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "boolean") {
-        throw new Error("noUiSlider (" + VERSION + "): 'keyboardSupport' option must be a boolean.");
+        throw new Error("noUiSlider: 'keyboardSupport' option must be a boolean.");
     }
 
     parsed.keyboardSupport = entry;
@@ -1213,7 +1203,7 @@ function testDocumentElement(parsed: ParsedOptions, entry: HTMLElement): void {
 
 function testCssPrefix(parsed: ParsedOptions, entry: unknown): void {
     if (typeof entry !== "string" && entry !== false) {
-        throw new Error("noUiSlider (" + VERSION + "): 'cssPrefix' must be a string or `false`.");
+        throw new Error("noUiSlider: 'cssPrefix' must be a string or `false`.");
     }
 
     parsed.cssPrefix = entry;
@@ -1221,7 +1211,7 @@ function testCssPrefix(parsed: ParsedOptions, entry: unknown): void {
 
 function testCssClasses(parsed: ParsedOptions, entry: CssClasses): void {
     if (typeof entry !== "object") {
-        throw new Error("noUiSlider (" + VERSION + "): 'cssClasses' must be an object.");
+        throw new Error("noUiSlider: 'cssClasses' must be an object.");
     }
 
     if (typeof parsed.cssPrefix === "string") {
@@ -1301,7 +1291,7 @@ function testOptions(options: Options): ParsedOptions {
         // If the option isn't set, but it is required, throw an error.
         if (!isSet(options[name]) && defaults[name] === undefined) {
             if ((tests[name] as any).r) {
-                throw new Error("noUiSlider (" + VERSION + "): '" + name + "' is required.");
+                throw new Error("noUiSlider: '" + name + "' is required.");
             }
 
             return;
@@ -1557,7 +1547,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         if (pips.mode === PipsMode.Count) {
             if (pips.values < 2) {
-                throw new Error("noUiSlider (" + VERSION + "): 'values' (>= 2) required for mode 'count'.");
+                throw new Error("noUiSlider: 'values' (>= 2) required for mode 'count'.");
             }
 
             // Divide 0 - 100 in 'count' parts.
@@ -2717,7 +2707,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         handleNumber = Number(handleNumber);
 
         if (!(handleNumber >= 0 && handleNumber < scope_HandleNumbers.length)) {
-            throw new Error("noUiSlider (" + VERSION + "): invalid handle number, got: " + handleNumber);
+            throw new Error("noUiSlider: invalid handle number, got: " + handleNumber);
         }
 
         // Look both backward and forward, since we don't want this handle to "push" other handles (#960);
@@ -2946,12 +2936,12 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 // Run the standard initializer
 function initialize(target: TargetElement, originalOptions: Options): API {
     if (!target || !target.nodeName) {
-        throw new Error("noUiSlider (" + VERSION + "): create requires a single element, got: " + target);
+        throw new Error("noUiSlider: create requires a single element, got: " + target);
     }
 
     // Throw an error if the slider was already initialized.
     if (target.noUiSlider) {
-        throw new Error("noUiSlider (" + VERSION + "): Slider was already initialized.");
+        throw new Error("noUiSlider: Slider was already initialized.");
     }
 
     // Test the options and create the slider environment;
@@ -2963,11 +2953,9 @@ function initialize(target: TargetElement, originalOptions: Options): API {
     return api;
 }
 
-// Use an object instead of a function for future expandability;
 export default {
     // Exposed for unit testing, don't use this in your application.
     __spectrum: Spectrum,
-    version: VERSION,
     // A reference to the default classes, allows global changes.
     // Use the cssClasses option for changes to one slider.
     cssClasses: cssClasses,

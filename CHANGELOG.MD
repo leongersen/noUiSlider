@@ -4,6 +4,7 @@
 - noUiSlider is now written and distributed as Typescript;
 - Types are now provided. If you are currently using [@types/nouislider](https://www.npmjs.com/package/@types/nouislider), this should be replaced;
 - The distributed files have moved from `distribute` to `dist`;
+- Removed: `version` from exceptions and export;
 
 ### 14.7.0 (*2021-04-06*)
 - noUiSlider is now build with Typescript. This release contains no further changes.
