@@ -108,9 +108,11 @@ type Pips = PositionsPips | ValuesPips | CountPips | StepsPips | RangePips;
 
 //endregion
 
+type StartValues = string | number | (string | number)[];
+
 interface UpdatableOptions {
     range?: Range;
-    start?: string | string[];
+    start?: StartValues;
     margin?: number;
     limit?: number;
     padding?: number | number[];
@@ -127,7 +129,7 @@ interface Options extends UpdatableOptions {
     connect?: "lower" | "upper" | boolean | boolean[];
     orientation?: "vertical" | "horizontal";
     direction?: "ltr" | "rtl";
-    behaviour: "string";
+    behaviour?: string;
     keyboardSupport?: boolean;
     keyboardPageMultiplier?: number;
     keyboardDefaultStep?: number;
@@ -2659,11 +2661,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Set the slider value.
-    function valueSet(
-        input: string | number | (string | number)[],
-        fireSetEvent?: boolean,
-        exactInput?: boolean
-    ): void {
+    function valueSet(input: StartValues, fireSetEvent?: boolean, exactInput?: boolean): void {
         const values = asArray(input);
         const isInit = scope_Locations[0] === undefined;
 
