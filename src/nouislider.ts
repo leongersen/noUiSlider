@@ -2029,7 +2029,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         moveHandles(movement > 0, proposal, data.locations, data.handleNumbers);
 
         // If target is a connect, then fire drag event
-        if (hasClass(data.target!, options.cssClasses.connect)) {
+        if (data.target != undefined && hasClass(data.target, options.cssClasses.connect)) {
             fireEvent("drag", data.handleNumbers[0]);
         }
     }
