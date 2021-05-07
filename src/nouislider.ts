@@ -2027,6 +2027,11 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         const proposal = (movement * 100) / data.baseSize;
 
         moveHandles(movement > 0, proposal, data.locations, data.handleNumbers);
+
+        // If target is a connect, then fire drag event
+        if (hasClass(data.target!, options.cssClasses.connect)) {
+            fireEvent("drag", data.handleNumbers[0]);
+        }
     }
 
     // Unbind move events on document, call callbacks.
