@@ -214,6 +214,7 @@ interface EventData {
     target?: HTMLElement;
     handles?: HTMLElement[];
     handle?: HTMLElement;
+    connect?: HTMLElement;
     listeners?: [string, EventHandler][];
     startCalcPoint?: number;
     baseSize?: number;
@@ -2026,12 +2027,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         // Convert the movement into a percentage of the slider width/height
         const proposal = (movement * 100) / data.baseSize;
 
-        moveHandles(movement > 0, proposal, data.locations, data.handleNumbers);
-
-        // If target is a connect, then fire drag event
-        if (data.target != undefined && hasClass(data.target, options.cssClasses.connect)) {
-            fireEvent("drag", data.handleNumbers[0]);
-        }
+        moveHandles(movement > 0, proposal, data.locations, data.handleNumbers, data.connect);
     }
 
     // Unbind move events on document, call callbacks.
@@ -2097,6 +2093,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             // relying on it to extract target touches.
             target: event.target as HTMLElement,
             handle: handle,
+            connect: data.connect,
             listeners: listeners,
             startCalcPoint: event.calcPoint,
             baseSize: baseSize(),
@@ -2338,7 +2335,8 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 eventHolders.forEach(function(eventHolder) {
                     attachEvent(actions.start, eventHolder, eventStart, {
                         handles: [handleBefore, handleAfter],
-                        handleNumbers: [index - 1, index]
+                        handleNumbers: [index - 1, index],
+                        connect: connect
                     });
                 });
             });
@@ -2482,7 +2480,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
     // Moves handle(s) by a percentage
     // (bool, % to move, [% where handle started, ...], [index in scope_Handles, ...])
-    function moveHandles(upward: boolean, proposal: number, locations: number[], handleNumbers: number[]): void {
+    function moveHandles(upward: boolean, proposal: number, locations: number[], handleNumbers: number[], connect?: HTMLElement): void {
         const proposals = locations.slice();
 
         let b = [!upward, upward];
@@ -2537,6 +2535,11 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 fireEvent("update", handleNumber);
                 fireEvent("slide", handleNumber);
             });
+
+            // If target is a connect, then fire drag event
+            if (connect != undefined) {
+                fireEvent("drag", handleNumbers[0]);
+            }
         }
     }
 
