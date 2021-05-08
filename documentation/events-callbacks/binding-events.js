@@ -14,7 +14,7 @@ slider.noUiSlider.on('slide', function () {
     addClassFor(lSlide, 'tShow', 450);
 });
 
-slider.noUiSlider.on('drag', function (values, handle) {
+slider.noUiSlider.on('drag', function () {
     addClassFor(lDrag, 'tShow', 450);
 });
 
