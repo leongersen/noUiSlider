@@ -2483,6 +2483,9 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     function moveHandles(upward: boolean, proposal: number, locations: number[], handleNumbers: number[], connect?: HTMLElement): void {
         const proposals = locations.slice();
 
+        // Store firstHandle now, so we still have it incase handleNumbers is reversed.
+        const firstHandleInConnection = handleNumbers[0];
+
         let b = [!upward, upward];
         let f = [upward, !upward];
 
@@ -2538,7 +2541,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
             // If target is a connect, then fire drag event
             if (connect != undefined) {
-                fireEvent("drag", handleNumbers[0]);
+                fireEvent("drag", firstHandleInConnection);
             }
         }
     }
