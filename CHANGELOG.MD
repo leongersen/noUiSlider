@@ -1,5 +1,8 @@
 # Changelog
 
+### 15.1.0 (*2021-05-09*)
+- Added: `drag` event when dragging connecting elements (#887, #1135);
+
 ### 15.0.0 (*2021-05-02*)
 - noUiSlider is now written and distributed as TypeScript;
 - Types are now provided. If you are currently using [@types/nouislider](https://www.npmjs.com/package/@types/nouislider), this should be replaced;
