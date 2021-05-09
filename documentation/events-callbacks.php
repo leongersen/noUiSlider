@@ -188,7 +188,7 @@
 <section>
 
 	<div class="view">
-		<p>This event is useful to specifically listen to a handle being dragged, whilst <strong>ignoring other updates</strong> to the slider value. This event also fires on a change by a 'tap'. In most cases, the <code>'update'</code> is the better choice.</p>
+		<p>This event is useful to specifically listen to a handle being dragged, while <strong>ignoring other updates</strong> to the slider value. This event also fires on a change by a 'tap'. In most cases, the <code>'update'</code> is the better choice.</p>
 	</div>
 </section>
 
@@ -198,12 +198,10 @@
 <section>
 
 	<div class="view">
-		<p>Use this event to listen for when a bar between handles is being dragged, whilst <strong>ignoring other updates</strong> to the slider values. This is used for specific cases when you need to know whether a connect, that connects multiple handles together, is being dragged.</p>
-		
-		<p>This event only returns the first handle from the connection. So if you have two handles connected together (like in the demo above), this event would only return the first one in the callback. In this case, you can add 1 to the handle number returned to get the second handles number and so forth.</p>
+		<p>Use this event to listen for when a connect element between handles is being dragged, while <strong>ignoring other updates</strong> to the slider values.</p>
+
+		<p>The handle in the callback is the first handle connected to the dragged connect.</p>
 	</div>
-	
-	<?php code('drag'); ?>
 </section>
 
 <?php sect('set'); ?>
