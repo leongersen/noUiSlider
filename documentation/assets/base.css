@@ -133,7 +133,7 @@
 
 	.example {
 		position: relative;
-		padding: 40px 60px 50px 30px;
+		padding: 40px 40px 50px 40px;
 		margin: 20px 0;
 		overflow: hidden;
 	}
@@ -404,7 +404,7 @@
 	}
 	.view-more {
 		width: 690px;
-		padding: 10px 70px 10px 0;
+		padding: 10px 45px 10px 0;
 	}
 }
 

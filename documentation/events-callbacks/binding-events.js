@@ -1,5 +1,6 @@
 var lUpdate = document.getElementById('l-update');
 var lSlide = document.getElementById('l-slide');
+var lDrag = document.getElementById('l-drag');
 var lSet = document.getElementById('l-set');
 var lChange = document.getElementById('l-change');
 var lStart = document.getElementById('l-start');
@@ -11,6 +12,10 @@ slider.noUiSlider.on('update', function () {
 
 slider.noUiSlider.on('slide', function () {
     addClassFor(lSlide, 'tShow', 450);
+});
+
+slider.noUiSlider.on('drag', function () {
+    addClassFor(lDrag, 'tShow', 450);
 });
 
 slider.noUiSlider.on('set', function () {
