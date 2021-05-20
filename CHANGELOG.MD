@@ -1,5 +1,8 @@
 # Changelog
 
+### 15.1.1 (*2021-05-09*)
+- Fixed: `tooltips` option accepts one `Formatter` for all tooltips (#1101);
+
 ### 15.1.0 (*2021-05-09*)
 - Added: `drag` event when dragging connecting elements (#887, #1135);
 

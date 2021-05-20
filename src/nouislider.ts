@@ -276,8 +276,8 @@ type EventCallback = (
 
 //region Helper Methods
 
-function isValidFormatter(entry: Formatter): entry is Formatter {
-    return typeof entry === "object" && typeof entry.to === "function" && typeof entry.from === "function";
+function isValidFormatter(entry: unknown): entry is Formatter {
+    return typeof entry === "object" && typeof (<Formatter>entry).to === "function" && typeof (<Formatter>entry).from === "function";
 }
 
 function removeElement(el: HTMLElement): void {
@@ -1153,11 +1153,11 @@ function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boole
         return;
     }
 
-    if (entry === true) {
+    if (entry === true || isValidFormatter(entry)) {
         parsed.tooltips = [];
 
         for (let i = 0; i < parsed.handles; i++) {
-            parsed.tooltips.push(true);
+            parsed.tooltips.push(entry);
         }
     } else {
         entry = asArray(entry);
