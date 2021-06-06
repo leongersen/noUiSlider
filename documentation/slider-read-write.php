@@ -18,7 +18,7 @@
 
 		<?php code('read'); ?>
 
-		<p>For one-handle sliders, calling <code>.get()</code> will return the value as a <code>'string'</code>. For multi-handle sliders, an <code>array['string', 'string', ...]</code> will be returned.</p>
+		<p>For one-handle sliders, calling <code>.get()</code> will return the value as a <code>'string'</code>. For multi-handle sliders, an <code>array['string', 'string', ...]</code> will be returned. To return the slider values as a <code>number</code> or <code>array[number, number, ...]</code> use <code>.get(true)</code>, which returns the unencoded values.</p>
 	</div>
 </section>
 

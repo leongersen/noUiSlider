@@ -20,9 +20,12 @@ QUnit.test("Values", function (assert) {
 
     assert.deepEqual(slider.noUiSlider.get(), ['50', '100'], 'Values where set');
 
+    assert.deepEqual(slider.noUiSlider.get(true), [50, 100], 'Unencoded values match');
+
     slider.noUiSlider.set([150, 600]);
 
     assert.deepEqual(slider.noUiSlider.get(), ['150', '600'], 'Slider correctly overstepped limits.');
+    assert.deepEqual(slider.noUiSlider.get(true), [150, 600], 'Unencoded values match.');
 
 });
 

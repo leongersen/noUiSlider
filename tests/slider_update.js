@@ -17,6 +17,7 @@ QUnit.test("Testing update method", function (assert) {
     });
 
     assert.deepEqual(slider.noUiSlider.get(), '50');
+    assert.deepEqual(slider.noUiSlider.get(true), 50);
 
     slider.noUiSlider.destroy();
 
