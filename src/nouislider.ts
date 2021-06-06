@@ -280,6 +280,11 @@ function isValidFormatter(entry: unknown): entry is Formatter {
     return typeof entry === "object" && typeof (<Formatter>entry).to === "function" && typeof (<Formatter>entry).from === "function";
 }
 
+function isValidTooltipFormatter(entry: unknown): entry is Formatter {
+    // tooltip formatters only need a to function and not a from function
+    return typeof entry === "object" && typeof (<Formatter>entry).to === "function";
+}
+
 function removeElement(el: HTMLElement): void {
     (el.parentElement as HTMLElement).removeChild(el);
 }
@@ -1153,7 +1158,7 @@ function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boole
         return;
     }
 
-    if (entry === true || isValidFormatter(entry)) {
+    if (entry === true || isValidTooltipFormatter(entry)) {
         parsed.tooltips = [];
 
         for (let i = 0; i < parsed.handles; i++) {
@@ -1167,10 +1172,7 @@ function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boole
         }
 
         entry.forEach(function(formatter) {
-            if (
-                typeof formatter !== "boolean" &&
-                (typeof formatter !== "object" || typeof formatter.to !== "function")
-            ) {
+            if (typeof formatter !== "boolean" && !isValidTooltipFormatter(formatter)) {
                 throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
             }
         });
