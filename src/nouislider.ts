@@ -1,6 +1,6 @@
 "use strict";
 
-interface CssClasses {
+export interface CssClasses {
     target: string;
     base: string;
     origin: string;
@@ -39,7 +39,7 @@ interface CssClasses {
     valueSub: string;
 }
 
-interface Formatter {
+export interface Formatter {
     to: (value: number) => string | number;
     from: (value: string) => number | false;
 }
@@ -59,11 +59,11 @@ export enum PipsType {
     SmallValue = 2
 }
 
-type WrappedSubRange = [number] | [number, number];
+export type WrappedSubRange = [number] | [number, number];
 
-type SubRange = number | WrappedSubRange;
+export type SubRange = number | WrappedSubRange;
 
-interface Range {
+export interface Range {
     min: SubRange;
     max: SubRange;
     [key: string]: SubRange;
@@ -71,46 +71,46 @@ interface Range {
 
 //region Pips
 
-interface BasePips {
+export interface BasePips {
     mode: PipsMode;
     density?: number;
     filter?: PipsFilter;
     format?: Formatter;
 }
 
-interface PositionsPips extends BasePips {
+export interface PositionsPips extends BasePips {
     mode: PipsMode.Positions;
     values: number[];
     stepped?: boolean;
 }
 
-interface ValuesPips extends BasePips {
+export interface ValuesPips extends BasePips {
     mode: PipsMode.Values;
     values: number[];
     stepped?: boolean;
 }
 
-interface CountPips extends BasePips {
+export interface CountPips extends BasePips {
     mode: PipsMode.Count;
     values: number;
     stepped?: boolean;
 }
 
-interface StepsPips extends BasePips {
+export interface StepsPips extends BasePips {
     mode: PipsMode.Steps;
 }
 
-interface RangePips extends BasePips {
+export interface RangePips extends BasePips {
     mode: PipsMode.Range;
 }
 
-type Pips = PositionsPips | ValuesPips | CountPips | StepsPips | RangePips;
+export type Pips = PositionsPips | ValuesPips | CountPips | StepsPips | RangePips;
 
 //endregion
 
-type StartValues = string | number | (string | number)[];
+export type StartValues = string | number | (string | number)[];
 
-interface UpdatableOptions {
+export interface UpdatableOptions {
     range?: Range;
     start?: StartValues;
     margin?: number;
@@ -140,7 +140,7 @@ export interface Options extends UpdatableOptions {
     animationDuration?: number;
 }
 
-interface Behaviour {
+export interface Behaviour {
     tap: boolean;
     drag: boolean;
     fixed: boolean;
@@ -149,7 +149,7 @@ interface Behaviour {
     unconstrained: boolean;
 }
 
-interface ParsedOptions {
+export interface ParsedOptions {
     animate: boolean;
     connect: boolean[];
     start: number[];
@@ -202,15 +202,15 @@ export interface API {
     pips: (grid: Pips) => HTMLElement;
 }
 
-interface TargetElement extends HTMLElement {
+export interface TargetElement extends HTMLElement {
     noUiSlider?: API;
 }
 
-interface CSSStyleDeclarationIE10 extends CSSStyleDeclaration {
+export interface CSSStyleDeclarationIE10 extends CSSStyleDeclaration {
     msTransform?: string;
 }
 
-interface EventData {
+export interface EventData {
     target?: HTMLElement;
     handles?: HTMLElement[];
     handle?: HTMLElement;
@@ -226,45 +226,45 @@ interface EventData {
     hover?: boolean;
 }
 
-interface MoveEventData extends EventData {
+export interface MoveEventData extends EventData {
     listeners: [string, EventHandler][];
     startCalcPoint: number;
     baseSize: number;
     locations: number[];
 }
 
-interface EndEventData extends EventData {
+export interface EndEventData extends EventData {
     listeners: [string, EventHandler][];
 }
 
-interface NearByStep {
+export interface NearByStep {
     startValue: number;
     step: number | false;
     highestStep: number;
 }
 
-interface NearBySteps {
+export interface NearBySteps {
     stepBefore: NearByStep;
     thisStep: NearByStep;
     stepAfter: NearByStep;
 }
 
-type EventHandler = (event: BrowserEvent) => false | undefined;
+export type EventHandler = (event: BrowserEvent) => false | undefined;
 
-type GetResult = number | string | (string | number)[];
+export type GetResult = number | string | (string | number)[];
 
-type NextStepsForHandle = [number | false | null, number | false | null];
+export type NextStepsForHandle = [number | false | null, number | false | null];
 
-type OptionKey = (keyof Options) & (keyof ParsedOptions) & (keyof UpdatableOptions);
+export type OptionKey = (keyof Options) & (keyof ParsedOptions) & (keyof UpdatableOptions);
 
-type PipsFilter = (value: number, type: PipsType) => PipsType;
+export type PipsFilter = (value: number, type: PipsType) => PipsType;
 
-type PageOffset = { x: number; y: number };
+export type PageOffset = { x: number; y: number };
 
-type BrowserEvent = MouseEvent &
+export type BrowserEvent = MouseEvent &
     TouchEvent & { pageOffset: PageOffset; points: [number, number]; cursor: boolean; calcPoint: number };
 
-type EventCallback = (
+export type EventCallback = (
     this: API,
     values: (number | string)[],
     handleNumber: number,
