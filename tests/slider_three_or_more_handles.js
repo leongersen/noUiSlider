@@ -15,13 +15,13 @@ QUnit.test("Slider with three or more handles", function (assert) {
         }
     });
 
-    assert.deepEqual(slider.noUiSlider.get().map(Number), [5, 10, 15]);
+    assert.deepEqual(slider.noUiSlider.get(true), [5, 10, 15]);
 
     slider.noUiSlider.set([0, 0, 1]);
-    assert.deepEqual(slider.noUiSlider.get().map(Number), [0, 0, 1]);
+    assert.deepEqual(slider.noUiSlider.get(true), [0, 0, 1]);
 
     slider.noUiSlider.set([19, 20, 20]);
-    assert.deepEqual(slider.noUiSlider.get().map(Number), [19, 20, 20]);
+    assert.deepEqual(slider.noUiSlider.get(true), [19, 20, 20]);
 
 
     // xnakos spotted a bug where handles can stack wrong, so if there are

@@ -188,7 +188,7 @@ export interface API {
     steps: () => NextStepsForHandle[];
     on: (eventName: string, callback: EventCallback) => void;
     off: (eventName: string) => void;
-    get: () => GetResult;
+    get: (unencoded?: boolean) => GetResult;
     set: (input: number | string | (number | string)[], fireSetEvent?: boolean, exactInput?: boolean) => void;
     setHandle: (handleNumber: number, value: number | string, fireSetEvent?: boolean, exactInput?: boolean) => void;
     reset: (fireSetEvent?: boolean) => void;
@@ -2733,7 +2733,11 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Get the slider value.
-    function valueGet(): GetResult {
+    function valueGet(unencoded = false): GetResult {
+        if (unencoded) {
+            // return a copy of the raw values
+            return scope_Values.length === 1 ? scope_Values[0] : scope_Values.slice(0);
+        }
         const values = scope_Values.map(options.format.to);
 
         // If only one handle is used, return a single value.
