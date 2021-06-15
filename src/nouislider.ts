@@ -39,8 +39,12 @@ interface CssClasses {
     valueSub: string;
 }
 
-interface Formatter {
+export interface PartialFormatter {
     to: (value: number) => string | number;
+    from?: (value: string) => number | false;
+}
+
+export interface Formatter extends PartialFormatter {
     from: (value: string) => number | false;
 }
 
@@ -75,7 +79,7 @@ interface BasePips {
     mode: PipsMode;
     density?: number;
     filter?: PipsFilter;
-    format?: Formatter;
+    format?: PartialFormatter;
 }
 
 interface PositionsPips extends BasePips {
@@ -120,7 +124,7 @@ interface UpdatableOptions {
     step?: number;
     pips?: Pips;
     format?: Formatter;
-    tooltips?: boolean | Formatter | (boolean | Formatter)[];
+    tooltips?: boolean | PartialFormatter | (boolean | PartialFormatter)[];
     animate?: boolean;
 }
 
@@ -136,7 +140,7 @@ export interface Options extends UpdatableOptions {
     documentElement?: HTMLElement;
     cssPrefix?: string;
     cssClasses?: CssClasses;
-    ariaFormat?: Formatter;
+    ariaFormat?: PartialFormatter;
     animationDuration?: number;
 }
 
@@ -159,14 +163,14 @@ interface ParsedOptions {
     step?: number;
     orientation?: "vertical" | "horizontal";
     direction?: "ltr" | "rtl";
-    tooltips?: (boolean | Formatter)[];
+    tooltips?: (boolean | PartialFormatter)[];
     keyboardSupport: boolean;
     keyboardPageMultiplier: number;
     keyboardDefaultStep: number;
     documentElement?: HTMLElement;
     cssPrefix?: string | false;
     cssClasses: CssClasses;
-    ariaFormat: Formatter;
+    ariaFormat: PartialFormatter;
     pips?: Pips;
     animationDuration: number;
     snap?: boolean;
@@ -277,11 +281,11 @@ type EventCallback = (
 //region Helper Methods
 
 function isValidFormatter(entry: unknown): entry is Formatter {
-    return typeof entry === "object" && typeof (<Formatter>entry).to === "function" && typeof (<Formatter>entry).from === "function";
+    return isValidPartialFormatter(entry) && typeof (<Formatter>entry).from === "function";
 }
 
-function isValidTooltipFormatter(entry: unknown): entry is Formatter {
-    // tooltip formatters only need a to function and not a from function
+function isValidPartialFormatter(entry: unknown): entry is PartialFormatter {
+    // partial formatters only need a to function and not a from function
     return typeof entry === "object" && typeof (<Formatter>entry).to === "function";
 }
 
@@ -894,15 +898,6 @@ const INTERNAL_EVENT_NS = {
 
 //endregion
 
-function validateFormat(entry: Formatter): true | never {
-    // Any object with a to and from method is supported.
-    if (isValidFormatter(entry)) {
-        return true;
-    }
-
-    throw new Error("noUiSlider: 'format' requires 'to' and 'from' methods.");
-}
-
 function testStep(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
         throw new Error("noUiSlider: 'step' is not numeric.");
@@ -1158,7 +1153,7 @@ function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boole
         return;
     }
 
-    if (entry === true || isValidTooltipFormatter(entry)) {
+    if (entry === true || isValidPartialFormatter(entry)) {
         parsed.tooltips = [];
 
         for (let i = 0; i < parsed.handles; i++) {
@@ -1172,7 +1167,7 @@ function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boole
         }
 
         entry.forEach(function(formatter) {
-            if (typeof formatter !== "boolean" && !isValidTooltipFormatter(formatter)) {
+            if (typeof formatter !== "boolean" && !isValidPartialFormatter(formatter)) {
                 throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.");
             }
         });
@@ -1181,13 +1176,19 @@ function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boole
     }
 }
 
-function testAriaFormat(parsed: ParsedOptions, entry: Formatter): void {
-    validateFormat(entry);
+function testAriaFormat(parsed: ParsedOptions, entry: PartialFormatter): void {
+    if (!isValidPartialFormatter(entry)) {
+        throw new Error("noUiSlider: 'ariaFormat' requires 'to' method.");
+    }
+
     parsed.ariaFormat = entry;
 }
 
 function testFormat(parsed: ParsedOptions, entry: Formatter): void {
-    validateFormat(entry);
+    if (!isValidFormatter(entry)) {
+        throw new Error("noUiSlider: 'format' requires 'to' and 'from' methods.");
+    }
+
     parsed.format = entry;
 }
 
@@ -1715,7 +1716,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     function addMarking(
         spread: { [key: string]: [number, PipsType] },
         filterFunc: PipsFilter | undefined,
-        formatter: Formatter
+        formatter: PartialFormatter
     ): HTMLElement {
         const element = scope_Document.createElement("div");
 
@@ -1790,11 +1791,10 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         const spread = generateSpread(pips);
         const filter = pips.filter;
-        const format: Formatter = pips.format || {
+        const format: PartialFormatter = pips.format || {
             to: function(value) {
                 return String(Math.round(value));
-            },
-            from: Number
+            }
         };
 
         scope_Pips = scope_Target.appendChild(addMarking(spread, filter, format));

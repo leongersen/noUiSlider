@@ -1,5 +1,9 @@
 # Changelog
 
+### 15.2.0 (*2021-06-15*)
+- Added: `unencoded` boolean argument to `get` method to return raw slider values (#1145);
+- Added: support for "partial" formatters in `pips.format`, `ariaFormat` and `tooltips` options (#1140);
+
 ### 15.1.1 (*2021-05-09*)
 - Fixed: `tooltips` option accepts one `Formatter` for all tooltips (#1101);
 
