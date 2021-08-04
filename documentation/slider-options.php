@@ -454,15 +454,38 @@
             When moving in a range that has no <code>step</code> value set, handles move by 10% <i>of the range they are in</i>.
             This default can be changed using the <code>keyboardDefaultStep</code> option.</p>
 
+		<p>
+			Example 1:<br/>
+			In the first example the keyboard step size is <code>20</code> which is equal to <code>range / keyboardDefaultStep</code>.
+		</p>
+
+		<p>Changing the <code>keyboardMultiplier</code> option will multiply the default step by the set amount.
+			This is useful when dealing with larger value ranges but smaller step size.</p>
+
+			<p>
+			Example 2:<br/>
+			In the second example the keyboard step size is <code>50</code> which is calculated <code>step * keyboardMultiplier</code>.
+		</p>
+
         <p>The Page Up and Page Down keys can be used to make larger steps through the slider range. By default, the page keys
             multiply the default step by 5. This can be changed using the <code>keyboardPageMultiplier</code> option.</p>
 
         <p>Keyboard support can be disabled by setting the <code>keyboardSupport</code> option to <code>false</code>.</p>
 
         <div class="example overflow">
+			<p>Slider 1</p>
             <div id="slider-keyboard"></div>
-            <?php run('keyboard-support'); ?>
+			<p class="example-val" id="slider-keyboard-value"></p>
+
+			<div style="margin: 30px 0; border-bottom: 1px solid #ddd;"></div>
+
+			<p>Slider 2</p>
+			<div id="slider-keyboard-2"></div>
+			<p class="example-val" id="slider-keyboard-2-value"></p>
         </div>
+
+		<?php run('keyboard-support'); ?>
+		<?php run('keyboard-support-link'); ?>
 
         <div class="options">
             <strong>Default</strong>
@@ -474,8 +497,13 @@
     </div>
 
     <div class="side">
-
         <?php code('keyboard-support'); ?>
+
+		<div class="viewer-header">Show the slider value</div>
+
+		<div class="viewer-content">
+			<?php code('keyboard-support-link'); ?>
+		</div>
     </div>
 
 </section>

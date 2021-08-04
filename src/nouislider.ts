@@ -136,6 +136,7 @@ export interface Options extends UpdatableOptions {
     behaviour?: string;
     keyboardSupport?: boolean;
     keyboardPageMultiplier?: number;
+    keyboardMultiplier?: number;
     keyboardDefaultStep?: number;
     documentElement?: HTMLElement;
     cssPrefix?: string;
@@ -166,6 +167,7 @@ interface ParsedOptions {
     tooltips?: (boolean | PartialFormatter)[];
     keyboardSupport: boolean;
     keyboardPageMultiplier: number;
+    keyboardMultiplier: number;
     keyboardDefaultStep: number;
     documentElement?: HTMLElement;
     cssPrefix?: string | false;
@@ -916,6 +918,14 @@ function testKeyboardPageMultiplier(parsed: ParsedOptions, entry: unknown): void
     parsed.keyboardPageMultiplier = entry;
 }
 
+function testKeyboardMultiplier(parsed: ParsedOptions, entry: unknown): void {
+    if (!isNumeric(entry)) {
+        throw new Error("noUiSlider: 'keyboardMultiplier' is not numeric.");
+    }
+
+    parsed.keyboardMultiplier = entry;
+}
+
 function testKeyboardDefaultStep(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
         throw new Error("noUiSlider: 'keyboardDefaultStep' is not numeric.");
@@ -1249,6 +1259,7 @@ function testOptions(options: Options): ParsedOptions {
     const tests: { [key in keyof Options]: { r: boolean; t: (parsed: ParsedOptions, entry: unknown) => void } } = {
         step: { r: false, t: testStep },
         keyboardPageMultiplier: { r: false, t: testKeyboardPageMultiplier },
+        keyboardMultiplier: { r: false, t: testKeyboardMultiplier },
         keyboardDefaultStep: { r: false, t: testKeyboardDefaultStep },
         start: { r: true, t: testStart },
         connect: { r: true, t: testConnect },
@@ -1280,6 +1291,7 @@ function testOptions(options: Options): ParsedOptions {
         cssPrefix: "noUi-",
         cssClasses: cssClasses,
         keyboardPageMultiplier: 5,
+        keyboardMultiplier: 1,
         keyboardDefaultStep: 10
     } as UpdatableOptions;
 
@@ -2239,7 +2251,6 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         let to;
 
         if (isUp || isDown) {
-            const multiplier = options.keyboardPageMultiplier;
             const direction = isDown ? 0 : 1;
             const steps = getNextStepsForHandle(handleNumber);
             let step = steps[direction];
@@ -2259,7 +2270,9 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             }
 
             if (isLargeUp || isLargeDown) {
-                step *= multiplier;
+                step *= options.keyboardPageMultiplier;
+            } else {
+                step *= options.keyboardMultiplier;
             }
 
             // Step over zero-length ranges (#948);
