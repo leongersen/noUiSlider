@@ -1,0 +1,15 @@
+version: '3'
+
+volumes:
+    node_modules:
+
+services:
+    php:
+        image: php:7.2-apache
+        container_name: noUISlider_php
+        volumes:
+            - .:/var/www/html/nouislider
+            - node_modules:/var/www/html/nouislider/node_modules
+        ports:
+            - 8130:8066
+        command: php -S 0.0.0.0:8066 /var/www/html/nouislider/documentation/_run/router.php
