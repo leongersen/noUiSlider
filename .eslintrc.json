@@ -14,7 +14,8 @@
         "one-var": ["error", "never"],
         "no-var": "off",
         "no-console": "error",
-        "prefer-spread": "off"
+        "prefer-spread": "off",
+        "@typescript-eslint/no-explicit-any": "off"
     },
     "env": {
         "browser": true,
