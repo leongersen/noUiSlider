@@ -2495,7 +2495,13 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
     // Moves handle(s) by a percentage
     // (bool, % to move, [% where handle started, ...], [index in scope_Handles, ...])
-    function moveHandles(upward: boolean, proposal: number, locations: number[], handleNumbers: number[], connect?: HTMLElement): void {
+    function moveHandles(
+        upward: boolean,
+        proposal: number,
+        locations: number[],
+        handleNumbers: number[],
+        connect?: HTMLElement
+    ): void {
         const proposals = locations.slice();
 
         // Store first handle now, so we still have it in case handleNumbers is reversed
