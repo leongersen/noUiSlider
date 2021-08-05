@@ -1,5 +1,5 @@
 /**
- * Slider 1
+ * Example 1
  */
 var keyboardSupport = document.getElementById('slider-keyboard')
 
@@ -15,7 +15,7 @@ noUiSlider.create(keyboardSupport, {
 });
 
 /**
- * Slider 2
+ * Example 2
  */
 var keyboardSupport2 = document.getElementById('slider-keyboard-2')
 
