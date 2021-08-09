@@ -18,15 +18,6 @@ npm run lint
 npm run format
 ```
 
-The documentation preview is now available via docker using `docker-compose`. To spin up the container run:
-
-```bash
-docker-compose up -d
-```
-
-The documentation should now be accessible at `localhost:8130`
-To change the port, please modify the `docker-compose.yml` file.
-
 # Pull requests
 - Detail (in the pull request comment) what your changes do.
 - When applicable, include new unit tests, and make sure existing ones pass.
