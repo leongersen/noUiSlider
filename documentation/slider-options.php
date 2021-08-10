@@ -450,32 +450,60 @@
 
         <p>Handles in the slider can receive keyboard focus and be moved by arrow keys.</p>
 
+		<p>Keyboard support can be disabled by setting the <code>keyboardSupport</code> option to <code>false</code>.</p>
+
         <p>When moved by the arrow keys on a keyboard, handles obey the <code>step</code> value for the range they are in.
             When moving in a range that has no <code>step</code> value set, handles move by 10% <i>of the range they are in</i>.
-            This default can be changed using the <code>keyboardDefaultStep</code> option.</p>
+            This default can be changed using the <code>keyboardDefaultStep</code> option. (<a href="#kb-support-example-1">view example 1</a>)</p>
 
-        <p>The Page Up and Page Down keys can be used to make larger steps through the slider range. By default, the page keys
-            multiply the default step by 5. This can be changed using the <code>keyboardPageMultiplier</code> option.</p>
+		<p>Changing the <code>keyboardMultiplier</code> option will multiply the default step by the set amount.
+			This is useful when dealing with larger value ranges but smaller step size. (<a href="#kb-support-example-2">view example 2</a>)</p>
 
-        <p>Keyboard support can be disabled by setting the <code>keyboardSupport</code> option to <code>false</code>.</p>
+		<p>The Page Up and Page Down keys can be used to make larger steps through the slider range. By default, the page keys
+            multiply the default step by 5. This can be changed using the <code>keyboardPageMultiplier</code> option. (<a href="#kb-support-example-2">view example 2</a>)</p>
+
+		<h3 id="kb-support-example-1"><br>Example 1</h3>
+
+		<p>
+			Here the keyboard step size is <code>20</code> which is equal to <code>range / keyboardDefaultStep</code>.
+		</p>
 
         <div class="example overflow">
             <div id="slider-keyboard"></div>
-            <?php run('keyboard-support'); ?>
+			<p class="example-val" id="slider-keyboard-value"></p>
+		</div>
+
+		<h3 id="kb-support-example-2">Example 2</h3>
+
+		<p>
+			Here the keyboard step size is <code>50</code> which is equal to <code>step * keyboardMultiplier</code>.
+		</p>
+
+		<div class="example overflow">
+			<div id="slider-keyboard-2"></div>
+			<p class="example-val" id="slider-keyboard-2-value"></p>
         </div>
 
+		<?php run('keyboard-support'); ?>
+		<?php run('keyboard-support-link'); ?>
+
         <div class="options">
+			<strong>keyboardSupport</strong>
             <strong>Default</strong>
             <div><code>true</code></div>
-
             <strong>Accepted values</strong>
             <div><code>true</code>, <code>false</code></div>
         </div>
     </div>
 
     <div class="side">
-
         <?php code('keyboard-support'); ?>
+
+		<div class="viewer-header">Show the slider value</div>
+
+		<div class="viewer-content">
+			<?php code('keyboard-support-link'); ?>
+		</div>
     </div>
 
 </section>
