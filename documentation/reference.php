@@ -130,6 +130,18 @@ $canonical = "nouislider/reference/"
                 <td><code>5</code></td>
             </tr>
             <tr>
+                <td><a href="/nouislider/slider-options/#section-keyboard-support">keyboardMultiplier</a></td>
+                <td><code>number</code></td>
+                <td><code>false</code></td>
+                <td><code>1</code></td>
+            </tr>
+            <tr>
+                <td><a href="/nouislider/slider-options/#section-handle-attributes">handleAttributes</a></td>
+                <td>array of <code>{ key: value }</code> for each handle</td>
+                <td><code>false</code></td>
+                <td><em>[none]</em></td>
+            </tr>
+            <tr>
                 <td><a href="/nouislider/behaviour-option/">behaviour</a></td>
                 <td><code>string</code></td>
                 <td><code>false</code></td>

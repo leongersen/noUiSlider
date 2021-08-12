@@ -32,6 +32,7 @@
 		<li><a href="#section-direction">Direction</a></li>
 		<li><a href="#section-tooltips">Tooltips</a></li>
 		<li><a href="#section-animate">Animate</a></li>
+		<li><a href="#section-handle-attributes">Handle Attributes</a></li>
 		<li><a href="#section-keyboard-support">Keyboard Support</a></li>
 		<li><a href="#section-document-element">Document Element <small>(advanced)</small></a></li>
 	</ul>
@@ -437,6 +438,32 @@
             <?php loadShowCSS('animate-duration'); ?>
         </div>
 	</div>
+
+</section>
+
+
+<?php sect('handle-attributes'); ?>
+<h2>Handle Attributes</h2>
+
+<section>
+
+    <div class="view">
+
+        <p>Additional attributes can be added to the slider handles using the <code>handleAttributes</code> option.</p>
+
+        <div class="options">
+            <strong>Default</strong>
+            <div><em>[none]</em></div>
+
+            <strong>Accepted values</strong>
+            <div>array of <code>{ key: value }</code> for each handle</div>
+        </div>
+    </div>
+
+    <div class="side">
+
+        <?php code('handle-attributes'); ?>
+    </div>
 
 </section>
 

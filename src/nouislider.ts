@@ -114,6 +114,8 @@ type Pips = PositionsPips | ValuesPips | CountPips | StepsPips | RangePips;
 
 type StartValues = string | number | (string | number)[];
 
+type HandleAttributes = { [key: string]: string };
+
 interface UpdatableOptions {
     range?: Range;
     start?: StartValues;
@@ -143,6 +145,7 @@ export interface Options extends UpdatableOptions {
     cssClasses?: CssClasses;
     ariaFormat?: PartialFormatter;
     animationDuration?: number;
+    handleAttributes?: HandleAttributes[];
 }
 
 interface Behaviour {
@@ -177,6 +180,7 @@ interface ParsedOptions {
     animationDuration: number;
     snap?: boolean;
     format: Formatter;
+    handleAttributes?: HandleAttributes[];
 
     range: Range;
     singleStep: number;
@@ -261,7 +265,7 @@ type GetResult = number | string | (string | number)[];
 
 type NextStepsForHandle = [number | false | null, number | false | null];
 
-type OptionKey = (keyof Options) & (keyof ParsedOptions) & (keyof UpdatableOptions);
+type OptionKey = keyof Options & keyof ParsedOptions & keyof UpdatableOptions;
 
 type PipsFilter = (value: number, type: PipsType) => PipsType;
 
@@ -399,13 +403,13 @@ function getPageOffset(doc: Document): PageOffset {
     const x = supportPageOffset
         ? window.pageXOffset
         : isCSS1Compat
-            ? doc.documentElement.scrollLeft
-            : doc.body.scrollLeft;
+        ? doc.documentElement.scrollLeft
+        : doc.body.scrollLeft;
     const y = supportPageOffset
         ? window.pageYOffset
         : isCSS1Compat
-            ? doc.documentElement.scrollTop
-            : doc.body.scrollTop;
+        ? doc.documentElement.scrollTop
+        : doc.body.scrollTop;
 
     return {
         x: x,
@@ -426,16 +430,16 @@ function getActions(): { start: string; move: string; end: string } {
               end: "pointerup"
           }
         : window.navigator.msPointerEnabled
-            ? {
-                  start: "MSPointerDown",
-                  move: "MSPointerMove",
-                  end: "MSPointerUp"
-              }
-            : {
-                  start: "mousedown touchstart",
-                  move: "mousemove touchmove",
-                  end: "mouseup touchend"
-              };
+        ? {
+              start: "MSPointerDown",
+              move: "MSPointerMove",
+              end: "MSPointerUp"
+          }
+        : {
+              start: "mousedown touchstart",
+              move: "mousemove touchmove",
+              end: "mouseup touchend"
+          };
 }
 
 // https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
@@ -1186,6 +1190,14 @@ function testTooltips(parsed: ParsedOptions, entry: boolean | Formatter | (boole
     }
 }
 
+function testHandleAttributes(parsed: ParsedOptions, entry: HandleAttributes[]): void {
+    if (entry.length !== parsed.handles) {
+        throw new Error("noUiSlider: must pass a attributes for all handles.");
+    }
+
+    parsed.handleAttributes = entry;
+}
+
 function testAriaFormat(parsed: ParsedOptions, entry: PartialFormatter): void {
     if (!isValidPartialFormatter(entry)) {
         throw new Error("noUiSlider: 'ariaFormat' requires 'to' method.");
@@ -1279,7 +1291,8 @@ function testOptions(options: Options): ParsedOptions {
         keyboardSupport: { r: true, t: testKeyboardSupport },
         documentElement: { r: false, t: testDocumentElement },
         cssPrefix: { r: true, t: testCssPrefix },
-        cssClasses: { r: true, t: testCssClasses }
+        cssClasses: { r: true, t: testCssClasses },
+        handleAttributes: { r: false, t: testHandleAttributes }
     };
 
     const defaults = {
@@ -1330,7 +1343,10 @@ function testOptions(options: Options): ParsedOptions {
     parsed.transformRule = noPrefix ? "transform" : msPrefix ? "msTransform" : "webkitTransform";
 
     // Pips don't move, so we can place them using left/top.
-    const styles = [["left", "top"], ["right", "bottom"]];
+    const styles = [
+        ["left", "top"],
+        ["right", "bottom"]
+    ];
 
     parsed.style = styles[parsed.dir][parsed.ort] as "left" | "top" | "right" | "bottom";
 
@@ -1399,6 +1415,13 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             handle.setAttribute("tabindex", "0");
             handle.addEventListener("keydown", function(event) {
                 return eventKeydown(event, handleNumber);
+            });
+        }
+
+        if (options.handleAttributes !== undefined) {
+            const attributes: HandleAttributes = options.handleAttributes[handleNumber];
+            Object.keys(attributes).forEach(function(attribute: string) {
+                handle.setAttribute(attribute, attributes[attribute]);
             });
         }
 
