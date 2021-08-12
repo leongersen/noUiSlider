@@ -40,6 +40,16 @@
 
             clickTarget.dispatchEvent(clickEvent);
         }
+        function simulateMousemove(clickTarget, x, y) {
+            var clickEvent = new MouseEvent('mousemove', {
+                clientX: x,
+                clientY: y,
+                bubbles: true,
+                buttons: 1
+            });
+
+            clickTarget.dispatchEvent(clickEvent);
+        }
     </script>
 </head>
 
@@ -75,6 +85,7 @@
 <script src="slider_lookaround.js"></script>
 <script src="slider_classes.js"></script>
 <script src="slider_set-exactInput.js"></script>
+<script src="slider_drag_all.js"></script>
 
 <script src="addon_pips.js"></script>
 

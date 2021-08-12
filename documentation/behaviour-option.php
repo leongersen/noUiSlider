@@ -12,7 +12,7 @@
 
 		<p>noUiSlider offers several ways to handle user interaction. The range can be set to drag, and handles can move to taps. All these effects are optional, and can be enable by adding their keyword to the <code>behaviour</code> option.</p>
 
-		<p>This option accepts a <code>"-"</code> separated list of <code>"drag"</code>, <code>"tap"</code>, <code>"fixed"</code>, <code>"snap"</code>, <code>"unconstrained"</code> or <code>"none"</code>.</p>
+		<p>This option accepts a <code>"-"</code> separated list of <code>"drag"</code>, <code>"drag-all"</code>, <code>"tap"</code>, <code>"fixed"</code>, <code>"snap"</code>, <code>"unconstrained"</code> or <code>"none"</code>.</p>
 
 		<div class="example">
 			<div id="behaviour"></div>
@@ -129,6 +129,25 @@
 	<div class="side">
 		<?php code('drag-fixed'); ?>
 	</div>
+</section>
+
+
+<?php sect('drag-all'); ?>
+<h2>Drag all handles</h2>
+
+<section>
+
+    <div class="view">
+        <p>Drags all handles when the <code>'drag'</code> flag is set. Requires more than two handles. The <code>connect</code> option <strong>must</strong> be set to <code>true</code>. The <code>slide</code> event fires for all handles when dragging the range.</p>
+        <div class="example">
+            <div id="drag-all"></div>
+            <?php run('drag-all'); ?>
+        </div>
+    </div>
+
+    <div class="side">
+        <?php code('drag-all'); ?>
+    </div>
 </section>
 
 

@@ -151,6 +151,7 @@ export interface Options extends UpdatableOptions {
 interface Behaviour {
     tap: boolean;
     drag: boolean;
+    dragAll: boolean;
     fixed: boolean;
     snap: boolean;
     hover: boolean;
@@ -1138,6 +1139,7 @@ function testBehaviour(parsed: ParsedOptions, entry: unknown): void {
     const snap = entry.indexOf("snap") >= 0;
     const hover = entry.indexOf("hover") >= 0;
     const unconstrained = entry.indexOf("unconstrained") >= 0;
+    const dragAll = entry.indexOf("drag-all") >= 0;
 
     if (fixed) {
         if (parsed.handles !== 2) {
@@ -1155,6 +1157,7 @@ function testBehaviour(parsed: ParsedOptions, entry: unknown): void {
     parsed.events = {
         tap: tap || snap,
         drag: drag,
+        dragAll: dragAll,
         fixed: fixed,
         snap: snap,
         hover: hover,
@@ -2359,6 +2362,9 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 const handleAfter = scope_Handles[index];
                 const eventHolders = [connect];
 
+                let handlesToDrag = [handleBefore, handleAfter];
+                let handleNumbersToDrag = [index - 1, index];
+
                 addClass(connect, options.cssClasses.draggable);
 
                 // When the range is fixed, the entire range can
@@ -2370,10 +2376,19 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                     eventHolders.push(handleAfter.children[0] as HTMLElement);
                 }
 
+                if (behaviour.dragAll) {
+                    handlesToDrag = scope_Handles;
+                    handleNumbersToDrag = [0];
+
+                    while (handleNumbersToDrag.length < scope_Handles.length) {
+                        handleNumbersToDrag.push(handleNumbersToDrag.length);
+                    }
+                }
+
                 eventHolders.forEach(function(eventHolder) {
                     attachEvent(actions.start, eventHolder, eventStart, {
-                        handles: [handleBefore, handleAfter],
-                        handleNumbers: [index - 1, index],
+                        handles: handlesToDrag,
+                        handleNumbers: handleNumbersToDrag,
                         connect: connect
                     });
                 });
