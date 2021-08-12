@@ -7,6 +7,14 @@ $request_url = $is_server ? $_SERVER['REQUEST_URI'] : ('/nouislider/' . $argv[1]
 
 $url = strtolower($request_url);
 
+// mjs mime type is not built-in
+if (strpos($url, '.mjs')) {
+    header('Content-Type: text/javascript');
+    readfile($_SERVER["SCRIPT_FILENAME"]);
+
+    return;
+}
+
 if (strpos($url, '.js') || strpos($url, '.css') || strpos($url, '.html')) {
     return false;
 }

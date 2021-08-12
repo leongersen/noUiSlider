@@ -9,3 +9,8 @@ import 'nouislider/dist/nouislider.css';
 // Alternatively, you can include both files:
 &lt;link href="nouislider.css" rel="stylesheet"&gt;
 &lt;script src="nouislider.js"&gt;&lt;/script&gt;
+
+// You can also use the ES6 module distribution
+&lt;script type="module"&gt;
+import noUiSlider from 'nouislider/dist/nouislider.mjs';
+&lt;/script&gt;
