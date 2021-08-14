@@ -251,6 +251,11 @@ $canonical = "nouislider/reference/"
                 <td><code>slider.noUiSlider.removeTooltips()</code></td>
                 <td><em>[none]</em></td>
             </tr>
+            <tr>
+                <td><a href="/nouislider/slider-read-write/#section-positions">getPositions</a></td>
+                <td><code>slider.noUiSlider.getPositions()</code></td>
+                <td><em>[none]</em></td>
+            </tr>
             </tbody>
         </table>
     </div>

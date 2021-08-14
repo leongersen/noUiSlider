@@ -2992,6 +2992,9 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         target: scope_Target, // Issue #597
         removePips: removePips,
         removeTooltips: removeTooltips,
+        getPositions: function() {
+            return scope_Locations.slice();
+        },
         getTooltips: function() {
             return scope_Tooltips;
         },

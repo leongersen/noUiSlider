@@ -86,6 +86,22 @@
 </section>
 
 
+<?php sect('positions'); ?>
+<h2>Positions</h2>
+
+<section>
+
+	<div class="view">
+        <p>To get the current positions for the slider handles (in percentages from the left of the slider), the <code>getPositions</code> method can be used. This matches the <a href="/nouislider/events-callbacks/#section-binding">positions parameter</a> in the slider's events.</p>
+	</div>
+
+    <div class="side">
+        <?php code('positions'); ?>
+    </div>
+
+</section>
+
+
 <?php sect('formatting'); ?>
 <h2>Number formatting</h2>
 
