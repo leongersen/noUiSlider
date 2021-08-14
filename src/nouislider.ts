@@ -2213,10 +2213,11 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         fireEvent("slide", handleNumber, true);
         fireEvent("update", handleNumber, true);
-        fireEvent("change", handleNumber, true);
-        fireEvent("set", handleNumber, true);
 
-        if (options.events.snap) {
+        if (!options.events.snap) {
+            fireEvent("change", handleNumber, true);
+            fireEvent("set", handleNumber, true);
+        } else {
             eventStart(event, { handleNumbers: [handleNumber] });
         }
     }
