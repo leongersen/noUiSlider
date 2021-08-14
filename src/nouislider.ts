@@ -2378,11 +2378,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
                 if (behaviour.dragAll) {
                     handlesToDrag = scope_Handles;
-                    handleNumbersToDrag = [0];
-
-                    while (handleNumbersToDrag.length < scope_Handles.length) {
-                        handleNumbersToDrag.push(handleNumbersToDrag.length);
-                    }
+                    handleNumbersToDrag = scope_HandleNumbers;
                 }
 
                 eventHolders.forEach(function(eventHolder) {
