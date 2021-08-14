@@ -54,7 +54,7 @@
 <section>
 
 	<div class="view">
-		<p>All values on the slider are part of a range. The range has a minimum and maximum value. The minimum value <a href="https://github.com/leongersen/noUiSlider/issues/676">cannot be equal to the maximum value</a>.</p>
+		<p>All values on the slider are part of a range. The range has a minimum and maximum value. If the minimum value is equal to the maximum value, handles are evenly spread across the slider.</p>
 
 		<div class="example">
 			<div id="slider-range"></div>

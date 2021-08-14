@@ -84,16 +84,6 @@ QUnit.test("Errors", function (assert) {
     assert.throws(function () {
         noUiSlider.create(slider, {
             start: 10,
-            range: {
-                'min': 10,
-                'max': 10
-            }
-        });
-    });
-
-    assert.throws(function () {
-        noUiSlider.create(slider, {
-            start: 10,
             limit: 5,
             range: {
                 'min': 0,

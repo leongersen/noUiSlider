@@ -765,6 +765,10 @@ class Spectrum {
         return Math.max.apply(null, stepDecimals);
     }
 
+    public hasNoSize(): boolean {
+        return this.xVal[0] === this.xVal[this.xVal.length - 1];
+    }
+
     // Outside testing
     public convert(value: number): number {
         return this.getStep(this.toStepping(value));
@@ -948,11 +952,6 @@ function testRange(parsed: ParsedOptions, entry: Range): void {
     // Catch missing start or end.
     if (entry.min === undefined || entry.max === undefined) {
         throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");
-    }
-
-    // Catch equal start or end.
-    if (entry.min === entry.max) {
-        throw new Error("noUiSlider: 'range' 'min' and 'max' cannot be equal.");
     }
 
     parsed.spectrum = new Spectrum(entry, parsed.snap || false, parsed.singleStep);
@@ -2737,6 +2736,21 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         });
 
         let i = scope_HandleNumbers.length === 1 ? 0 : 1;
+
+        // Spread handles evenly across the slider if the range has no size (min=max)
+        if (isInit && scope_Spectrum.hasNoSize()) {
+            exactInput = true;
+
+            scope_Locations[0] = 0;
+
+            if (scope_HandleNumbers.length > 1) {
+                const space = 100 / (scope_HandleNumbers.length - 1);
+
+                scope_HandleNumbers.forEach(function(handleNumber) {
+                    scope_Locations[handleNumber] = handleNumber * space;
+                });
+            }
+        }
 
         // Secondary passes. Now that all base values are set, apply constraints.
         // Iterate all handles to ensure constraints are applied for the entire slider (Issue #1009)
