@@ -1,5 +1,13 @@
 # Changelog
 
+### 15.4.0 (*2021-08-14*)
+- Added: `handleAttributes` option (#1019);
+- Added: `drag-all` behaviour (#756, #841, #1116);
+- Added: ESM/ES6 module distribution `dist/nouislider.mjs` (#1149);
+- Added: support for ranges where `min` = `max` (#236, #359, #578, #633, #676, #790);
+- Added: `getPositions` method;
+- Fixed: Duplicate change/set events when using `snap` behaviour (#1106);
+
 ### 15.3.0 (*2021-08-10*)
 - Added: `keyboardMultiplier` option (#1151);
 
