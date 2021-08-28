@@ -1,5 +1,9 @@
 var dateSlider = document.getElementById('slider-date');
 
+function timestamp(str) {
+    return new Date(str).getTime();
+}
+
 noUiSlider.create(dateSlider, {
 // Create two timestamps to define a range.
     range: {
