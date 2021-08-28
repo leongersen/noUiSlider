@@ -2,11 +2,12 @@
 
 noUiSlider is a lightweight JavaScript range slider.
 
-- **No dependencies**
+- **Accessible** with `aria` and keyboard support
+- GPU animated: no reflows, so fast; even on older devices
 - All modern browsers and IE > 9 are supported
+- **No dependencies**
 - Fully **responsive**
 - **Multi-touch support** on Android, iOS and Windows devices
-- Accessible with `aria` and keyboard support
 - Tons of [examples](https://refreshless.com/nouislider/examples) and answered [Stack Overflow questions](https://stackoverflow.com/questions/tagged/nouislider)
 
 License

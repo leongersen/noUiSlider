@@ -1,6 +1,6 @@
 <?php
 	$title = "noUiSlider - JavaScript Range Slider";
-	$description = "noUiSlider is a free and lightweight JavaScript range slider with multi-touch support (iOS, Android, Windows). Great for responsive designs, and no dependencies!";
+	$description = "noUiSlider is a lightweight, ARIA-accessible JavaScript range slider with multi-touch and keyboard support. Great for responsive designs, and no dependencies!";
     $canonical = "nouislider/"
 ?>
 
@@ -11,8 +11,9 @@
 		<h3 class="quotable">noUiSlider: lightweight JavaScript range slider with full touch support</h3>
 
 		<ul class="pro-list">
-			<li>Multi-Touch support for iOS, Android &amp; Windows (phone)</li>
-            <li>Accessible with ARIA and keyboard support</li>
+            <li><strong>Accessible</strong> with ARIA and keyboard support</li>
+            <li>Multi-Touch support on iOS, Android &amp; Windows devices</li>
+            <li>GPU animated: no reflows, so fast; even on older devices</li>
             <li>Responsive design friendly</li>
 			<li>No dependencies</li>
 			<li>Tested in IE9 - IE11, Edge, Chrome, Firefox &amp; Safari</li>
