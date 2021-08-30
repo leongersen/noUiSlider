@@ -7,6 +7,7 @@
 <section>
 	<ul>
 		<li><a href="#section-colorpicker">Color picker</a></li>
+		<li><a href="#section-styling">Styling</a></li>
 		<li><a href="#section-dates">Using dates</a></li>
 		<li><a href="#section-merging-tooltips">Merging overlapping tooltips</a></li>
 		<li><a href="#section-html5">Working with HTML5 input types</a></li>
@@ -29,6 +30,7 @@
 </section>
 
 <?php include 'examples-content/colorpicker.php'; ?>
+<?php include 'examples-content/styling.php'; ?>
 <?php include 'examples-content/dates.php'; ?>
 <?php include 'examples-content/merging-tooltips.php'; ?>
 <?php include 'examples-content/html5.php'; ?>
