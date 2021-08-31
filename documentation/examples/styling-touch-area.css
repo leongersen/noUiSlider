@@ -1,4 +1,4 @@
-.slider-styled .noUi-handle:hover .noUi-touch-area {
+.slider-styled .noUi-handle .noUi-touch-area {
     border: 1px solid transparent;
     position: absolute;
     top: -10px;
