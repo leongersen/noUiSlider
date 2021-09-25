@@ -10,7 +10,7 @@
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
 
-    <link href="/nouislider/documentation/assets/base.css?v=3" rel="stylesheet">
+    <link href="/nouislider/documentation/assets/base.css?v=4" rel="stylesheet">
     <link href="/nouislider/documentation/assets/prism.css" rel="stylesheet">
     <script src="/nouislider/documentation/assets/wNumb.js"></script>
 
