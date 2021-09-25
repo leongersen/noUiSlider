@@ -366,6 +366,11 @@
 		padding: 5px;
 	}
 
+	.style-head {
+		font-size: 0.6rem;
+		display: block;
+		margin-bottom: 10px;
+	}
 
 @media ( min-width: 800px ) {
 

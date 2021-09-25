@@ -162,8 +162,6 @@
 		<p>If your styling system doesn't match the convention in noUiSlider, the <code>cssPrefix</code> and <code>cssClasses</code> options can be used to reconfigure the markup.</p>
 
         <p>Alternatively, to modify the default classes for all sliders, a modifiable reference to the default class list is available as <code>noUiSlider.cssClasses</code>.</p>
-
-        <p>When adding padding to <code>.noUi-target</code>, <code>.noUi-connect</code> elements don't fill the slider width. This can be fixed by increasing the size of <code>.noUi-connects</code>.</p>
 	</div>
 
 	<div class="side">
@@ -214,12 +212,6 @@
 					</tr>
 				</tbody>
 			</table>
-		</div>
-
-		<div class="viewer-header">Add padding to slider base</div>
-
-		<div class="viewer-content">
-			<?php showCSS('padding'); ?>
 		</div>
 
 		<div class="viewer-header">Overriding classes</div>
