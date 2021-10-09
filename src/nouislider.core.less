@@ -39,19 +39,13 @@
 	z-index: 1;
 	top: 0;
 	right: 0;
+	height: 100%;
+	width: 100%;
 	-ms-transform-origin: 0 0;
 	-webkit-transform-origin: 0 0;
 	-webkit-transform-style: preserve-3d;
 	transform-origin: 0 0;
 	transform-style: flat;
-}
-.@{noUi-css-prefix}-connect {
-	height: 100%;
-	width: 100%;
-}
-.@{noUi-css-prefix}-origin {
-	height: 10%;
-	width: 10%;
 }
 
 /* Offset direction
@@ -65,6 +59,7 @@
  * connect elements.
  */
 .@{noUi-css-prefix}-vertical .@{noUi-css-prefix}-origin {
+	top: -100%;
 	width: 0;
 }
 .@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-origin {
@@ -106,7 +101,7 @@
 	width: 28px;
 	height: 34px;
 	right: -6px;
-	top: -17px;
+	bottom: -17px;
 }
 .@{noUi-css-prefix}-txt-dir-rtl.@{noUi-css-prefix}-horizontal .@{noUi-css-prefix}-handle {
 	left: -17px;

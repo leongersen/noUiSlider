@@ -54,7 +54,7 @@ QUnit.test("Slider with three or more handles", function (assert) {
     var middleHandleX = (middleHandlePos.right + middleHandlePos.left) / 2;
     var middleHandleY = (middleHandlePos.top + middleHandlePos.bottom) / 2;
     var selectedByClick = document.elementFromPoint(middleHandleX, middleHandleY);
-    assert.strictEqual(selectedByClick, middleHandle, "Middle handle should be selected by click as rightmost handle is unmovable move");
+    assert.strictEqual(selectedByClick, middleHandle.querySelector('.noUi-touch-area'), "Middle handle should be selected by click as rightmost handle is unmovable move");
 
 
     // xnakos also spotted a bug where clicking
