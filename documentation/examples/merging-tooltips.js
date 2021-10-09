@@ -57,12 +57,12 @@ function mergeTooltips(slider, threshold, separator) {
                     var offset = 0;
 
                     poolPositions[poolIndex].forEach(function (value) {
-                        offset += 1000 - 10 * value;
+                        offset += 1000 - value;
                     });
 
                     var direction = isVertical ? 'bottom' : 'right';
                     var last = isRtl ? 0 : handlesInPool - 1;
-                    var lastOffset = 1000 - 10 * poolPositions[poolIndex][last];
+                    var lastOffset = 1000 - poolPositions[poolIndex][last];
                     offset = (textIsRtl && !isVertical ? 100 : 0) + (offset / handlesInPool) - lastOffset;
 
                     // Center this tooltip over the affected handles
