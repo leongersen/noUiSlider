@@ -42,7 +42,7 @@ QUnit.test("Aria", function (assert) {
 
 });
 
-QUnit.test("Aria", function (assert) {
+QUnit.test("Aria all config", function (assert) {
 
     document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
 
