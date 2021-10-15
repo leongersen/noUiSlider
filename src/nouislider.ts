@@ -144,6 +144,7 @@ export interface Options extends UpdatableOptions {
     cssPrefix?: string;
     cssClasses?: CssClasses;
     ariaFormat?: PartialFormatter;
+    formatAllAriaAttributes: boolean;
     animationDuration?: number;
     handleAttributes?: HandleAttributes[];
 }
@@ -177,12 +178,12 @@ interface ParsedOptions {
     cssPrefix?: string | false;
     cssClasses: CssClasses;
     ariaFormat: PartialFormatter;
+    formatAllAriaAttributes: boolean;
     pips?: Pips;
     animationDuration: number;
     snap?: boolean;
     format: Formatter;
     handleAttributes?: HandleAttributes[];
-
     range: Range;
     singleStep: number;
     transformRule: "transform" | "msTransform" | "webkitTransform";
@@ -896,6 +897,15 @@ const INTERNAL_EVENT_NS = {
 
 //endregion
 
+function testformatAllAriaAttributes(parsed: ParsedOptions, entry: boolean): void {
+    if (typeof entry !== "boolean") {
+        throw new Error("noUiSlider: 'formatAllAriaAttributes' option must be a boolean.");
+    }
+
+    parsed.formatAllAriaAttributes = entry;
+}
+
+
 function testStep(parsed: ParsedOptions, entry: unknown): void {
     if (!isNumeric(entry)) {
         throw new Error("noUiSlider: 'step' is not numeric.");
@@ -1275,6 +1285,7 @@ function testOptions(options: Options): ParsedOptions {
         padding: { r: false, t: testPadding },
         behaviour: { r: true, t: testBehaviour },
         ariaFormat: { r: false, t: testAriaFormat },
+        formatAllAriaAttributes: {r: false, t: testformatAllAriaAttributes},
         format: { r: false, t: testFormat },
         tooltips: { r: false, t: testTooltips },
         keyboardSupport: { r: true, t: testKeyboardSupport },
@@ -1555,8 +1566,8 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 const text = String(options.ariaFormat.to(unencoded[index]));
 
                 // Map to slider range values
-                min = <string>scope_Spectrum.fromStepping(min).toFixed(1);
-                max = <string>scope_Spectrum.fromStepping(max).toFixed(1);
+                min = <string>(options.formatAllAriaAttributes ? options.ariaFormat.to(unencoded[min]) : scope_Spectrum.fromStepping(min).toFixed(1));
+                max = <string>(options.formatAllAriaAttributes ? options.ariaFormat.to(unencoded[max]) : scope_Spectrum.fromStepping(max).toFixed(1));
                 now = <string>scope_Spectrum.fromStepping(now).toFixed(1);
 
                 handle.children[0].setAttribute("aria-valuemin", min);
