@@ -424,13 +424,13 @@ function getPageOffset(doc: Document): PageOffset {
 function getActions(): { start: string; move: string; end: string } {
     // Determine the events to bind. IE11 implements pointerEvents without
     // a prefix, which breaks compatibility with the IE10 implementation.
-    return window.navigator.pointerEnabled
+    return (window.navigator as any).pointerEnabled
         ? {
               start: "pointerdown",
               move: "pointermove",
               end: "pointerup"
           }
-        : window.navigator.msPointerEnabled
+        : (window.navigator as any).msPointerEnabled
         ? {
               start: "MSPointerDown",
               move: "MSPointerMove",
