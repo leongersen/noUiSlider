@@ -1,6 +1,6 @@
 {
   "name": "nouislider",
-  "version": "15.5.0",
+  "version": "15.5.1",
   "main": "dist/nouislider.js",
   "style": "dist/nouislider.min.css",
   "types": "dist/nouislider.d.ts",
@@ -22,16 +22,16 @@
     "docs": "cd ../ && php -S localhost:80 nouislider/documentation/_run/router.php"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.20.0",
-    "@typescript-eslint/parser": "^4.20.0",
-    "eslint": "^7.23.0",
-    "less": "^3.9.0",
-    "less-plugin-clean-css": "^1.5.1",
-    "prettier": "^1.14.2",
-    "rollup": "^2.46.0",
-    "rollup-plugin-typescript2": "^0.30.0",
-    "typescript": "^4.2.3",
-    "uglify-js": "^3.4.9"
+    "@typescript-eslint/eslint-plugin": "^5.10",
+    "@typescript-eslint/parser": "^5.10",
+    "eslint": "^8.7",
+    "less": "^4.1",
+    "less-plugin-clean-css": "^1.5",
+    "prettier": "^2.5",
+    "rollup": "^2.65.0",
+    "rollup-plugin-typescript2": "^0.31",
+    "typescript": "^4.5",
+    "uglify-js": "^3.14"
   },
   "repository": {
     "type": "git",

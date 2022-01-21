@@ -28,6 +28,8 @@ $canonical = "nouislider/download/"
 <section>
     <h3>Download noUiSlider</h3>
 
-    <a class="button" href="https://github.com/leongersen/noUiSlider/releases" data-category="convert" data-action="download">Download noUiSlider from Github</a>
+    <p>noUiSlider can be downloaded from GitHub. Required files are in the <code>dist</code> folder. To compile from sources, run <code>npm run build</code>.</p>
+
+    <a href="https://github.com/leongersen/noUiSlider/releases" data-category="convert" data-action="download">Download noUiSlider from Github</a>
 
 </section>
