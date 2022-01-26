@@ -2928,12 +2928,14 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         options.limit = newOptions.limit;
         options.padding = newOptions.padding;
 
-        // Update pips, removes existing.
-        if (options.pips) {
+        if (optionsToUpdate.pips !== undefined) {
+          // Update pips, removes existing.
+          if (options.pips) {
             pips(options.pips);
-        } else {
+          } else {
             removePips();
-        }
+          }
+	}
 
         if (optionsToUpdate.tooltips !== undefined) {
             // Update tooltips, removes existing.
