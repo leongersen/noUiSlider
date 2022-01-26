@@ -2935,11 +2935,13 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             removePips();
         }
 
-        // Update tooltips, removes existing.
-        if (options.tooltips) {
-            tooltips();
-        } else {
-            removeTooltips();
+        if (optionsToUpdate.tooltips) {
+            // Update tooltips, removes existing.
+            if (options.tooltips) {
+                tooltips();
+            } else {
+                removeTooltips();
+            }
         }
 
         // Invalidate the current positioning so valueSet forces an update.
