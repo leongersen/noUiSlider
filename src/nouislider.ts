@@ -2935,7 +2935,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             removePips();
         }
 
-        if (optionsToUpdate.tooltips) {
+        if (optionsToUpdate.tooltips !== undefined) {
             // Update tooltips, removes existing.
             if (options.tooltips) {
                 tooltips();
