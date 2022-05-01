@@ -1,5 +1,8 @@
 # Changelog
 
+### 15.6.0 (*2022-05-01*)
+- Added: `smooth-steps` `behaviour` flag (#627);
+
 ### 15.5.1 (*2022-01-21*)
 - Added: `dist` to release (#1148);
 - Updated release tooling (#1173, #1174);
