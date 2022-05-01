@@ -26,6 +26,19 @@
 </section>
 
 
+<section>
+    <ul>
+        <li><a href="#section-tap">Tap</a></li>
+        <li><a href="#section-tap">Drag</a></li>
+        <li><a href="#section-fixed">Fixed dragging</a></li>
+        <li><a href="#section-drag-all">Drag all handles</a></li>
+        <li><a href="#section-snap">Snap</a></li>
+        <li><a href="#section-hover">Hover</a></li>
+        <li><a href="#section-unconstrained">Unconstrained</a></li>
+        <li><a href="#section-smooth-steps">Smooth steps</a></li>
+    </ul>
+</section>
+
 <?php sect('examples'); ?>
 <h2>Example configurations</h2>
 
@@ -212,13 +225,33 @@
 </section>
 
 
+<?php sect('smooth-steps'); ?>
+<h2>Smooth steps</h2>
+
+<section>
+
+	<div class="view">
+		<p>With this option set, handles will ignore <code>step</code> values while dragging. Steps are applied when a handle is released. The <code>"update"</code> event fires when a handle is released.</p>
+		<div class="example">
+			<div id="smooth-steps"></div>
+            <span class="example-val" id="smooth-steps-values"></span>
+			<?php run('smooth-steps'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('smooth-steps'); ?>
+	</div>
+</section>
+
+
 <?php sect('combined'); ?>
 <h2>Combined options</h2>
 
 <section>
 
 	<div class="view">
-		<p>Most <code>'behaviour'</code> flags can be combined.</p>
+		<p>Most <code>'behaviour'</code> flags can be combined. This example combines <code>'tap'</code>, <code>'drag'</code> and <code>'smooth-steps'</code>.</p>
 		<div class="example">
 			<div id="combined"></div>
 			<?php run('combined'); ?>
