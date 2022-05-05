@@ -1,0 +1,17 @@
+<!-- https://refreshless.com/nouislider/slider-values/#section-step -->
+
+<!-- Under the "Displaying the Slider Values" Section
+    The following code and notes apply -->
+
+<!-- The HTML for the label below the slider reading "Value: ..." is -->
+<span class="example-val" id="slider-step-value">4000.00</span>
+
+<!-- The actual content "Value: " is inserted via the `content: ` property
+     of the `:before` pseudo-class on the class of `.example-val` as follows: -->
+
+<style>
+    .example-val:before {
+        content: "Value: ";
+        font: 700 12px Arial;
+    }
+</style>

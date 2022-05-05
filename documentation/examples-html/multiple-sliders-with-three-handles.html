@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>No UI Slider Multi Range Slider PoC</title>
+
+    <!-- Foundation 6.6.3 CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation.min.css">
+
+    <!-- NoUISlider CSS v 15.x -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15/dist/nouislider.min.css">
+
+    <!--jQuery 3.X.x -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Foundation 6.6.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/js/foundation.min.js"></script>
+
+    <!-- NoUISlider JS v 15.x -->
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15/dist/nouislider.min.js"></script>
+</head>
+<body>
+
+	<main>
+
+		<div class="grid-container">
+
+		    <div class="grid-x grid-padding-x grid-padding-y">
+
+		        <div class="cell">
+		        	<form action="/">
+
+		        	<!-- slider 1 -->
+                    <div class="grid-x grid-padding-x grid-padding-y">
+		        		<div class="cell medium-6 center">
+		        		    <label for="slider1">Slider 1
+                                <div class="slider" id="slider1" name="slider1"></div>
+		        		    </label>
+		        	    </div>
+
+		                <script>
+		                    var slider1 = document.getElementById("slider1");
+		                    noUiSlider.create(slider1, {
+		                        start: [4545.45, 6767.67, 8888.89],
+		                        //step: 1,
+		                        connect: true,
+		                        behavior: 'tap-drag',
+		                        tooltips: true,
+		                        pips: {
+		                        	mode: 'range',
+		                        	//stepped: true,
+		                        	density: 50
+		                        },
+		                        range: {
+		                            min: [0],
+		                            max: [10000]
+		                        }
+		                    });
+                        </script>
+                    </div>
+
+                    <!-- slider 2 -->
+                    <div class="grid-x grid-padding-x grid-padding-y">
+		        		<div class="cell medium-6 center">
+		        		    <label for="slider2">Slider 2
+                                <div class="slider" id="slider2" name="slider2"></div>
+		        		    </label>
+		        	    </div>
+
+		        	    <script>
+		                    var slider2 = document.getElementById("slider2");
+		                    noUiSlider.create(slider2, {
+		                        start: [1777, 2222.99, 2765.43],
+		                        //step: 1,
+		                        connect: true,
+		                        behavior: 'tap-drag',
+		                        tooltips: true,
+		                        pips: {
+		                        	mode: 'positions',
+		                        	values: [0, 100],
+		                        	//stepped: true,
+		                        	density: 50
+		                        },
+		                        range: {
+		                            min: [0],
+		                            max: [3000]
+		                        }
+		                    });
+		                </script>
+                    </div>
+
+		            <!-- slider 3 -->
+                     <div class="grid-x grid-padding-x grid-padding-y">
+		        		<div class="cell medium-6 center">
+		        		    <label for="slider3">Slider 3
+                                <div class="slider" id="slider3" name="slider3"></div>
+		        		    </label>
+		        	    </div>
+
+		        	    <script>
+		        	        var slider3 = document.getElementById("slider3");
+		        	        noUiSlider.create(slider3, {
+		        	            start: [151.51, 201, 275.5],
+		        	            //step: 1,
+		        	            connect: true,
+		        	            behavior: 'tap-drag',
+		        	            tooltips: true,
+		        	            pips: {
+		        	            	mode: 'steps',
+		        	            	//stepped: true,
+		        	            	density: 50
+		        	            },
+		        	            range: {
+		        	                min: [0],
+		        	                max: [365]
+		        	            }
+		        	        });
+		        	    </script>
+                    </div>
+
+                    <!-- slider 4 -->
+                    <div class="grid-x grid-padding-x grid-padding-y">
+		        		<div class="cell medium-6 center">
+		        		    <label for="slider4">Slider 4
+                                <div class="slider" id="slider4" name="slider4"></div>
+		        		    </label>
+		        		</div>
+
+		        	    <script>
+		        	        var slider4 = document.getElementById("slider4");
+		        	        noUiSlider.create(slider4, {
+		        	            start: [16.78, 23.45, 34.56],
+		        	            //step: 1,
+		        	            connect: true,
+		        	            behavior: 'tap-drag',
+		        	            tooltips: true,
+		        	            pips: {
+		        	            	mode: 'steps',
+		        	            	//stepped: true,
+		        	            	density: 50
+		        	            },
+		        	            range: {
+		        	                min: [0],
+		        	                max: [50]
+		        	            }
+		        	        });
+		        	    </script>
+		        	</div>
+
+		        	</form>
+
+		        </div>
+
+		    </div>
+
+		</div>
+
+	</main>
+
+<script>$(document).foundation();</script>
+</body>
+</html>
