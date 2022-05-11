@@ -3,7 +3,7 @@ var slider1 = document.getElementById('disable1'),
     checkbox1 = document.getElementById('checkbox1'),
     checkbox2 = document.getElementById('checkbox2'),
     checkbox3 = document.getElementById('checkbox3'),
-    origins = slider2.getElementsByClassName('noUi-origin');
+    origins = slider2.querySelectorAll('.noUi-origin');
 
 function toggle(element) {
 

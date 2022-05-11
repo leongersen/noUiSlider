@@ -38,11 +38,20 @@
 
         <p>noUiSlider will always limit values to the slider range.</p>
 
+        <?php sect('set-handle'); ?>
+        <h3>setHandle</h3>
+
         <p>To set a single slider handle, the <code>setHandle</code> method can be used. This method accepts a zero-indexed handle number, a value and optionally a 'fire set event' boolean.</p>
 
         <p>Passing <code>null</code> as the value to <code>setHandle</code> will leave the handle unchanged.</p>
 
+        <?php sect('exact-input'); ?>
+        <h3>exactInput</h3>
+
         <p>Both the <code>set</code> and <code>setHandle</code> methods have an <code>exactInput</code> argument, which can be used to ignore the stepping configured for the slider.</p>
+
+        <?php sect('reset'); ?>
+        <h3>reset</h3>
 
 		<p>To return to the initial slider values, the <code>.reset()</code> method can be used. This will <strong>only</strong> reset the slider <i>values</i>.</p>
 	</div>

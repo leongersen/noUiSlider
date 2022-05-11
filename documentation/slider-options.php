@@ -10,9 +10,11 @@
 
 	<div class="double">
 
-		<p>noUiSlider can be configured with a wide variety of options, which can be use to customize a slider's behaviour.</p>
+		<p>noUiSlider can be configured with a wide variety of options, which can be used to customize slider functionality.</p>
 
 		<p>For options regarding the slider range, see <a href="/nouislider/slider-values/"> slider values</a>.</p>
+
+		<p>For options regarding the sliders behaviour, see <a href="/nouislider/behaviour-option/"> slider behaviour</a>.</p>
 	</div>
 </section>
 
@@ -286,7 +288,7 @@
 
 		<p>The orientation setting can be used to set the slider to <code>"vertical"</code> or <code>"horizontal"</code>.</p>
 
-		<p><strong>Set dimensions!</strong> Vertical sliders don't assume a default <code>height</code>, so a height needs to be set. Any unit can be used, including <code>%</code> or <code>px</code>.</p>
+		<div class="notice"><strong>Set dimensions!</strong> Vertical sliders don't assume a default <code>height</code>, so a height needs to be set. Any unit can be used, including <code>px</code>, <code>em</code> or <code>rem</code>.</div>
 
 		<div class="example vertical">
 			<div id="slider-vertical"></div>
@@ -357,9 +359,12 @@
 
 		<p>noUiSlider can provide a basic tooltip using the <code>tooltips</code> option. This option can also accept <a href="/nouislider/number-formatting/#section-tooltips">formatting options</a> to format the tooltips content. In that case, pass an <code>array</code> with a formatter for each handle, <code>true</code> to use the default or <code>false</code> to display no tooltip.</p>
 
-        <p>Tooltips can be removed from a slider using the <code>removeTooltips()</code> method.</p>
-
         <p>To merge overlapping tooltips, refer to <a href="/nouislider/examples/#section-merging-tooltips">this example</a>.</p>
+
+        <?php sect('remove-tooltips'); ?>
+        <h3>removeTooltips</h3>
+
+        <p>Tooltips can be removed from a slider using the <code>removeTooltips()</code> method.</p>
 
 		<div class="example overflow">
 			<div id="slider-tooltips"></div>

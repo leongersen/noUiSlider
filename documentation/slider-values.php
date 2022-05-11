@@ -14,7 +14,7 @@
 
 	<div class="view">
 
-		<p>The number of handles can be set using the <code>start</code> option. This option accepts an array of initial handle positions. Set one value for one handle, two values for two handles.</p>
+		<p>The number of handles can be set using the <code>start</code> option. This option accepts an array of initial handle positions. A handle is created for every provided value.</p>
 
 		<div class="example">
 			<div id="slider-handles"></div>
@@ -28,7 +28,7 @@
 </section>
 
 <?php sect('handles-multiple'); ?>
-<h2>More than two handles</h2>
+<h3>More than two handles</h3>
 
 <section>
 
@@ -138,10 +138,10 @@
 <section>
 
 	<div class="view">
-		<p>For every sub-range in a non-linear slider, stepping can be set. Note how in the example below the slider doesn't step until it reaches <code>500</code>. From there on, it changes in increments of <code>500</code>, until it reaches <code>4000</code>, where increments now span <code>1000</code>.</p>
+		<p>For every range-segment in a non-linear slider, stepping can be set. Note how in the example below the slider doesn't step until it reaches <code>500</code>. From there on, it changes in increments of <code>500</code>, until it reaches <code>4000</code>, where increments now span <code>1000</code>.</p>
 
         <div class="notice">
-            <p>Note that the <a href="/nouislider/slider-options/#section-step"><code>step</code> option</a>, when set, only applies to the first sub-range.</p>
+            <p>Note that the <a href="/nouislider/slider-options/#section-step"><code>step</code> option</a>, when set, only applies to the first range-segment.</p>
         </div>
 
 		<div class="example">

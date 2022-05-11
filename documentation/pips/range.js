@@ -3,8 +3,15 @@ var pipsRangeRtl = document.getElementById('pips-range-rtl');
 var pipsRangeVertical = document.getElementById('pips-range-vertical');
 var pipsRangeVerticalRtl = document.getElementById('pips-range-vertical-rtl');
 
+var range = {
+    'min': [     0 ],
+    '10%': [   500,  500 ],
+    '50%': [  4000, 1000 ],
+    'max': [ 10000 ]
+};
+
 noUiSlider.create(pipsRange, {
-    range: range_all_sliders,
+    range: range,
     start: 0,
     pips: {
         mode: 'range',
@@ -13,7 +20,7 @@ noUiSlider.create(pipsRange, {
 });
 
 noUiSlider.create(pipsRangeRtl, {
-    range: range_all_sliders,
+    range: range,
     start: 0,
     direction: 'rtl',
     pips: {
@@ -23,7 +30,7 @@ noUiSlider.create(pipsRangeRtl, {
 });
 
 noUiSlider.create(pipsRangeVertical, {
-    range: range_all_sliders,
+    range: range,
     start: 0,
     orientation: 'vertical',
     pips: {
@@ -33,7 +40,7 @@ noUiSlider.create(pipsRangeVertical, {
 });
 
 noUiSlider.create(pipsRangeVerticalRtl, {
-    range: range_all_sliders,
+    range: range,
     start: 0,
     orientation: 'vertical',
     direction: 'rtl',

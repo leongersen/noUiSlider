@@ -33,6 +33,7 @@
         <div class="quick">
 
             <div id="slider"></div>
+            <pre><code>&lt;div id=&quot;slider&quot;&gt;&lt;/div&gt;</code></pre>
             <?php run('minimal'); ?>
             <?php code('minimal'); ?>
 

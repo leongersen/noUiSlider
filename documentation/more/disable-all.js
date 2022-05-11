@@ -5,5 +5,5 @@ slider.setAttribute('disabled', true);
 slider.removeAttribute('disabled');
 
 // To disable one handle
-var origins = slider.getElementsByClassName('noUi-origin');
+var origins = slider.querySelectorAll('.noUi-origin');
 origins[0].setAttribute('disabled', true);

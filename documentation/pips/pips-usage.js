@@ -1,4 +1,2 @@
-slider.noUiSlider.pips(/* options */);
-
-// Find the current set of pips.
-slider.querySelector('.noUi-pips');
+// returns the created HtmlElement
+var pips = slider.noUiSlider.pips(/* options */);

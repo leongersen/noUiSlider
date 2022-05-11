@@ -10,7 +10,7 @@
 
 	<div class="view">
 
-		<p>noUiSlider offers several ways to handle user interaction. The range can be set to drag, and handles can move to taps. All these effects are optional, and can be enable by adding their keyword to the <code>behaviour</code> option.</p>
+		<p>noUiSlider offers several ways to handle user interaction. The range can be made draggable, or handles can move to tapped positions. All these effects are optional, and can be enable by adding their keyword to the <code>behaviour</code> option.</p>
 
 		<p>This option accepts a <code>"-"</code> separated list of <code>"drag"</code>, <code>"drag-all"</code>, <code>"tap"</code>, <code>"fixed"</code>, <code>"snap"</code>, <code>"unconstrained"</code> or <code>"none"</code>.</p>
 

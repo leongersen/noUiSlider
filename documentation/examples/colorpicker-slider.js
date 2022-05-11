@@ -1,8 +1,8 @@
 var resultElement = document.getElementById('result');
-var sliders = document.getElementsByClassName('sliders');
+var sliders = document.querySelectorAll('.sliders');
 var colors = [0, 0, 0];
 
-[].slice.call(sliders).forEach(function (slider, index) {
+sliders.forEach(function (slider, index) {
 
     noUiSlider.create(slider, {
         start: 127,
