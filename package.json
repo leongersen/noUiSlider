@@ -19,7 +19,7 @@
     "prepublishOnly": "npm run build",
     "format": "prettier src/nouislider.ts --write --config .prettierrc",
     "lint": "eslint src/nouislider.ts",
-    "docs": "cd ../ && php -S localhost:80 nouislider/documentation/_run/router.php"
+    "docs": "cd ../ && php -S localhost:8080 nouislider/documentation/_run/router.php"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.10",
