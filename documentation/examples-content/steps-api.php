@@ -9,7 +9,7 @@
 
 		<p>Use of this API is not necessary for linear sliders, as the step is constant in that case.</p>
 
-		<p>We'll listen to keydown on the input element, and pass the event to a function so we can read the code that identifies the key.</p>
+		<p>A <code>keydown</code> listener is added to the input element, passing the event to a function to read the <code>code</code> that identifies the key.</p>
 
 		<div class="example">
 			<div id="steps-slider"></div>

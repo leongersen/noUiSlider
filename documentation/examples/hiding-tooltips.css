@@ -1,6 +1,6 @@
-.noUi-tooltip {
+#slider-hide .noUi-tooltip {
     display: none;
 }
-.noUi-active .noUi-tooltip {
+#slider-hide .noUi-active .noUi-tooltip {
     display: block;
 }

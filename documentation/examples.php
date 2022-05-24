@@ -6,6 +6,7 @@
 
 <section>
 	<ul>
+		<li><a href="#section-formatting">Number formatting</a></li>
 		<li><a href="#section-colorpicker">Color picker</a></li>
 		<li><a href="#section-styling">Styling</a></li>
 		<li><a href="#section-dates">Using dates</a></li>
@@ -29,6 +30,7 @@
     <div class="notice">Can't find something? See the full <a href="/nouislider/reference/">options reference</a>.</div>
 </section>
 
+<?php include 'examples-content/formatting.php'; ?>
 <?php include 'examples-content/colorpicker.php'; ?>
 <?php include 'examples-content/styling.php'; ?>
 <?php include 'examples-content/dates.php'; ?>
