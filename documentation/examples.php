@@ -6,6 +6,7 @@
 
 <section>
 	<ul>
+		<li><a href="#section-values">Using an array of values</a></li>
 		<li><a href="#section-formatting">Number formatting</a></li>
 		<li><a href="#section-colorpicker">Color picker</a></li>
 		<li><a href="#section-styling">Styling</a></li>
@@ -19,7 +20,6 @@
 		<li><a href="#section-colored-connect">Colored connect elements</a></li>
 		<li><a href="#section-steps-api">Changing the slider value by keypress</a></li>
 		<li><a href="#section-skipping">Skipping values on a slider</a></li>
-		<li><a href="#section-huge-numbers">Working with huge numbers</a></li>
 		<li><a href="#section-toggle">Create a toggle</a></li>
 		<li><a href="#section-soft-limits">Block the edges of a slider</a></li>
 		<li><a href="#section-from-center">Connect to the center of a slider</a></li>
@@ -30,6 +30,7 @@
     <div class="notice">Can't find something? See the full <a href="/nouislider/reference/">options reference</a>.</div>
 </section>
 
+<?php include 'examples-content/values.php'; ?>
 <?php include 'examples-content/formatting.php'; ?>
 <?php include 'examples-content/colorpicker.php'; ?>
 <?php include 'examples-content/styling.php'; ?>
@@ -43,7 +44,6 @@
 <?php include 'examples-content/colored-connect.php'; ?>
 <?php include 'examples-content/steps-api.php'; ?>
 <?php include 'examples-content/skipping.php'; ?>
-<?php include 'examples-content/huge-numbers.php'; ?>
 <?php include 'examples-content/toggle.php'; ?>
 <?php include 'examples-content/soft-limits.php'; ?>
 <?php include 'examples-content/from-center.php'; ?>

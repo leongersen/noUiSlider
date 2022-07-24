@@ -1,3 +1,4 @@
+// This approach is not recommended
 range: {
 	  'min': 0,
 	 '7.6%': 2097152,
