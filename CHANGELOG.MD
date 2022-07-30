@@ -8,7 +8,7 @@
 - Updated release tooling (#1173, #1174);
 
 ### 15.5.0 (*2021-09-01*)
-- Fixed: Compositing issues in Safari (note that this updates the stylesheet!) (#987, #998, #1029, #1154);
+- Fixed: Compositing issues in Safari **[this is a Potential BC-break when using a custom stylesheet!]** (#987, #998, #1029, #1154);
 - Changed: divisibility of `margin`, `padding` and `limit` by `step` is no longer enforced (#1163);
 
 ### 15.4.0 (*2021-08-14*)
