@@ -1,6 +1,6 @@
-var pipsSlider = document.getElementById('slider-pips');
+var clickPipsSlider = document.getElementById('slider-click-pips');
 
-noUiSlider.create(pipsSlider, {
+noUiSlider.create(clickPipsSlider, {
     range: {
         min: 0,
         max: 100

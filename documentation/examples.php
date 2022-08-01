@@ -10,6 +10,7 @@
 		<li><a href="#section-formatting">Number formatting</a></li>
 		<li><a href="#section-colorpicker">Color picker</a></li>
 		<li><a href="#section-styling">Styling</a></li>
+		<li><a href="#section-pips">Interacting with Pips</a></li>
 		<li><a href="#section-dates">Using dates</a></li>
 		<li><a href="#section-merging-tooltips">Merging overlapping tooltips</a></li>
 		<li><a href="#section-html5">Working with HTML5 input types</a></li>
@@ -34,6 +35,7 @@
 <?php include 'examples-content/formatting.php'; ?>
 <?php include 'examples-content/colorpicker.php'; ?>
 <?php include 'examples-content/styling.php'; ?>
+<?php include 'examples-content/pips.php'; ?>
 <?php include 'examples-content/dates.php'; ?>
 <?php include 'examples-content/merging-tooltips.php'; ?>
 <?php include 'examples-content/html5.php'; ?>

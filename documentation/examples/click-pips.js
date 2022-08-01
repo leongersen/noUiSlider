@@ -1,8 +1,8 @@
-var pips = pipsSlider.querySelectorAll('.noUi-value');
+var pips = clickPipsSlider.querySelectorAll('.noUi-value');
 
 function clickOnPip() {
     var value = Number(this.getAttribute('data-value'));
-    pipsSlider.noUiSlider.set(value);
+    clickPipsSlider.noUiSlider.set(value);
 }
 
 for (var i = 0; i < pips.length; i++) {
