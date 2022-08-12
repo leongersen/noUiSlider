@@ -70,7 +70,7 @@ type SubRange = number | WrappedSubRange;
 interface Range {
     min: SubRange;
     max: SubRange;
-    [key: string]: SubRange;
+    [key: `${number}%`]: SubRange;
 }
 
 //region Pips
