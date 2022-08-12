@@ -583,7 +583,7 @@ class Spectrum {
         const ordered: [WrappedSubRange, string][] = [];
 
         // Map the object keys to an array.
-        Object.keys(entry).forEach((index) => {
+        Object.keys(entry).forEach((index: keyof Range) => {
             ordered.push([asArray(entry[index]) as WrappedSubRange, index]);
         });
 

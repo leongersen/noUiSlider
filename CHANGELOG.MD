@@ -1,5 +1,8 @@
 # Changelog
 
+### 15.6.1 (*2022-08-12*)
+- Fixed: (Typescript) type for keys in `range` (#1218);
+
 ### 15.6.0 (*2022-05-01*)
 - Added: `smooth-steps` `behaviour` flag (#627);
 
