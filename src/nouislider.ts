@@ -1495,13 +1495,13 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     function isSliderDisabled(): boolean {
-        return scope_Target.hasAttribute("disabled");
+        return scope_Target.hasAttribute("disabled") || scope_Target.hasAttribute("data-disabled");
     }
 
     // Disable the slider dragging if any handle is disabled
     function isHandleDisabled(handleNumber: number): boolean {
         const handleOrigin = scope_Handles[handleNumber];
-        return handleOrigin.hasAttribute("disabled");
+        return handleOrigin.hasAttribute("disabled") || handleOrigin.hasAttribute("data-disabled");
     }
 
     function removeTooltips(): void {
