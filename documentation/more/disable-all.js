@@ -1,9 +1,8 @@
 // To disable
-slider.setAttribute('disabled', true);
+slider.noUiSlider.disable();
 
 // To re-enable
-slider.removeAttribute('disabled');
+slider.noUiSlider.enable();
 
 // To disable one handle
-var origins = slider.querySelectorAll('.noUi-origin');
-origins[0].setAttribute('disabled', true);
+slider.noUiSlider.disable(1);

@@ -1,6 +1,6 @@
 {
   "name": "nouislider",
-  "version": "15.6.1",
+  "version": "15.7.0",
   "main": "dist/nouislider.js",
   "style": "dist/nouislider.min.css",
   "types": "dist/nouislider.d.ts",

@@ -232,6 +232,16 @@ $canonical = "nouislider/reference/"
                 <td><em>[none]</em></td>
             </tr>
             <tr>
+                <td><a href="/nouislider/more/#section-disable">disable</a></td>
+                <td><code>slider.noUiSlider.disable()</code></td>
+                <td><em>[none]</em>, <code>"number"</code></td>
+            </tr>
+            <tr>
+                <td><a href="/nouislider/more/#section-disable">enable</a></td>
+                <td><code>slider.noUiSlider.enable()</code></td>
+                <td><em>[none]</em>, <code>"number"</code></td>
+            </tr>
+            <tr>
                 <td><a href="/nouislider/more/#section-update">updateOptions</a></td>
                 <td><code>slider.noUiSlider.updateOptions(...)</code></td>
                 <td><em>object</em></td>

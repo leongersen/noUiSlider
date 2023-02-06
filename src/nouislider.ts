@@ -70,6 +70,7 @@ type SubRange = number | WrappedSubRange;
 interface Range {
     min: SubRange;
     max: SubRange;
+
     [key: `${number}%`]: SubRange;
 }
 
@@ -204,6 +205,8 @@ export interface API {
     set: (input: number | string | (number | string)[], fireSetEvent?: boolean, exactInput?: boolean) => void;
     setHandle: (handleNumber: number, value: number | string, fireSetEvent?: boolean, exactInput?: boolean) => void;
     reset: (fireSetEvent?: boolean) => void;
+    disable: (handleNumber?: number) => void;
+    enable: (handleNumber?: number) => void;
     options: Options;
     updateOptions: (optionsToUpdate: UpdatableOptions, fireSetEvent: boolean) => void;
     target: HTMLElement;
@@ -216,6 +219,10 @@ export interface API {
 
 interface TargetElement extends HTMLElement {
     noUiSlider?: API;
+}
+
+interface Origin extends HTMLElement {
+    handle: HTMLElement;
 }
 
 interface CSSStyleDeclarationIE10 extends CSSStyleDeclaration {
@@ -1357,7 +1364,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     // Slider DOM Nodes
     const scope_Target = target;
     let scope_Base: HTMLElement;
-    let scope_Handles: HTMLElement[];
+    let scope_Handles: Origin[];
     let scope_Connects: (HTMLElement | false)[];
     let scope_Pips: HTMLElement | null;
     let scope_Tooltips: (HTMLElement | false)[] | null;
@@ -1393,7 +1400,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Append a origin to the base
-    function addOrigin(base: HTMLElement, handleNumber: number): HTMLElement {
+    function addOrigin(base: HTMLElement, handleNumber: number): Origin {
         const origin = addNodeTo(base, options.cssClasses.origin);
         const handle = addNodeTo(origin, options.cssClasses.handle);
 
@@ -1426,7 +1433,9 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             addClass(handle, options.cssClasses.handleUpper);
         }
 
-        return origin;
+        (origin as Origin).handle = handle;
+
+        return origin as Origin;
     }
 
     // Insert nodes for connect elements
@@ -1502,6 +1511,31 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     function isHandleDisabled(handleNumber: number): boolean {
         const handleOrigin = scope_Handles[handleNumber];
         return handleOrigin.hasAttribute("disabled");
+    }
+
+    function disable(handleNumber?: number): void {
+        if (handleNumber !== null && handleNumber !== undefined) {
+            scope_Handles[handleNumber].setAttribute("disabled", "");
+            scope_Handles[handleNumber].handle.removeAttribute("tabindex");
+        } else {
+            scope_Target.setAttribute("disabled", "");
+            scope_Handles.forEach(function (handle) {
+                handle.handle.removeAttribute("tabindex");
+            });
+        }
+    }
+
+    function enable(handleNumber?: number): void {
+        if (handleNumber !== null && handleNumber !== undefined) {
+            scope_Handles[handleNumber].removeAttribute("disabled");
+            scope_Handles[handleNumber].handle.setAttribute("tabindex", "0");
+        } else {
+            scope_Target.removeAttribute("disabled");
+            scope_Handles.forEach(function (handle) {
+                handle.removeAttribute("disabled");
+                handle.handle.setAttribute("tabindex", "0");
+            });
+        }
     }
 
     function removeTooltips(): void {
@@ -3013,6 +3047,8 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         set: valueSet,
         setHandle: valueSetHandle,
         reset: valueReset,
+        disable: disable,
+        enable: enable,
         // Exposed for unit testing, don't use this in your application.
         __moveHandles: function (upward: boolean, proposal: number, handleNumbers: number[]) {
             moveHandles(upward, proposal, scope_Locations, handleNumbers);

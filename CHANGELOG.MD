@@ -1,5 +1,8 @@
 # Changelog
 
+### 15.7.0 (*2023-02-06*)
+- Added: `disable` and `enable` methods to disable slider or handles (#1158, #1227);
+
 ### 15.6.1 (*2022-08-12*)
 - Fixed: (Typescript) type for keys in `range` (#1218);
 

@@ -2,17 +2,16 @@ var slider1 = document.getElementById('disable1'),
     slider2 = document.getElementById('disable2'),
     checkbox1 = document.getElementById('checkbox1'),
     checkbox2 = document.getElementById('checkbox2'),
-    checkbox3 = document.getElementById('checkbox3'),
-    origins = slider2.querySelectorAll('.noUi-origin');
+    checkbox3 = document.getElementById('checkbox3');
 
-function toggle(element) {
+function toggle(checkbox, slider, handleNumber) {
 
     // If the checkbox is checked, disabled the slider.
     // Otherwise, re-enable it.
-    if (this.checked) {
-        element.setAttribute('disabled', true);
+    if (checkbox.checked) {
+        slider.noUiSlider.disable(handleNumber);
     } else {
-        element.removeAttribute('disabled');
+        slider.noUiSlider.enable(handleNumber);
     }
 }
 
@@ -34,13 +33,13 @@ noUiSlider.create(slider2, {
 });
 
 checkbox1.addEventListener('click', function () {
-    toggle.call(this, slider1);
+    toggle(this, slider1);
 });
 
 checkbox2.addEventListener('click', function () {
-    toggle.call(this, origins[0]);
+    toggle(this, slider2, 0);
 });
 
 checkbox3.addEventListener('click', function () {
-    toggle.call(this, origins[1]);
+    toggle(this, slider2, 1);
 });

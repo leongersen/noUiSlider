@@ -20,7 +20,7 @@
 
 	<div class="view">
 
-		<p>Disabling a slider is identical to disabling a checkbox or textarea; add the <code class="language-markup">disabled</code> attribute.</p>
+        <p>A slider can be disabled by calling the <code>disable</code> method in the API.</p>
 
 		<p>A disabled slider can't be changed by user interaction (sliding, clicking or touching), but its value can still be changed using the <code>.set()</code> method.</p>
 
@@ -28,7 +28,9 @@
 
 		<p>The slider below is disabled when the checkbox is checked, and re-enabled when it is unchecked.</p>
 
-		<p>Individual handles can be disabled by adding a <code>disabled</code> attribute to a <code>.noUi-origin</code> element.</p>
+		<p>Individual handles can be disabled by calling the <code>disable</code> with a zero-index handle number. Disabling an individual handle will also prevent it from having <code>focus</code>.</p>
+
+        <p>The slider or handles can re re-enabled using the <code>enable</code> method.</p>
 
 		<div class="example">
 			<div id="disable1"></div>
