@@ -2,6 +2,7 @@
   "name": "nouislider",
   "version": "15.7.0",
   "main": "dist/nouislider.js",
+  "module": "dist/nouislider.mjs",
   "style": "dist/nouislider.min.css",
   "types": "dist/nouislider.d.ts",
   "license": "MIT",
