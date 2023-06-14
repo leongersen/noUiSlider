@@ -1,5 +1,8 @@
 # Changelog
 
+### 15.7.1 (*2023-06-14*)
+- Added: `module` field to `package.json` (#1247, #1248);
+
 ### 15.7.0 (*2023-02-06*)
 - Added: `disable` and `enable` methods to disable slider or handles (#1158, #1227);
 
