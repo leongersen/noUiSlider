@@ -10,4 +10,4 @@ noUiSlider.create(mergingTooltipSlider, {
     }
 });
 
-mergeTooltips(mergingTooltipSlider, 15, ' - ');
+mergeTooltips(mergingTooltipSlider, ' - ');
