@@ -6,6 +6,8 @@ Clone the project (for example, in `C:/Web`):
 
 ```git clone https://github.com/leongersen/noUiSlider nouislider```
 
+Note that the documentation assumes a clone in a lowercase "nouislider" directory.
+
 You can now run the following shorthand to start the server:
 
 ```
@@ -13,6 +15,12 @@ npm run docs
 ```
 
 You can now access the documentation at `http://localhost:8080/nouislider/`.
+
+To run on another port, set a `PORT` environment variable:
+
+```
+PORT=8086 npm run docs
+```
 
 Alternatively, in your root (e.g. `C:/Web`), start the server:
 
