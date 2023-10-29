@@ -1,11 +1,16 @@
 var tooltipSlider = document.getElementById('slider-tooltips');
 
 noUiSlider.create(tooltipSlider, {
-    start: [20, 80, 120],
+    start: [20, 80, 120, 140],
     tooltips: [
-        false, // no tooltip
-        wNumb({decimals: 1}), // tooltip with custom formatting
-        true // tooltip with default formatting
+        // no tooltip
+        false,
+        // tooltip with custom formatting
+        wNumb({decimals: 1}),
+        // tooltip with default formatting
+        true,
+        // tooltip with manual formatting
+        { to: function(value) { return '❤️ ' + value; } }
     ],
     /**
      * Tooltip with default formatting on all handles:
@@ -13,15 +18,14 @@ noUiSlider.create(tooltipSlider, {
      *
      * Tooltip with specific formatting on all handles:
      * tooltips: {
-     *     to: ...,
-     *     from: ...
+     *     to: ...
      * }
      *
      * Tooltip with specific formatting on each handle:
      * tooltips: [
-     *     { to: ..., from: ... },
-     *     { to: ..., from: ... },
-     *     { to: ..., from: ... },
+     *     { to: ... },
+     *     { to: ... },
+     *     { to: ... },
      * ]
      */
     range: {
