@@ -19,6 +19,8 @@
             <div style="margin-bottom: 30px;" id="slider"></div>
             <strong class="style-head">Fit handles within slider</strong>
             <div style="margin-bottom: 30px;" id="slider-fit"></div>
+            <strong class="style-head">Don't overlap handles</strong>
+            <div style="margin-bottom: 30px;" id="slider-no-overlap"></div>
             <strong class="style-head">Rounded styling</strong>
             <div style="margin-bottom: 30px;" class="slider-styled" id="slider-round"></div>
             <strong class="style-head">Square styling</strong>
@@ -32,9 +34,16 @@
 <pre><code>
 &lt;div id=&quot;slider&quot;&gt;&lt;/div&gt;
 &lt;div id=&quot;slider-fit&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;slider-no-overlap&quot;&gt;&lt;/div&gt;
 &lt;div class=&quot;slider-styled&quot; id=&quot;slider-round&quot;&gt;&lt;/div&gt;
 &lt;div class=&quot;slider-styled&quot; id=&quot;slider-square&quot;&gt;&lt;/div&gt;
 </code></pre>
+
+        <div class="viewer-header">Don't overlap handles</div>
+
+        <div class="viewer-content">
+            <?php loadShowCSS('styling-no-overlap'); ?>
+        </div>
 
         <div class="viewer-header">Fit handles withing the slider</div>
 

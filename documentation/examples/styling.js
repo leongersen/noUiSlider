@@ -9,6 +9,17 @@ noUiSlider.create(slider, {
     }
 });
 
+var sliderNoOverlap = document.getElementById('slider-no-overlap');
+
+noUiSlider.create(sliderNoOverlap, {
+    start: [50, 50],
+    connect: true,
+    range: {
+        'min': 0,
+        'max': 100
+    }
+});
+
 var sliderFit = document.getElementById('slider-fit');
 
 noUiSlider.create(sliderFit, {
