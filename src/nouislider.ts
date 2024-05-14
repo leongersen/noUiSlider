@@ -113,7 +113,9 @@ type Pips = PositionsPips | ValuesPips | CountPips | StepsPips | RangePips;
 
 //endregion
 
-type StartValues = string | number | (string | number)[];
+type ValueArgument = number | string | null;
+
+type StartValues = ValueArgument | ValueArgument[];
 
 type HandleAttributes = { [key: string]: string };
 
@@ -202,8 +204,8 @@ export interface API {
     on: (eventName: string, callback: EventCallback) => void;
     off: (eventName: string) => void;
     get: (unencoded?: boolean) => GetResult;
-    set: (input: number | string | (number | string)[], fireSetEvent?: boolean, exactInput?: boolean) => void;
-    setHandle: (handleNumber: number, value: number | string, fireSetEvent?: boolean, exactInput?: boolean) => void;
+    set: (input: ValueArgument | ValueArgument[], fireSetEvent?: boolean, exactInput?: boolean) => void;
+    setHandle: (handleNumber: number, value: ValueArgument, fireSetEvent?: boolean, exactInput?: boolean) => void;
     reset: (fireSetEvent?: boolean) => void;
     disable: (handleNumber?: number) => void;
     enable: (handleNumber?: number) => void;
@@ -212,6 +214,7 @@ export interface API {
     target: HTMLElement;
     removePips: () => void;
     removeTooltips: () => void;
+    getPositions: () => number[];
     getTooltips: () => { [handleNumber: number]: HTMLElement | false };
     getOrigins: () => { [handleNumber: number]: HTMLElement };
     pips: (grid: Pips) => HTMLElement;
@@ -2740,7 +2743,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     }
 
     // Parses value passed to .set method. Returns current value if not parse-able.
-    function resolveToValue(to: null | false | undefined | string | number, handleNumber: number): number {
+    function resolveToValue(to: ValueArgument | false | undefined, handleNumber: number): number {
         // Setting with null indicates an 'ignore'.
         // Inputting 'false' is invalid.
         if (to === null || to === false || to === undefined) {
@@ -2830,7 +2833,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     // Set value for a single handle
     function valueSetHandle(
         handleNumber: number,
-        value: string | number,
+        value: ValueArgument,
         fireSetEvent?: boolean,
         exactInput?: boolean
     ): void {

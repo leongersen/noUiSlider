@@ -1,5 +1,9 @@
 # Changelog
 
+### 15.7.2 (*2024-05-14*)
+- Added: `getPositions` to Typescript definitions (#1270);
+- Added: Allow `null` in `set` Typescript definitions (#1271);
+
 ### 15.7.1 (*2023-06-14*)
 - Added: `module` field to `package.json` (#1247, #1248);
 
