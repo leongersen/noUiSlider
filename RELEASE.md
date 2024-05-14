@@ -1,0 +1,6 @@
+- `npm login`
+- Update version in `package.json`
+- Run `npm audit fix`
+- Update `changelog.md`
+- Run `npm publish -otp=<2FA VALUE FROM AUTHENTICATOR>`
+- Create a new release on https://github.com/leongersen/noUiSlider/releases
