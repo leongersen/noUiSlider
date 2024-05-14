@@ -91,7 +91,8 @@ interface RangePips extends BasePips {
     mode: PipsMode.Range;
 }
 declare type Pips = PositionsPips | ValuesPips | CountPips | StepsPips | RangePips;
-declare type StartValues = string | number | (string | number)[];
+declare type ValueArgument = number | string | null;
+declare type StartValues = ValueArgument | ValueArgument[];
 declare type HandleAttributes = {
     [key: string]: string;
 };
@@ -131,8 +132,8 @@ export interface API {
     on: (eventName: string, callback: EventCallback) => void;
     off: (eventName: string) => void;
     get: (unencoded?: boolean) => GetResult;
-    set: (input: number | string | (number | string)[], fireSetEvent?: boolean, exactInput?: boolean) => void;
-    setHandle: (handleNumber: number, value: number | string, fireSetEvent?: boolean, exactInput?: boolean) => void;
+    set: (input: ValueArgument | ValueArgument[], fireSetEvent?: boolean, exactInput?: boolean) => void;
+    setHandle: (handleNumber: number, value: ValueArgument, fireSetEvent?: boolean, exactInput?: boolean) => void;
     reset: (fireSetEvent?: boolean) => void;
     disable: (handleNumber?: number) => void;
     enable: (handleNumber?: number) => void;
@@ -141,6 +142,7 @@ export interface API {
     target: HTMLElement;
     removePips: () => void;
     removeTooltips: () => void;
+    getPositions: () => number[];
     getTooltips: () => {
         [handleNumber: number]: HTMLElement | false;
     };
