@@ -1,5 +1,9 @@
 # Changelog
 
+### 15.8.0 (*2024-06-10*)
+- Added: Allow `connect` option to get updated (#1272);
+- Added: `invert-connects` behaviour (#1262, #1272);
+
 ### 15.7.2 (*2024-05-14*)
 - Added: `getPositions` to Typescript definitions (#1270);
 - Added: Allow `null` in `set` Typescript definitions (#1271);

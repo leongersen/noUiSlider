@@ -108,10 +108,10 @@ interface UpdatableOptions {
     format?: Formatter;
     tooltips?: boolean | PartialFormatter | (boolean | PartialFormatter)[];
     animate?: boolean;
+    connect?: "lower" | "upper" | boolean | boolean[];
 }
 export interface Options extends UpdatableOptions {
     range: Range;
-    connect?: "lower" | "upper" | boolean | boolean[];
     orientation?: "vertical" | "horizontal";
     direction?: "ltr" | "rtl";
     behaviour?: string;
