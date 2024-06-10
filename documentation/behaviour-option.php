@@ -10,9 +10,9 @@
 
 	<div class="view">
 
-		<p>noUiSlider offers several ways to handle user interaction. The range can be made draggable, or handles can move to tapped positions. All these effects are optional, and can be enable by adding their keyword to the <code>behaviour</code> option.</p>
+		<p>noUiSlider offers several ways to handle user interaction. The range can be made draggable, or handles can move to tapped positions. All these effects are optional, and can be enabled by adding their keyword to the <code>behaviour</code> option.</p>
 
-		<p>This option accepts a <code>"-"</code> separated list of <code>"drag"</code>, <code>"drag-all"</code>, <code>"tap"</code>, <code>"fixed"</code>, <code>"snap"</code>, <code>"unconstrained"</code> or <code>"none"</code>.</p>
+		<p>This option accepts a <code>"-"</code> separated list of <code>"drag"</code>, <code>"drag-all"</code>, <code>"tap"</code>, <code>"fixed"</code>, <code>"snap"</code>, <code>"unconstrained"</code>, <code>"invert-connects"</code> or <code>"none"</code>.</p>
 
 		<div class="example">
 			<div id="behaviour"></div>
@@ -273,7 +273,7 @@
 	<div class="view">
 		<p>With this option set, connects invert when handles pass each other.</p>
 
-		<p>Requires the <code><a href="#section-unconstrained">unconstrained</a></code> behaviour and the <code>connect</code> option.</p>
+		<p>Requires the <code><a href="#section-unconstrained">unconstrained</a></code> behaviour and the <code>connect</code> option. This option is only applicable for sliders with two handles.</p>
 		<div class="example">
 			<div id="invert-connects"></div>
 			<span class="example-val" id="invert-connects-values"></span>
