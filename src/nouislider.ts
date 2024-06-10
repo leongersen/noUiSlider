@@ -131,11 +131,11 @@ interface UpdatableOptions {
     format?: Formatter;
     tooltips?: boolean | PartialFormatter | (boolean | PartialFormatter)[];
     animate?: boolean;
+    connect?: "lower" | "upper" | boolean | boolean[];
 }
 
 export interface Options extends UpdatableOptions {
     range: Range;
-    connect?: "lower" | "upper" | boolean | boolean[];
     orientation?: "vertical" | "horizontal";
     direction?: "ltr" | "rtl";
     behaviour?: string;
@@ -160,6 +160,7 @@ interface Behaviour {
     snap: boolean;
     hover: boolean;
     unconstrained: boolean;
+    invertConnects: boolean;
 }
 
 interface ParsedOptions {
@@ -1136,6 +1137,7 @@ function testBehaviour(parsed: ParsedOptions, entry: unknown): void {
     const snap = entry.indexOf("snap") >= 0;
     const hover = entry.indexOf("hover") >= 0;
     const unconstrained = entry.indexOf("unconstrained") >= 0;
+    const invertConnects = entry.indexOf("invert-connects") >= 0;
     const dragAll = entry.indexOf("drag-all") >= 0;
     const smoothSteps = entry.indexOf("smooth-steps") >= 0;
 
@@ -1161,6 +1163,7 @@ function testBehaviour(parsed: ParsedOptions, entry: unknown): void {
         snap: snap,
         hover: hover,
         unconstrained: unconstrained,
+        invertConnects: invertConnects,
     };
 }
 
@@ -1367,6 +1370,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     // Slider DOM Nodes
     const scope_Target = target;
     let scope_Base: HTMLElement;
+    let scope_ConnectBase: HTMLElement;
     let scope_Handles: Origin[];
     let scope_Connects: (HTMLElement | false)[];
     let scope_Pips: HTMLElement | null;
@@ -1379,6 +1383,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     const scope_HandleNumbers: number[] = [];
     let scope_ActiveHandlesCount = 0;
     const scope_Events: { [key: string]: EventCallback[] } = {};
+    let scope_ConnectsInverted: boolean = false;
 
     // Document Nodes
     const scope_Document = target.ownerDocument;
@@ -1452,12 +1457,12 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
     // Add handles to the slider base.
     function addElements(connectOptions: boolean[], base: HTMLElement): void {
-        const connectBase = addNodeTo(base, options.cssClasses.connects);
+        scope_ConnectBase = addNodeTo(base, options.cssClasses.connects);
 
         scope_Handles = [];
         scope_Connects = [];
 
-        scope_Connects.push(addConnect(connectBase, connectOptions[0]));
+        scope_Connects.push(addConnect(scope_ConnectBase, connectOptions[0]));
 
         // [::::O====O====O====]
         // connectOptions = [0, 1, 1, 1]
@@ -1466,7 +1471,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             // Keep a list of all added handles.
             scope_Handles.push(addOrigin(base, i));
             scope_HandleNumbers[i] = i;
-            scope_Connects.push(addConnect(connectBase, connectOptions[i + 1]));
+            scope_Connects.push(addConnect(scope_ConnectBase, connectOptions[i + 1]));
         }
     }
 
@@ -2666,8 +2671,27 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
 
         (scope_Handles[handleNumber].style as CSSStyleDeclarationIE10)[options.transformRule] = translateRule;
 
+        if(
+            options.events.invertConnects && 
+            // sanity check for at least 2 handles
+            scope_Locations.length > 1 && 
+            // check if handles passed each other, but don't match the ConnectsInverted state
+            scope_ConnectsInverted !== !scope_Locations.every(
+                (position: number, index: number, locations: number[]): boolean =>   
+                    index === 0 || position >= locations[index - 1]
+            )) {
+                // when invertConnects is set, automatically invert connects when handles pass each other
+                invertConnects();
+            }
+
         updateConnect(handleNumber);
         updateConnect(handleNumber + 1);
+        
+        if(scope_ConnectsInverted) {
+            // When connects are inverted, we also have to update adjacent connects
+            updateConnect(handleNumber - 1);
+            updateConnect(handleNumber + 2);
+        }
     }
 
     // Handles before the slider middle are stacked later = higher,
@@ -2719,15 +2743,23 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             return;
         }
 
+        // Create a copy of locations, so we can sort them for the local scope logic
+        let locations = scope_Locations.slice();
+        if (scope_ConnectsInverted) {
+            locations.sort(function(a, b) {
+                return a - b;
+            });
+        }
+
         let l = 0;
         let h = 100;
 
         if (index !== 0) {
-            l = scope_Locations[index - 1];
+            l = locations[index - 1];
         }
 
         if (index !== scope_Connects.length - 1) {
-            h = scope_Locations[index];
+            h = locations[index];
         }
 
         // We use two rules:
@@ -2968,6 +3000,7 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             "format",
             "pips",
             "tooltips",
+            "connect",
         ];
 
         // Only change options that we're actually passed to update.
@@ -3012,6 +3045,33 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
         scope_Locations = [];
 
         valueSet(isSet(optionsToUpdate.start) ? optionsToUpdate.start : v, fireSetEvent);
+
+        // Update connects only if it was set
+        if (optionsToUpdate.connect) {
+            // IE supported way of removing children including event handlers
+            while (scope_ConnectBase.firstChild) {
+                scope_ConnectBase.removeChild(scope_ConnectBase.firstChild);
+            }
+
+            // Adding new connects according to the new connect options
+            for (let i = 0; i <= options.handles; i++) {
+                scope_Connects[i] = addConnect(scope_ConnectBase, options.connect[i]);
+                updateConnect(i);
+            }
+
+            // readding drag events for the new connect elements
+            // to ignore the other events we have to negate the 'if (!behaviour.fixed)' check
+            bindSliderEvents({ drag: options.events.drag, fixed: true } as Behaviour);
+        }
+    }
+
+    // Invert options for connect handles
+    function invertConnects() {
+        scope_ConnectsInverted = !scope_ConnectsInverted;
+        updateOptions({
+            // inverse the connect boolean array
+            connect: options.connect.map((b: boolean) => !b)
+        }, false); // don't fire the set event
     }
 
     // Initialization steps

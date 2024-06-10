@@ -36,6 +36,7 @@
         <li><a href="#section-hover">Hover</a></li>
         <li><a href="#section-unconstrained">Unconstrained</a></li>
         <li><a href="#section-smooth-steps">Smooth steps</a></li>
+        <li><a href="#section-invert-connects">Invert connects</a></li>
     </ul>
 </section>
 
@@ -260,5 +261,34 @@
 
 	<div class="side">
 		<?php code('combined'); ?>
+	</div>
+</section>
+
+
+<?php sect('invert-connects'); ?>
+<h2>Invert Connects</h2>
+
+<section>
+
+	<div class="view">
+		<p>With this option set, connects invert when handles pass each other.</p>
+
+		<p>Requires the <code><a href="#section-unconstrained">unconstrained</a></code> behaviour and the <code>connect</code> option.</p>
+		<div class="example">
+			<div id="invert-connects"></div>
+			<span class="example-val" id="invert-connects-values"></span>
+			<?php run('invert-connects'); ?>
+			<?php run('invert-connects-link'); ?>
+		</div>
+	</div>
+
+	<div class="side">
+		<?php code('invert-connects'); ?>
+
+		<div class="viewer-header">Show the slider value</div>
+
+		<div class="viewer-content">
+			<?php code('invert-connects-link'); ?>
+		</div>
 	</div>
 </section>
