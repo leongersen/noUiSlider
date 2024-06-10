@@ -75,7 +75,7 @@
 
 	<div class="view">
 
-        <p>noUiSlider has an update method that can change the <code>'margin'</code>, <code>'padding'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'pips'</code>, <code>'tooltips'</code>, <code>'animate'</code> and <code>'snap'</code> options.</p>
+        <p>noUiSlider has an update method that can change the <code>'margin'</code>, <code>'padding'</code>, <code>'limit'</code>, <code>'step'</code>, <code>'range'</code>, <code>'pips'</code>, <code>'tooltips'</code>, <code>'connect'</code>, <code>'animate'</code> and <code>'snap'</code> options.</p>
 
 		<p>All other options require changes to the slider's HTML or event bindings.</p>
 
