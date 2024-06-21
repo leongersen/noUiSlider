@@ -45,7 +45,7 @@
             <?php loadShowCSS('styling-no-overlap'); ?>
         </div>
 
-        <div class="viewer-header">Fit handles withing the slider</div>
+        <div class="viewer-header">Fit handles within the slider</div>
 
         <div class="viewer-content">
             <?php loadShowCSS('styling-fit'); ?>

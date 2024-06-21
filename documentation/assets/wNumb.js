@@ -232,7 +232,7 @@ var FormatOptions = [
 			return false;
 		}
 
-		// Covert to number.
+		// Convert to number.
 		output = Number(output);
 
 		// Run the user-specified post-decoder.
