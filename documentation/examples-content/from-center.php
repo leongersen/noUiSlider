@@ -5,12 +5,19 @@
 
     <div class="view">
 
-        <p><a href="https://github.com/leongersen/noUiSlider/issues/371">Issue #371</a> requested a slider with the connect option originating from the slider center.</p>
+        <p><a href="https://github.com/leongersen/noUiSlider/issues/371">Issue #371</a> requested a slider with the connect option originating from the slider center.
+            This can be implemented by hiding one of the handles and using the <code>"unconstrained"</code> behaviour.</p>
 
-        <p>An example of how to implement this is <a href="https://jsfiddle.net/leongersen/9hyfv0bw/11/">available as a JSFiddle</a>.</p>
-
+        <div class="example">
+            <div id="from-center"></div>
+            <?php run('from-center'); ?>
+            <?php run('from-center'); ?>
+        </div>
     </div>
 
     <div class="side">
+
+        <?php loadShowCSS('from-center'); ?>
+        <?php code('from-center'); ?>
     </div>
 </section>
