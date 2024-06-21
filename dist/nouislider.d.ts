@@ -143,12 +143,8 @@ export interface API {
     removePips: () => void;
     removeTooltips: () => void;
     getPositions: () => number[];
-    getTooltips: () => {
-        [handleNumber: number]: HTMLElement | false;
-    };
-    getOrigins: () => {
-        [handleNumber: number]: HTMLElement;
-    };
+    getTooltips: () => (HTMLElement | false)[] | null;
+    getOrigins: () => HTMLElement[];
     pips: (grid: Pips) => HTMLElement;
 }
 interface TargetElement extends HTMLElement {

@@ -1,5 +1,8 @@
 # Changelog
 
+### 15.8.1 (*2024-06-21*)
+- Fixed: Typescript definitions for `getTooltips` and `getOrigins` (#1273);
+
 ### 15.8.0 (*2024-06-10*)
 - Added: Allow `connect` option to get updated (#1272);
 - Added: `invert-connects` behaviour (#1262, #1272);
