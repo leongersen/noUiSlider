@@ -171,7 +171,7 @@
 <section>
 
 	<div class="view">
-		<p>A handle snaps to a clicked location. It can immediatly be moved, without a <code>mouseup</code> + <code>mousedown</code>.</p>
+		<p>A handle snaps to a clicked location. It can immediately be moved, without a <code>mouseup</code> + <code>mousedown</code>.</p>
 		<div class="example">
 			<div id="snap"></div>
 			<?php run('snap'); ?>

@@ -157,7 +157,7 @@
 	<div class="view">
 		<p>noUiSlider uses a custom binding model with support for namespaces. There are two methods, <code>.on(eventName, callback)</code> and <code>.off(eventName)</code>. Events can be namespaced by appending a period ('.') and an identifier to the event name.</p>
 
-		<p>Nested namespaces (<code>'slide.something.else'</code>) are not supported, and are threated as a single namespace (so <code>'.a.b'</code> isn't related to <code>'.a'</code>).</p>
+		<p>Nested namespaces (<code>'slide.something.else'</code>) are not supported, and are treated as a single namespace (so <code>'.a.b'</code> isn't related to <code>'.a'</code>).</p>
 
 		<p><code>values</code> is an array containing the current slider values, with formatting applied. <code>handle</code> is the index of the handle that caused the event, starting at zero. <code>values[handle]</code> gives the value for the handle that triggered the event.</p>
 
