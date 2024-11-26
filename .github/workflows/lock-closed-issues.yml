@@ -3,7 +3,7 @@ name: 'Lock Issues'
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 1 * *'
 
 concurrency: lock_issues
 
