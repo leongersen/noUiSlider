@@ -3,6 +3,7 @@
   "version": "15.8.1",
   "main": "dist/nouislider.js",
   "module": "dist/nouislider.mjs",
+  "sideEffects": false,
   "style": "dist/nouislider.min.css",
   "types": "dist/nouislider.d.ts",
   "license": "MIT",
