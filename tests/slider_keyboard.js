@@ -139,3 +139,67 @@ QUnit.test("Keyboard support", function (assert) {
     pageUp(handle0);
     assert.deepEqual(slider.noUiSlider.get(), '5.00');
 });
+
+QUnit.test("Fixed handles move together with the keyboard", function (assert) {
+    ['horizontal', 'vertical'].forEach(function (orientation) {
+        ['ltr', 'rtl'].forEach(function (direction) {
+            document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
+            var slider = document.getElementById('qunit-fixture').querySelector('.slider');
+            noUiSlider.create(slider, {
+                start: [20, 40], connect: true, step: 5,
+                behaviour: 'drag-fixed', orientation: orientation, direction: direction,
+                padding: 10, range: { min: 0, max: 100 }
+            });
+            var handles = slider.querySelectorAll('.noUi-handle');
+            function key(index, name) {
+                handles[index].dispatchEvent(new KeyboardEvent('keydown', { key: name }));
+            }
+            var increase = orientation === 'horizontal' ?
+                (direction === 'ltr' ? 'ArrowRight' : 'ArrowLeft') :
+                (direction === 'ltr' ? 'ArrowDown' : 'ArrowUp');
+            key(0, increase);
+            assert.deepEqual(slider.noUiSlider.get(true), [25, 45], 'first handle moves pair');
+            key(1, increase);
+            assert.deepEqual(slider.noUiSlider.get(true), [30, 50], 'second handle moves pair');
+            key(0, 'Home');
+            assert.deepEqual(slider.noUiSlider.get(true), [10, 30], 'Home respects padding');
+            key(1, 'End');
+            assert.deepEqual(slider.noUiSlider.get(true), [70, 90], 'End respects padding');
+            key(0, increase);
+            assert.deepEqual(slider.noUiSlider.get(true), [70, 90], 'pair stops at boundary');
+            key(0, 'Home');
+            var pageIncrease = orientation === 'vertical' && direction === 'ltr' ? 'PageDown' : 'PageUp';
+            key(1, pageIncrease);
+            assert.deepEqual(slider.noUiSlider.get(true), [35, 55], 'page multiplier moves pair');
+            slider.noUiSlider.disable(0);
+            key(1, increase);
+            assert.deepEqual(slider.noUiSlider.get(true), [35, 55], 'disabled partner blocks pair');
+            slider.noUiSlider.enable(0);
+            slider.noUiSlider.disable();
+            key(0, increase);
+            assert.deepEqual(slider.noUiSlider.get(true), [35, 55], 'disabled slider blocks pair');
+            slider.noUiSlider.enable();
+            slider.noUiSlider.updateOptions({ range: { min: 0, max: 200 }, start: [60, 80] });
+            key(0, increase);
+            assert.deepEqual(slider.noUiSlider.get(true), [65, 85], 'updated slider still moves pair');
+            slider.noUiSlider.destroy();
+        });
+    });
+});
+
+QUnit.test("Fixed keyboard movement notifies both handles", function (assert) {
+    document.getElementById('qunit-fixture').innerHTML = '<div class="slider"></div>';
+    var slider = document.getElementById('qunit-fixture').querySelector('.slider');
+    noUiSlider.create(slider, {
+        start: [20, 40], connect: true, step: 5, behaviour: 'drag-fixed',
+        range: { min: 0, max: 100 }
+    });
+    var events = [];
+    ['update', 'slide', 'change', 'set', 'drag'].forEach(function (name) {
+        slider.noUiSlider.on(name, function (values, handle) { events.push(name + ':' + handle); });
+    });
+    events = [];
+    slider.querySelector('.noUi-handle').dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+    assert.deepEqual(events.sort(), ['change:0', 'change:1', 'set:0', 'set:1', 'slide:0', 'slide:1', 'update:0', 'update:1']);
+    slider.noUiSlider.destroy();
+});

@@ -2286,7 +2286,11 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
     // Handles keydown on focused handles
     // Don't move the document when pressing arrow keys on focused handles
     function eventKeydown(event: KeyboardEvent, handleNumber: number): boolean {
-        if (isSliderDisabled() || isHandleDisabled(handleNumber)) {
+        if (
+            isSliderDisabled() ||
+            isHandleDisabled(handleNumber) ||
+            (options.events.fixed && scope_HandleNumbers.some(isHandleDisabled))
+        ) {
             return false;
         }
 
@@ -2362,12 +2366,21 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
             to = options.spectrum.xVal[0];
         }
 
-        setHandle(handleNumber, scope_Spectrum.toStepping(to), true, true);
+        if (options.events.fixed) {
+            const proposal = scope_Spectrum.toStepping(to) - scope_Locations[handleNumber];
+            moveHandles(proposal > 0, proposal, scope_Locations, scope_HandleNumbers);
+            scope_HandleNumbers.forEach(function (handle) {
+                fireEvent("change", handle);
+                fireEvent("set", handle);
+            });
+        } else {
+            setHandle(handleNumber, scope_Spectrum.toStepping(to), true, true);
 
-        fireEvent("slide", handleNumber);
-        fireEvent("update", handleNumber);
-        fireEvent("change", handleNumber);
-        fireEvent("set", handleNumber);
+            fireEvent("slide", handleNumber);
+            fireEvent("update", handleNumber);
+            fireEvent("change", handleNumber);
+            fireEvent("set", handleNumber);
+        }
 
         return false;
     }
