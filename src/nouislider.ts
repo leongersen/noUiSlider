@@ -1987,7 +1987,9 @@ function scope(target: TargetElement, options: ParsedOptions, originalOptions: O
                 return (
                     target === eventTarget ||
                     eventTarget.contains(target) ||
-                    (e.composed && e.composedPath().shift() === eventTarget)
+                    // In shadow DOM the touch target is retargeted to the host, so use the path of the event.
+                    // Only for a touch on the target of this event: the event also lists touches on other elements.
+                    (e.composed && target === e.target && e.composedPath().shift() === eventTarget)
                 );
             };
 
