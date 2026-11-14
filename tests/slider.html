@@ -50,6 +50,28 @@
 
             clickTarget.dispatchEvent(clickEvent);
         }
+        // Touch events are composed in browsers. The lists hold objects made by createTouch.
+        function simulateTouch(type, eventTarget, changedTouches, touches) {
+            var touchEvent = new Event(type, {
+                bubbles: true,
+                composed: true
+            });
+
+            Object.defineProperty(touchEvent, 'changedTouches', {value: changedTouches});
+            Object.defineProperty(touchEvent, 'touches', {value: touches});
+
+            eventTarget.dispatchEvent(touchEvent);
+        }
+        function createTouch(identifier, target, x, y) {
+            return {
+                identifier: identifier,
+                target: target,
+                pageX: x,
+                pageY: y,
+                clientX: x,
+                clientY: y
+            };
+        }
     </script>
 </head>
 
@@ -87,6 +109,7 @@
 <script src="slider_set-exactInput.js"></script>
 <script src="slider_drag_all.js"></script>
 <script src="slider_no_size.js"></script>
+<script src="slider_multi_touch.js"></script>
 
 <script src="addon_pips.js"></script>
 
